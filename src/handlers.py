@@ -3,6 +3,7 @@ from tokens import Token
 program = ""
 index = 0
 
+
 def init(program_: str, index_: int):
     global program, index
     program = program_
