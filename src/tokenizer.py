@@ -2,6 +2,7 @@ from tokens import Token
 import handlers
 import sys
 
+
 def tokenize(program: str) -> list[Token | int | str]:
     tokens: list[Token | int | str] = []
     temp = ""
@@ -55,13 +56,14 @@ def tokenize(program: str) -> list[Token | int | str]:
                     tokens.append(Token(char))
         elif char == '"' and program[index - 1] != "\\":
             # Handling Strings
-            string = not string
-            if temp:
+            if string:
                 tokens.append(f'"{temp}"')
                 temp = ""
+            string = not string
         else:
             temp += char
     return tokens
+
 
 def main():
     with open(sys.argv[1]) as f:
@@ -69,6 +71,7 @@ def main():
 
     for token in tokenize(program):
         print(token)
+
 
 if __name__ == "__main__":
     main()
