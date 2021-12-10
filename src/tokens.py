@@ -27,9 +27,6 @@ class Token(Enum):
     COMMENT_OPEN = "==<"
     COMMENT_CLOSE = ">=="
 
-    ZERO = "\\"
-    ONE = "/"
-
     IF = "."
     ELSE = ","
     WHILE = ".."
