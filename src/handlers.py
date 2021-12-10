@@ -70,7 +70,7 @@ def greater() -> Token | None:
 def equal() -> Token | None:
     if program[index - 1] in "=>":
         return None
-    if program[index + 1] == "==":
+    if program[index + 1] == "=":
         if program[index + 2] == "<":
             return Token.COMMENT_OPEN
         else:
