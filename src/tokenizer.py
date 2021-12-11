@@ -9,10 +9,12 @@ def tokenize(program: str) -> list[Token | int | str]:
     string = False
     multisemantic = "+-:<>=.?!"
     for index, char in enumerate(program):
-        if char == " " and temp and not string:
+        if not char.isalpha() and temp and not string:
             tokens.append(temp)
             temp = ""
         if char in "\n \t":
+            if char == "\n":
+                tokens.append("\n")
             continue
         if char != '"' and not string:
             # Handling Names
