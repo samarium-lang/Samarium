@@ -52,8 +52,7 @@ class Token(Enum):
 
     STRING = '"'
     IMPORT = "$"
-    CONST = "#"
-    LAMBDA = "_"
+    LAMBDA = "#"
     END = ";"
     CAST = "'"
     DECORATOR = "%"
