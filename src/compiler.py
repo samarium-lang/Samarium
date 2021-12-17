@@ -2,8 +2,8 @@ from parser import parse, Code
 from tokenizer import tokenize
 import sys
 from utils import (
-    SamariumString,
-    SamariumInteger,
+    SMString,
+    SMInteger,
     _cast,
     _input,
     _import,
@@ -17,7 +17,12 @@ def main():
     tokens = tokenize(code)
     for token in tokens:
         parse(token)
-    exec("\n".join(Code.code))
+    # for line in Code.code:
+    #     print(repr(line))
+    try:
+        exec("\n".join(Code.code))
+    except Exception as e:
+        _throw(str(e))
 
 
 if __name__ == "__main__":
