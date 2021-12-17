@@ -60,6 +60,7 @@ class Token(Enum):
     CAST = "'"
     DECORATOR = "%"
     SEP = "`"
+    TO = "->"
 
     PAREN_OPEN = "("
     PAREN_CLOSE = ")"

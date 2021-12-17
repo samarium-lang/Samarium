@@ -24,6 +24,8 @@ def plus() -> Token | None:
 def minus() -> Token | None:
     if program[index - 1] == "-":
         return None
+    if program[index + 1] == ">":
+        return Token.TO
     if program[index + 1] != "-":
         return Token.SUB
     if program[index + 2] == "-":
@@ -55,7 +57,7 @@ def less() -> Token | None:
 
 
 def greater() -> Token | None:
-    if program[index - 1] == ">":
+    if program[index - 1] in "->":
         return None
     if program[index + 1] == ">":
         return Token.SHR
