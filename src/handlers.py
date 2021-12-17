@@ -106,3 +106,30 @@ def exclamation() -> Token | None:
         return Token.THROW
     else:
         return Token.CATCH
+
+
+def pipe() -> Token | None:
+    if program[index - 1] == "|":
+        return None
+    if program[index + 1] == "|":
+        return Token.OR
+    else:
+        return Token.BINOR
+
+
+def ampersand() -> Token | None:
+    if program[index - 1] == "&":
+        return None
+    if program[index + 1] == "&":
+        return Token.AND
+    else:
+        return Token.BINAND
+
+
+def tilde() -> Token | None:
+    if program[index - 1] == "~":
+        return None
+    if program[index + 1] == "~":
+        return Token.NOT
+    else:
+        return Token.BINNOT
