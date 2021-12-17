@@ -6,40 +6,72 @@ with open(sys.argv[1]) as f:
 
 
 class Code:
-    comment = False
-    multiline_comment = False
-    newline = False
-    indent = 0
     code = []
     command = []
+    command_tokens = []
+    comment = False
+    func = False
+    imp = False
+    indent = 0
+    multiline_comment = False
+    newline = False
     tokens = []
 
+    @staticmethod
+    def reset():
+        Code.code = []
+        Code.command = []
+        Code.command_tokens = []
+        Code.comment = False
+        Code.func = False
+        Code.imp = False
+        Code.indent = 0
+        Code.multiline_comment = False
+        Code.newline = False
+        Code.tokens = []
 
-def parse(token: Token | str | int):
-    Code.tokens.append(token)
+
+def parse(token: Token | str | int | None):
+
+    # For when `parse(None)` is called recursively
+    if token is not None:
+        Code.command_tokens.append(token)
+
     if Code.newline:
         if Code.command:
             Code.code.append("".join(Code.command))
             Code.command = []
+            Code.tokens.extend(Code.command_tokens)
+            Code.command_tokens = []
         Code.command = ["    " * Code.indent]
         Code.newline = False
-        return
+
     if Code.multiline_comment:
         if token == Token.COMMENT_CLOSE:
             Code.multiline_comment = False
         return
+
+    # SMInteger handling
     if isinstance(token, int):
-        Code.command.append(f"SamariumInteger({token})")
+        Code.command.append(f"SMInteger({token})")
         return
+
     if isinstance(token, str):
-        if token == "\n" and Code.comment:
+        if token == "\n" and Code.comment:  # One line comment
             Code.comment = False
         else:
             if token[0] == token[-1] == '"':
-                Code.command.append(f"SamariumString({token})")
+                # SMString handling
+                Code.command.append(f"SMString({token}).smf()")
             else:
-                Code.command.append(token)
+                # Name handling, `_` added so
+                # Python's builtins cannot be overwritten
+                if token != "\n":
+                    Code.command.append(f"{token}_")
+                # Code.command.append(f"{token}_" if token != "\n" else token)
         return
+
+    # Main parser
     match token:
 
         # Arithmetic
@@ -58,10 +90,15 @@ def parse(token: Token | str | int):
         case Token.LE: Code.command.append("<=")
         case Token.GE: Code.command.append(">=")
 
-        # Logical & Bitwise
-        case Token.AND: Code.command.append("&")
-        case Token.OR: Code.command.append("|")
+        # Logical
+        case Token.AND: Code.command.append(" and ")
+        case Token.OR: Code.command.append(" or ")
         case Token.NOT: Code.command.append(" not ")
+
+        # Bitwise
+        case Token.BINAND: Code.command.append("&")
+        case Token.BINOR: Code.command.append("|")
+        case Token.BINNOT: Code.command.append("~")
         case Token.XOR: Code.command.append("^")
         case Token.SHR: Code.command.append(">>")
         case Token.SHL: Code.command.append("<<")
@@ -73,10 +110,13 @@ def parse(token: Token | str | int):
         case Token.PAREN_CLOSE: Code.command.append(")")
         case Token.BRACE_OPEN:
             Code.command.append(":")
+            Code.newline = True
             Code.indent += 1
+            parse(None)
         case Token.BRACE_CLOSE:
             Code.newline = True
             Code.indent -= 1
+            parse(None)
 
         # Comments
         case Token.COMMENT:
@@ -88,49 +128,86 @@ def parse(token: Token | str | int):
         # Execution
         case Token.ASSIGN:
             Code.command.append("=")
-            if Code.tokens[0] != Token.CONST:
-                Code.command.insert(0, "var")
+        case Token.SEP:
+            Code.command.append(",")
+        case Token.TO:
+            Code.command.append(":")
         case Token.END:
-            Code.code.append("".join(Code.command) + ";")
+            if Code.imp:
+                Code.imp = False
+                Code.command.append("')")
+            Code.command.append(";")
             Code.newline = True
-        case Token.IMPORT:
-            ...  # TODO
+            parse(None)
 
         # I/O
+        case Token.IMPORT:
+            Code.imp = True
+            Code.command.append("_import('")
         case Token.CAST:
-            Code.command.append(f"_cast({Code.command.pop()})")
+            x = 0
+            while not isinstance(Code.command[~x], (int, str)):
+                x += 1
+            Code.command[~x] = f"_cast({Code.command[~x]})"
+            # Code.command.append(f"_cast({Code.command})")
         case Token.STDIN:
             match isinstance(Code.command[-1], str):
                 case True: Code.command.append(f"_input({Code.command.pop()})")
                 case False: Code.command.append("_input()")
         case Token.STDOUT:
-            Code.command.insert(0, "print(")
-            Code.command.append(")")
+            x = Code.indent > 0
+            Code.command = [
+                *Code.command[:x],
+                "print(",
+                *Code.command[x:],
+                ")"
+            ]
 
         # Control Flow
         case Token.IF:
-            ...  # TODO
+            if (
+                isinstance(Code.command_tokens[-2], str)
+                and not Code.command_tokens[-2].isspace()
+            ):
+                Code.command.append(".")
+            else:
+                Code.command.append("if ")
         case Token.WHILE:
-            ...  # TODO
+            Code.command.append("while ")
         case Token.FOR:
             ...  # TODO
         case Token.ELSE:
-            ...  # TODO
+            Code.command.append("else")
 
         # Error Handling
         case Token.TRY:
-            ...  # TODO
+            Code.command.append("try")
         case Token.CATCH:
-            ...  # TODO
+            Code.command.append("except")
         case Token.THROW:
-            ...  # TODO
+            Code.command = ["_throw(", *Code.command, ")"]
 
         # Functions / Classes
         case Token.FUNCTION:
-            ...  # TODO
+            if Code.command_tokens[0] == Token.IMPORT:
+                Code.command.append("*")
+                return
+            x = Code.indent > 0
+            Code.func = bool(Code.command[x:])
+            if Code.func:
+                Code.command = [
+                    *Code.command[:x],
+                    "def ",
+                    Code.command[x],
+                    "(",
+                    ",".join(Code.command[x + 1:]),
+                    ")"
+                ]
+            else:
+                Code.command.insert(x, "return ")
         case Token.CLASS:
-            ...  # TODO
+            ...  # TODO SUBCLASS & Code.cls
         case Token.LAMBDA:
-            ...  # TODO
+            Code.command.append("lambda ")
         case Token.DECORATOR:
-            ...  # TODO
+            Code.command.append("@")
