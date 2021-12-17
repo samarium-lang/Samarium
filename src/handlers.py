@@ -135,3 +135,12 @@ def tilde() -> Token | None:
         return Token.NOT
     else:
         return Token.BINNOT
+
+
+def comma() -> Token | None:
+    if program[index - 1] == ",":
+        return None
+    if program[index + 1] == ",":
+        return Token.ELSE
+    else:
+        return Token.SEP

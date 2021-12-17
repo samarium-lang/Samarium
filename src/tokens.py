@@ -28,7 +28,7 @@ class Token(Enum):
     COMMENT_CLOSE = ">=="
 
     IF = "."
-    ELSE = ","
+    ELSE = ",,"
     WHILE = ".."
     FOR = "..."
 
@@ -59,7 +59,7 @@ class Token(Enum):
     END = ";"
     CAST = "'"
     DECORATOR = "%"
-    SEP = "`"
+    SEP = ","
     TO = "->"
 
     PAREN_OPEN = "("
