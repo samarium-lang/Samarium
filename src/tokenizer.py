@@ -7,7 +7,7 @@ def tokenize(program: str) -> list[Token | int | str]:
     tokens: list[Token | int | str] = []
     temp = ""
     string = False
-    multisemantic = "+-:<>=.?!"
+    multisemantic = "+-:<>=.?!&|~"
     for index, char in enumerate(program):
         if not char.isalpha() and temp and not string:
             tokens.append(temp)
@@ -38,7 +38,10 @@ def tokenize(program: str) -> list[Token | int | str]:
                     "=": handlers.equal,
                     ".": handlers.dot,
                     "?": handlers.question,
-                    "!": handlers.exclamation
+                    "!": handlers.exclamation,
+                    "&": handlers.ampersand,
+                    "|": handlers.pipe,
+                    "~": handlers.tilde
                 }
                 if out := handler_list[char]():
                     tokens.append(out)
