@@ -38,9 +38,12 @@ class Token(Enum):
     STDIN = "?"
     STDOUT = "!"
 
-    AND = "&"
-    OR = "|"
-    NOT = "~"
+    AND = "&&"
+    OR = "||"
+    NOT = "~~"
+    BINAND = "&"
+    BINOR = "|"
+    BINNOT = "~"
     XOR = "^"
 
     BRACE_OPEN = "{"
@@ -56,6 +59,7 @@ class Token(Enum):
     END = ";"
     CAST = "'"
     DECORATOR = "%"
+    SEP = "`"
 
     PAREN_OPEN = "("
     PAREN_CLOSE = ")"
