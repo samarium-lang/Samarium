@@ -9,25 +9,26 @@ class Code:
     code = []
     command = []
     command_tokens = []
-    comment = False
-    func = False
-    imp = False
     indent = 0
-    multiline_comment = False
-    newline = False
+    switches = {
+        "catch": False,
+        "cls": False,
+        "comment": False,
+        "forloop": False,
+        "func": False,
+        "imp": False,
+        "multiline_comment": False,
+        "newline": False
+    }
     tokens = []
 
     @staticmethod
     def reset():
+        Code.switches = {k: False for k in Code.switches}
         Code.code = []
         Code.command = []
         Code.command_tokens = []
-        Code.comment = False
-        Code.func = False
-        Code.imp = False
         Code.indent = 0
-        Code.multiline_comment = False
-        Code.newline = False
         Code.tokens = []
 
 
@@ -37,18 +38,18 @@ def parse(token: Token | str | int | None):
     if token is not None:
         Code.command_tokens.append(token)
 
-    if Code.newline:
+    if Code.switches["newline"]:
         if Code.command:
             Code.code.append("".join(Code.command))
             Code.command = []
             Code.tokens.extend(Code.command_tokens)
             Code.command_tokens = []
         Code.command = ["    " * Code.indent]
-        Code.newline = False
+        Code.switches["newline"] = False
 
-    if Code.multiline_comment:
+    if Code.switches["multiline_comment"]:
         if token == Token.COMMENT_CLOSE:
-            Code.multiline_comment = False
+            Code.switches["multiline_comment"] = False
         return
 
     # SMInteger handling
@@ -57,8 +58,8 @@ def parse(token: Token | str | int | None):
         return
 
     if isinstance(token, str):
-        if token == "\n" and Code.comment:  # One line comment
-            Code.comment = False
+        if token == "\n" and Code.switches["comment"]:  # One line comment
+            Code.switches["comment"] = False
         else:
             if token[0] == token[-1] == '"':
                 # SMString handling
@@ -68,6 +69,9 @@ def parse(token: Token | str | int | None):
                 # Python's builtins cannot be overwritten
                 if token != "\n":
                     Code.command.append(f"{token}_")
+                else:
+                    Code.switches["newline"] = True
+                    parse(None)
                 # Code.command.append(f"{token}_" if token != "\n" else token)
         return
 
@@ -104,28 +108,38 @@ def parse(token: Token | str | int | None):
         case Token.SHL: Code.command.append("<<")
 
         # Parens, Brackets and Braces
-        case Token.VECTOR_OPEN: Code.command.append("[")
-        case Token.VECTOR_CLOSE: Code.command.append("]")
+        case Token.VECTOR_OPEN: Code.command.append("SMVector([")
+        case Token.VECTOR_CLOSE: Code.command.append("])")
         case Token.PAREN_OPEN: Code.command.append("(")
         case Token.PAREN_CLOSE: Code.command.append(")")
         case Token.BRACE_OPEN:
+            if Code.switches["cls"]:
+                if Code.command_tokens[-1] == Token.PAREN_CLOSE:
+                    Code.command[-1] = ","
+                    Code.command.append("SMClass)")
+                else:
+                    Code.command.append("(SMClass)")
+                Code.switches["cls"] = False
+            Code.switches["forloop"] = False
             Code.command.append(":")
-            Code.newline = True
+            Code.switches["newline"] = True
             Code.indent += 1
             parse(None)
         case Token.BRACE_CLOSE:
-            Code.newline = True
+            Code.switches["newline"] = True
             Code.indent -= 1
             parse(None)
 
         # Comments
         case Token.COMMENT:
-            Code.comment = True
+            Code.switches["comment"] = True
             Code.command.append("#")
         case Token.COMMENT_OPEN:
-            Code.multiline_comment = True
+            Code.switches["multiline_comment"] = True
 
         # Execution
+        case Token.INSTANCE:
+            Code.command.append("self.")
         case Token.ASSIGN:
             Code.command.append("=")
         case Token.SEP:
@@ -133,23 +147,17 @@ def parse(token: Token | str | int | None):
         case Token.TO:
             Code.command.append(":")
         case Token.END:
-            if Code.imp:
-                Code.imp = False
+            if Code.switches["imp"]:
+                Code.switches["imp"] = False
                 Code.command.append("')")
             Code.command.append(";")
-            Code.newline = True
+            Code.switches["newline"] = True
             parse(None)
 
         # I/O
         case Token.IMPORT:
-            Code.imp = True
+            Code.switches["imp"] = True
             Code.command.append("_import('")
-        case Token.CAST:
-            x = 0
-            while not isinstance(Code.command[~x], (int, str)):
-                x += 1
-            Code.command[~x] = f"_cast({Code.command[~x]})"
-            # Code.command.append(f"_cast({Code.command})")
         case Token.STDIN:
             match isinstance(Code.command[-1], str):
                 case True: Code.command.append(f"_input({Code.command.pop()})")
@@ -165,6 +173,11 @@ def parse(token: Token | str | int | None):
 
         # Control Flow
         case Token.IF:
+            if Code.command_tokens[-1] == Token.ELSE:
+                Code.command[-1] = "elif"
+            if len(Code.command_tokens) < 2:
+                Code.command.append("if ")
+                return
             if (
                 isinstance(Code.command_tokens[-2], str)
                 and not Code.command_tokens[-2].isspace()
@@ -175,7 +188,8 @@ def parse(token: Token | str | int | None):
         case Token.WHILE:
             Code.command.append("while ")
         case Token.FOR:
-            ...  # TODO
+            Code.command.append("for ")
+            Code.switches["forloop"] = True
         case Token.ELSE:
             Code.command.append("else")
 
@@ -183,6 +197,7 @@ def parse(token: Token | str | int | None):
         case Token.TRY:
             Code.command.append("try")
         case Token.CATCH:
+            Code.switches["catch"] = True
             Code.command.append("except")
         case Token.THROW:
             Code.command = ["_throw(", *Code.command, ")"]
@@ -193,8 +208,9 @@ def parse(token: Token | str | int | None):
                 Code.command.append("*")
                 return
             x = Code.indent > 0
-            Code.func = bool(Code.command[x:])
-            if Code.func:
+            Code.switches["func"] = bool(Code.command[x:])
+            Code.command = [i for i in Code.command if i]
+            if Code.switches["func"]:
                 Code.command = [
                     *Code.command[:x],
                     "def ",
@@ -206,8 +222,12 @@ def parse(token: Token | str | int | None):
             else:
                 Code.command.insert(x, "return ")
         case Token.CLASS:
-            ...  # TODO SUBCLASS & Code.cls
+            Code.command.append("class ")
+            Code.switches["cls"] = True
         case Token.LAMBDA:
             Code.command.append("lambda ")
         case Token.DECORATOR:
-            Code.command.append("@")
+            if Code.switches["forloop"]:
+                Code.command.append(" in ")
+            else:
+                Code.command.append("@")
