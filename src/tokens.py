@@ -27,7 +27,7 @@ class Token(Enum):
     COMMENT_OPEN = "==<"
     COMMENT_CLOSE = ">=="
 
-    IF = "."
+    IF = "?"
     ELSE = ",,"
     WHILE = ".."
     FOR = "..."
@@ -35,7 +35,7 @@ class Token(Enum):
     FUNCTION = "*"
     CLASS = "@"
 
-    STDIN = "?"
+    STDIN = "???"
     STDOUT = "!"
 
     AND = "&&"
