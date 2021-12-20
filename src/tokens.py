@@ -57,7 +57,7 @@ class Token(Enum):
     IMPORT = "$"
     LAMBDA = "#"
     END = ";"
-    CAST = "'"
+    INSTANCE = "'"
     DECORATOR = "%"
     SEP = ","
     TO = "->"
