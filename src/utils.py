@@ -16,22 +16,6 @@ class SMClass:
         return self.special()
 
 
-class SMString(str):
-
-    def __special__(self) -> SMInteger:
-        return SMInteger(len(self))
-
-    def smf(self) -> SMString:
-        for i, char in enumerate(self):
-            if char == "$" != self[i - 1]:
-                to_format = self.capture_word(i)
-                self.replace(to_format, eval(f"{to_format[1:]}_"))
-        return self
-
-    def capture_word(self, index: int) -> str:
-        return self[index:self[index:].find(" ")]
-
-
 class SMArray:
 
     def __init__(self, array: list[Any]):

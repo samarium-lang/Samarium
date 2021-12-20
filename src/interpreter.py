@@ -1,8 +1,8 @@
+from __future__ import annotations
 from parser import parse, CodeHandler
 from tokenizer import tokenize
 import sys
 from utils import (
-    SMString,
     SMInteger,
     SMArray,
     _cast,
@@ -13,6 +13,23 @@ from utils import (
 MODULE_NAMES = ["math"]
 imported = CodeHandler()
 is_import = False
+
+
+class SMString(str):
+
+    def __special__(self) -> SMInteger:
+        return SMInteger(len(self))
+
+    def smf(self) -> SMString:
+        for i, char in enumerate(self):
+            if char == "$" != self[i - 1] and self[i + 1] == "{":
+                to_format = self[i:self[i:].find("}") + 1]
+                self = self.replace(
+                    to_format, eval(
+                        "\n".join(run(f"{to_format[2:-1]}").code)
+                    )
+                )
+        return SMString(self)
 
 
 def parse_smmeta(metadata: str) -> dict[str, tuple[int, int]]:
