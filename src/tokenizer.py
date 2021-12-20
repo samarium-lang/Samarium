@@ -12,11 +12,9 @@ def tokenize(program: str) -> list[Token | int | str]:
         if not char.isalpha() and temp and not string:
             tokens.append(temp)
             temp = ""
-        if char in "\n \t":
-            if char == "\n":
-                tokens.append("\n")
-            continue
-        if char != '"' and not string:
+        elif char in "\n \t" and (char == "\n" or string):
+            tokens.append(char)
+        elif char != '"' and not string:
             # Handling Names
             if char.isalpha():
                 temp += char
@@ -58,7 +56,7 @@ def tokenize(program: str) -> list[Token | int | str]:
                     tokens.append(
                         int(char.translate({47: 49, 92: 48}), 2)
                     )
-                else:
+                elif not char.isspace():
                     tokens.append(Token(char))
         elif char == '"' and program[index - 1] != "\\":
             # Handling Strings
