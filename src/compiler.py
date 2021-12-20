@@ -4,6 +4,7 @@ import sys
 from utils import (
     SMString,
     SMInteger,
+    SMArray,
     _cast,
     _input,
     _throw,
@@ -57,9 +58,6 @@ def run(code: str):
     tokens = tokenize(code)
     for token in tokens:
         parse(token)
-    print(Code.code)
-    print("!!!")
-    print(curr_code)
     Code.code.extend(curr_code)
     try:
         code = "\n".join(Code.code)
