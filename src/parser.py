@@ -5,232 +5,223 @@ with open(sys.argv[1]) as f:
     code = f.read()
 
 
-class Code:
-    code = []
-    command = []
-    command_tokens = []
-    indent = 0
-    switches = {
-        "class": False,
-        "comment": False,
-        "function": False,
-        "import": False,
-        "multiline_comment": False,
-        "newline": False
-    }
-    tokens = []
-
-    @staticmethod
-    def reset():
-        Code.switches = {k: False for k in Code.switches}
-        Code.code = []
-        Code.command = []
-        Code.command_tokens = []
-        Code.indent = 0
-        Code.tokens = []
+class CodeHandler:
+    def __init__(self):
+        self.code = []
+        self.command = []
+        self.command_tokens = []
+        self.indent = 0
+        self.switches = {
+            "class": False,
+            "comment": False,
+            "function": False,
+            "import": False,
+            "multiline_comment": False,
+            "newline": False
+        }
+        self.tokens = []
 
 
-def parse(token: Token | str | int | None):
+def parse(token: Token | str | int | None, ch: CodeHandler):
 
     # For when `parse(None)` is called recursively
     if token is not None:
-        Code.command_tokens.append(token)
+        ch.command_tokens.append(token)
 
-    if Code.switches["newline"]:
-        if Code.command:
-            Code.code.append("".join(Code.command))
-            Code.command = []
-            Code.tokens.extend(Code.command_tokens)
-            Code.command_tokens = []
-        Code.command = ["    " * Code.indent]
-        Code.switches["newline"] = False
+    if ch.switches["newline"]:
+        if ch.command:
+            ch.code.append("".join(ch.command))
+            ch.command = []
+            ch.tokens.extend(ch.command_tokens)
+            ch.command_tokens = []
+        ch.command = ["    " * ch.indent]
+        ch.switches["newline"] = False
 
-    if Code.switches["multiline_comment"]:
+    if ch.switches["multiline_comment"]:
         if token == Token.COMMENT_CLOSE:
-            Code.switches["multiline_comment"] = False
+            ch.switches["multiline_comment"] = False
         return
 
     # SMInteger handling
     if isinstance(token, int):
-        Code.command.append(f"SMInteger({token})")
+        ch.command.append(f"SMInteger({token})")
         return
 
     if isinstance(token, str):
-        if token == "\n" and Code.switches["comment"]:  # One line comment
-            Code.switches["comment"] = False
+        if token == "\n" and ch.switches["comment"]:  # One line comment
+            ch.switches["comment"] = False
         else:
             if token[0] == token[-1] == '"':
                 # SMString handling
-                Code.command.append(f"SMString({token}).smf()")
+                ch.command.append(f"SMString({token}).smf()")
             else:
                 # Name handling, `_` added so
                 # Python's builtins cannot be overwritten
                 if token != "\n":
-                    Code.command.append(f"{token}_")
+                    ch.command.append(f"{token}_")
                 else:
-                    Code.switches["newline"] = True
-                    parse(None)
-                # Code.command.append(f"{token}_" if token != "\n" else token)
+                    ch.switches["newline"] = True
+                    parse(None, ch)
         return
 
     # Main parser
     match token:
 
         # Arithmetic
-        case Token.ADD: Code.command.append("+")
-        case Token.SUB: Code.command.append("-")
-        case Token.MUL: Code.command.append("*")
-        case Token.DIV: Code.command.append("//")
-        case Token.MOD: Code.command.append("%")
-        case Token.POW: Code.command.append("**")
+        case Token.ADD: ch.command.append("+")
+        case Token.SUB: ch.command.append("-")
+        case Token.MUL: ch.command.append("*")
+        case Token.DIV: ch.command.append("//")
+        case Token.MOD: ch.command.append("%")
+        case Token.POW: ch.command.append("**")
 
         # Comparison
-        case Token.EQ: Code.command.append("==")
-        case Token.NE: Code.command.append("!=")
-        case Token.LT: Code.command.append("<")
-        case Token.GT: Code.command.append(">")
-        case Token.LE: Code.command.append("<=")
-        case Token.GE: Code.command.append(">=")
+        case Token.EQ: ch.command.append("==")
+        case Token.NE: ch.command.append("!=")
+        case Token.LT: ch.command.append("<")
+        case Token.GT: ch.command.append(">")
+        case Token.LE: ch.command.append("<=")
+        case Token.GE: ch.command.append(">=")
 
         # Logical
-        case Token.AND: Code.command.append(" and ")
-        case Token.OR: Code.command.append(" or ")
-        case Token.NOT: Code.command.append(" not ")
+        case Token.AND: ch.command.append(" and ")
+        case Token.OR: ch.command.append(" or ")
+        case Token.NOT: ch.command.append(" not ")
 
         # Bitwise
-        case Token.BINAND: Code.command.append("&")
-        case Token.BINOR: Code.command.append("|")
-        case Token.BINNOT: Code.command.append("~")
-        case Token.XOR: Code.command.append("^")
-        case Token.SHR: Code.command.append(">>")
-        case Token.SHL: Code.command.append("<<")
+        case Token.BINAND: ch.command.append("&")
+        case Token.BINOR: ch.command.append("|")
+        case Token.BINNOT: ch.command.append("~")
+        case Token.XOR: ch.command.append("^")
+        case Token.SHR: ch.command.append(">>")
+        case Token.SHL: ch.command.append("<<")
 
         # Parens, Brackets and Braces
-        case Token.VECTOR_OPEN: Code.command.append("SMVector([")
-        case Token.VECTOR_CLOSE: Code.command.append("])")
-        case Token.PAREN_OPEN: Code.command.append("(")
-        case Token.PAREN_CLOSE: Code.command.append(")")
+        case Token.VECTOR_OPEN: ch.command.append("SMVector([")
+        case Token.VECTOR_CLOSE: ch.command.append("])")
+        case Token.PAREN_OPEN: ch.command.append("(")
+        case Token.PAREN_CLOSE: ch.command.append(")")
         case Token.BRACE_OPEN:
-            if Code.switches["class"]:
-                if Code.command_tokens[-1] == Token.PAREN_CLOSE:
-                    Code.command[-1] = ","
-                    Code.command.append("SMClass)")
+            if ch.switches["class"]:
+                if ch.command_tokens[-1] == Token.PAREN_CLOSE:
+                    ch.command[-1] = ","
+                    ch.command.append("SMClass)")
                 else:
-                    Code.command.append("(SMClass)")
-                Code.switches["class"] = False
-            Code.command.append(":")
-            Code.switches["newline"] = True
-            Code.indent += 1
-            parse(None)
+                    ch.command.append("(SMClass)")
+                ch.switches["class"] = False
+            ch.command.append(":")
+            ch.switches["newline"] = True
+            ch.indent += 1
+            parse(None, ch)
         case Token.BRACE_CLOSE:
-            Code.switches["newline"] = True
-            Code.indent -= 1
-            parse(None)
+            ch.switches["newline"] = True
+            ch.indent -= 1
+            parse(None, ch)
 
         # Comments
         case Token.COMMENT:
-            Code.switches["comment"] = True
-            Code.command.append("#")
+            ch.switches["comment"] = True
+            ch.command.append("#")
         case Token.COMMENT_OPEN:
-            Code.switches["multiline_comment"] = True
+            ch.switches["multiline_comment"] = True
 
         # Execution
         case Token.INSTANCE:
-            Code.command.append("self.")
+            ch.command.append("self.")
         case Token.ASSIGN:
-            Code.command.append("=")
+            ch.command.append("=")
         case Token.SEP:
-            Code.command.append(",")
+            ch.command.append(",")
         case Token.END:
-            if Code.switches["import"]:
-                Code.switches["import"] = False
-                Code.command.append("')")
-            Code.command.append(";")
-            Code.switches["newline"] = True
-            parse(None)
+            if ch.switches["import"]:
+                ch.switches["import"] = False
+                ch.command.append("')")
+            ch.command.append(";")
+            ch.switches["newline"] = True
+            parse(None, ch)
 
         # I/O
         case Token.IMPORT:
-            Code.switches["import"] = True
-            Code.command.append("_import('")
+            ch.switches["import"] = True
+            ch.command.append("_import('")
         case Token.STDIN:
-            match isinstance(Code.command[-1], str):
-                case True: Code.command.append(f"_input({Code.command.pop()})")
-                case False: Code.command.append("_input()")
+            match isinstance(ch.command[-1], str):
+                case True: ch.command.append(f"_input({ch.command.pop()})")
+                case False: ch.command.append("_input()")
         case Token.STDOUT:
-            x = Code.indent > 0
-            Code.command = [
-                *Code.command[:x],
+            x = ch.indent > 0
+            ch.command = [
+                *ch.command[:x],
                 "print(",
-                *Code.command[x:],
+                *ch.command[x:],
                 ")"
             ]
 
         # Control Flow
         case Token.IF:
-            if Code.command_tokens[-1] == Token.ELSE:
-                Code.command[-1] = "elif"
-            if len(Code.command_tokens) < 2:
-                Code.command.append("if ")
+            if ch.command_tokens[-1] == Token.ELSE:
+                ch.command[-1] = "elif"
+            if len(ch.command_tokens) < 2:
+                ch.command.append("if ")
                 return
             if (
-                isinstance(Code.command_tokens[-2], str)
-                and not Code.command_tokens[-2].isspace()
+                isinstance(ch.command_tokens[-2], str)
+                and not ch.command_tokens[-2].isspace()
             ):
-                Code.command.append(".")
+                ch.command.append(".")
             else:
-                Code.command.append("if ")
+                ch.command.append("if ")
         case Token.WHILE:
-            Code.command.append("while ")
+            ch.command.append("while ")
         case Token.FOR:
-            Code.command.append("for ")
+            ch.command.append("for ")
         case Token.ELSE:
-            Code.command.append("else")
+            ch.command.append("else")
         case Token.FROM:
-            Code.command.append("break")
-            parse(Token.END)
+            ch.command.append("break")
+            parse(Token.END, ch)
         case Token.TO:
-            if Code.switches["lambda"]:
-                Code.command.append(":")
-                Code.switches["lambda"] = False
+            if ch.switches["lambda"]:
+                ch.command.append(":")
+                ch.switches["lambda"] = False
                 return
-            Code.command.append("continue")
-            parse(Token.END)
+            ch.command.append("continue")
+            parse(Token.END, ch)
         case Token.IN:
-            Code.command.append(" in ")
+            ch.command.append(" in ")
 
         # Error Handling
         case Token.TRY:
-            Code.command.append("try")
+            ch.command.append("try")
         case Token.CATCH:
-            Code.command.append("except Exception")
+            ch.command.append("except Exception")
         case Token.THROW:
-            Code.command = ["_throw(", *Code.command, ")"]
+            ch.command = ["_throw(", *ch.command, ")"]
 
         # Functions / Classes
         case Token.FUNCTION:
-            if Code.command_tokens[0] == Token.IMPORT:
-                Code.command.append("*")
+            if ch.command_tokens[0] == Token.IMPORT:
+                ch.command.append("*")
                 return
-            x = Code.indent > 0
-            Code.switches["function"] = bool(Code.command[x:])
-            Code.command = [i for i in Code.command if i]
-            if Code.switches["function"]:
-                Code.command = [
-                    *Code.command[:x],
+            x = ch.indent > 0
+            ch.switches["function"] = bool(ch.command[x:])
+            ch.command = [i for i in ch.command if i]
+            if ch.switches["function"]:
+                ch.command = [
+                    *ch.command[:x],
                     "def ",
-                    Code.command[x],
+                    ch.command[x],
                     "(",
-                    ",".join(Code.command[x + 1:]),
+                    ",".join(ch.command[x + 1:]),
                     ")"
                 ]
             else:
-                Code.command.insert(x, "return ")
+                ch.command.insert(x, "return ")
         case Token.CLASS:
-            Code.command.append("class ")
-            Code.switches["class"] = True
+            ch.command.append("class ")
+            ch.switches["class"] = True
         case Token.LAMBDA:
-            Code.command.append("lambda ")
-            Code.switches["lambda"] = True
+            ch.command.append("lambda ")
+            ch.switches["lambda"] = True
         case Token.DECORATOR:
-            Code.command.append("@")
+            ch.command.append("@")

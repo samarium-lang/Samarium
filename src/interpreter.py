@@ -1,4 +1,4 @@
-from parser import parse, Code
+from parser import parse, CodeHandler
 from tokenizer import tokenize
 import sys
 from utils import (
@@ -11,7 +11,7 @@ from utils import (
 )
 
 MODULE_NAMES = ["math"]
-imported = []
+imported = CodeHandler()
 is_import = False
 
 
@@ -27,24 +27,24 @@ def parse_smmeta(metadata: str) -> dict[str, tuple[int, int]]:
 
 
 def _import(data: str):
-    if data in imported:
-        return
-    else:
-        imported.append(data)
-    name, *objects = data.split(".")
+    name, objects = data.split(".")
     name = name[:-1]
+    objects = objects.split(",")
     if name not in MODULE_NAMES:
         _throw(f"Module {name} not found")
-    if not objects:
-        exec(f"import modules.{name}")
+    module = readfile(f"modules/{name}.sm").splitlines()
+    if objects == ["*"]:
+        imported.code.extend(
+            run(readfile(f"modules/{name}.sm")).code
+        )
     else:
-        module = readfile(f"modules/{name}.sm").splitlines()
-        if objects == ("*",):
-            run(readfile(f"modules/{name}.sm"))
-        else:
-            metadata = parse_smmeta(readfile(f"modules/{name}.smmeta"))
-            for obj in objects:
-                run("\n".join(module[slice(*metadata[obj[:-1]])]))
+        metadata = parse_smmeta(readfile(f"modules/{name}.smmeta"))
+        for obj in objects:
+            imported.code.extend(
+                run("\n".join(module[
+                        slice(*metadata[obj[:-1]])
+                ])).code
+            )
 
 
 def readfile(path: str) -> str:
@@ -53,19 +53,27 @@ def readfile(path: str) -> str:
 
 
 def run(code: str):
-    curr_code = Code.code.copy()
-    Code.reset()
+    ch = CodeHandler()
     tokens = tokenize(code)
     for token in tokens:
-        parse(token)
-    Code.code.extend(curr_code)
+        parse(token, ch)
+    imports = []
+    ind = 0
+    while ch.code[ind].startswith("_import"):
+        imports.append(ch.code[ind])
+        ind += 1
+    ch.code = ch.code[ind:]
+    import_code = "\n".join(imports)
     try:
-        code = "\n".join(Code.code)
+        if import_code:
+            exec(import_code)
+        code = "\n".join(imported.code + ch.code)
         if sys.argv[-1] == "--debug":
             print(code)
         exec(code)
     except Exception as e:
         _throw(str(e))
+    return ch
 
 
 def main():
