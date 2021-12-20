@@ -142,7 +142,7 @@ def parse(token: Token | str | int | None, ch: CodeHandler):
             parse(None, ch)
 
         # I/O
-        case Token.IMPORT:
+        case Token.DOLLAR:
             if not ch.command:
                 ch.switches["import"] = True
                 ch.command.append("_import('")
@@ -204,7 +204,7 @@ def parse(token: Token | str | int | None, ch: CodeHandler):
 
         # Functions / Classes
         case Token.FUNCTION:
-            if ch.command_tokens[0] == Token.IMPORT:
+            if ch.command_tokens[0] == Token.DOLLAR:
                 ch.command.append("*")
                 return
             x = ch.indent > 0

@@ -54,7 +54,7 @@ class Token(Enum):
     THROW = "!!!"
 
     STRING = '"'
-    IMPORT = "$"
+    DOLLAR = "$"
     LAMBDA = "#"
     END = ";"
     INSTANCE = "'"
