@@ -196,6 +196,8 @@ def parse(token: Token | str | int | None):
                 return
             Code.command.append("continue")
             parse(Token.END)
+        case Token.IN:
+            Code.command.append(" in ")
 
         # Error Handling
         case Token.TRY:
