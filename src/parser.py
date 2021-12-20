@@ -11,12 +11,10 @@ class Code:
     command_tokens = []
     indent = 0
     switches = {
-        "catch": False,
-        "cls": False,
+        "class": False,
         "comment": False,
-        "forloop": False,
-        "func": False,
-        "imp": False,
+        "function": False,
+        "import": False,
         "multiline_comment": False,
         "newline": False
     }
@@ -113,14 +111,13 @@ def parse(token: Token | str | int | None):
         case Token.PAREN_OPEN: Code.command.append("(")
         case Token.PAREN_CLOSE: Code.command.append(")")
         case Token.BRACE_OPEN:
-            if Code.switches["cls"]:
+            if Code.switches["class"]:
                 if Code.command_tokens[-1] == Token.PAREN_CLOSE:
                     Code.command[-1] = ","
                     Code.command.append("SMClass)")
                 else:
                     Code.command.append("(SMClass)")
-                Code.switches["cls"] = False
-            Code.switches["forloop"] = False
+                Code.switches["class"] = False
             Code.command.append(":")
             Code.switches["newline"] = True
             Code.indent += 1
@@ -144,11 +141,9 @@ def parse(token: Token | str | int | None):
             Code.command.append("=")
         case Token.SEP:
             Code.command.append(",")
-        case Token.TO:
-            Code.command.append(":")
         case Token.END:
-            if Code.switches["imp"]:
-                Code.switches["imp"] = False
+            if Code.switches["import"]:
+                Code.switches["import"] = False
                 Code.command.append("')")
             Code.command.append(";")
             Code.switches["newline"] = True
@@ -156,7 +151,7 @@ def parse(token: Token | str | int | None):
 
         # I/O
         case Token.IMPORT:
-            Code.switches["imp"] = True
+            Code.switches["import"] = True
             Code.command.append("_import('")
         case Token.STDIN:
             match isinstance(Code.command[-1], str):
@@ -189,16 +184,24 @@ def parse(token: Token | str | int | None):
             Code.command.append("while ")
         case Token.FOR:
             Code.command.append("for ")
-            Code.switches["forloop"] = True
         case Token.ELSE:
             Code.command.append("else")
+        case Token.FROM:
+            Code.command.append("break")
+            parse(Token.END)
+        case Token.TO:
+            if Code.switches["lambda"]:
+                Code.command.append(":")
+                Code.switches["lambda"] = False
+                return
+            Code.command.append("continue")
+            parse(Token.END)
 
         # Error Handling
         case Token.TRY:
             Code.command.append("try")
         case Token.CATCH:
-            Code.switches["catch"] = True
-            Code.command.append("except")
+            Code.command.append("except Exception")
         case Token.THROW:
             Code.command = ["_throw(", *Code.command, ")"]
 
@@ -208,9 +211,9 @@ def parse(token: Token | str | int | None):
                 Code.command.append("*")
                 return
             x = Code.indent > 0
-            Code.switches["func"] = bool(Code.command[x:])
+            Code.switches["function"] = bool(Code.command[x:])
             Code.command = [i for i in Code.command if i]
-            if Code.switches["func"]:
+            if Code.switches["function"]:
                 Code.command = [
                     *Code.command[:x],
                     "def ",
@@ -223,11 +226,9 @@ def parse(token: Token | str | int | None):
                 Code.command.insert(x, "return ")
         case Token.CLASS:
             Code.command.append("class ")
-            Code.switches["cls"] = True
+            Code.switches["class"] = True
         case Token.LAMBDA:
             Code.command.append("lambda ")
+            Code.switches["lambda"] = True
         case Token.DECORATOR:
-            if Code.switches["forloop"]:
-                Code.command.append(" in ")
-            else:
-                Code.command.append("@")
+            Code.command.append("@")
