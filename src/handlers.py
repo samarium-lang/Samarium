@@ -25,6 +25,8 @@ def minus() -> Token | None:
     if program[index - 1] in "<-":
         return None
     if program[index + 1] == ">":
+        if program[index + 2] == "?":
+            return Token.IN
         return Token.TO
     if program[index + 1] != "-":
         return Token.SUB
@@ -93,7 +95,7 @@ def dot() -> Token | None:
 
 
 def question() -> Token | None:
-    if program[index - 1] == "?":
+    if program[index - 1] in ">?":
         return None
     if program[index + 1] == "?":
         return Token.TRY

@@ -62,6 +62,7 @@ class Token(Enum):
     SEP = ","
     TO = "->"
     FROM = "<-"
+    IN = "->?"
 
     PAREN_OPEN = "("
     PAREN_CLOSE = ")"
