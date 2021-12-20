@@ -22,7 +22,7 @@ def plus() -> Token | None:
 
 
 def minus() -> Token | None:
-    if program[index - 1] == "-":
+    if program[index - 1] in "<-":
         return None
     if program[index + 1] == ">":
         return Token.TO
@@ -48,6 +48,8 @@ def colon() -> Token | None:
 def less() -> Token | None:
     if program[index - 1] in "=<":
         return None
+    if program[index + 1] == "-":
+        return Token.FROM
     if program[index + 1] == "<":
         return Token.SHL
     if program[index + 1] == ":":

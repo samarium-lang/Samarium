@@ -61,6 +61,7 @@ class Token(Enum):
     DECORATOR = "%"
     SEP = ","
     TO = "->"
+    FROM = "<-"
 
     PAREN_OPEN = "("
     PAREN_CLOSE = ")"
