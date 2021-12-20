@@ -97,10 +97,11 @@ def dot() -> Token | None:
 def question() -> Token | None:
     if program[index - 1] in ">?":
         return None
-    if program[index + 1] == "?":
-        return Token.TRY
-    else:
+    if program[index + 1] != "?":
+        return Token.IF
+    if program[index + 2] == "?":
         return Token.STDIN
+    return Token.TRY
 
 
 def exclamation() -> Token | None:

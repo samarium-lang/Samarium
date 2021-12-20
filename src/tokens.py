@@ -11,8 +11,8 @@ class Token(Enum):
     SHR = ">>"
     SHL = "<<"
 
-    VECTOR_OPEN = "["
-    VECTOR_CLOSE = "]"
+    ARRAY_OPEN = "["
+    ARRAY_CLOSE = "]"
 
     ASSIGN = ":"
 

@@ -16,6 +16,7 @@ class CodeHandler:
             "comment": False,
             "function": False,
             "import": False,
+            "lambda": False,
             "multiline_comment": False,
             "newline": False
         }
@@ -34,7 +35,7 @@ def parse(token: Token | str | int | None, ch: CodeHandler):
             ch.command = []
             ch.tokens.extend(ch.command_tokens)
             ch.command_tokens = []
-        ch.command = ["    " * ch.indent]
+        ch.command = ["    " * ch.indent] if ch.indent else []
         ch.switches["newline"] = False
 
     if ch.switches["multiline_comment"]:
@@ -97,8 +98,8 @@ def parse(token: Token | str | int | None, ch: CodeHandler):
         case Token.SHL: ch.command.append("<<")
 
         # Parens, Brackets and Braces
-        case Token.VECTOR_OPEN: ch.command.append("SMVector([")
-        case Token.VECTOR_CLOSE: ch.command.append("])")
+        case Token.ARRAY_OPEN: ch.command.append("SMArray([")
+        case Token.ARRAY_CLOSE: ch.command.append("])")
         case Token.PAREN_OPEN: ch.command.append("(")
         case Token.PAREN_CLOSE: ch.command.append(")")
         case Token.BRACE_OPEN:
@@ -142,8 +143,11 @@ def parse(token: Token | str | int | None, ch: CodeHandler):
 
         # I/O
         case Token.IMPORT:
-            ch.switches["import"] = True
-            ch.command.append("_import('")
+            if not ch.command:
+                ch.switches["import"] = True
+                ch.command.append("_import('")
+                return
+            ch.command.append(".__special__()")
         case Token.STDIN:
             match isinstance(ch.command[-1], str):
                 case True: ch.command.append(f"_input({ch.command.pop()})")
