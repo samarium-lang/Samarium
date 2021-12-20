@@ -1,7 +1,25 @@
+# type: ignore
 from __future__ import annotations
+from typing import Any
+
+
+class SMClass:
+
+    def __init__(self, *args):
+        self.__ops = []
+        self.init(*args)
+
+    def __str__(self):
+        return self.toString()
+
+    def __special__(self):
+        return self.special()
 
 
 class SMString(str):
+
+    def __special__(self) -> SMInteger:
+        return SMInteger(len(self))
 
     def smf(self) -> SMString:
         for i, char in enumerate(self):
@@ -12,6 +30,47 @@ class SMString(str):
 
     def capture_word(self, index: int) -> str:
         return self[index:self[index:].find(" ")]
+
+
+class SMArray:
+
+    def __init__(self, array: list[Any]):
+        self._array = array
+
+    def __iter__(self):
+        yield from self._array
+
+    def __contains__(self, element: Any) -> bool:
+        return element in self._array
+
+    def __special__(self) -> int:
+        return SMInteger(len(self._array))
+
+    def __call__(self, *indexes: SMInteger) -> Any:
+        index = [i._value for i in indexes]
+        if len(index) == 1:
+            return self._array[index[0]]
+        else:
+            return SMArray(self._array[slice(*index)])
+
+    def __sub__(self, data: int | list[Any]) -> Any | None:
+        if isinstance(data, int):
+            newarr = self._array.copy()
+            return newarr.pop(data)
+        elif isinstance(data, list):
+            for i in data:
+                self._array.remove(i)
+
+    def __add__(self, data: Any) -> SMArray:
+        return SMArray(self._array + [data])
+
+    def __mul__(self, data: list[Any]) -> SMArray:
+        newarr = self._array.copy()
+        newarr.extend(data)
+        return SMArray(newarr)
+
+    def __str__(self) -> str:
+        return f"{self._array}"
 
 
 class SMInteger:
@@ -106,8 +165,11 @@ class SMInteger:
             for char in bin(value)[2:]
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return SMInteger.to_slashes(self._value)
+
+    def __repr__(self) -> str:
+        return str(self)
 
 
 def _cast(obj: SMInteger | str) -> str | SMInteger:
