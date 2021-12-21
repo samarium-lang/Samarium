@@ -86,11 +86,9 @@ def equal() -> Token | None:
 def dot() -> Token | None:
     if program[index - 1] == ".":
         return None
-    if program[index + 1] != ".":
-        return Token.IF
-    if program[index + 2] == ".":
-        return Token.FOR
-    else:
+    if program[index + 1] == ".":
+        if program[index + 2] == ".":
+            return Token.FOR
         return Token.WHILE
 
 
