@@ -7,13 +7,19 @@ class SMClass:
 
     def __init__(self, *args):
         self.__ops = []
-        self.init(*args)
+        self.init_(*args)
 
     def __str__(self):
-        return self.toString()
+        return self.toString_()
 
     def __special__(self):
-        return self.special()
+        return self.special_()
+
+
+class SMString(str):
+
+    def __special__(self) -> SMInteger:
+        return SMInteger(len(self))
 
 
 class SMArray:
@@ -27,7 +33,7 @@ class SMArray:
     def __contains__(self, element: Any) -> bool:
         return element in self._array
 
-    def __special__(self) -> int:
+    def __special__(self) -> SMInteger:
         return SMInteger(len(self._array))
 
     def __call__(self, *indexes: SMInteger) -> Any:

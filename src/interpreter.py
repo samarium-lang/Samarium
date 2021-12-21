@@ -5,31 +5,19 @@ import sys
 from utils import (
     SMInteger,
     SMArray,
+    SMString,
     _cast,
     _input,
     _throw,
 )
 
-MODULE_NAMES = ["math"]
-imported = CodeHandler()
+MODULE_NAMES = [
+    "math", "random", "iter", "collections",
+    "numbers", "string", "statistics"
+]
+PUBLIC = CodeHandler(globals())
+imported = CodeHandler(globals())
 is_import = False
-
-
-class SMString(str):
-
-    def __special__(self) -> SMInteger:
-        return SMInteger(len(self))
-
-    def smf(self) -> SMString:
-        for i, char in enumerate(self):
-            if char == "$" != self[i - 1] and self[i + 1] == "{":
-                to_format = self[i:self[i:].find("}") + 1]
-                self = self.replace(
-                    to_format, eval(
-                        "\n".join(run(f"{to_format[2:-1]}").code)
-                    )
-                )
-        return SMString(self)
 
 
 def parse_smmeta(metadata: str) -> dict[str, tuple[int, int]]:
@@ -69,32 +57,36 @@ def readfile(path: str) -> str:
         return f.read()
 
 
-def run(code: str):
-    ch = CodeHandler()
+def run(code: str, ch: CodeHandler = None, *, snippet: bool = False):
+    ch = ch or CodeHandler(globals())
     tokens = tokenize(code)
     for token in tokens:
         parse(token, ch)
-    imports = []
-    ind = 0
-    while ch.code[ind].startswith("_import"):
-        imports.append(ch.code[ind])
-        ind += 1
-    ch.code = ch.code[ind:]
-    import_code = "\n".join(imports)
-    try:
-        if import_code:
-            exec(import_code)
-        code = "\n".join(imported.code + ch.code)
-        if sys.argv[-1] == "--debug":
-            print(code)
-        exec(code)
-    except Exception as e:
-        _throw(str(e))
+    if snippet:
+        import_code = ""
+    else:
+        imports = []
+        ind = 0
+        while ch.code[ind].startswith("_import"):
+            imports.append(ch.code[ind])
+            ind += 1
+        ch.code = ch.code[ind:]
+        import_code = "\n".join(imports)
+    # try:
+    if import_code:
+        exec(import_code, ch.globals, ch.locals)
+    code = "\n".join(imported.code + ch.code)
+    if sys.argv[-1] == "--debug":
+        print(code)
+    exec(code, ch.globals, ch.locals)
+    # except Exception as e:
+    #    _throw(str(e))
     return ch
 
 
 def main():
-    run(readfile(sys.argv[1]))
+    sys.argv.append("src/test/lambda.sm")
+    run(readfile(sys.argv[1]), PUBLIC)
 
 
 if __name__ == "__main__":
