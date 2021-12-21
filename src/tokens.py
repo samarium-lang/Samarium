@@ -53,6 +53,7 @@ class Token(Enum):
     CATCH = "!!"
     THROW = "!!!"
 
+    ATTRIBUTE = "."
     STRING = '"'
     DOLLAR = "$"
     LAMBDA = "#"
