@@ -67,3 +67,6 @@ class Token(Enum):
 
     PAREN_OPEN = "("
     PAREN_CLOSE = ")"
+
+    TABLE_OPEN = "{{"
+    TABLE_CLOSE = "}}"
