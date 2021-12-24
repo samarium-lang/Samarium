@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 from typing import Any
 
@@ -22,10 +21,39 @@ class SMString(str):
         return SMInteger(len(self))
 
 
+class SMTable:
+
+    def __init__(self, table: dict[Any, Any]):
+        self._table = table
+
+    def __special__(self) -> SMArray:
+        return SMArray([*self._table.values()])
+
+    def __contains__(self, key: Any) -> SMInteger:
+        return SMInteger(key in self._table)
+
+    def __str__(self) -> SMString:
+        return SMString(
+            "{{" + ", ".join(f"{k} -> {v}" for k, v in self._table.items()) + "}}"
+        )
+
+    def __iter__(self):
+        yield from self._table
+
+    def __bool__(self) -> SMInteger:
+        return SMInteger(bool(self._table))
+
+    def __call__(self, key: Any) -> Any:
+        return self._table[key]
+
+
 class SMArray:
 
     def __init__(self, array: list[Any]):
         self._array = array
+
+    def __bool__(self) -> SMInteger:
+        return SMInteger(bool(self._array))
 
     def __iter__(self):
         yield from self._array

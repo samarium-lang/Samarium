@@ -149,3 +149,21 @@ def comma() -> Token | None:
         return Token.ELSE
     else:
         return Token.SEP
+
+
+def open_brace() -> Token | None:
+    if program[index - 1] == "{":
+        return None
+    if program[index + 1] == "{":
+        return Token.TABLE_OPEN
+    else:
+        return Token.BRACE_OPEN
+
+
+def close_brace() -> Token | None:
+    if program[index - 1] == "}":
+        return None
+    if program[index + 1] == "}":
+        return Token.TABLE_CLOSE
+    else:
+        return Token.BRACE_CLOSE
