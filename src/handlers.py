@@ -1,7 +1,9 @@
 from tokens import Token
+from typing import Callable
 
 program = ""
 index = 0
+nextchar = lambda offset=1: program[index + offset]
 
 
 def init(program_: str, index_: int):
@@ -10,160 +12,111 @@ def init(program_: str, index_: int):
     index = index_
 
 
-def plus() -> Token | None:
-    if program[index - 1] == "+":
-        return None
-    if program[index + 1] != "+":
-        return Token.ADD
-    if program[index + 2] == "+":
-        return Token.POW
-    else:
-        return Token.MUL
+def cancel(chars: str):
+    def decorator(function: Callable):
+        def wrapper() -> Token | None:
+            if program[index - 1] in chars:
+                return None
+            return function()
+        return wrapper
+    return decorator
 
 
-def minus() -> Token | None:
-    if program[index - 1] in "<-":
-        return None
-    if program[index + 1] == ">":
-        if program[index + 2] == "?":
-            return Token.IN
-        return Token.TO
-    if program[index + 1] != "-":
-        return Token.SUB
-    if program[index + 2] == "-":
-        return Token.MOD
-    else:
-        return Token.DIV
+@cancel("+")
+def plus() -> Token:
+    if nextchar() == "+":
+        return (Token.MUL, Token.POW)[nextchar(2) == "+"]
+    return Token.ADD
 
 
-def colon() -> Token | None:
-    if program[index - 1] in "<>:":
-        return None
-    if program[index + 1] != ":":
-        return Token.ASSIGN
-    if program[index + 2] == ":":
-        return Token.NE
-    else:
-        return Token.EQ
+@cancel("<-")
+def minus() -> Token:
+    match nextchar():
+        case ">": return (Token.TO, Token.IN)[nextchar(2) == "?"]
+        case "-": return (Token.DIV, Token.MOD)[nextchar(2) == "-"]
+        case _: return Token.SUB
 
 
-def less() -> Token | None:
-    if program[index - 1] in "=<":
-        return None
-    if program[index + 1] == "-":
-        return Token.FROM
-    if program[index + 1] == "<":
-        return Token.SHL
-    if program[index + 1] == ":":
-        return Token.LE
-    else:
-        return Token.LT
+@cancel("<>:")
+def colon() -> Token:
+    if nextchar() == ":":
+        return (Token.EQ, Token.NE)[nextchar(2) == ":"]
+    return Token.ASSIGN
 
 
-def greater() -> Token | None:
-    if program[index - 1] in "->":
-        return None
-    if program[index + 1] == ">":
-        return Token.SHR
+@cancel("=<")
+def less() -> Token:
+    match nextchar():
+        case "-": return Token.FROM
+        case "<": return Token.SHL
+        case ":": return Token.LE
+        case _: return Token.LT
+
+
+@cancel("->")
+def greater() -> Token:
     if program[index + 1:index + 3] == "==":
         return Token.COMMENT_CLOSE
-    if program[index + 1] == ":":
-        return Token.GE
-    else:
-        return Token.GT
+    match nextchar():
+        case ">": return Token.SHR
+        case ":": return Token.GE
+        case _: return Token.GT
 
 
-def equal() -> Token | None:
-    if program[index - 1] in "=>":
-        return None
-    if program[index + 1] == "=":
-        if program[index + 2] == "<":
-            return Token.COMMENT_OPEN
-        else:
-            return Token.COMMENT
+@cancel("=>")
+def equal() -> Token:
+    if nextchar() == "=":
+        return (Token.COMMENT, Token.COMMENT_OPEN)[nextchar(2) == "<"]
+    raise ValueError("Invalid token")
 
 
-def dot() -> Token | None:
-    if program[index - 1] == ".":
-        return None
-    if program[index + 1] != ".":
-        return Token.ATTRIBUTE
-    if program[index + 2] == ".":
-        return Token.FOR
-    else:
-        return Token.WHILE
+@cancel(".")
+def dot() -> Token:
+    if nextchar() == ".":
+        return (Token.WHILE, Token.FOR)[nextchar(2) == "."]
+    return Token.ATTRIBUTE
 
 
-def question() -> Token | None:
-    if program[index - 1] in ">?":
-        return None
-    if program[index + 1] != "?":
-        return Token.IF
-    if program[index + 2] == "?":
-        return Token.STDIN
-    return Token.TRY
+@cancel(">?")
+def question() -> Token:
+    if nextchar() == "?":
+        return (Token.TRY, Token.STDIN)[nextchar(2) == "?"]
+    return Token.IF
 
 
-def exclamation() -> Token | None:
-    if program[index - 1] == "!":
-        return None
-    if program[index + 1] != "!":
-        return Token.STDOUT
-    if program[index + 2] == "!":
-        return Token.THROW
-    else:
-        return Token.CATCH
+
+@cancel("!")
+def exclamation() -> Token:
+    if nextchar() == "!":
+        return (Token.CATCH, Token.THROW)[nextchar(2) == "!"]
+    return Token.STDOUT
 
 
-def pipe() -> Token | None:
-    if program[index - 1] == "|":
-        return None
-    if program[index + 1] == "|":
-        return Token.OR
-    else:
-        return Token.BINOR
+@cancel("|")
+def pipe() -> Token:
+    return (Token.BINOR, Token.OR)[nextchar() == "|"]
 
 
-def ampersand() -> Token | None:
-    if program[index - 1] == "&":
-        return None
-    if program[index + 1] == "&":
-        return Token.AND
-    else:
-        return Token.BINAND
+@cancel("&")
+def ampersand() -> Token:
+    return (Token.BINAND, Token.AND)[nextchar() == "&"]
 
 
-def tilde() -> Token | None:
-    if program[index - 1] == "~":
-        return None
-    if program[index + 1] == "~":
-        return Token.NOT
-    else:
-        return Token.BINNOT
+@cancel("~")
+def tilde() -> Token:
+    return (Token.BINNOT, Token.NOT)[nextchar() == "~"]
 
 
-def comma() -> Token | None:
-    if program[index - 1] == ",":
-        return None
-    if program[index + 1] == ",":
-        return Token.ELSE
-    else:
-        return Token.SEP
+@cancel(",")
+def comma() -> Token:
+    return (Token.SEP, Token.ELSE)[nextchar() == ","]
 
 
-def open_brace() -> Token | None:
-    if program[index - 1] == "{":
-        return None
-    if program[index + 1] == "{":
-        return Token.TABLE_OPEN
-    else:
-        return Token.BRACE_OPEN
+@cancel("{")
+def open_brace() -> Token:
+    return (Token.BRACE_OPEN, Token.TABLE_OPEN)[nextchar() == "{"]
 
 
-def close_brace() -> Token | None:
-    if program[index - 1] == "}":
-        return None
-    if program[index + 1] == "}":
-        return Token.TABLE_CLOSE
-    else:
-        return Token.BRACE_CLOSE
+@cancel("}")
+def close_brace() -> Token:
+    return (Token.BRACE_CLOSE, Token.TABLE_CLOSE)[nextchar() == "}"]
