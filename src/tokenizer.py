@@ -87,8 +87,3 @@ def tokenize_number(program: str, index: int) -> int:
             break
     temp = temp.replace("/", "1").replace("\\", "0")
     return int(temp, 2)
-
-
-with open(sys.argv[1]) as f:
-    for i in tokenize(f.read()):
-        print(i)
