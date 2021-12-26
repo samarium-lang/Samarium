@@ -12,7 +12,7 @@ def tokenize(
 ) -> list[Tokenizable]:
 
     tokens: list[Tokenizable] = []
-    multisemantic = "+-:<>=.?!&|~,}{"
+    multisemantic = "+-:<>=.^?!&|~,}{"
     prev = ""
 
     for index, char in enumerate(program):
@@ -57,7 +57,8 @@ def tokenize(
                 "~": handlers.tilde,
                 ",": handlers.comma,
                 "{": handlers.open_brace,
-                "}": handlers.close_brace
+                "}": handlers.close_brace,
+                "^": handlers.caret
             }
             if out := handler_list[char]():
                 tokens.append(out)

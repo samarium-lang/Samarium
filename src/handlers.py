@@ -107,6 +107,11 @@ def tilde() -> Token:
     return (Token.BINNOT, Token.NOT)[nextchar() == "~"]
 
 
+@cancel("^")
+def caret() -> Token:
+    return (Token.XOR, Token.RANDOM)[nextchar() == "^"]
+
+
 @cancel(",")
 def comma() -> Token:
     return (Token.SEP, Token.ELSE)[nextchar() == ","]
