@@ -1,11 +1,11 @@
 from __future__ import annotations
 from typing import Any
+from secrets import randbelow
 
 
 class SMClass:
 
     def __init__(self, *args):
-        self.__ops = []
         self.init_(*args)
 
     def __str__(self):
@@ -14,6 +14,9 @@ class SMClass:
     def __special__(self):
         return self.special_()
 
+    def __bool__(self):
+        return self.toBoolean_()
+
 
 class SMString(str):
 
@@ -21,18 +24,18 @@ class SMString(str):
         return SMInteger(len(self))
 
 
-class SMTable:
+class SMTable(SMClass):
 
     def __init__(self, table: dict[Any, Any]):
         self._table = table
 
-    def __special__(self) -> SMArray:
+    def special_(self) -> SMArray:
         return SMArray([*self._table.values()])
 
     def __contains__(self, key: Any) -> SMInteger:
         return SMInteger(key in self._table)
 
-    def __str__(self) -> SMString:
+    def toString_(self) -> SMString:
         return SMString(
             "{{" + ", ".join(f"{k} -> {v}" for k, v in self._table.items()) + "}}"
         )
@@ -40,19 +43,19 @@ class SMTable:
     def __iter__(self):
         yield from self._table
 
-    def __bool__(self) -> SMInteger:
+    def toBoolean_(self) -> SMInteger:
         return SMInteger(bool(self._table))
 
     def __call__(self, key: Any) -> Any:
         return self._table[key]
 
 
-class SMArray:
+class SMArray(SMClass):
 
     def __init__(self, array: list[Any]):
         self._array = array
 
-    def __bool__(self) -> SMInteger:
+    def toBoolean_(self) -> SMInteger:
         return SMInteger(bool(self._array))
 
     def __iter__(self):
@@ -61,7 +64,7 @@ class SMArray:
     def __contains__(self, element: Any) -> bool:
         return element in self._array
 
-    def __special__(self) -> SMInteger:
+    def special_(self) -> SMInteger:
         return SMInteger(len(self._array))
 
     def __call__(self, *indexes: SMInteger) -> Any:
@@ -87,17 +90,20 @@ class SMArray:
         newarr.extend(data)
         return SMArray(newarr)
 
-    def __str__(self) -> str:
-        return f"{self._array}"
+    def toString_(self) -> str:
+        return f"[{', '.join(map(str, self._array))}]"
 
 
-class SMInteger:
+class SMInteger(SMClass):
 
     def __init__(self, value: int):
         self._value = value
 
-    def __bool__(self) -> bool:
+    def toBoolean_(self) -> bool:
         return bool(self._value)
+
+    def toString_(self) -> str:
+        return str(self._value)
 
     # Arithmetic
     def __add__(self, other: SMInteger) -> SMInteger:
@@ -183,12 +189,6 @@ class SMInteger:
             for char in bin(value)[2:]
         )
 
-    def __str__(self) -> str:
-        return SMInteger.to_slashes(self._value)
-
-    def __repr__(self) -> str:
-        return str(self)
-
 
 def _cast(obj: SMInteger | str) -> str | SMInteger:
     if isinstance(obj, SMInteger):
@@ -209,3 +209,7 @@ def _input(prompt: str = ""):
 def _throw(msg: str):
     print(f"Error: {msg}")
     exit(1)
+
+
+def _random(start: SMInteger, end: SMInteger) -> SMInteger:
+    return SMInteger(randbelow(end._value - start._value + 1) + start._value)
