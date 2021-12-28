@@ -3,7 +3,10 @@ from typing import Callable
 
 program = ""
 index = 0
-nextchar = lambda offset=1: program[index + offset]
+
+
+def nextchar(offset: int = 1) -> str:
+    return program[index + offset]
 
 
 def init(program_: str, index_: int):
@@ -82,7 +85,6 @@ def question() -> Token:
     if nextchar() == "?":
         return (Token.TRY, Token.STDIN)[nextchar(2) == "?"]
     return Token.IF
-
 
 
 @cancel("!")
