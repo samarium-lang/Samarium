@@ -17,6 +17,18 @@ class SMClass:
     def __bool__(self):
         return self.toBoolean_()
 
+    def init_(self) -> None:
+        ...
+
+    def toString_(self) -> SMString:
+        ...
+
+    def toBoolean_(self) -> SMInteger:
+        ...
+
+    def special_(self) -> Any:
+        ...
+
 
 class SMString(str):
 
