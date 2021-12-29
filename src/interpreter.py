@@ -77,7 +77,8 @@ def run(code: str, ch: CodeHandler = None, *, snippet: bool = False):
             exec(import_code)
         code = "\n".join(imported.code + ch.code)
         if "--debug" in sys.argv:
-            print(code)
+            for i, line in enumerate(code.splitlines()):
+                print(str(i+1).center(4), line)
         exec(code)
     except Exception as e:
         _throw(str(e).replace("_", ""))
