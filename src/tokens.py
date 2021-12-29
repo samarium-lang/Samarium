@@ -64,11 +64,11 @@ class Token(Enum):
     CLASS = "@"
     LAMBDA = "#"
     INSTANCE = "'"
-    DECORATOR = "%"
 
     # Other
     ASSIGN = ":"
     ATTRIBUTE = "."
+    CAST = "%"
     DOLLAR = "$"
     END = ";"
     FROM = "<-"
