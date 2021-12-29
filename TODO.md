@@ -36,3 +36,9 @@
 
 **13. Feature concepts**
 > There are still 2 unused characters, `` ` `` and `_` + some combination of characters could be used as well, so we could add some stuff to the language.
+
+**14. `}` parsing**
+> Currently, `}` is the only character (that I'm aware of) that both:
+> <br>→ can be the last character of a valid program
+> <br>→ has multiple meanings (either `}` for `BRACE_CLOSE` or `}}` for `TABLE_CLOSE`)
+> <br>When `}` is the last character of a file (as in there's no newline or anything, literally the last character), an IndexError occurs when the tokenizer tries to check if the next character is also `}`.
