@@ -126,4 +126,7 @@ def open_brace() -> Token:
 
 @cancel("}")
 def close_brace() -> Token:
-    return (Token.BRACE_CLOSE, Token.TABLE_CLOSE)[nextchar() == "}"]
+    try:
+        return (Token.BRACE_CLOSE, Token.TABLE_CLOSE)[nextchar() == "}"]
+    except IndexError:
+        return Token.BRACE_CLOSE
