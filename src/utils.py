@@ -218,6 +218,7 @@ def _cast(obj: SMInteger | SMString) -> SMString | SMInteger:
             return SMString(chr(obj._value))
         case SMString():
             return SMInteger(ord(obj))
+    return SMNull()
 
 
 def _input(prompt: str = ""):
