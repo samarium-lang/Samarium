@@ -3,18 +3,18 @@ from parser import parse, CodeHandler
 from tokenizer import tokenize
 import sys
 from utils import (
-    SMInteger,
     SMArray,
+    SMClass,
+    SMInteger,
     SMString,
+    SMTable,
     _cast,
     _input,
     _throw,
+    _random
 )
 
-MODULE_NAMES = [
-    "math", "random", "iter", "collections",
-    "numbers", "string", "statistics"
-]
+MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
 PUBLIC = CodeHandler(globals())
 imported = CodeHandler(globals())
 is_import = False
@@ -72,20 +72,19 @@ def run(code: str, ch: CodeHandler = None, *, snippet: bool = False):
             ind += 1
         ch.code = ch.code[ind:]
         import_code = "\n".join(imports)
-    # try:
-    if import_code:
-        exec(import_code, ch.globals, ch.locals)
-    code = "\n".join(imported.code + ch.code)
-    if sys.argv[-1] == "--debug":
-        print(code)
-    exec(code, ch.globals, ch.locals)
-    # except Exception as e:
-    #    _throw(str(e))
+    try:
+        if import_code:
+            exec(import_code)
+        code = "\n".join(imported.code + ch.code)
+        if "--debug" in sys.argv:
+            print(code)
+        exec(code)
+    except Exception as e:
+        _throw(str(e).replace("_", ""))
     return ch
 
 
 def main():
-    sys.argv.append("src/test/lambda.sm")
     run(readfile(sys.argv[1]), PUBLIC)
 
 
