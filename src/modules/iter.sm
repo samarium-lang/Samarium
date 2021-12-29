@@ -12,6 +12,7 @@ find array target * {
 }
 
 count array target * {
+    ? target ~~ ->? array { * \; }
     * sum([/ ... e ->? array ? e :: target]);
 }
 
@@ -34,6 +35,7 @@ reverse array * {
         o +: array(i);
         i -: /;
     }
+    * o;
 }
 
 takeWhile array function * {
@@ -64,10 +66,11 @@ dropWhile array function * {
 }
 
 accumulate array function * {
-    prev : [array(\)];
+    prev : array(\);
+    o : [array(\)];
     ... e ->? array {
-        prev +: function(prev, e);
+        o +: function(prev, e);
         prev : e;
     }
-    * prev;
+    * o;
 }
