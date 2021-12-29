@@ -47,6 +47,7 @@ takeWhile array function * {
         }
         <-
     }
+    * o;
 }
 
 dropWhile array function * {
