@@ -1,0 +1,73 @@
+<-math.sum;
+
+find array target * {
+    index : \;
+    ... e ->? array {
+        ? e :: target {
+            * index;
+        }
+        index +: /;
+    }
+    * -/;
+}
+
+count array target * {
+    * sum([/ ... e ->? array ? e :: target]);
+}
+
+filter array function * {
+    * [e ... e ->? array ? function(e)];
+}
+
+filterFalse array function * {
+    * filter(array, # x -> ~~ function(x));
+}
+
+map array function * {
+    * [function(e) ... e ->? array];
+}
+
+reverse array * {
+    o : [];
+    i : array$ - /;
+    .. i >: \ {
+        o +: array(i);
+        i -: /;
+    }
+}
+
+takeWhile array function * {
+    o : [];
+    ... e ->? array {
+        ? function(e) {
+            o +: e;
+            ->
+        }
+        <-
+    }
+}
+
+dropWhile array function * {
+    o : [];
+    i : \;
+    ... e ->? array {
+        i +: /;
+        ? ~~ function(e) {
+            o +: e;
+            <-
+        }
+    }
+    ... e ->? array(i, array$) {
+        o +: e;
+    }
+    * o;
+}
+
+accumulate array function * {
+    prev : [array(\)];
+    ... e ->? array {
+        prev +: function(prev, e);
+        prev : e;
+    }
+    * prev;
+}

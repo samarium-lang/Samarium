@@ -1,0 +1,36 @@
+choice array * {
+    * array(^^\ -> array$ - /^^);
+}
+
+== doesn't work;
+shuffle array * {
+    shuffledArray : [];
+    .. array {
+        e : array(^^\ -> array$ - /^^);
+        shuffledArray +: e;
+        array -: [e];
+    }
+    * shuffledArray;
+}
+
+choices array k * {
+    o : [];
+    .. o$ < k {
+        o +: array(^^\ -> array$ - /^^);
+    }
+    * o;
+}
+
+== doesn't work;
+sample array k * {
+    ? k > array$ {
+        * -/;
+        == "The sample can't be bigger than the array";
+    }
+    o : [];
+    .. o$ < k {
+        e : array(^^\ -> array$ - /^^);
+        o +: e;
+        array -: [e];
+    }
+}

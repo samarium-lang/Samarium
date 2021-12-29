@@ -1,0 +1,80 @@
+abs n * {
+    ? n < \ { * -n; }
+    * n;
+}
+
+factorial n * {
+    ? n < \ {
+        * -/;
+        =="factorial is defined only for non-negative numbers";
+    }
+    o : /;
+    .. n > \ {
+        o ++: n;
+        n -: /;
+    }
+    * o;
+}
+
+gcd a b * {
+    .. b {
+        a, b : b, a --- b;
+    }
+    * a;
+}
+
+lcm a b * {
+    * abs(a ++ b) -- gcd(a, b);
+}
+
+product array * {
+    o : /;
+    ... e ->? array {
+        o ++: e;
+    }
+    * o;
+}
+
+sum array * {
+    o : \;
+    ... e ->? array {
+        o +: e;
+    }
+    * o;
+}
+
+sqrt n * {
+    ? n < \ {
+        * -/;
+        =="sqrt is defined only for non-negative numbers";
+    }
+    ? n < /\ {
+        * n;
+    }
+    a : n -- /\;
+    b : (a + n -- a) --- /\;
+    .. a > b {
+        b : (a + n -- a) --- /\;
+    }
+    * a;
+}
+
+max array * {
+    o : array(\);
+    ... e ->? array {
+        ? e > o {
+            o : e;
+        }
+    }
+    * o;
+}
+
+min array * {
+    o : array(\);
+    ... e ->? array {
+        ? e < o {
+            o : e;
+        }
+    }
+    * o;
+}

@@ -1,0 +1,92 @@
+uppercase : "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+lowercase : "abcdefghijklmnopqrstuvwxyz";
+letters : uppercase + lowercase;
+
+octdigits : "01234567";
+digits : octdigits + "89";
+hexdigits : digits + "abcdef";
+
+punctuation : "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+whitespace : " \t\n\r\f\v";
+
+printable : letters + digits + punctuation + whitespace;
+
+center string length char:" " * {
+    ? char$ > / {
+        "char has to be of length 1"!!!;
+    }
+    index : \;
+    .. string$ < length {
+        ? index {
+            string : char + string;
+        } ,, {
+            string +: char;
+        }
+        index +: /;
+        index ---: /\;
+    }
+    * string;
+}
+
+startsWith string prefix * {
+    ? prefix$ > string$ { * \; }
+    == TODO: Implement slicing
+}
+
+endsWith string suffix * {
+    ? suffix$ > string$ { * \; }
+    == TODO: Implement slicing
+}
+
+split string delimiter:" " * {
+    ? delimiter ~~ ->? string {
+        * [string];
+    }
+    out : [];
+    temp : "";
+    ... char ->? string {
+        ? char :: delimiter {
+            out +: temp;
+            temp : "";
+        } ,, {
+            temp +: char;
+        }
+    }
+    out +: temp;
+    * out;
+}
+
+capitalize string * {
+    == TODO: Implement slicing
+}
+
+title string * {
+    * join(capitalize(w) ... w -> split(string));
+}
+
+join iterable delimiter:" " * {
+    o : ""; == iterable[0]
+    ... e ->? iterable==<[1:]>== {
+        == TODO: Implement slicing
+    }
+}
+
+stripLeft string prefix * {
+    .. startsWith(string, prefix) {
+        == TODO: Implement slicing
+    }
+}
+
+stripRight string suffix * {
+    .. endsWith(string, suffix) {
+        == TODO: Implement slicing
+    }
+}
+
+strip string chars * {
+    * stripLeft(stripRight(string, chars), chars);
+}
+
+isWrapped string chars * {
+    * startsWith(string, chars) && endsWith(string, chars);
+}

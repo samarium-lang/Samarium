@@ -1,0 +1,47 @@
+@ Stack {
+    init size * {
+        'sstack : [];
+        'ssize : size;
+    }
+
+    push data * {
+        ? 'isFull() {
+            "The stack is full (size " + 'ssize.toString() + ")"!!!;
+        }
+        'sstack +: data;
+    }
+
+    special * { * 'sstack$; }
+
+    pop * { 'sstack -: 'sstack$ - /; }
+
+    peek * { * 'sstack(-/); }
+
+    toBoolean * { * 'sstack$ > \; }
+
+    isFull * { * 'ssize :: 'sstack$; }
+
+    toString * { * "Stack(size=" + 'ssize.toString() + ", top=" + 'peek(); }
+}
+
+@ Set {
+    init * {
+        'sdata : [];
+    }
+
+    add data * {
+        ... e ->? data {
+            ? e ~~ ->? 'sdata {
+                'sdata +: e;
+            }
+        }
+    }
+
+    toString * {
+        * "Set(data=" + 'sdata.join(", ") + ")";
+    }
+
+    special * {
+        * 'sdata$;
+    }
+}
