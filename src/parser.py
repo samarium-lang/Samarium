@@ -248,9 +248,8 @@ def parse(token: Tokenizable, ch: CodeHandler):
             ch.command = [i for i in ch.command if i]
             if ch.switches["function"]:
                 ch.command = [
-                    *ch.command[:x],
-                    "@_check_none\n",
-                    "def ",
+                    *ch.command[:x], "@_check_none\n",
+                    *ch.command[:x], "def ",
                     ch.command[x],
                     "(",
                     ",".join(groupnames(
