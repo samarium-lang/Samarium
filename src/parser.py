@@ -270,5 +270,3 @@ def parse(token: Tokenizable, ch: CodeHandler):
         case Token.LAMBDA:
             ch.command += ["lambda "]
             ch.switches["lambda"] = True
-        case Token.DECORATOR:
-            ch.command += ["@"]
