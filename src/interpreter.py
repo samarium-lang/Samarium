@@ -17,7 +17,7 @@ def parse_smmeta(metadata: str) -> dict[str, tuple[int, int]]:
             continue
         name, linedata = line.split(":")
         start, end = linedata.split(",")
-        data[name] = (int(start), int(end))
+        data[name] = (int(start) - 1, int(end))
     return data
 
 
