@@ -45,3 +45,6 @@
 
 **15. SMArray.toString**
 > This one is easy, simply it should wrap every string in `"` but since it returns a printable representation of the string, they're being removed.
+
+**16. Empty functions**
+> Make the parser add a `pass` inside empty Samarium functions when transpiling to Python.
