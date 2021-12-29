@@ -2,7 +2,7 @@
 > As I've said, I want them to be user friendly, chill and not super serious, so it's really just describing the features in a simple way
 
 **2. Fix the extension**
-> Currently there are 3 things to fix: <br>→ Class with parents on separate lines <br>→ Function with parameters on separate lines <br>→ Function when default arguments are used
+> Currently there are 3 things to fix: <br>→ Class with parents on separate lines <br>→ Function with parameters on separate lines <br>→ Function when default arguments are used <br>→ The first argument in a lambda is highlighted like a function name
 
 **3. Implement Standard Library**
 > This is simply writing and testing Samarium code for all functions there are to do + your own suggestions
@@ -42,3 +42,6 @@
 > <br>→ can be the last character of a valid program
 > <br>→ has multiple meanings (either `}` for `BRACE_CLOSE` or `}}` for `TABLE_CLOSE`)
 > <br>When `}` is the last character of a file (as in there's no newline or anything, literally the last character), an IndexError occurs when the tokenizer tries to check if the next character is also `}`.
+
+**15. SMArray.toString**
+> This one is easy, simply it should wrap every string in `"` but since it returns a printable representation of the string, they're being removed.
