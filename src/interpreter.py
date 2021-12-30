@@ -68,7 +68,7 @@ def run(code: str, ch: CodeHandler = None, *, snippet: bool = False):
         code = "\n".join(imported.code + ch.code)
         if "--debug" in sys.argv:
             for i, line in enumerate(code.splitlines()):
-                print(str(i+1).center(4), line)
+                print(f"{i+1:^4}{line}")
         exec(code)
     except Exception as e:
         _throw(str(e).replace("_", ""))
