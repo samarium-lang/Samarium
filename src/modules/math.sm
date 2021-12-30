@@ -5,8 +5,7 @@ abs n * {
 
 factorial n * {
     ? n < \ {
-        * -/;
-        =="factorial is defined only for non-negative numbers";
+        "factorial is defined only for non-negative numbers"!!!;
     }
     o : /;
     .. n > \ {
@@ -45,8 +44,7 @@ sum array * {
 
 sqrt n * {
     ? n < \ {
-        * -/;
-        =="sqrt is defined only for non-negative numbers";
+        "sqrt is defined only for non-negative numbers"!!!;
     }
     ? n < /\ {
         * n;

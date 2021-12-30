@@ -236,7 +236,13 @@ def parse(token: Tokenizable, ch: CodeHandler):
         case Token.CATCH:
             ch.command += ["except Exception"]
         case Token.THROW:
-            ch.command = ["_throw(", *ch.command, ")"]
+            x = ch.indent > 0
+            ch.command = [
+                *ch.command[:x],
+                "_throw(",
+                *ch.command[x:],
+                ")"
+            ]
 
         # Functions / Classes
         case Token.FUNCTION:

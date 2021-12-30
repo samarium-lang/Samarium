@@ -22,9 +22,6 @@
 **9. Fix code execution in comments**
 > Parser doesn't ignore the contents of comments, so it still tries to call built-in functions like `!` or `!!!`.
 
-**10. Fix `_throw` including the indentation**
-> When calling `!!!` (maybe `!` too, didn't test), it wraps the entire line including the indentation, thus causing an IndentationError when transpiled to Python.
-
 **11. Test stdlib**
 > Test all functions in the standard library, and make sure they work as expected.
 
