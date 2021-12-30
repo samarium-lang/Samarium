@@ -55,7 +55,7 @@ class SMString(str):
         return SMInteger(bool(self))
 
     def toString_(self) -> SMString:
-        return SMString(repr(self))
+        return SMString(f'"{repr(self)[1:-1]}"')
 
 
 class SMTable(SMClass):
@@ -71,7 +71,10 @@ class SMTable(SMClass):
 
     def toString_(self) -> SMString:
         return SMString(
-            "{{" + ", ".join(f"{k} -> {v}" for k, v in self._table.items()) + "}}"
+            "{{" + ", ".join(
+                f"{k.toString_()} -> {v.toString_()}"
+                for k, v in self._table.items()
+            ) + "}}"
         )
 
     def __iter__(self):
@@ -125,7 +128,7 @@ class SMArray(SMClass):
         return SMArray(newarr)
 
     def toString_(self) -> str:
-        return f"[{', '.join(map(str, self._array))}]"
+        return f"[{', '.join(i.toString_() for i in self._array)}]"
 
 
 class SMInteger(SMClass):
