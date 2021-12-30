@@ -1,6 +1,5 @@
 from tokens import Token
 import handlers
-import sys
 
 Tokenizable = Token | str | int | None
 
