@@ -69,6 +69,8 @@
 > ```
 > An alternative solution to the second example
 > would be making SMTables only accept SMStrings
-> as keys. Also in the second example, I think
+> as keys (it would be quite useful since all
+> SMClasses would need to be hashable in some way).
+> Also in the second example, I think
 > the cause is that the 3rd `{` is getting cancelled
 > because the previous character is also a `{`.
