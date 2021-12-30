@@ -73,6 +73,7 @@ class Token(Enum):
     END = ";"
     FROM = "<-"
     IN = "->?"
+    NULL = "_"
     RANDOM = "^^"
     SEP = ","
     STDIN = "???"

@@ -162,6 +162,8 @@ def parse(token: Tokenizable, ch: CodeHandler):
             ch.command += [","]
         case Token.ATTRIBUTE:
             ch.command += ["."]
+        case Token.NULL:
+            ch.command += ["SMNull()"]
         case Token.CAST:
             ch.command[-1] = f"_cast({ch.command[-1]})"
         case Token.RANDOM:
