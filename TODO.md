@@ -42,3 +42,22 @@
 
 **16. Empty functions**
 > Make the parser add a `pass` inside empty Samarium functions when transpiling to Python.
+
+**17. `SMNull` wrapper for lambdas**
+> Working concepts I made, except I'm not really sure how one would add it to the parser:
+> ```py
+> # v1 : 169ns ± 0.234ns
+> lambda: SMNull if (x := lambda_goes_here)() is None else x()
+> # v2 : 123 ns ± 0.072ns
+> lambda: SMNull if (x := (lambda_goes_here)()) is None else x
+
+**18. Incorrect tokenizing without spacing**
+> In the following example you can see how different the token is depending on the spacing:
+> ```bash
+> ...e->?array{e!;}
+> # for e_-array_:
+> #     print(e_);
+> ...e ->?array{e!;}
+> # for e_ in array_:
+> #     print(e_);
+> ```
