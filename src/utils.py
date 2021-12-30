@@ -16,6 +16,9 @@ class SMClass:
     def __str__(self):
         return self.toString_()
 
+    def __repr__(self):
+        return self.toString_()
+
     def __special__(self):
         return self.special_()
 
@@ -43,7 +46,16 @@ class SMNull:
 class SMString(str):
 
     def __special__(self) -> SMInteger:
+        return self.special_()
+
+    def special_(self) -> SMInteger:
         return SMInteger(len(self))
+
+    def toBoolean_(self) -> SMInteger:
+        return SMInteger(bool(self))
+
+    def toString_(self) -> SMString:
+        return SMString(repr(self))
 
 
 class SMTable(SMClass):
