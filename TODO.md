@@ -61,3 +61,12 @@
 > # for e_ in array_:
 > #     print(e_);
 > ```
+> ```bash
+> {{{{}} -> /\}}
+> # SMTable({}):SMInteger(2)})
+> {{ {{}} -> /\}}
+> # SMTable({SMTable({}):SMInteger(2)})
+> ```
+> An alternative solution to the second example
+> would be making SMTables only accept SMStrings
+> as keys.
