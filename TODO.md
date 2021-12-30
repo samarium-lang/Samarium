@@ -31,15 +31,6 @@
 **13. Feature concepts**
 > There are still 2 unused characters, `` ` `` and `_` + some combination of characters could be used as well, so we could add some stuff to the language.
 
-**14. `}` parsing**
-> Currently, `}` is the only character (that I'm aware of) that both:
-> <br>→ can be the last character of a valid program
-> <br>→ has multiple meanings (either `}` for `BRACE_CLOSE` or `}}` for `TABLE_CLOSE`)
-> <br>When `}` is the last character of a file (as in there's no newline or anything, literally the last character), an IndexError occurs when the tokenizer tries to check if the next character is also `}`.
-
-**15. SMArray.toString**
-> This one is easy, simply it should wrap every string in `"` but since it returns a printable representation of the string, they're being removed.
-
 **16. Empty functions**
 > Make the parser add a `pass` inside empty Samarium functions when transpiling to Python.
 
