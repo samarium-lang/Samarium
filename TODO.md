@@ -26,7 +26,7 @@
 > Test all functions in the standard library, and make sure they work as expected.
 
 **13. Feature concepts**
-> There are still 2 unused characters, `` ` `` and `_` + some combination of characters could be used as well, so we could add some stuff to the language.
+> There is still 1 unused character, `` ` `` + some combination of characters could be used as well, so we still could add some stuff to the language.
 
 **16. Empty functions**
 > Make the parser add a `pass` inside empty Samarium functions when transpiling to Python.
