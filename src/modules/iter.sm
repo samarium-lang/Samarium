@@ -75,3 +75,13 @@ accumulate array function * {
     }
     * o;
 }
+
+enumerate array * {
+    o : [];
+    i : \;
+    ... e ->? array {
+        o +: [i, e];
+        i +: /;
+    }
+    * o;
+}
