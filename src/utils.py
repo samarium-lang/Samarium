@@ -218,7 +218,7 @@ def _cast(obj: SMInteger | SMString) -> SMString | SMInteger:
             return SMString(chr(obj._value))
         case SMString():
             return SMInteger(ord(obj))
-    raise TypeError(f"Cannot cast {obj} to SMString or SMInteger")
+    _throw(f"Cannot cast {obj} to SMString or SMInteger")
 
 
 def _input(prompt: str = ""):
