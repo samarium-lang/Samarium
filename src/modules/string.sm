@@ -57,29 +57,29 @@ split string delimiter:" " * {
 }
 
 capitalize string * {
-    == TODO: Implement slicing
+    * \; == TODO: Implement slicing;
 }
 
 title string * {
-    * join(capitalize(w) ... w -> split(string));
+    * join(capitalize(w) ... w ->? split(string));
 }
 
 join iterable delimiter:" " * {
-    o : ""; == iterable[0]
-    ... e ->? iterable==<[1:]>== {
-        == TODO: Implement slicing
+    o : "";
+    ... e ->? iterable {
+        \; == TODO: Implement slicing;
     }
 }
 
 stripLeft string prefix * {
     .. startsWith(string, prefix) {
-        == TODO: Implement slicing
+        \; == TODO: Implement slicing;
     }
 }
 
 stripRight string suffix * {
     .. endsWith(string, suffix) {
-        == TODO: Implement slicing
+        \; == TODO: Implement slicing;
     }
 }
 
