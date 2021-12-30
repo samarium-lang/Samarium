@@ -73,7 +73,7 @@ def parse(token: Tokenizable, ch: CodeHandler):
         else:
             if token[0] == token[-1] == '"':
                 # SMString handling
-                ch.command += [token]
+                ch.command += [f"SMString({token})"]
             else:
                 # Name handling, `_` added so
                 # Python's builtins cannot be overwritten
@@ -163,10 +163,7 @@ def parse(token: Tokenizable, ch: CodeHandler):
         case Token.ATTRIBUTE:
             ch.command += ["."]
         case Token.CAST:
-            x = 0
-            while not isinstance(ch.command[~x], (int, str)):
-                x += 1
-            ch.command[~x] = f"_cast({ch.command[~x]})"
+            ch.command[-1] = f"_cast({ch.command[-1]})"
         case Token.RANDOM:
             if ch.switches["random"]:
                 ch.command += [")"]
@@ -251,8 +248,8 @@ def parse(token: Tokenizable, ch: CodeHandler):
             ch.command = [i for i in ch.command if i]
             if ch.switches["function"]:
                 ch.command = [
-                    *ch.command[:x],
-                    "def ",
+                    *ch.command[:x], "@_check_none\n",
+                    *ch.command[:x], "def ",
                     ch.command[x],
                     "(",
                     ",".join(groupnames(

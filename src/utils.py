@@ -2,6 +2,11 @@ from __future__ import annotations
 from typing import Any
 from secrets import randbelow
 
+__all__ = (
+    "_cast", "_input", "_throw", "_random", "_check_none", "SMClass",
+    "SMInteger", "SMString", "SMArray", "SMTable"
+)
+
 
 class SMClass:
 
@@ -28,6 +33,11 @@ class SMClass:
 
     def special_(self) -> Any:
         ...
+
+
+class SMNull:
+    def __str__(self):
+        return "null"
 
 
 class SMString(str):
@@ -202,10 +212,13 @@ class SMInteger(SMClass):
         )
 
 
-def _cast(obj: SMInteger | str) -> str | SMInteger:
-    if isinstance(obj, SMInteger):
-        return chr(obj._value)
-    return SMInteger(ord(obj))
+def _cast(obj: SMInteger | SMString) -> SMString | SMInteger:
+    match obj:
+        case SMInteger():
+            return SMString(chr(obj._value))
+        case SMString():
+            return SMInteger(ord(obj))
+    _throw(f"Cannot cast {obj} to SMString or SMInteger")
 
 
 def _input(prompt: str = ""):
@@ -225,3 +238,11 @@ def _throw(msg: str):
 
 def _random(start: SMInteger, end: SMInteger) -> SMInteger:
     return SMInteger(randbelow(end._value - start._value + 1) + start._value)
+
+
+def _check_none(func):
+    """return SMNull if function returns None"""
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        return SMNull() if result is None else result
+    return wrapper

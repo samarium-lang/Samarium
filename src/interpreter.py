@@ -2,17 +2,7 @@ from __future__ import annotations
 from parser import parse, CodeHandler
 from tokenizer import tokenize
 import sys
-from utils import (
-    SMArray,
-    SMClass,
-    SMInteger,
-    SMString,
-    SMTable,
-    _cast,
-    _input,
-    _throw,
-    _random
-)
+from utils import *
 
 MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
 PUBLIC = CodeHandler(globals())
