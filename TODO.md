@@ -62,3 +62,11 @@
 > Also in the second example, I think
 > the cause is that the 3rd `{` is getting cancelled
 > because the previous character is also a `{`.
+
+**19. Removing the need for commas between lambda arguments**
+> Normal functions are defined like this:
+> `myFunction argAlpha argBravo argCharlie * {...}`
+> Lambda functions, however, require the arguments to be separated by commas:
+> `# argAlpha, argBravo, argCharlie -> ...`
+> This can probably be done by using the `CodeHandlers.switches` lambda switch,
+> which would be disabled on `Token.TO` or something.
