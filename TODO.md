@@ -55,18 +55,18 @@
 > {{ {{}} -> /\}}
 > # SMTable({SMTable({}):SMInteger(2)})
 > ```
-> An alternative solution to the second example
-> would be making SMTables only accept SMStrings
-> as keys (it would be quite useful since all
-> SMClasses would need to be hashable in some way).
-> Also in the second example, I think
-> the cause is that the 3rd `{` is getting cancelled
+> An alternative solution to the second example<br>
+> would be making SMTables only accept SMStrings<br>
+> as keys (it would be quite useful since all<br>
+> SMClasses would need to be hashable in some way).<br>
+> Also in the second example, I think<br>
+> the cause is that the 3rd `{` is getting cancelled<br>
 > because the previous character is also a `{`.
 
 **19. Removing the need for commas between lambda arguments**
-> Normal functions are defined like this:
-> `myFunction argAlpha argBravo argCharlie * {...}`
-> Lambda functions, however, require the arguments to be separated by commas:
-> `# argAlpha, argBravo, argCharlie -> ...`
-> This can probably be done by using the `CodeHandlers.switches` lambda switch,
+> Normal functions are defined like this:<br>
+> `myFunction argAlpha argBravo argCharlie * {...}`<br>
+> Lambda functions, however, require the arguments to be separated by commas:<br>
+> `# argAlpha, argBravo, argCharlie -> ...`<br>
+> This can probably be done by using the `CodeHandler.switches` lambda switch,<br>
 > which would be disabled on `Token.TO` or something.
