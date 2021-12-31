@@ -221,13 +221,19 @@ def parse(token: Tokenizable, ch: CodeHandler):
             ch.command += ["break"]
             parse(Token.END, ch)
         case Token.TO:
-            if ch.command[0].isspace() and len(ch.command) == 1:
+            if is_first_token(ch):
                 ch.command += ["continue"]
                 parse(Token.END, ch)
                 return
             if ch.switches["random"]:
                 ch.command += [","]
                 return
+            if ch.switches["lambda"]:
+                x = 0
+                while ch.command[~x] != "lambda ":
+                    x += 1
+                ch.command[~x + 1:] = ",".join(groupnames(ch.command[~x + 1:]))
+                ch.switches["lambda"] = False
             ch.command += [":"]
         case Token.IN:
             ch.command += [" in "]

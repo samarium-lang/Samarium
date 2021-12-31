@@ -38,6 +38,7 @@
 > lambda: SMNull if (x := lambda_goes_here)() is None else x()
 > # v2 : 123 ns ± 0.072ns
 > lambda: SMNull if (x := (lambda_goes_here)()) is None else x
+> ```
 
 **18. Incorrect tokenizing without spacing**
 > In the following example you can see how different the token is depending on the spacing:
@@ -62,11 +63,3 @@
 > Also in the second example, I think<br>
 > the cause is that the 3rd `{` is getting cancelled<br>
 > because the previous character is also a `{`.
-
-**19. Removing the need for commas between lambda arguments**
-> Normal functions are defined like this:<br>
-> `myFunction argAlpha argBravo argCharlie * {...}`<br>
-> Lambda functions, however, require the arguments to be separated by commas:<br>
-> `# argAlpha, argBravo, argCharlie -> ...`<br>
-> This can probably be done by using the `CodeHandler.switches` lambda switch,<br>
-> which would be disabled on `Token.TO` or something.
