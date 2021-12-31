@@ -63,3 +63,14 @@
 > Also in the second example, I think<br>
 > the cause is that the 3rd `{` is getting cancelled<br>
 > because the previous character is also a `{`.
+
+**20. Supporting variables as default for `groupnames`**
+> Basically due to how `groupnames` works, it's not possible to have a variable as a default value.<br>
+> Works: `func a:/, b:"text", c:[] * {}`<br>
+> Doesn't work:
+> ```
+> one : /;
+> str : "text";
+> array : [];
+> func a:one, b:str, c:array * {}
+> ```
