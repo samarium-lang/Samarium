@@ -40,30 +40,6 @@
 > lambda: SMNull if (x := (lambda_goes_here)()) is None else x
 > ```
 
-**18. Incorrect tokenizing without spacing**
-> In the following example you can see how different the token is depending on the spacing:
-> ```bash
-> ...e->?array{e!;}
-> # for e_-array_:
-> #     print(e_);
-> ...e ->?array{e!;}
-> # for e_ in array_:
-> #     print(e_);
-> ```
-> ```bash
-> {{{{}} -> /\}}
-> # SMTable({}):SMInteger(2)})
-> {{ {{}} -> /\}}
-> # SMTable({SMTable({}):SMInteger(2)})
-> ```
-> An alternative solution to the second example<br>
-> would be making SMTables only accept SMStrings<br>
-> as keys (it would be quite useful since all<br>
-> SMClasses would need to be hashable in some way).<br>
-> Also in the second example, I think<br>
-> the cause is that the 3rd `{` is getting cancelled<br>
-> because the previous character is also a `{`.
-
 **20. Supporting variables as default for `groupnames`**
 > Basically due to how `groupnames` works, it's not possible to have a variable as a default value.<br>
 > Works: `func a:/, b:"text", c:[] * {}`<br>
