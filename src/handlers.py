@@ -47,7 +47,7 @@ def less(scroller: Scroller) -> Token:
 
 
 def greater(scroller: Scroller) -> Token:
-    if scroller.program[:3] == "==":
+    if scroller.program[:3] == ">==":
         return Token.COMMENT_CLOSE
     match scroller.next():
         case ">": return Token.SHR
