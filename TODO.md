@@ -16,12 +16,6 @@
 **7. Detect genexprs**
 > This is a bit tricky, but it's not that hard. The only way to do this is to use a regex to find the genexpr syntax, and then throw a syntax error if it's found.
 
-**8. Fix single-line comment parsing**
-> This can only by done by including `\n` as a token again.
-
-**9. Fix code execution in comments**
-> Parser doesn't ignore the contents of comments, so it still tries to call built-in functions like `!` or `!!!`.
-
 **11. Test stdlib**
 > Test all functions in the standard library, and make sure they work as expected.
 

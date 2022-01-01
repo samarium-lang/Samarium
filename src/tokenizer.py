@@ -7,6 +7,7 @@ Tokenlike = Token | str | int | None
 
 def tokenize(program: str) -> list[Tokenlike]:
 
+    comment = False
     multisemantic = "+-:<>=.^?!&|~,}{"
     scroller = handlers.Scroller(program)
     string = False
@@ -15,8 +16,13 @@ def tokenize(program: str) -> list[Tokenlike]:
 
     while scroller.program:
 
+        if comment:
+            if scroller.pointer == "\n":
+                comment = False
+            scroller.shift()
+
         # String submitting
-        if scroller.pointer == '"' and scroller.prev != "\\":
+        elif scroller.pointer == '"' and scroller.prev != "\\":
             if not string and temp:
                 tokens.append(temp)
                 temp = ""
@@ -57,6 +63,10 @@ def tokenize(program: str) -> list[Tokenlike]:
                 "}": handlers.close_brace,
                 "^": handlers.caret
             }[scroller.pointer](scroller):
+                if out == Token.COMMENT:
+                    comment = True
+                    scroller.shift(2)
+                    continue
                 tokens.append(out)
                 scroller.shift(len(out.value))
 
