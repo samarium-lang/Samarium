@@ -57,7 +57,10 @@ def greater(scroller: Scroller) -> Token:
 
 def equal(scroller: Scroller) -> Token:
     if scroller.next() == "=":
-        return (Token.COMMENT, Token.COMMENT_OPEN)[scroller.next(2) == "<"]
+        try:
+            return (Token.COMMENT, Token.COMMENT_OPEN)[scroller.next(2) == "<"]
+        except IndexError:
+            return Token.COMMENT
     raise ValueError("Invalid token")
 
 
