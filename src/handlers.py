@@ -1,132 +1,110 @@
 from tokens import Token
-from typing import Callable
-
-program = ""
-index = 0
 
 
-def nextchar(offset: int = 1) -> str:
-    return program[index + offset]
+class Scroller:
+
+    def __init__(self, program: str):
+        self.program = program
+        self.prev = ""
+
+    @property
+    def pointer(self) -> str:
+        return self.program[0]
+
+    def next(self, offset: int = 1) -> str:
+        return self.program[offset]
+
+    def shift(self, units: int = 1):
+        self.prev = self.program[:units][-1]
+        self.program = self.program[units:]
 
 
-def init(program_: str, index_: int):
-    global program, index
-    program = program_
-    index = index_
-
-
-def cancel(chars: str):
-    def decorator(function: Callable):
-        def wrapper() -> Token | None:
-            if program[index - 1] in chars:
-                return None
-            return function()
-        return wrapper
-    return decorator
-
-
-@cancel("+")
-def plus() -> Token:
-    if nextchar() == "+":
-        return (Token.MUL, Token.POW)[nextchar(2) == "+"]
+def plus(scroller: Scroller) -> Token:
+    if scroller.next() == "+":
+        return (Token.MUL, Token.POW)[scroller.next(2) == "+"]
     return Token.ADD
 
 
-@cancel("<-")
-def minus() -> Token:
-    match nextchar():
-        case ">": return (Token.TO, Token.IN)[nextchar(2) == "?"]
-        case "-": return (Token.DIV, Token.MOD)[nextchar(2) == "-"]
+def minus(scroller: Scroller) -> Token:
+    match scroller.next():
+        case ">": return (Token.TO, Token.IN)[scroller.next(2) == "?"]
+        case "-": return (Token.DIV, Token.MOD)[scroller.next(2) == "-"]
         case _: return Token.SUB
 
 
-@cancel("<>:")
-def colon() -> Token:
-    if nextchar() == ":":
-        return (Token.EQ, Token.NE)[nextchar(2) == ":"]
+def colon(scroller: Scroller) -> Token:
+    if scroller.next() == ":":
+        return (Token.EQ, Token.NE)[scroller.next(2) == ":"]
     return Token.ASSIGN
 
 
-@cancel("=<")
-def less() -> Token:
-    match nextchar():
+def less(scroller: Scroller) -> Token:
+    match scroller.next():
         case "-": return Token.FROM
         case "<": return Token.SHL
         case ":": return Token.LE
         case _: return Token.LT
 
 
-@cancel("->")
-def greater() -> Token:
-    if program[index + 1:index + 3] == "==":
+def greater(scroller: Scroller) -> Token:
+    if scroller.program[:3] == "==":
         return Token.COMMENT_CLOSE
-    match nextchar():
+    match scroller.next():
         case ">": return Token.SHR
         case ":": return Token.GE
         case _: return Token.GT
 
 
-@cancel("=>")
-def equal() -> Token:
-    if nextchar() == "=":
-        return (Token.COMMENT, Token.COMMENT_OPEN)[nextchar(2) == "<"]
+def equal(scroller: Scroller) -> Token:
+    if scroller.next() == "=":
+        return (Token.COMMENT, Token.COMMENT_OPEN)[scroller.next(2) == "<"]
     raise ValueError("Invalid token")
 
 
-@cancel(".")
-def dot() -> Token:
-    if nextchar() == ".":
-        return (Token.WHILE, Token.FOR)[nextchar(2) == "."]
+def dot(scroller: Scroller) -> Token:
+    if scroller.next() == ".":
+        return (Token.WHILE, Token.FOR)[scroller.next(2) == "."]
     return Token.ATTRIBUTE
 
 
-@cancel(">?")
-def question() -> Token:
-    if nextchar() == "?":
-        return (Token.TRY, Token.STDIN)[nextchar(2) == "?"]
+def question(scroller: Scroller) -> Token:
+    if scroller.next() == "?":
+        return (Token.TRY, Token.STDIN)[scroller.next(2) == "?"]
     return Token.IF
 
 
-@cancel("!")
-def exclamation() -> Token:
-    if nextchar() == "!":
-        return (Token.CATCH, Token.THROW)[nextchar(2) == "!"]
+def exclamation(scroller: Scroller) -> Token:
+    if scroller.next() == "!":
+        return (Token.CATCH, Token.THROW)[scroller.next(2) == "!"]
     return Token.STDOUT
 
 
-@cancel("|")
-def pipe() -> Token:
-    return (Token.BINOR, Token.OR)[nextchar() == "|"]
+def pipe(scroller: Scroller) -> Token:
+    return (Token.BINOR, Token.OR)[scroller.next() == "|"]
 
 
-@cancel("&")
-def ampersand() -> Token:
-    return (Token.BINAND, Token.AND)[nextchar() == "&"]
+def ampersand(scroller: Scroller) -> Token:
+    return (Token.BINAND, Token.AND)[scroller.next() == "&"]
 
 
-@cancel("~")
-def tilde() -> Token:
-    return (Token.BINNOT, Token.NOT)[nextchar() == "~"]
+def tilde(scroller: Scroller) -> Token:
+    return (Token.BINNOT, Token.NOT)[scroller.next() == "~"]
 
 
-@cancel("^")
-def caret() -> Token:
-    return (Token.XOR, Token.RANDOM)[nextchar() == "^"]
+def caret(scroller: Scroller) -> Token:
+    return (Token.XOR, Token.RANDOM)[scroller.next() == "^"]
 
 
-@cancel(",")
-def comma() -> Token:
-    return (Token.SEP, Token.ELSE)[nextchar() == ","]
+def comma(scroller: Scroller) -> Token:
+    return (Token.SEP, Token.ELSE)[scroller.next() == ","]
 
 
-@cancel("{")
-def open_brace() -> Token:
-    return (Token.BRACE_OPEN, Token.TABLE_OPEN)[nextchar() == "{"]
+def open_brace(scroller: Scroller) -> Token:
+    return (Token.BRACE_OPEN, Token.TABLE_OPEN)[scroller.next() == "{"]
 
 
-@cancel("}")
-def close_brace() -> Token:
+def close_brace(scroller: Scroller) -> Token:
     try:
-        return (Token.BRACE_CLOSE, Token.TABLE_CLOSE)[nextchar() == "}"]
+        return (Token.BRACE_CLOSE, Token.TABLE_CLOSE)[scroller.next() == "}"]
     except IndexError:
         return Token.BRACE_CLOSE

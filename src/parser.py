@@ -1,4 +1,4 @@
-from tokenizer import Tokenizable
+from tokenizer import Tokenlike
 from tokens import Token
 from typing import Any
 
@@ -43,7 +43,7 @@ def groupnames(array: list[str]) -> list[str]:
     return out
 
 
-def parse(token: Tokenizable, ch: CodeHandler):
+def parse(token: Tokenlike, ch: CodeHandler):
 
     # For when `parse(None)` is called recursively
     if token is not None:
