@@ -79,7 +79,7 @@ class Parser:
             # SMString handling
             if token[0] == token[-1] == '"':
                 self.ch.line += [f"SMString({token})"]
-            
+
             # Name handling, `_` added so
             # Python's builtins cannot be overwritten
             elif len(self.ch.line_tokens) > 1:
@@ -93,11 +93,14 @@ class Parser:
             self.parse_exec, self.parse_control_flow,
             self.parse_error_handling, self.parse_misc
         }:
-            if out := func(token):
+            out = func(token)
+            if not out:
+                continue
+            if isinstance(out, str):
                 self.ch.line += [out]
-                break
+            break
 
-    def parse_operator(self, token: Parsable) -> str:
+    def parse_operator(self, token: Parsable) -> str | int:
         return {
             # Arithmetic
             Token.ADD: "+",
@@ -124,9 +127,9 @@ class Parser:
             Token.XOR: "^",
             Token.SHR: ">>",
             Token.SHL: "<<"
-        }.get(token, "")
+        }.get(token, 0)
 
-    def parse_bracket(self, token: Parsable) -> str:
+    def parse_bracket(self, token: Parsable) -> str | int:
         out = {
             Token.BRACKET_OPEN: "SMArray([",
             Token.BRACKET_CLOSE: "])",
@@ -135,7 +138,7 @@ class Parser:
             Token.TABLE_OPEN: "SMTable({",
             Token.TABLE_CLOSE: "})",
             Token.BRACE_OPEN: ":"
-        }.get(token, "")
+        }.get(token, 0)
         if token == Token.BRACE_OPEN:
             if self.ch.switches["class"]:
                 if self.ch.line_tokens[-1] == Token.PAREN_CLOSE:
@@ -154,10 +157,12 @@ class Parser:
             ):
                 self.ch.switches["class"] = False
                 self.ch.class_indent.pop()
+        else:
+            return out
         self.parse_token(None)
-        return out
+        return 1
 
-    def parse_exec(self, token: Parsable) -> str:
+    def parse_exec(self, token: Parsable) -> str | int:
         out = {
             Token.INSTANCE: "self",
             Token.ASSIGN: "=",
@@ -166,14 +171,13 @@ class Parser:
             Token.NULL: "SMNull()",
             Token.DOLLAR: ".__special__()",
             Token.END: ";",
-            Token.RANDOM: ")" if self.ch.switches["random"] else "_random(",
-            Token.STDIN: (
-                f"_input({self.ch.line.pop()})"
-                if isinstance(self.ch.line[-1], str)
-                else "_input()"
-            )
-        }.get(token, "")
+            Token.RANDOM: ")" if self.ch.switches["random"] else "_random("
+        }.get(token, 0)
         match token:
+            case Token.STDIN:
+                if isinstance(self.ch.line[-1], str):
+                    return f"_input({self.ch.line.pop()})"
+                return "_input()"
             case Token.CAST:
                 self.ch.line[-1] = f"_cast({self.ch.line[-1]})"
             case Token.RANDOM:
@@ -192,15 +196,17 @@ class Parser:
                     *self.ch.line[x:],
                     ")"
                 ]
-        return out
+            case _:
+                return out
+        return 1
 
-    def parse_control_flow(self, token: Parsable) -> str:
+    def parse_control_flow(self, token: Parsable) -> str | int:
         out = {
             Token.WHILE: "while ",
             Token.FOR: "for ",
             Token.ELSE: "else ",
             Token.IN: " in "
-        }.get(token, "")
+        }.get(token, 0)
         if (
             token in {Token.IF, Token.FOR, Token.ELSE}
             and not self.is_first_token()
@@ -233,13 +239,15 @@ class Parser:
                         self.groupnames(self.ch.line[~x + 1:])
                     )
                     self.ch.switches["lambda"] = False
-        return out
+            case _:
+                return out
+        return 1
 
-    def parse_error_handling(self, token: Parsable) -> str:
+    def parse_error_handling(self, token: Parsable) -> str | int:
         out = {
             Token.TRY: "try",
             Token.CATCH: "except Exception"
-        }.get(token, "")
+        }.get(token, 0)
         if token == Token.THROW:
             x = bool(self.ch.indent)
             self.ch.line = [
@@ -248,9 +256,10 @@ class Parser:
                 *self.ch.line[x:],
                 ")"
             ]
+            return 1
         return out
 
-    def parse_misc(self, token: Parsable) -> str:
+    def parse_misc(self, token: Parsable) -> str | int:
         match token:
             case Token.FUNCTION:
                 if self.ch.line_tokens[0] == Token.FROM:
@@ -260,7 +269,7 @@ class Parser:
                 self.ch.line = [i for i in self.ch.line if i]
                 if not self.ch.switches["function"]:
                     self.ch.line.insert(x, "return ")
-                    return ""
+                    return 1
                 self.ch.line = [
                     *self.ch.line[:x], "@_check_none\n",
                     *self.ch.line[:x], "def ",
@@ -277,4 +286,6 @@ class Parser:
             case Token.LAMBDA:
                 self.ch.switches["lambda"] = True
                 return "lambda "
-        return ""
+            case _:
+                return 0
+        return 1
