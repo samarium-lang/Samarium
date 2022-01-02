@@ -7,10 +7,13 @@ Here's a `Hello, World!` program written in Samarium:
 "Hello, World!"!;
 ```
 
+The following guide assumes that you are familiar with the basics of programming.
+
 # Table of Contents
 - [Introduction](#introduction)
 - [Table of Contents](#table-of-contents)
 - [Strings](#strings)
+  - [Operations on Strings](#operations-on-strings)
 - [Numbers](#numbers)
   - [Syntax](#syntax)
 - [Creating Variables](#creating-variables)
@@ -26,6 +29,15 @@ Strings in Samarium are defined using double quotation marks, as shown in the in
 ```rs
 "Hello!"
 ```
+Multiline strings do not require any additional syntax, you simply do:
+```rs
+"This
+is a
+multiline
+string"
+```
+## Operations on Strings
+<!-- todo: concatenation with +, cloning with ++,  -->
 
 # Numbers
 Numbers in Samarium are represented in base 2 using slashes and backslashes. Only integers are supported in Samarium.

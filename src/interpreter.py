@@ -1,5 +1,5 @@
 from __future__ import annotations
-from parser import parse, CodeHandler
+from parser import Parser, CodeHandler
 from tokenizer import tokenize
 import sys
 from utils import *
@@ -7,7 +7,6 @@ from utils import *
 MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
 PUBLIC = CodeHandler(globals())
 imported = CodeHandler(globals())
-is_import = False
 
 
 def parse_smmeta(metadata: str) -> dict[str, tuple[int, int]]:
@@ -47,21 +46,18 @@ def readfile(path: str) -> str:
         return f.read()
 
 
-def run(code: str, ch: CodeHandler = None, *, snippet: bool = False):
-    ch = ch or CodeHandler(globals())
+def run(code: str, ch: CodeHandler = None):
     tokens = tokenize(code)
-    for token in tokens:
-        parse(token, ch)
-    if snippet:
-        import_code = ""
-    else:
-        imports = []
-        ind = 0
-        while ch.code[ind].startswith("_import"):
-            imports.append(ch.code[ind])
-            ind += 1
-        ch.code = ch.code[ind:]
-        import_code = "\n".join(imports)
+    parser = Parser(tokens, ch or CodeHandler(globals()))
+    parser.parse()
+    ch = parser.ch
+    imports = []
+    ind = 0
+    while ch.code[ind].startswith("_import"):
+        imports.append(ch.code[ind])
+        ind += 1
+    ch.code = ch.code[ind:]
+    import_code = "\n".join(imports)
     try:
         if import_code:
             exec(import_code)
@@ -72,7 +68,6 @@ def run(code: str, ch: CodeHandler = None, *, snippet: bool = False):
         exec(code)
     except Exception as e:
         _throw(str(e).replace("_", ""))
-    return ch
 
 
 def main():
