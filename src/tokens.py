@@ -33,8 +33,8 @@ class Token(Enum):
     SHL = "<<"
 
     # Parens, Brackets and Braces
-    ARRAY_OPEN = "["
-    ARRAY_CLOSE = "]"
+    BRACKET_OPEN = "["
+    BRACKET_CLOSE = "]"
 
     BRACE_OPEN = "{"
     BRACE_CLOSE = "}"
