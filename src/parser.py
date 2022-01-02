@@ -2,19 +2,20 @@ from tokenizer import Tokenlike
 from tokens import Token
 from typing import Any
 
+Parsable = Tokenlike | None
+
 
 class CodeHandler:
     def __init__(self, globals: dict[str, Any]):
         self.class_indent = []
         self.code = []
-        self.command = []
-        self.tokens = []
+        self.line = []
+        self.line_tokens = []
         self.indent = 0
         self.locals = {}
         self.globals = globals
         self.switches = {
             "class": False,
-            "comment": False,
             "function": False,
             "import": False,
             "lambda": False,
@@ -22,262 +23,258 @@ class CodeHandler:
             "newline": False,
             "random": False
         }
-        self.tokens_ = []
+        self.all_tokens = []
 
 
-def is_first_token(ch: CodeHandler) -> bool:
-    return not ch.command or (len(ch.command) == 1 and ch.command[0].isspace())
+class Parser:
+    def __init__(self, tokens: list[Tokenlike], code_handler: CodeHandler):
+        self.tokens = tokens
+        self.ch = code_handler
 
+    def is_first_token(self) -> bool:
+        return not self.ch.line or (
+            len(self.ch.line) == 1 and self.ch.line[0].isspace()
+        )
 
-def groupnames(array: list[str]) -> list[str]:
-    out = []
-    temp = ""
-    for i in array:
-        if i.isidentifier() and temp:
+    # FIXME Issue 20
+    def groupnames(self, array: list[str]) -> list[str]:
+        out = []
+        temp = ""
+        for i in array:
+            if i.isidentifier() and temp:
+                out += [temp]
+                temp = i
+            else:
+                temp += i
+        if temp:
             out += [temp]
-            temp = i
-        else:
-            temp += i
-    if temp:
-        out += [temp]
-    return out
+        return out
 
+    def parse(self):
+        for token in self.tokens:
+            self.parse_token(token)
 
-def parse(token: Tokenlike, ch: CodeHandler):
+    def parse_token(self, token: Parsable):
+        print(token)
 
-    # For when `parse(None)` is called recursively
-    if token is not None:
-        ch.tokens += [token]
+        # For when `parse_token(None)` is called recursively
+        if token is not None:
+            self.ch.line_tokens += [token]
 
-    if ch.switches["newline"]:
-        ch.code += ["".join(ch.command)]
-        ch.command = []
-        ch.tokens_.extend(ch.tokens)
-        ch.tokens = []
-        ch.command = ["    " * ch.indent] if ch.indent else []
-        ch.switches["newline"] = False
+        if self.ch.switches["newline"]:
+            self.ch.code += ["".join(self.ch.line)]
+            self.ch.all_tokens.extend(self.ch.line_tokens)
 
-    if ch.switches["multiline_comment"]:
-        if token == Token.COMMENT_CLOSE:
-            ch.switches["multiline_comment"] = False
-        return
+            self.ch.line_tokens = []
+            self.ch.line = ["    " * self.ch.indent] * bool(self.ch.indent)
 
-    # SMInteger handling
-    if isinstance(token, int):
-        ch.command += [f"SMInteger({token})"]
-        return
+            self.ch.switches["newline"] = False
 
-    if isinstance(token, str):
-        if token == "\n" and ch.switches["comment"]:  # One line comment
-            ch.switches["comment"] = False
-        else:
+        # SMInteger handling
+        if isinstance(token, int):
+            self.ch.line += [f"SMInteger({token})"]
+            return
+
+        if isinstance(token, str):
+            # SMString handling
             if token[0] == token[-1] == '"':
-                # SMString handling
-                ch.command += [f"SMString({token})"]
-            else:
-                # Name handling, `_` added so
-                # Python's builtins cannot be overwritten
-                if token != "\n":
-                    if len(ch.tokens) > 1:
-                        if ch.tokens[-2] == Token.INSTANCE:
-                            ch.command += ["."]
-                    ch.command += [f"{token}_"]
-                else:
-                    ch.switches["newline"] = True
-                    parse(None, ch)
-        return
+                self.ch.line += [f"SMString({token})"]
+            
+            # Name handling, `_` added so
+            # Python's builtins cannot be overwritten
+            elif len(self.ch.line_tokens) > 1:
+                if self.ch.line_tokens[-2] == Token.INSTANCE:
+                    self.ch.line += ["."]
+                self.ch.line += [f"{token}_"]
+            return
 
-    # Main parser
-    match token:
+        for func in {
+            self.parse_operator, self.parse_bracket,
+            self.parse_exec, self.parse_control_flow,
+            self.parse_error_handling, self.parse_misc
+        }:
+            if out := func(token):
+                self.ch.line += [out]
+                break
 
-        # Arithmetic
-        case Token.ADD: ch.command += ["+"]
-        case Token.SUB: ch.command += ["-"]
-        case Token.MUL: ch.command += ["*"]
-        case Token.DIV: ch.command += ["//"]
-        case Token.MOD: ch.command += ["%"]
-        case Token.POW: ch.command += ["**"]
+    def parse_operator(self, token: Parsable) -> str:
+        return {
+            # Arithmetic
+            Token.ADD: "+",
+            Token.SUB: "-",
+            Token.MUL: "*",
+            Token.DIV: "//",
+            Token.MOD: "%",
+            Token.POW: "**",
+            # Comparison
+            Token.EQ: "==",
+            Token.NE: "!=",
+            Token.LT: "<",
+            Token.GT: ">",
+            Token.LE: "<=",
+            Token.GE: ">=",
+            # Logical
+            Token.AND: " and ",
+            Token.OR: " or ",
+            Token.NOT: " not ",
+            # Bitwise
+            Token.BINAND: "&",
+            Token.BINOR: "|",
+            Token.BINNOT: "~",
+            Token.XOR: "^",
+            Token.SHR: ">>",
+            Token.SHL: "<<"
+        }.get(token, "")
 
-        # Comparison
-        case Token.EQ: ch.command += ["=="]
-        case Token.NE: ch.command += ["!="]
-        case Token.LT: ch.command += ["<"]
-        case Token.GT: ch.command += [">"]
-        case Token.LE: ch.command += ["<="]
-        case Token.GE: ch.command += [">="]
+    def parse_bracket(self, token: Parsable) -> str:
+        out = {
+            Token.BRACKET_OPEN: "SMArray([",
+            Token.BRACKET_CLOSE: "])",
+            Token.PAREN_OPEN: "(",
+            Token.PAREN_CLOSE: ")",
+            Token.TABLE_OPEN: "SMTable({",
+            Token.TABLE_CLOSE: "})",
+            Token.BRACE_OPEN: ":"
+        }.get(token, "")
+        if token == Token.BRACE_OPEN:
+            if self.ch.switches["class"]:
+                if self.ch.line_tokens[-1] == Token.PAREN_CLOSE:
+                    self.ch.line[-1] == ","
+                    return "SMClass)"
+                elif self.ch.line_tokens[-2] != Token.FUNCTION:
+                    return "(SMClass)"
+            self.ch.switches["newline"] = True
+            self.ch.indent += 1
+        elif token == Token.BRACE_CLOSE:
+            self.ch.switches["newline"] = True
+            self.ch.indent -= 1
+            if (
+                self.ch.switches["class"]
+                and self.ch.indent == self.ch.class_indent[-1]
+            ):
+                self.ch.switches["class"] = False
+                self.ch.class_indent.pop()
+        self.parse_token(None)
+        return out
 
-        # Logical
-        case Token.AND: ch.command += [" and "]
-        case Token.OR: ch.command += [" or "]
-        case Token.NOT: ch.command += [" not "]
-
-        # Bitwise
-        case Token.BINAND: ch.command += ["&"]
-        case Token.BINOR: ch.command += ["|"]
-        case Token.BINNOT: ch.command += ["~"]
-        case Token.XOR: ch.command += ["^"]
-        case Token.SHR: ch.command += [">>"]
-        case Token.SHL: ch.command += ["<<"]
-
-        # Parens, Brackets and Braces
-        case Token.ARRAY_OPEN: ch.command += ["SMArray(["]
-        case Token.ARRAY_CLOSE: ch.command += ["])"]
-        case Token.PAREN_OPEN: ch.command += ["("]
-        case Token.PAREN_CLOSE: ch.command += [")"]
-        case Token.TABLE_OPEN: ch.command += ["SMTable({"]
-        case Token.TABLE_CLOSE: ch.command += ["})"]
-        case Token.BRACE_OPEN:
-            if ch.switches["class"]:
-                if ch.tokens[-1] == Token.PAREN_CLOSE:
-                    ch.command[-1] = ","
-                    ch.command += ["SMClass)"]
-                else:
-                    if ch.tokens[-2] != Token.FUNCTION:
-                        ch.command += ["(SMClass)"]
-            ch.command += [":"]
-            ch.switches["newline"] = True
-            ch.indent += 1
-            parse(None, ch)
-        case Token.BRACE_CLOSE:
-            ch.switches["newline"] = True
-            ch.indent -= 1
-            if ch.switches["class"] and ch.indent == ch.class_indent[-1]:
-                ch.switches["class"] = False
-                ch.class_indent.pop()
-            parse(None, ch)
-
-        # Comments
-        case Token.COMMENT:
-            ch.switches["comment"] = True
-            ch.command += ["#"]
-        case Token.COMMENT_OPEN:
-            ch.switches["multiline_comment"] = True
-
-        # Execution
-        case Token.INSTANCE:
-            ch.command += ["self"]
-        case Token.ASSIGN:
-            ch.command += ["="]
-        case Token.SEP:
-            ch.command += [","]
-        case Token.ATTRIBUTE:
-            ch.command += ["."]
-        case Token.NULL:
-            ch.command += ["SMNull()"]
-        case Token.CAST:
-            ch.command[-1] = f"_cast({ch.command[-1]})"
-        case Token.RANDOM:
-            if ch.switches["random"]:
-                ch.command += [")"]
-            else:
-                ch.command += ["_random("]
-            ch.switches["random"] = not ch.switches["random"]
-        case Token.END:
-            if ch.switches["import"]:
-                ch.switches["import"] = False
-                ch.command += ["')"]
-            ch.command += [";"]
-            ch.switches["newline"] = True
-            parse(None, ch)
-
-        # I/O
-        case Token.DOLLAR:
-            ch.command += [".__special__()"]
-        case Token.STDIN:
-            match isinstance(ch.command[-1], str):
-                case True: ch.command += [f"_input({ch.command.pop()})"]
-                case False: ch.command += ["_input()"]
-        case Token.STDOUT:
-            x = ch.indent > 0
-            ch.command = [
-                *ch.command[:x],
-                "print(",
-                *ch.command[x:],
-                ")"
-            ]
-
-        # Control Flow
-        case Token.IF:
-            if ch.tokens[-1] == Token.ELSE:
-                ch.command[-1] = "elif"
-            if not is_first_token(ch):
-                ch.command += [" "]
-            ch.command += ["if "]
-        case Token.WHILE:
-            ch.command += ["while "]
-        case Token.FOR:
-            if not is_first_token(ch):
-                ch.command += [" "]
-            ch.command += ["for "]
-        case Token.ELSE:
-            if not is_first_token(ch):
-                ch.command += [" "]
-            ch.command += ["else "]
-        case Token.FROM:
-            if not ch.command:
-                ch.switches["import"] = True
-                ch.command += ["_import('"]
-                return
-            ch.command += ["break"]
-            parse(Token.END, ch)
-        case Token.TO:
-            if is_first_token(ch):
-                ch.command += ["continue"]
-                parse(Token.END, ch)
-                return
-            if ch.switches["random"]:
-                ch.command += [","]
-                return
-            if ch.switches["lambda"]:
-                x = 0
-                while ch.command[~x] != "lambda ":
-                    x += 1
-                ch.command[~x + 1:] = ",".join(groupnames(ch.command[~x + 1:]))
-                ch.switches["lambda"] = False
-            ch.command += [":"]
-        case Token.IN:
-            ch.command += [" in "]
-
-        # Error Handling
-        case Token.TRY:
-            ch.command += ["try"]
-        case Token.CATCH:
-            ch.command += ["except Exception"]
-        case Token.THROW:
-            x = ch.indent > 0
-            ch.command = [
-                *ch.command[:x],
-                "_throw(",
-                *ch.command[x:],
-                ")"
-            ]
-
-        # Functions / Classes
-        case Token.FUNCTION:
-            if ch.tokens[0] == Token.FROM:
-                ch.command += ["*"]
-                return
-            x = ch.indent > 0
-            ch.switches["function"] = bool(ch.command[x:])
-            ch.command = [i for i in ch.command if i]
-            if ch.switches["function"]:
-                ch.command = [
-                    *ch.command[:x], "@_check_none\n",
-                    *ch.command[:x], "def ",
-                    ch.command[x],
-                    "(",
-                    ",".join(groupnames(
-                        (["self"] if ch.switches["class"] else [])
-                        + ch.command[x + 1:]
-                    )),
+    def parse_exec(self, token: Parsable) -> str:
+        out = {
+            Token.INSTANCE: "self",
+            Token.ASSIGN: "=",
+            Token.SEP: ",",
+            Token.ATTRIBUTE: ".",
+            Token.NULL: "SMNull()",
+            Token.DOLLAR: ".__special__()",
+            Token.END: ";",
+            Token.RANDOM: ")" if self.ch.switches["random"] else "_random(",
+            Token.STDIN: (
+                f"_input({self.ch.line.pop()})"
+                if isinstance(self.ch.line[-1], str)
+                else "_input()"
+            )
+        }.get(token, "")
+        match token:
+            case Token.CAST:
+                self.ch.line[-1] = f"_cast({self.ch.line[-1]})"
+            case Token.RANDOM:
+                self.ch.switches["random"] = not self.ch.switches["random"]
+            case Token.END:
+                if self.ch.switches["import"]:
+                    self.ch.switches["import"] = False
+                    self.ch.line += ["')"]
+                self.ch.switches["newline"] = True
+                self.parse_token(None)
+            case Token.STDOUT:
+                x = bool(self.ch.indent)
+                self.ch.line = [
+                    *self.ch.line[:x],
+                    "print(",
+                    *self.ch.line[x:],
                     ")"
                 ]
-            else:
-                ch.command.insert(x, "return ")
-        case Token.CLASS:
-            ch.command += ["class "]
-            ch.switches["class"] = True
-            ch.class_indent += [ch.indent]
-        case Token.LAMBDA:
-            ch.command += ["lambda "]
-            ch.switches["lambda"] = True
+        return out
+
+    def parse_control_flow(self, token: Parsable) -> str:
+        out = {
+            Token.WHILE: "while ",
+            Token.FOR: "for ",
+            Token.ELSE: "else ",
+            Token.IN: " in "
+        }.get(token, "")
+        if (
+            token in {Token.IF, Token.FOR, Token.ELSE}
+            and not self.is_first_token()
+        ):
+            self.ch.line += [" "]
+        match token:
+            case Token.IF:
+                if self.ch.line_tokens[-2] == Token.ELSE:
+                    self.ch.line[-2:] = "elif", " "  # FIXME
+                else:
+                    return "if "
+            case Token.FROM:
+                if not self.ch.line:
+                    self.ch.switches["import"] = True
+                    self.ch.line += ["_import('"]
+                else:
+                    self.ch.line += ["break"]
+                    self.parse_token(Token.END)
+            case Token.TO:
+                if self.is_first_token():
+                    self.ch.line += ["continue"]
+                    self.parse_token(Token.END)
+                elif self.ch.switches["random"]:
+                    return ","
+                elif self.ch.switches["lambda"]:
+                    x = 0
+                    while self.ch.line[~x] != "lambda ":
+                        x += 1
+                    self.ch.line[~x + 1:] = ",".join(
+                        self.groupnames(self.ch.line[~x + 1:])
+                    )
+                    self.ch.switches["lambda"] = False
+        return out
+
+    def parse_error_handling(self, token: Parsable) -> str:
+        out = {
+            Token.TRY: "try",
+            Token.CATCH: "except Exception"
+        }.get(token, "")
+        if token == Token.THROW:
+            x = bool(self.ch.indent)
+            self.ch.line = [
+                *self.ch.line[:x],
+                "_throw(",
+                *self.ch.line[x:],
+                ")"
+            ]
+        return out
+
+    def parse_misc(self, token: Parsable) -> str:
+        match token:
+            case Token.FUNCTION:
+                if self.ch.line_tokens[0] == Token.FROM:
+                    return "*"
+                x = bool(self.ch.indent)
+                self.ch.switches["function"] = bool(self.ch.line[x:])
+                self.ch.line = [i for i in self.ch.line if i]
+                if not self.ch.switches["function"]:
+                    self.ch.line.insert(x, "return ")
+                    return ""
+                self.ch.line = [
+                    *self.ch.line[:x], "@_check_none\n",
+                    *self.ch.line[:x], "def ",
+                    self.ch.line[x], "(",
+                    ",".join(self.groupnames(
+                        (["self"] * self.ch.switches["class"])
+                        + self.ch.line[x + 1:]
+                    )), ")"
+                ]
+            case Token.CLASS:
+                self.ch.switches["class"] = True
+                self.ch.class_indent += [self.ch.indent]
+                return "class "
+            case Token.LAMBDA:
+                self.ch.switches["lambda"] = True
+                return "lambda "
+        return ""
