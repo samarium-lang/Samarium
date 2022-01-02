@@ -2,7 +2,7 @@ from tokens import Token
 import handlers
 import sys
 
-Tokenlike = Token | str | int | None
+Tokenlike = Token | str | int
 
 
 def tokenize(program: str) -> list[Tokenlike]:
