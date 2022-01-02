@@ -55,7 +55,6 @@ class Parser:
             self.parse_token(token)
 
     def parse_token(self, token: Parsable):
-        print(token)
 
         # For when `parse_token(None)` is called recursively
         if token is not None:
@@ -79,20 +78,21 @@ class Parser:
             # SMString handling
             if token[0] == token[-1] == '"':
                 self.ch.line += [f"SMString({token})"]
+                return
 
             # Name handling, `_` added so
             # Python's builtins cannot be overwritten
             elif len(self.ch.line_tokens) > 1:
                 if self.ch.line_tokens[-2] == Token.INSTANCE:
                     self.ch.line += ["."]
-                self.ch.line += [f"{token}_"]
+            self.ch.line += [f"{token}_"]
             return
 
-        for func in {
+        for func in [
             self.parse_operator, self.parse_bracket,
             self.parse_exec, self.parse_control_flow,
             self.parse_error_handling, self.parse_misc
-        }:
+        ]:
             out = func(token)
             if not out:
                 continue
@@ -148,6 +148,7 @@ class Parser:
                     return "(SMClass)"
             self.ch.switches["newline"] = True
             self.ch.indent += 1
+            return out
         elif token == Token.BRACE_CLOSE:
             self.ch.switches["newline"] = True
             self.ch.indent -= 1
@@ -170,7 +171,6 @@ class Parser:
             Token.ATTRIBUTE: ".",
             Token.NULL: "SMNull()",
             Token.DOLLAR: ".__special__()",
-            Token.END: ";",
             Token.RANDOM: ")" if self.ch.switches["random"] else "_random("
         }.get(token, 0)
         match token:
@@ -182,12 +182,13 @@ class Parser:
                 self.ch.line[-1] = f"_cast({self.ch.line[-1]})"
             case Token.RANDOM:
                 self.ch.switches["random"] = not self.ch.switches["random"]
+                return out
             case Token.END:
                 if self.ch.switches["import"]:
                     self.ch.switches["import"] = False
                     self.ch.line += ["')"]
                 self.ch.switches["newline"] = True
-                self.parse_token(None)
+                self.ch.line += [";"]
             case Token.STDOUT:
                 x = bool(self.ch.indent)
                 self.ch.line = [
