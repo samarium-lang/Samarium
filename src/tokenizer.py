@@ -8,7 +8,7 @@ Tokenlike = Token | str | int
 def tokenize(program: str) -> list[Tokenlike]:
 
     comment = False
-    multisemantic = "+-:<>=.^?!&|~,}{"
+    multisemantic = "+-:<>=.^?!&|~,}{#"
     scroller = handlers.Scroller(program)
     string = False
     temp = ""
@@ -61,7 +61,8 @@ def tokenize(program: str) -> list[Tokenlike]:
                 ",": handlers.comma,
                 "{": handlers.open_brace,
                 "}": handlers.close_brace,
-                "^": handlers.caret
+                "^": handlers.caret,
+                "#": handlers.hash_
             }[scroller.pointer](scroller):
                 if out == Token.COMMENT:
                     comment = True
