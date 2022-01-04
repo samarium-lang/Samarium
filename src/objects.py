@@ -1,19 +1,20 @@
 from __future__ import annotations
+from contextlib import suppress
 from exceptions import NotDefinedError
-from typing import Any, Callable, Iterator
+from typing import Any, Callable, Iterator, TypeVar
+
+T = TypeVar("T")
 
 
-Slice = type("Slice", (), {})
-
-
-def run_with_backup(main: Callable, backup: Callable, *args):
-    try:
+def run_with_backup(
+    main: Callable[..., T],
+    backup: Callable[..., T],
+    *args
+) -> T:
+    with suppress(NotDefinedError):
         return main(*args)
-    except NotDefinedError as e:
-        try:
-            return backup(*args)
-        except NotDefinedError:
-            raise e
+    return backup(*args)
+
 
 
 class Class:
@@ -274,6 +275,18 @@ class Class:
         raise NotDefinedError(self, "greaterThanOrEqual")
 
 
+class Slice(Class):
+
+    def create_(self, value: slice):
+        self.value = value
+        self.start_ = value.start or Null()
+        self.stop_ = value.stop or Null()
+        self.step_ = value.step or Null()
+
+    def toString_(self) -> String:
+        return String(f"Slice<<{self.start_}, {self.stop_}, {self.step_}>>")
+
+
 class Null(Class):
 
     def toString_(self) -> String:
@@ -413,6 +426,9 @@ class Integer(Class):
     def greaterThan_(self, other: Integer) -> Integer:
         return Integer(self.value > other.value)
 
+    def special_(self) -> String:
+        return String(f"{self.value:b}")
+
 
 class Table(Class):
 
@@ -451,6 +467,13 @@ class Table(Class):
     def greaterThan_(self, other: Table) -> Integer:
         return self.special_().special_() > other.special_().special_()
 
+    def add_(self, other: Table) -> Table:
+        return Table(self.table | other.table)
+
+    def addAssign_(self, other: Table) -> Table:
+        self.table |= other.table
+        return self
+
 
 class Array(Class):
 
@@ -480,3 +503,33 @@ class Array(Class):
 
     def greaterThan_(self, other: Array) -> Integer:
         return self.special_() > other.special_()
+
+    def getItem_(self, index: Integer) -> Any:
+        return self.array[index.value]
+
+    def setItem_(self, index: Integer, value: Any):
+        self.array[index.value] = value
+
+    def getSlice(self, slice: Slice) -> list[Any]:
+        return self.array[slice.value]
+
+    def setSlice(self, slice: Slice, value: Any):
+        self.array[slice.value] = value
+
+    def add_(self, other: Array) -> Array:
+        ...  # TODO
+
+    def addAssign_(self, other: Array) -> Array:
+        ...  # TODO
+
+    def subtract_(self, other: Array) -> Array:
+        ...  # TODO
+
+    def subtractAssign_(self, other: Array) -> Array:
+        ...  # TODO
+
+    def multiply_(self, other: Array) -> Array:
+        ...  # TODO
+
+    def multiplyAssign_(self, other: Array) -> Array:
+        ...  # TODO
