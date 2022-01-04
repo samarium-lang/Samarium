@@ -285,6 +285,9 @@ class Null(Class):
 
 class String(Class):
 
+    def __str__(self) -> str:
+        return self.value
+
     def create_(self, value: str):
         self.value = value
 
@@ -300,8 +303,16 @@ class String(Class):
     def add_(self, other: String) -> String:
         return String(self.value + other.value)
 
+    def addAssign_(self, other: String) -> String:
+        self.value += other.value
+        return self
+
     def multiply_(self, times: Integer) -> String:
         return String(self.value * times.value)
+
+    def multiplyAssign_(self, times: Integer) -> String:
+        self.value *= times.value
+        return self
 
     def equals_(self, other: String) -> Integer:
         return Integer(self.special_() == other.special_())
@@ -311,6 +322,9 @@ class String(Class):
 
 
 class Integer(Class):
+
+    def __int__(self) -> int:
+        return self.value
 
     def create_(self, value: int):
         self.value = value
@@ -324,29 +338,65 @@ class Integer(Class):
     def add_(self, other: Integer) -> Integer:
         return Integer(self.value + other.value)
 
+    def addAssign_(self, other: Integer) -> Integer:
+        self.value += other.value
+        return self
+
     def subtract_(self, other: Integer) -> Integer:
         return Integer(self.value - other.value)
+
+    def subtractAssign_(self, other: Integer) -> Integer:
+        self.value -= other.value
+        return self
 
     def multiply_(self, other: Integer) -> Integer:
         return Integer(self.value * other.value)
 
+    def multiplyAssign_(self, other: Integer) -> Integer:
+        self.value *= other.value
+        return self
+
     def divide_(self, other: Integer) -> Integer:
         return Integer(self.value // other.value)
+
+    def divideAssign_(self, other: Integer) -> Integer:
+        self.value //= other.value
+        return self
 
     def mod_(self, other: Integer) -> Integer:
         return Integer(self.value % other.value)
 
+    def modAssign_(self, other: Integer) -> Integer:
+        self.value %= other.value
+        return self
+
     def power_(self, other: Integer) -> Integer:
         return Integer(self.value ** other.value)
+
+    def powerAssign_(self, other: Integer) -> Integer:
+        self.value **= other.value
+        return self
 
     def and_(self, other: Integer) -> Integer:
         return Integer(self.value & other.value)
 
+    def andAssign_(self, other: Integer) -> Integer:
+        self.value &= other.value
+        return self
+
     def or_(self, other: Integer) -> Integer:
         return Integer(self.value | other.value)
 
+    def orAssign_(self, other: Integer) -> Integer:
+        self.value |= other.value
+        return self
+
     def xor_(self, other: Integer) -> Integer:
         return Integer(self.value ^ other.value)
+
+    def xorAssign_(self, other: Integer) -> Integer:
+        self.value ^= other.value
+        return self
 
     def not_(self) -> Integer:
         return Integer(~self.value)
