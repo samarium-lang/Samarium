@@ -1,3 +1,5 @@
+from contextlib import suppress
+from math import log
 from tokens import Token
 import handlers
 import sys
@@ -73,33 +75,42 @@ def tokenize(program: str) -> list[Tokenlike]:
 
         # Number handling
         elif scroller.pointer in "/\\":
-            number, length = tokenize_number(scroller)
+            number = tokenize_number(scroller)
             tokens.append(number)
-            scroller.shift(length)
+            scroller.shift(
+                log(number + 1, 2).__ceil__() or 1
+            )
 
         else:
-            try:
+            with suppress(ValueError):
                 tokens.append(Token(scroller.pointer))
-            except ValueError:
-                pass
             scroller.shift()
 
-    return tokens
+    return exclude_comments(tokens)
 
 
-def tokenize_number(scroller: handlers.Scroller) -> tuple[int, int]:
+def tokenize_number(scroller: handlers.Scroller) -> int:
     temp = ""
-    length = 0
     for char in scroller.program:
         if char not in "/\\":
             break
-        length += 1
         temp += char
     temp = temp.replace("/", "1").replace("\\", "0")
-    return int(temp, 2), length
+    return int(temp, 2)
+
+
+def exclude_comments(tokens: list[Tokenlike]) -> list[Tokenlike]:
+    out = []
+    ignore = False
+    for token in tokens:
+        match token:
+            case Token.COMMENT_OPEN: ignore = True
+            case Token.COMMENT_CLOSE: ignore = False
+            case _: out += [token] * (not ignore)
+    return out
 
 
 if __name__ == "__main__":
     with open(sys.argv[1]) as f:
-        for i in tokenize(f.read()):
-            print(i)
+        for token in tokenize(f.read()):
+            print(token)

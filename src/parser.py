@@ -69,15 +69,15 @@ class Parser:
 
             self.ch.switches["newline"] = False
 
-        # SMInteger handling
+        # objects.Integer handling
         if isinstance(token, int):
-            self.ch.line += [f"SMInteger({token})"]
+            self.ch.line += [f"objects.Integer({token})"]
             return
 
         if isinstance(token, str):
-            # SMString handling
+            # objects.String handling
             if token[0] == token[-1] == '"':
-                self.ch.line += [f"SMString({token})"]
+                self.ch.line += [f"objects.String({token})"]
                 return
 
             # Name handling, `_` added so
@@ -131,11 +131,11 @@ class Parser:
 
     def parse_bracket(self, token: Parsable) -> str | int:
         out = {
-            Token.BRACKET_OPEN: "SMArray([",
+            Token.BRACKET_OPEN: "objects.Array([",
             Token.BRACKET_CLOSE: "])",
             Token.PAREN_OPEN: "(",
             Token.PAREN_CLOSE: ")",
-            Token.TABLE_OPEN: "SMTable({",
+            Token.TABLE_OPEN: "objects.Table({",
             Token.TABLE_CLOSE: "})",
             Token.BRACE_OPEN: ":"
         }.get(token, 0)
@@ -143,9 +143,9 @@ class Parser:
             if self.ch.switches["class"]:
                 if self.ch.line_tokens[-1] == Token.PAREN_CLOSE:
                     self.ch.line[-1] == ","
-                    return "SMClass)"
+                    return "objects.Class)"
                 elif self.ch.line_tokens[-2] != Token.FUNCTION:
-                    return "(SMClass)"
+                    return "(objects.Class)"
             self.ch.switches["newline"] = True
             self.ch.indent += 1
             return out
@@ -169,17 +169,17 @@ class Parser:
             Token.ASSIGN: "=",
             Token.SEP: ",",
             Token.ATTRIBUTE: ".",
-            Token.NULL: "SMNull()",
-            Token.DOLLAR: ".__special__()",
-            Token.RANDOM: ")" if self.ch.switches["random"] else "_random("
+            Token.NULL: "objects.Null()",
+            Token.DOLLAR: ".special_()",
+            Token.RANDOM: ")" if self.ch.switches["random"] else "random("
         }.get(token, 0)
         match token:
             case Token.STDIN:
                 if isinstance(self.ch.line[-1], str):
-                    return f"_input({self.ch.line.pop()})"
-                return "_input()"
+                    return f"readline({self.ch.line.pop()})"
+                return "readline()"
             case Token.CAST:
-                self.ch.line[-1] = f"_cast({self.ch.line[-1]})"
+                self.ch.line[-1] = f"cast_type({self.ch.line[-1]})"
             case Token.RANDOM:
                 self.ch.switches["random"] = not self.ch.switches["random"]
                 return out
@@ -222,7 +222,7 @@ class Parser:
             case Token.FROM:
                 if not self.ch.line:
                     self.ch.switches["import"] = True
-                    self.ch.line += ["_import('"]
+                    self.ch.line += ["import_module('"]
                 else:
                     self.ch.line += ["break"]
                     self.parse_token(Token.END)
@@ -272,7 +272,7 @@ class Parser:
                     self.ch.line.insert(x, "return ")
                     return 1
                 self.ch.line = [
-                    *self.ch.line[:x], "@_check_none\n",
+                    *self.ch.line[:x], "@check_none\n",
                     *self.ch.line[:x], "def ",
                     self.ch.line[x], "(",
                     ",".join(self.groupnames(
