@@ -1,6 +1,7 @@
 class NotDefinedError(Exception):
     def __init__(self, class_, message: str):
-        super().__init__(f"{class_.__class__.__name__}.{message}")
+        self.class_ = class_.__class__.__name__
+        super().__init__(f"{self.class_}.{message}")
 
 
 class SamariumError(Exception):
