@@ -221,6 +221,7 @@ class Parser:
                 with suppress(IndexError):
                     if self.ch.line_tokens[-2] == Token.ELSE:
                         self.ch.line[-2:] = "elif", " "
+                        return 1
                 return "if "
             case Token.FROM:
                 if not self.ch.line:
