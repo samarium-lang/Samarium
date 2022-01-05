@@ -1,3 +1,6 @@
+from contextlib import suppress
+from exceptions import SamariumSyntaxError, handle_exception
+from math import log
 from tokens import Token
 import handlers
 import sys
@@ -8,7 +11,7 @@ Tokenlike = Token | str | int
 def tokenize(program: str) -> list[Tokenlike]:
 
     comment = False
-    multisemantic = "+-:<>=.^?!&|~,}{"
+    multisemantic = "+-:<>=.^?!&|~,}{#"
     scroller = handlers.Scroller(program)
     string = False
     temp = ""
@@ -45,7 +48,7 @@ def tokenize(program: str) -> list[Tokenlike]:
 
         # Multisemantic token handling
         elif scroller.pointer in multisemantic:
-            if out := {
+            if not (out := {
                 "+": handlers.plus,
                 "-": handlers.minus,
                 ":": handlers.colon,
@@ -61,44 +64,55 @@ def tokenize(program: str) -> list[Tokenlike]:
                 ",": handlers.comma,
                 "{": handlers.open_brace,
                 "}": handlers.close_brace,
-                "^": handlers.caret
-            }[scroller.pointer](scroller):
-                if out == Token.COMMENT:
-                    comment = True
-                    scroller.shift(2)
-                    continue
-                tokens.append(out)
-                scroller.shift(len(out.value))
+                "^": handlers.caret,
+                "#": handlers.hash_
+            }[scroller.pointer](scroller)):
+                handle_exception(SamariumSyntaxError(scroller.pointer))
+            if out == Token.COMMENT:
+                comment = True
+                scroller.shift(2)
+                continue
+            tokens.append(out)
+            scroller.shift(len(out.value))
 
         # Number handling
         elif scroller.pointer in "/\\":
-            number, length = tokenize_number(scroller)
+            number = tokenize_number(scroller)
             tokens.append(number)
-            scroller.shift(length)
+            scroller.shift(
+                log(number + 1, 2).__ceil__() or 1
+            )
 
         else:
-            try:
+            with suppress(ValueError):
                 tokens.append(Token(scroller.pointer))
-            except ValueError:
-                pass
             scroller.shift()
 
-    return tokens
+    return exclude_comments(tokens)
 
 
-def tokenize_number(scroller: handlers.Scroller) -> tuple[int, int]:
+def tokenize_number(scroller: handlers.Scroller) -> int:
     temp = ""
-    length = 0
     for char in scroller.program:
         if char not in "/\\":
             break
-        length += 1
         temp += char
     temp = temp.replace("/", "1").replace("\\", "0")
-    return int(temp, 2), length
+    return int(temp, 2)
+
+
+def exclude_comments(tokens: list[Tokenlike]) -> list[Tokenlike]:
+    out = []
+    ignore = False
+    for token in tokens:
+        match token:
+            case Token.COMMENT_OPEN: ignore = True
+            case Token.COMMENT_CLOSE: ignore = False
+            case _: out += [token] * (not ignore)
+    return out
 
 
 if __name__ == "__main__":
     with open(sys.argv[1]) as f:
-        for i in tokenize(f.read()):
-            print(i)
+        for token in tokenize(f.read()):
+            print(token)
