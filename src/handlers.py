@@ -57,12 +57,13 @@ def greater(scroller: Scroller) -> Token:
         case _: return Token.GT
 
 
-def equal(scroller: Scroller) -> Token:
+def equal(scroller: Scroller) -> Token | None:
     if scroller.next() == "=":
         try:
             return (Token.COMMENT, Token.COMMENT_OPEN)[scroller.next(2) == "<"]
         except IndexError:
             return Token.COMMENT
+    return None
 
 
 def dot(scroller: Scroller) -> Token:

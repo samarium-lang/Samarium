@@ -26,16 +26,6 @@ def check_none(function: Callable):
     return wrapper
 
 
-def handle_exception(exception: Exception):
-    name = exception.__class__.__name__
-    if not name.startswith("Samarium"):
-        name = "External" + name
-    else:
-        name = name.removeprefix("Samarium")
-    color = f"\033[{4 - (name == 'Error')}1m"
-    print(f"{color}[{name}] {exception}\033[0m")
-
-
 def import_module(data: str, *, ch: CodeHandler = None, imported: CodeHandler):
     name, objects = data.split(":")
     name = name[:-1]
@@ -103,7 +93,7 @@ def run(
     ch = parser.ch
     imports = []
     ind = 0
-    while ch.code[ind].startswith("_import"):  # FIXME use itertools.takewhile
+    while ch.code[ind].startswith("import_module"):  # FIXME use itertools.takewhile
         imports.append(ch.code[ind])
         ind += 1
     ch.code = ch.code[ind:]
@@ -117,7 +107,7 @@ def run(
                 print(f"{i+1:^4}" * ("--nolines" not in sys.argv) + line)
         exec(code)
     except Exception as e:
-        handle_exception(e)
+        exceptions.handle_exception(e)
     return ch
 
 

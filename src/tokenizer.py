@@ -1,5 +1,5 @@
 from contextlib import suppress
-from exceptions import SamariumSyntaxError
+from exceptions import SamariumSyntaxError, handle_exception
 from math import log
 from tokens import Token
 import handlers
@@ -67,7 +67,7 @@ def tokenize(program: str) -> list[Tokenlike]:
                 "^": handlers.caret,
                 "#": handlers.hash_
             }[scroller.pointer](scroller)):
-                raise SamariumSyntaxError(scroller.pointer)
+                handle_exception(SamariumSyntaxError(scroller.pointer))
             if out == Token.COMMENT:
                 comment = True
                 scroller.shift(2)
