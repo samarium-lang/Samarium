@@ -19,7 +19,7 @@ class SamariumError(Exception):
     blank = ""
     prefix = ""
 
-    def __init__(self, message: str):
+    def __init__(self, message: str = ""):
         super().__init__(f"{self.prefix}{message}" or self.blank)
 
 
