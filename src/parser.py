@@ -1,3 +1,4 @@
+from contextlib import suppress
 from tokenizer import Tokenlike
 from tokens import Token
 from typing import Any
@@ -171,6 +172,8 @@ class Parser:
             Token.ATTRIBUTE: ".",
             Token.NULL: "objects.Null()",
             Token.DOLLAR: ".special_()",
+            Token.HASH: ".hash_()",
+            Token.SIZE: ".__sizeof__()",
             Token.RANDOM: ")" if self.ch.switches["random"] else "random("
         }.get(token, 0)
         match token:
@@ -186,9 +189,9 @@ class Parser:
             case Token.END:
                 if self.ch.switches["import"]:
                     self.ch.switches["import"] = False
-                    self.ch.line += ["')"]
+                    self.ch.line += ["', imported=imported)"]
                 self.ch.switches["newline"] = True
-                self.ch.line += [";"]
+                self.parse_token(None)
             case Token.STDOUT:
                 x = bool(self.ch.indent)
                 self.ch.line = [
@@ -215,10 +218,10 @@ class Parser:
             self.ch.line += [" "]
         match token:
             case Token.IF:
-                if self.ch.line_tokens[-2] == Token.ELSE:
-                    self.ch.line[-2:] = "elif", " "  # FIXME
-                else:
-                    return "if "
+                with suppress(IndexError):
+                    if self.ch.line_tokens[-2] == Token.ELSE:
+                        self.ch.line[-2:] = "elif", " "
+                return "if "
             case Token.FROM:
                 if not self.ch.line:
                     self.ch.switches["import"] = True
@@ -240,6 +243,8 @@ class Parser:
                         self.groupnames(self.ch.line[~x + 1:])
                     )
                     self.ch.switches["lambda"] = False
+                else:
+                    return ":"
             case _:
                 return out
         return 1
