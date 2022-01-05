@@ -11,12 +11,12 @@ MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
 
 
 def cast_type(obj: Castable) -> Castable:
-    match type(obj):
-        case objects.String:
-            return objects.Integer(ord(str(obj)))
-        case objects.Integer:
-            return objects.String(chr(int(obj)))
-    raise exceptions.SamariumTypeError(str(type(obj)))
+    if isinstance(obj, objects.String):
+        return objects.Integer(ord(str(obj)))
+    elif isinstance(obj, objects.Integer):
+        return objects.String(chr(int(obj)))
+    else:
+        raise exceptions.SamariumTypeError(str(type(obj)))
 
 
 def check_none(function: Callable):
