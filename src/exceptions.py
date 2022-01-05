@@ -1,9 +1,10 @@
 def handle_exception(exception: Exception):
     name = exception.__class__.__name__
-    if not name.startswith("Samarium"):
-        name = "External" + name
-    else:
-        name = name.removeprefix("Samarium")
+    if name != "NotDefinedError":
+        if not name.startswith("Samarium"):
+            name = "External" + name
+        else:
+            name = name.removeprefix("Samarium")
     color = f"\033[{4 - (name == 'Error')}1m"
     print(f"{color}[{name}] {exception}\033[0m")
     exit(1)
