@@ -27,7 +27,7 @@ def check_none(function: Callable):
 
 
 def import_module(data: str, *, ch: CodeHandler = None, imported: CodeHandler):
-    name, objects = data.split(":")
+    name, objects = data.split(".")
     name = name[:-1]
     objects = objects.split(",")
     if name not in MODULE_NAMES:
@@ -93,7 +93,7 @@ def run(
     ch = parser.ch
     imports = []
     ind = 0
-    while ch.code[ind].startswith("import_module"):  # FIXME use itertools.takewhile
+    while ch.code[ind].startswith("import_module"):
         imports.append(ch.code[ind])
         ind += 1
     ch.code = ch.code[ind:]
