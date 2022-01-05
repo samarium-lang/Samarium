@@ -1,3 +1,4 @@
+import objects
 import sys
 from parser import CodeHandler
 from core import run, readfile
