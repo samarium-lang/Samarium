@@ -1,6 +1,6 @@
 from __future__ import annotations
 from contextlib import suppress
-from exceptions import NotDefinedError
+from exceptions import NotDefinedError, SamariumTypeError
 from typing import Any, Callable, Iterator, TypeVar
 
 T = TypeVar("T")
@@ -14,6 +14,10 @@ def run_with_backup(
     with suppress(NotDefinedError):
         return main(*args)
     return backup(*args)
+
+
+def smhash(obj) -> Integer:
+    return Integer(hash(str(hash(obj))))
 
 
 class Class:
@@ -301,6 +305,9 @@ class Null(Class):
     def toString_(self) -> String:
         return String("null")
 
+    def hash_(self) -> Integer:
+        return smhash(None)
+
     def size_(self) -> Integer:
         return Integer(self.__sizeof__())
 
@@ -312,6 +319,9 @@ class String(Class):
 
     def __str__(self) -> str:
         return self.value
+
+    def hash_(self) -> Integer:
+        return smhash(self.value)
 
     def create_(self, value: str):
         self.value = value
@@ -369,6 +379,9 @@ class Integer(Class):
 
     def __int__(self) -> int:
         return self.value
+
+    def hash_(self) -> Integer:
+        return smhash(self.value)
 
     def size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
@@ -563,10 +576,18 @@ class Array(Class):
         self.array += other.array
         return self
 
-    def subtract_(self, other: Array) -> Array:
-        ...  # TODO
+    def subtract_(self, other: Array | Integer) -> Array:
+        new_array = self.array.copy()
+        if isinstance(other, Array):
+            for i in other:
+                new_array.remove(i)
+        elif isinstance(other, Integer):
+            new_array.pop(other.value)
+        else:
+            raise SamariumTypeError
+        return Array(new_array)
 
-    def subtractAssign_(self, other: Array) -> Array:
+    def subtractAssign_(self, other: Array | Integer) -> Array:
         ...  # TODO
 
     def multiply_(self, other: Integer) -> Array:
