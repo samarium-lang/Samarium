@@ -282,6 +282,9 @@ class Slice(Class):
         self.stop = value.stop or Null()
         self.step = value.step or Null()
 
+    def size_(self) -> Integer:
+        return Integer(self.value.__sizeof__())
+
     def special_(self) -> Table:
         return Table({
             "start": self.start,
@@ -298,6 +301,9 @@ class Null(Class):
     def toString_(self) -> String:
         return String("null")
 
+    def size_(self) -> Integer:
+        return Integer(self.__sizeof__())
+
     def toBit_(self) -> Integer:
         return Integer(0)
 
@@ -309,6 +315,9 @@ class String(Class):
 
     def create_(self, value: str):
         self.value = value
+
+    def size_(self) -> Integer:
+        return Integer(self.value.__sizeof__())
 
     def special_(self) -> Integer:
         return Integer(len(self.value))
@@ -360,6 +369,9 @@ class Integer(Class):
 
     def __int__(self) -> int:
         return self.value
+
+    def size_(self) -> Integer:
+        return Integer(self.value.__sizeof__())
 
     def create_(self, value: int):
         self.value = value
@@ -457,6 +469,9 @@ class Table(Class):
     def create_(self, table: dict[Any, Any]):
         self.table = table
 
+    def size_(self) -> Integer:
+        return Integer(self.table.__sizeof__())
+
     def special_(self) -> Array:
         return Array([*self.table.values()])
 
@@ -501,6 +516,9 @@ class Array(Class):
 
     def create_(self, array: list[Any]):
         self.array = array
+
+    def size_(self) -> Integer:
+        return Integer(self.array.__sizeof__())
 
     def special_(self) -> Integer:
         return Integer(len(self.array))
