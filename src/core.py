@@ -11,12 +11,12 @@ MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
 
 
 def cast_type(obj: Castable) -> Castable:
-    match obj:
-        case objects.Integer():
-            return objects.String(chr(int(obj)))
-        case objects.String():
+    match type(obj):
+        case objects.String:
             return objects.Integer(ord(str(obj)))
-    raise exceptions.SamariumTypeError
+        case objects.Integer:
+            return objects.String(chr(int(obj)))
+    raise exceptions.SamariumTypeError(str(type(obj)))
 
 
 def check_none(function: Callable):
@@ -27,8 +27,13 @@ def check_none(function: Callable):
 
 
 def handle_exception(exception: Exception):
-    match exception.__class__.__name__:
-        ...
+    name = exception.__class__.__name__
+    if not name.startswith("Samarium"):
+        name = "External" + name
+    else:
+        name = name.removeprefix("Samarium")
+    color = f"\033[{4 - (name == 'Error')}1m"
+    print(f"{color}[{name}] {exception}\033[0m")
 
 
 def import_module(data: str, *, ch: CodeHandler = None, imported: CodeHandler):
@@ -36,7 +41,7 @@ def import_module(data: str, *, ch: CodeHandler = None, imported: CodeHandler):
     name = name[:-1]
     objects = objects.split(",")
     if name not in MODULE_NAMES:
-        raise exceptions.SamariumImportError
+        raise exceptions.SamariumImportError(name)
     module = readfile(f"modules/{name}.sm").splitlines()
     if objects == ["*"]:
         imported.code.extend(
@@ -114,3 +119,7 @@ def run(
     except Exception as e:
         handle_exception(e)
     return ch
+
+
+def throw(message: str = ""):
+    raise exceptions.SamariumError(message)
