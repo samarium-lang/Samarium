@@ -40,7 +40,7 @@ class Class:
         return self.call_(*args)
 
     def __sizeof__(self) -> Integer:
-        return self.size_()
+        return self.size_() + Integer(1072)
 
     def __hash__(self) -> int:
         return self.hash_().value
@@ -302,6 +302,9 @@ class Slice(Class):
 
 class Null(Class):
 
+    def create_(self):
+        ...
+
     def toString_(self) -> String:
         return String("null")
 
@@ -309,7 +312,7 @@ class Null(Class):
         return smhash(None)
 
     def size_(self) -> Integer:
-        return Integer(self.__sizeof__())
+        return Integer(None.__sizeof__())
 
     def toBit_(self) -> Integer:
         return Integer(0)
@@ -537,7 +540,7 @@ class Array(Class):
         return Integer(len(self.array))
 
     def toString_(self) -> String:
-        return String(f"[{', '.join(i.toString_() for i in self.array)}]")
+        return String(f"[{', '.join(str(i) for i in self.array)}]")
 
     def toBit_(self) -> Integer:
         return Integer(bool(self.array))
