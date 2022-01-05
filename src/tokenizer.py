@@ -1,4 +1,5 @@
 from contextlib import suppress
+from exceptions import SamariumSyntaxError
 from math import log
 from tokens import Token
 import handlers
@@ -47,7 +48,7 @@ def tokenize(program: str) -> list[Tokenlike]:
 
         # Multisemantic token handling
         elif scroller.pointer in multisemantic:
-            if out := {
+            if not (out := {
                 "+": handlers.plus,
                 "-": handlers.minus,
                 ":": handlers.colon,
@@ -65,13 +66,14 @@ def tokenize(program: str) -> list[Tokenlike]:
                 "}": handlers.close_brace,
                 "^": handlers.caret,
                 "#": handlers.hash_
-            }[scroller.pointer](scroller):
-                if out == Token.COMMENT:
-                    comment = True
-                    scroller.shift(2)
-                    continue
-                tokens.append(out)
-                scroller.shift(len(out.value))
+            }[scroller.pointer](scroller)):
+                raise SamariumSyntaxError(scroller.pointer)
+            if out == Token.COMMENT:
+                comment = True
+                scroller.shift(2)
+                continue
+            tokens.append(out)
+            scroller.shift(len(out.value))
 
         # Number handling
         elif scroller.pointer in "/\\":
