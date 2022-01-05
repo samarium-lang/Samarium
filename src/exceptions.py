@@ -18,7 +18,3 @@ class SamariumSyntaxError(SamariumError):
 
 class SamariumTypeError(SamariumError):
     pass
-
-
-class SamariumTokenError(SamariumError):
-    pass
