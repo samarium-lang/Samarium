@@ -584,11 +584,18 @@ class Array(Class):
         elif isinstance(other, Integer):
             new_array.pop(other.value)
         else:
-            raise SamariumTypeError
+            raise SamariumTypeError(type(other).__name__)
         return Array(new_array)
 
     def subtractAssign_(self, other: Array | Integer) -> Array:
-        ...  # TODO
+        if isinstance(other, Array):
+            for i in other:
+                self.array.remove(i)
+        elif isinstance(other, Integer):
+            self.array.pop(other.value)
+        else:
+            raise SamariumTypeError(type(other).__name__)
+        return self
 
     def multiply_(self, other: Integer) -> Array:
         return Array(self.array * other.value)
