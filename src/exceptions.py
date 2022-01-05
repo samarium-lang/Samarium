@@ -5,16 +5,23 @@ class NotDefinedError(Exception):
 
 
 class SamariumError(Exception):
-    pass
+    blank = ""
+    prefix = ""
+
+    def __init__(self, message: str):
+        super().__init__(f"{self.prefix}{message}" or self.blank)
 
 
 class SamariumImportError(SamariumError):
-    pass
+    blank = "Import error"
+    prefix = "Invalid module: "
 
 
 class SamariumSyntaxError(SamariumError):
-    pass
+    blank = "Invalid syntax"
+    prefix = "Unsupported character: "
 
 
 class SamariumTypeError(SamariumError):
-    pass
+    blank = "Invalid type"
+    prefix = "Unsupported type: "
