@@ -278,12 +278,19 @@ class Slice(Class):
 
     def create_(self, value: slice):
         self.value = value
-        self.start_ = value.start or Null()
-        self.stop_ = value.stop or Null()
-        self.step_ = value.step or Null()
+        self.start = value.start or Null()
+        self.stop = value.stop or Null()
+        self.step = value.step or Null()
+
+    def special_(self) -> Table:
+        return Table({
+            "start": self.start,
+            "stop": self.stop,
+            "step": self.step
+        })
 
     def toString_(self) -> String:
-        return String(f"Slice<<{self.start_}, {self.stop_}, {self.step_}>>")
+        return String(f"Slice<<{self.start}, {self.stop}, {self.step}>>")
 
 
 class Null(Class):
