@@ -16,7 +16,6 @@ def run_with_backup(
     return backup(*args)
 
 
-
 class Class:
     def __init__(self, *args: Any):
         self.create_(*args)
@@ -517,10 +516,11 @@ class Array(Class):
         self.array[slice.value] = value
 
     def add_(self, other: Array) -> Array:
-        ...  # TODO
+        return Array(self.array + other.array)
 
     def addAssign_(self, other: Array) -> Array:
-        ...  # TODO
+        self.array += other.array
+        return self
 
     def subtract_(self, other: Array) -> Array:
         ...  # TODO
@@ -528,8 +528,9 @@ class Array(Class):
     def subtractAssign_(self, other: Array) -> Array:
         ...  # TODO
 
-    def multiply_(self, other: Array) -> Array:
-        ...  # TODO
+    def multiply_(self, other: Integer) -> Array:
+        return Array(self.array * other.value)
 
-    def multiplyAssign_(self, other: Array) -> Array:
-        ...  # TODO
+    def multiplyAssign_(self, other: Integer) -> Array:
+        self.array *= other.value
+        return self
