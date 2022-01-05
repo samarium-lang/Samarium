@@ -332,6 +332,22 @@ class String(Class):
     def greaterThan_(self, other: String) -> Integer:
         return Integer(self.special_() > other.special_())
 
+    def getItem_(self, index: Integer) -> String:
+        return String(self.value[index.value])
+
+    def setItem_(self, index: Integer, value: String):
+        string = [*self.value]
+        string[index.value] = value.value
+        self.value = "".join(string)
+
+    def getSlice_(self, slice: Slice) -> String:
+        return String(self.value[slice.value])
+
+    def setSlice_(self, slice: Slice, value: String):
+        string = [*self.value]
+        string[slice.value] = value.value
+        self.value = "".join(string)
+
 
 class Integer(Class):
 
