@@ -264,7 +264,7 @@ class Parser:
             x = bool(self.ch.indent)
             self.ch.line = [
                 *self.ch.line[:x],
-                "_throw(",
+                "throw(",
                 *self.ch.line[x:],
                 ")"
             ]
