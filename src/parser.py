@@ -37,19 +37,19 @@ class Parser:
             len(self.ch.line) == 1 and self.ch.line[0].isspace()
         )
 
-    # FIXME Issue 20
     def groupnames(self, array: list[str]) -> list[str]:
+        def find_2nd(array: list[str]) -> int:
+            x = 0
+            for i, c in enumerate(array):
+                x += c == "="
+                if x == 2:
+                    return i
+            return 0
         out = []
-        temp = ""
-        for i in array:
-            if i.isidentifier() and temp:
-                out += [temp]
-                temp = i
-            else:
-                temp += i
-        if temp:
-            out += [temp]
-        return out
+        while x := find_2nd(array):
+            out += ["".join(array[:x - 1])]
+            array = array[x - 1:]
+        return out + ["".join(array)]
 
     def parse(self):
         for token in self.tokens:

@@ -33,14 +33,3 @@
 > # v2 : 123 ns ± 0.072ns
 > lambda: SMNull if (x := (lambda_goes_here)()) is None else x
 > ```
-
-**20. Supporting variables as default for `groupnames`**
-> Basically due to how `groupnames` works, it's not possible to have a variable as a default value.<br>
-> Works: `func a:/, b:"text", c:[] * {}`<br>
-> Doesn't work:
-> ```
-> one : /;
-> str : "text";
-> array : [];
-> func a:one, b:str, c:array * {}
-> ```
