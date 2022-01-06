@@ -45,7 +45,12 @@ class Parser:
                 if x == 2:
                     return i
             return 0
-        out = []
+        try:
+            ind = array.index("=") - 1
+            out = array[:ind]
+            array = array[ind:]
+        except ValueError:
+            return array
         while x := find_2nd(array):
             out += ["".join(array[:x - 1])]
             array = array[x - 1:]
@@ -269,8 +274,9 @@ class Parser:
     def parse_misc(self, token: Parsable) -> str | int:
         match token:
             case Token.FUNCTION:
-                if self.ch.line_tokens[0] == Token.FROM:
-                    return "*"
+                with suppress(IndexError):
+                    if self.ch.line_tokens[0] == Token.FROM:
+                        return "*"
                 x = bool(self.ch.indent)
                 self.ch.switches["function"] = bool(self.ch.line[x:])
                 self.ch.line = [i for i in self.ch.line if i]
