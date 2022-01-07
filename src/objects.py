@@ -286,11 +286,11 @@ class Class:
 
 class Slice(Class):
 
-    def create_(self, value: slice):
-        self.value = value
-        self.start = value.start or Null()
-        self.stop = value.stop or Null()
-        self.step = value.step or Null()
+    def create_(self, start: Any, stop: Any, step: Any):
+        self.start = start or Null()
+        self.stop = stop or Null()
+        self.step = step or Null()
+        self.value = slice(start, stop, step)
 
     def size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
@@ -578,10 +578,10 @@ class Array(Class):
     def setItem_(self, index: Integer, value: Any):
         self.array[index.value] = value
 
-    def getSlice(self, slice: Slice) -> list[Any]:
-        return self.array[slice.value]
+    def getSlice_(self, slice: Slice) -> Array:
+        return Array(self.array[slice.value])
 
-    def setSlice(self, slice: Slice, value: Any):
+    def setSlice_(self, slice: Slice, value: Any):
         self.array[slice.value] = value
 
     def add_(self, other: Array) -> Array:
