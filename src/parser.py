@@ -158,6 +158,9 @@ class Parser:
         elif token == Token.BRACE_CLOSE:
             self.ch.switches["newline"] = True
             self.ch.indent -= 1
+            if self.ch.switches["function"] and not self.ch.line_tokens:
+                self.ch.switches["function"] = False
+                return "pass"
             if (
                 self.ch.switches["class"]
                 and self.ch.indent == self.ch.class_indent[-1]
@@ -171,7 +174,6 @@ class Parser:
             self.ch.switches["slice"] = False
             self.ch.line += [")"]
         elif token == Token.SLICE_STEP:
-            print(self.ch.line_tokens)
             self.ch.line += [","] if self.ch.line_tokens[-2] != Token.SLICE_OPEN else ["None,"]
 
 
