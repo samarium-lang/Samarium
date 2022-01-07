@@ -6,6 +6,12 @@ from typing import Any, Callable, Iterator, TypeVar
 T = TypeVar("T")
 
 
+def get_repr(obj: Class) -> str:
+    if type(obj) is String:
+        return f'"{obj.toString_()}"'
+    return obj.toString_().value
+
+
 def run_with_backup(
     main: Callable[..., T],
     backup: Callable[..., T],
@@ -31,7 +37,7 @@ class Class:
         return str(self.toString_().value)
 
     def __iter__(self) -> Iterator:
-        return self.iterate_()
+        return iter(self.iterate_().array)
 
     def __contains__(self, element: Any) -> Integer:
         return self.has_(element)
@@ -172,7 +178,7 @@ class Class:
     def has_(self, element: Any) -> Integer:
         raise NotDefinedError(self, "has")
 
-    def iterate_(self) -> Iterator:
+    def iterate_(self) -> Array:
         raise NotDefinedError(self, "iterate")
 
     def call_(self, *args: Any) -> Any:
@@ -317,6 +323,9 @@ class Null(Class):
     def toBit_(self) -> Integer:
         return Integer(0)
 
+    def equals_(self, other: Null) -> Integer:
+        return Integer(type(other) is Null)
+
 
 class String(Class):
 
@@ -328,6 +337,12 @@ class String(Class):
 
     def create_(self, value: str):
         self.value = value
+
+    def has_(self, element: String) -> Integer:
+        return Integer(element.value in self.value)
+
+    def iterate_(self) -> Array:
+        return Array([String(char) for char in self.value])
 
     def size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
@@ -356,10 +371,10 @@ class String(Class):
         return self
 
     def equals_(self, other: String) -> Integer:
-        return Integer(self.special_() == other.special_())
+        return Integer(self.value == other.value)
 
     def greaterThan_(self, other: String) -> Integer:
-        return Integer(self.special_() > other.special_())
+        return Integer(self.value > other.value)
 
     def getItem_(self, index: Integer) -> String:
         return String(self.value[index.value])
@@ -494,7 +509,7 @@ class Table(Class):
     def toString_(self) -> String:
         return String(
             "{{" + ", ".join(
-                f"{k.toString_()} -> {v.toString_()}"
+                f"{get_repr(k)} -> {get_repr(v)}"
                 for k, v in self.table.items()
             ) + "}}"
         )
@@ -515,10 +530,7 @@ class Table(Class):
         return Integer(element in self.table)
 
     def equals_(self, other: Table) -> Integer:
-        return self.special_().special_() == other.special_().special_()
-
-    def greaterThan_(self, other: Table) -> Integer:
-        return self.special_().special_() > other.special_().special_()
+        return Integer(self.table == other.table)
 
     def add_(self, other: Table) -> Table:
         return Table(self.table | other.table)
@@ -540,7 +552,7 @@ class Array(Class):
         return Integer(len(self.array))
 
     def toString_(self) -> String:
-        return String(f"[{', '.join(str(i) for i in self.array)}]")
+        return String(f"[{', '.join(get_repr(i) for i in self.array)}]")
 
     def toBit_(self) -> Integer:
         return Integer(bool(self.array))
@@ -555,10 +567,10 @@ class Array(Class):
         return Integer(element in self.array)
 
     def equals_(self, other: Array) -> Integer:
-        return self.special_() == other.special_()
+        return Integer(self.array == other.array)
 
     def greaterThan_(self, other: Array) -> Integer:
-        return self.special_() > other.special_()
+        return Integer(self.array > other.array)
 
     def getItem_(self, index: Integer) -> Any:
         return self.array[index.value]
