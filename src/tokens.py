@@ -62,6 +62,11 @@ class Token(Enum):
     LAMBDA = "#"
     INSTANCE = "'"
 
+    # Slicing
+    SLICE_OPEN = "<<"
+    SLICE_CLOSE = ">>"
+    SLICE_STEP = "**"
+
     # Other
     ASSIGN = ":"
     ATTRIBUTE = "."

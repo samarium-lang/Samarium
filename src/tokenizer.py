@@ -7,6 +7,27 @@ import sys
 
 Tokenlike = Token | str | int
 
+MULTISEMANTIC = {
+    "+": handlers.plus,
+    "-": handlers.minus,
+    ":": handlers.colon,
+    "<": handlers.less,
+    ">": handlers.greater,
+    "=": handlers.equal,
+    ".": handlers.dot,
+    "?": handlers.question,
+    "!": handlers.exclamation,
+    "&": handlers.ampersand,
+    "|": handlers.pipe,
+    "~": handlers.tilde,
+    ",": handlers.comma,
+    "{": handlers.open_brace,
+    "}": handlers.close_brace,
+    "^": handlers.caret,
+    "#": handlers.hash_,
+    "*": handlers.asterisk
+}
+
 
 MULTISEMANTIC = {
     "+": handlers.plus,
@@ -68,13 +89,14 @@ def tokenize(program: str) -> list[Tokenlike]:
 
         # Multisemantic token handling
         elif scroller.pointer in MULTISEMANTIC:
-            if out := MULTISEMANTIC[scroller.pointer](scroller):
-                if out == Token.COMMENT:
-                    comment = True
-                    scroller.shift(2)
-                    continue
-                tokens.append(out)
-                scroller.shift(len(out.value))
+            if not (out := MULTISEMANTIC[scroller.pointer](scroller)):
+                handle_exception(SamariumSyntaxError(scroller.pointer))
+            if out == Token.COMMENT:
+                comment = True
+                scroller.shift(2)
+                continue
+            tokens.append(out)
+            scroller.shift(len(out.value))
 
         # Number handling
         elif scroller.pointer in "/\\":
