@@ -46,13 +46,13 @@ split string delimiter:" " * {
     temp : "";
     ... char ->? string {
         ? char :: delimiter {
-            out +: temp;
+            out +: [temp];
             temp : "";
         } ,, {
             temp +: char;
         }
     }
-    out +: temp;
+    out +: [temp];
     * out;
 }
 

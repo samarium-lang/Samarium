@@ -5,9 +5,9 @@ choice array * {
 == doesn't work;
 shuffle array * {
     shuffledArray : [];
-    .. array {
+    .. array$ > \{
         e : array(^^\ -> array$ - /^^);
-        shuffledArray +: e;
+        shuffledArray +: [e];
         array -: [e];
     }
     * shuffledArray;
@@ -16,7 +16,7 @@ shuffle array * {
 choices array k * {
     o : [];
     .. o$ < k {
-        o +: array(^^\ -> array$ - /^^);
+        o +: [array(^^\ -> array$ - /^^)];
     }
     * o;
 }
@@ -24,13 +24,12 @@ choices array k * {
 == doesn't work;
 sample array k * {
     ? k > array$ {
-        * -/;
-        == "The sample can't be bigger than the array";
+        "The sample can't be bigger than the array"!!!;
     }
     o : [];
     .. o$ < k {
         e : array(^^\ -> array$ - /^^);
-        o +: e;
+        o +: [e];
         array -: [e];
     }
 }

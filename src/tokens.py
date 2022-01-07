@@ -80,3 +80,5 @@ class Token(Enum):
     SLICE_OPEN = "<<"
     SLICE_CLOSE = ">>"
     SLICE_STEP = "**"
+    SIZE = ":!:"
+    HASH = "##"

@@ -7,9 +7,6 @@
 **3. Implement Standard Library**
 > This is simply writing and testing Samarium code for all functions there are to do + your own suggestions
 
-**4. Object Oriented Stuff**
-> This includes coming up with names for special methods which support syntactic sugar + finally decide on `SMInteger.__special__`
-
 **5. Slicing Prototype**
 > This includes creating a concept for its syntax, and also coming up with a way to parse it in a way which will not allow creating Python lists. Let's say the syntax is `myArray_\ -> /\_;`, then if I were to parse it as `myArray[0:2]` then using just `_/_` would get parsed to `[1]`, which would result in a Python `list`. Therefore this would require working with `__getitem__`, `__getslice__`, `__setitem__`, and `__setslice__`, where the latter two would require some nice workaround to parse `myArray_/_ : //` as `myArray.__setitem__(1, 3)`
 
@@ -18,9 +15,6 @@
 
 **11. Test stdlib**
 > Test all functions in the standard library, and make sure they work as expected.
-
-**13. Feature concepts**
-> There is still 1 unused character, `` ` `` + some combination of characters could be used as well, so we still could add some stuff to the language.
 
 **16. Empty functions**
 > Make the parser add a `pass` inside empty Samarium functions when transpiling to Python.
@@ -32,15 +26,4 @@
 > lambda: SMNull if (x := lambda_goes_here)() is None else x()
 > # v2 : 123 ns ± 0.072ns
 > lambda: SMNull if (x := (lambda_goes_here)()) is None else x
-> ```
-
-**20. Supporting variables as default for `groupnames`**
-> Basically due to how `groupnames` works, it's not possible to have a variable as a default value.<br>
-> Works: `func a:/, b:"text", c:[] * {}`<br>
-> Doesn't work:
-> ```
-> one : /;
-> str : "text";
-> array : [];
-> func a:one, b:str, c:array * {}
 > ```

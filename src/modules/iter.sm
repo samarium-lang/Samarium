@@ -32,7 +32,7 @@ reverse array * {
     o : [];
     i : array$ - /;
     .. i >: \ {
-        o +: array(i);
+        o +: [array(i)];
         i -: /;
     }
     * o;
@@ -42,7 +42,7 @@ takeWhile array function * {
     o : [];
     ... e ->? array {
         ? function(e) {
-            o +: e;
+            o +: [e];
             ->
         }
         <-
@@ -56,7 +56,7 @@ dropWhile array function * {
     ... e ->? array {
         i +: /;
         ? ~~ function(e) {
-            o +: e;
+            o +: [e];
             <-
         }
     }
@@ -70,7 +70,7 @@ accumulate array function * {
     prev : array(\);
     o : [array(\)];
     ... e ->? array {
-        o +: function(prev, e);
+        o +: [function(prev, e)];
         prev : e;
     }
     * o;
@@ -80,8 +80,27 @@ enumerate array * {
     o : [];
     i : \;
     ... e ->? array {
-        o +: [i, e];
+        o +: [[i, e]];
         i +: /;
+    }
+    * o;
+}
+
+range start stop:_ step:/ * {
+    ? step :: \ {
+        "step cannot be zero"!!!;
+    }
+    ? _ :: stop {
+        stop : start;
+        start : \;
+    }
+    o : [];
+    .. (step < \) ^ (start < stop) {
+        o +: [start];
+        start +: step;
+    }
+    ? step < \ && o {
+        o -: -/;
     }
     * o;
 }

@@ -35,6 +35,8 @@ def minus(scroller: Scroller) -> Token:
 def colon(scroller: Scroller) -> Token:
     if scroller.next() == ":":
         return (Token.EQ, Token.NE)[scroller.next(2) == ":"]
+    if scroller.next() == "!" and scroller.next(2) == ":":
+        return Token.SIZE
     return Token.ASSIGN
 
 
@@ -55,13 +57,13 @@ def greater(scroller: Scroller) -> Token:
         case _: return Token.GT
 
 
-def equal(scroller: Scroller) -> Token:
+def equal(scroller: Scroller) -> Token | None:
     if scroller.next() == "=":
         try:
             return (Token.COMMENT, Token.COMMENT_OPEN)[scroller.next(2) == "<"]
         except IndexError:
             return Token.COMMENT
-    raise ValueError("Invalid token")
+    return None
 
 
 def dot(scroller: Scroller) -> Token:
@@ -115,3 +117,7 @@ def close_brace(scroller: Scroller) -> Token:
 
 def asterisk(scroller: Scroller) -> Token:
     return (Token.FUNCTION, Token.SLICE_STEP)[scroller.next() == "*"]
+
+
+def hash_(scroller: Scroller) -> Token:
+    return (Token.LAMBDA, Token.HASH)[scroller.next() == "#"]
