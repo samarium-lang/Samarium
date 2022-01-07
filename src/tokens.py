@@ -82,8 +82,5 @@ class Token(Enum):
     STDOUT = "!"
     STRING = '"'
     TO = "->"
-    SLICE_OPEN = "<<"
-    SLICE_CLOSE = ">>"
-    SLICE_STEP = "**"
     SIZE = ":!:"
     HASH = "##"

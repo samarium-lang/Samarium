@@ -22,8 +22,7 @@ class CodeHandler:
             "lambda": False,
             "multiline_comment": False,
             "newline": False,
-            "random": False,
-            "slice": False,
+            "random": False
         }
         self.all_tokens = []
 
@@ -142,8 +141,7 @@ class Parser:
             Token.PAREN_CLOSE: ")",
             Token.TABLE_OPEN: "objects.Table({",
             Token.TABLE_CLOSE: "})",
-            Token.BRACE_OPEN: ":",
-            # Token.SLICE_STEP: ","
+            Token.BRACE_OPEN: ":"
         }.get(token, 0)
         if token == Token.BRACE_OPEN:
             if self.ch.switches["class"]:
@@ -167,19 +165,6 @@ class Parser:
             ):
                 self.ch.switches["class"] = False
                 self.ch.class_indent.pop()
-        elif token == Token.SLICE_OPEN:
-            self.ch.switches["slice"] = True
-            self.ch.line += [".__getitem__("]
-        elif token == Token.SLICE_CLOSE:
-            self.ch.switches["slice"] = False
-            self.ch.line += [")"]
-        elif token == Token.SLICE_STEP:
-            self.ch.line += [","] if self.ch.line_tokens[-2] != Token.SLICE_OPEN else ["None,"]
-
-
-
-
-
         else:
             return out
         self.parse_token(None)
@@ -267,10 +252,6 @@ class Parser:
                     )
                     self.ch.switches["lambda"] = False
                 return ":"
-            case Token.WHILE:
-                if self.ch.switches["slice"]:
-                    self.ch.line += "," if (self.ch.line_tokens[-2] != Token.SLICE_OPEN) else "None,"
-
             case _:
                 return out
         return 1
@@ -322,8 +303,3 @@ class Parser:
             case _:
                 return 0
         return 1
-
-
-
-def parse_slice():
-    pass
