@@ -7,11 +7,31 @@ import sys
 
 Tokenlike = Token | str | int
 
+MULTISEMANTIC = {
+    "+": handlers.plus,
+    "-": handlers.minus,
+    ":": handlers.colon,
+    "<": handlers.less,
+    ">": handlers.greater,
+    "=": handlers.equal,
+    ".": handlers.dot,
+    "?": handlers.question,
+    "!": handlers.exclamation,
+    "&": handlers.ampersand,
+    "|": handlers.pipe,
+    "~": handlers.tilde,
+    ",": handlers.comma,
+    "{": handlers.open_brace,
+    "}": handlers.close_brace,
+    "^": handlers.caret,
+    "#": handlers.hash_,
+    "*": handlers.asterisk
+}
+
 
 def tokenize(program: str) -> list[Tokenlike]:
 
     comment = False
-    multisemantic = "+-:<>=.^?!&|~,}{#"
     scroller = handlers.Scroller(program)
     string = False
     temp = ""
@@ -47,26 +67,8 @@ def tokenize(program: str) -> list[Tokenlike]:
             temp = ""
 
         # Multisemantic token handling
-        elif scroller.pointer in multisemantic:
-            if not (out := {
-                "+": handlers.plus,
-                "-": handlers.minus,
-                ":": handlers.colon,
-                "<": handlers.less,
-                ">": handlers.greater,
-                "=": handlers.equal,
-                ".": handlers.dot,
-                "?": handlers.question,
-                "!": handlers.exclamation,
-                "&": handlers.ampersand,
-                "|": handlers.pipe,
-                "~": handlers.tilde,
-                ",": handlers.comma,
-                "{": handlers.open_brace,
-                "}": handlers.close_brace,
-                "^": handlers.caret,
-                "#": handlers.hash_
-            }[scroller.pointer](scroller)):
+        elif scroller.pointer in MULTISEMANTIC:
+            if not (out := MULTISEMANTIC[scroller.pointer](scroller)):
                 handle_exception(SamariumSyntaxError(scroller.pointer))
             if out == Token.COMMENT:
                 comment = True
