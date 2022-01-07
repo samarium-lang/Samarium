@@ -115,9 +115,9 @@ def close_brace(scroller: Scroller) -> Token:
         return Token.BRACE_CLOSE
 
 
-def asterisk(scroller: Scroller) -> Token:
-    return (Token.FUNCTION, Token.SLICE_STEP)[scroller.next() == "*"]
-
-
 def hash_(scroller: Scroller) -> Token:
     return (Token.LAMBDA, Token.HASH)[scroller.next() == "#"]
+
+
+def asterisk(scroller: Scroller) -> Token:
+    return (Token.FUNCTION, Token.SLICE_STEP)[scroller.next() == "*"]

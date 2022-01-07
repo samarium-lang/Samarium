@@ -29,27 +29,6 @@ MULTISEMANTIC = {
 }
 
 
-MULTISEMANTIC = {
-    "+": handlers.plus,
-    "-": handlers.minus,
-    ":": handlers.colon,
-    "<": handlers.less,
-    ">": handlers.greater,
-    "=": handlers.equal,
-    ".": handlers.dot,
-    "?": handlers.question,
-    "!": handlers.exclamation,
-    "&": handlers.ampersand,
-    "|": handlers.pipe,
-    "~": handlers.tilde,
-    ",": handlers.comma,
-    "{": handlers.open_brace,
-    "}": handlers.close_brace,
-    "^": handlers.caret,
-    "*": handlers.asterisk
-}
-
-
 def tokenize(program: str) -> list[Tokenlike]:
 
     comment = False

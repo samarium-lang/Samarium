@@ -130,7 +130,9 @@ class Parser:
             Token.BINAND: "&",
             Token.BINOR: "|",
             Token.BINNOT: "~",
-            Token.XOR: "^"
+            Token.XOR: "^",
+            Token.SHR: ">>",
+            Token.SHL: "<<"
         }.get(token, 0)
 
     def parse_bracket(self, token: Parsable) -> str | int:
