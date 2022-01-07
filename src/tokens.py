@@ -29,9 +29,6 @@ class Token(Enum):
     BINNOT = "~"
     XOR = "^"
 
-    SHR = ">>"
-    SHL = "<<"
-
     # Parens, Brackets and Braces
     BRACKET_OPEN = "["
     BRACKET_CLOSE = "]"
@@ -80,3 +77,6 @@ class Token(Enum):
     STDOUT = "!"
     STRING = '"'
     TO = "->"
+    SLICE_OPEN = "<<"
+    SLICE_CLOSE = ">>"
+    SLICE_STEP = "**"

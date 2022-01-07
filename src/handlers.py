@@ -41,7 +41,7 @@ def colon(scroller: Scroller) -> Token:
 def less(scroller: Scroller) -> Token:
     match scroller.next():
         case "-": return Token.FROM
-        case "<": return Token.SHL
+        case "<": return Token.SLICE_OPEN
         case ":": return Token.LE
         case _: return Token.LT
 
@@ -50,7 +50,7 @@ def greater(scroller: Scroller) -> Token:
     if scroller.program[:3] == ">==":
         return Token.COMMENT_CLOSE
     match scroller.next():
-        case ">": return Token.SHR
+        case ">": return Token.SLICE_CLOSE
         case ":": return Token.GE
         case _: return Token.GT
 
@@ -111,3 +111,7 @@ def close_brace(scroller: Scroller) -> Token:
         return (Token.BRACE_CLOSE, Token.TABLE_CLOSE)[scroller.next() == "}"]
     except IndexError:
         return Token.BRACE_CLOSE
+
+
+def asterisk(scroller: Scroller) -> Token:
+    return (Token.FUNCTION, Token.SLICE_STEP)[scroller.next() == "*"]

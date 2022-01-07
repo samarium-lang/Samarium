@@ -5,10 +5,30 @@ import sys
 Tokenlike = Token | str | int
 
 
+MULTISEMANTIC = {
+    "+": handlers.plus,
+    "-": handlers.minus,
+    ":": handlers.colon,
+    "<": handlers.less,
+    ">": handlers.greater,
+    "=": handlers.equal,
+    ".": handlers.dot,
+    "?": handlers.question,
+    "!": handlers.exclamation,
+    "&": handlers.ampersand,
+    "|": handlers.pipe,
+    "~": handlers.tilde,
+    ",": handlers.comma,
+    "{": handlers.open_brace,
+    "}": handlers.close_brace,
+    "^": handlers.caret,
+    "*": handlers.asterisk
+}
+
+
 def tokenize(program: str) -> list[Tokenlike]:
 
     comment = False
-    multisemantic = "+-:<>=.^?!&|~,}{"
     scroller = handlers.Scroller(program)
     string = False
     temp = ""
@@ -44,25 +64,8 @@ def tokenize(program: str) -> list[Tokenlike]:
             temp = ""
 
         # Multisemantic token handling
-        elif scroller.pointer in multisemantic:
-            if out := {
-                "+": handlers.plus,
-                "-": handlers.minus,
-                ":": handlers.colon,
-                "<": handlers.less,
-                ">": handlers.greater,
-                "=": handlers.equal,
-                ".": handlers.dot,
-                "?": handlers.question,
-                "!": handlers.exclamation,
-                "&": handlers.ampersand,
-                "|": handlers.pipe,
-                "~": handlers.tilde,
-                ",": handlers.comma,
-                "{": handlers.open_brace,
-                "}": handlers.close_brace,
-                "^": handlers.caret
-            }[scroller.pointer](scroller):
+        elif scroller.pointer in MULTISEMANTIC:
+            if out := MULTISEMANTIC[scroller.pointer](scroller):
                 if out == Token.COMMENT:
                     comment = True
                     scroller.shift(2)
