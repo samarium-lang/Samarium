@@ -13,9 +13,6 @@
 **7. Detect genexprs**
 > This is a bit tricky, but it's not that hard. The only way to do this is to use a regex to find the genexpr syntax, and then throw a syntax error if it's found.
 
-**11. Test stdlib**
-> Test all functions in the standard library, and make sure they work as expected.
-
 **17. `SMNull` wrapper for lambdas**
 > Working concepts I made, except I'm not really sure how one would add it to the parser:
 > ```py
