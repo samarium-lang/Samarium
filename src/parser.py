@@ -239,6 +239,7 @@ class Parser:
                 if self.is_first_token():
                     self.ch.line += ["continue"]
                     self.parse_token(Token.END)
+                    return 1
                 elif self.ch.switches["random"]:
                     return ","
                 elif self.ch.switches["lambda"]:
@@ -249,8 +250,7 @@ class Parser:
                         self.groupnames(self.ch.line[~x + 1:])
                     )
                     self.ch.switches["lambda"] = False
-                else:
-                    return ":"
+                return ":"
             case _:
                 return out
         return 1
