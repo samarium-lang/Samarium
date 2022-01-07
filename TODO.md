@@ -16,9 +16,6 @@
 **11. Test stdlib**
 > Test all functions in the standard library, and make sure they work as expected.
 
-**16. Empty functions**
-> Make the parser add a `pass` inside empty Samarium functions when transpiling to Python.
-
 **17. `SMNull` wrapper for lambdas**
 > Working concepts I made, except I'm not really sure how one would add it to the parser:
 > ```py
