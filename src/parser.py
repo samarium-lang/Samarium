@@ -1,4 +1,5 @@
 from contextlib import suppress
+from exceptions import handle_exception, SamariumSyntaxError
 from tokenizer import Tokenlike
 from tokens import Token
 from typing import Any
@@ -22,7 +23,8 @@ class CodeHandler:
             "lambda": False,
             "multiline_comment": False,
             "newline": False,
-            "random": False
+            "random": False,
+            "slice": False
         }
         self.all_tokens = []
 
@@ -31,6 +33,9 @@ class Parser:
     def __init__(self, tokens: list[Tokenlike], code_handler: CodeHandler):
         self.tokens = tokens
         self.ch = code_handler
+        self.set_slice = False
+        self.slicing = False
+        self.slice_tokens = []
 
     def is_first_token(self) -> bool:
         return not self.ch.line or (
@@ -57,10 +62,30 @@ class Parser:
         return out + ["".join(array)]
 
     def parse(self):
-        for token in self.tokens:
-            self.parse_token(token)
+        for index, token in enumerate(self.tokens):
+            self.parse_token(token, index)
 
-    def parse_token(self, token: Parsable):
+    def parse_token(self, token: Parsable, index: int = None):
+
+        if token == Token.SLICE_OPEN:
+            self.slicing = True
+            self.slice_tokens.append(token)
+            return
+
+        if index is not None:
+            if self.slicing:
+                self.slice_tokens.append(token)
+                if token == Token.SLICE_CLOSE:
+                    self.slicing = False
+                    if self.tokens[index + 1] == Token.ASSIGN:
+                        self.slice_tokens.append(Token.ASSIGN)
+                    self.set_slice = self.parse_slice()
+
+            if (
+                token == Token.ASSIGN
+                and self.tokens[index - 1] == Token.SLICE_CLOSE
+            ):
+                return
 
         # For when `parse_token(None)` is called recursively
         if token is not None:
@@ -106,6 +131,95 @@ class Parser:
                 self.ch.line += [out]
             break
 
+    def parse_slice(self):
+        assign = self.slice_tokens[-1] == Token.ASSIGN
+        tokens = self.slice_tokens[1:-1 - assign]
+        if all(
+            token not in tokens
+            for token in {Token.WHILE, Token.SLICE_STEP}
+        ):
+            method = "setItem" if assign else "getItem"
+            # <<>>
+            if not tokens:
+                method = "setSlice" if assign else "getSlice"
+                self.ch.line += [
+                    f".{method}_(objects.Slice(None,None,None)"
+                    + ")" if method == "getSlice" else ","
+                ]
+            # <<index>>
+            else:
+                self.ch.line += f".{method}_("
+                for t in tokens:
+                    self.parse_token(t)
+                self.ch.line += ")" if method == "getItem" else ","
+            return assign
+        method = "setSlice" if assign else "getSlice"
+        # <<**step>>
+        if tokens[0] == Token.SLICE_STEP:
+            self.ch.line += f".{method}_(objects.Slice(None,None,"
+            for t in tokens[1:]:
+                self.parse_token(t)
+            self.ch.line += ")" + "," * assign
+        # <<start..>>
+        elif tokens[-1] == Token.WHILE:
+            self.ch.line += f".{method}_(objects.Slice("
+            for t in tokens[:-1]:
+                self.parse_token(t)
+            self.ch.line += ",None,None)" + "," * assign
+        elif tokens[0] == Token.WHILE:
+            self.ch.line += f".{method}_(objects.Slice(None,"
+            # <<..end**step>>
+            if Token.SLICE_STEP in tokens:
+                step_index = tokens.index(Token.SLICE_STEP)
+                for t in tokens[1:step_index]:
+                    self.parse_token(t)
+                self.ch.line += ","
+                for t in tokens[step_index + 1:]:
+                    self.parse_token(t)
+                self.ch.line += ")" + "," * assign
+            # <<..end>>
+            else:
+                for t in tokens[1:]:
+                    self.parse_token(t)
+                self.ch.line += ",None)" + "," * assign
+        elif Token.WHILE in tokens or Token.SLICE_STEP in tokens:
+            self.ch.line += f".{method}_(objects.Slice("
+            with suppress(IndexError):
+                while_index = tokens.index(Token.WHILE)
+                step_index = tokens.index(Token.SLICE_STEP)
+            # <<start..end**step>>
+            if Token.WHILE in tokens and Token.SLICE_STEP in tokens:
+                slices = [
+                    slice(None, while_index),
+                    slice(while_index + 1, step_index),
+                    slice(step_index + 1, None)
+                ]
+                for i, s in enumerate(slices):
+                    for t in tokens[s]:
+                        self.parse_token(t)
+                    if i < 2:
+                        self.ch.line += ","
+                self.ch.line += ")" + "," * assign
+            # <<start..end>>
+            elif Token.WHILE in tokens:
+                for i in tokens[:while_index]:
+                    self.parse_token(i)
+                self.ch.line += ","
+                for i in tokens[while_index + 1:]:
+                    self.parse_token(i)
+                self.ch.line += ",None)" + "," * assign
+            # <<start**step>>
+            else:
+                for i in tokens[:step_index]:
+                    self.parse_token(i)
+                self.ch.line += ",None,"
+                for i in tokens[step_index + 1:]:
+                    self.parse_token(i)
+                self.ch.line += ")" + "," * assign
+        else:
+            handle_exception(SamariumSyntaxError())
+        return assign
+
     def parse_operator(self, token: Parsable) -> str | int:
         return {
             # Arithmetic
@@ -130,9 +244,7 @@ class Parser:
             Token.BINAND: "&",
             Token.BINOR: "|",
             Token.BINNOT: "~",
-            Token.XOR: "^",
-            Token.SHR: ">>",
-            Token.SHL: "<<"
+            Token.XOR: "^"
         }.get(token, 0)
 
     def parse_bracket(self, token: Parsable) -> str | int:
@@ -196,6 +308,8 @@ class Parser:
                     self.ch.switches["import"] = False
                     self.ch.line += ["', imported=imported)"]
                 self.ch.switches["newline"] = True
+                if self.set_slice:
+                    self.ch.line += ")"
                 self.parse_token(None)
             case Token.STDOUT:
                 x = bool(self.ch.indent)
