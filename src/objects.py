@@ -60,7 +60,7 @@ class Class:
     def __add__(self, other: Class) -> Class:
         return self.add_(other)
 
-    def __iadd_(self, other: Class) -> Class:
+    def __iadd__(self, other: Class) -> Class:
         return self.addAssign_(other)
 
     def __mul__(self, other: Class) -> Class:
@@ -405,7 +405,7 @@ class Integer(Class):
         return Integer(self.value.__sizeof__())
 
     def create_(self, value: int):
-        self.value = value
+        self.value = int(value)
 
     def toBit_(self) -> Integer:
         return Integer(bool(self.value))
