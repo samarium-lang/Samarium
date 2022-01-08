@@ -79,12 +79,9 @@ def tokenize(program: str) -> list[Tokenlike]:
 
         # Number handling
         elif scroller.pointer in "/\\":
-            number = tokenize_number(scroller)
+            number, length = tokenize_number(scroller)
             tokens.append(number)
-            scroller.shift(
-                log(number + 1, 2).__ceil__() or 1
-            )
-
+            scroller.shift(length)
         else:
             with suppress(ValueError):
                 tokens.append(Token(scroller.pointer))
@@ -93,14 +90,14 @@ def tokenize(program: str) -> list[Tokenlike]:
     return exclude_comments(tokens)
 
 
-def tokenize_number(scroller: handlers.Scroller) -> int:
+def tokenize_number(scroller: handlers.Scroller) -> tuple[int, int]:
     temp = ""
     for char in scroller.program:
         if char not in "/\\":
             break
         temp += char
     temp = temp.replace("/", "1").replace("\\", "0")
-    return int(temp, 2)
+    return int(temp, 2), len(temp)
 
 
 def exclude_comments(tokens: list[Tokenlike]) -> list[Tokenlike]:
