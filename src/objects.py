@@ -290,7 +290,7 @@ class Slice(Class):
         self.start = start or Null()
         self.stop = stop or Null()
         self.step = step or Null()
-        self.value = slice(start, stop, step)
+        self.value = slice(start.value, stop.value, step.value)
 
     def size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
@@ -309,16 +309,16 @@ class Slice(Class):
 class Null(Class):
 
     def create_(self):
-        ...
+        self.value = None
 
     def toString_(self) -> String:
         return String("null")
 
     def hash_(self) -> Integer:
-        return smhash(None)
+        return smhash(self.value)
 
     def size_(self) -> Integer:
-        return Integer(None.__sizeof__())
+        return Integer(self.value.__sizeof__())
 
     def toBit_(self) -> Integer:
         return Integer(0)

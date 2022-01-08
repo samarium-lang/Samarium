@@ -80,6 +80,7 @@ class Parser:
                     if self.tokens[index + 1] == Token.ASSIGN:
                         self.slice_tokens.append(Token.ASSIGN)
                     self.set_slice = self.parse_slice()
+                return
 
             if (
                 token == Token.ASSIGN
@@ -134,6 +135,8 @@ class Parser:
     def parse_slice(self):
         assign = self.slice_tokens[-1] == Token.ASSIGN
         tokens = self.slice_tokens[1:-1 - assign]
+        null = "objects.Null()"
+        slce = "objects.Slice"
         if all(
             token not in tokens
             for token in {Token.WHILE, Token.SLICE_STEP}
@@ -143,7 +146,7 @@ class Parser:
             if not tokens:
                 method = "setSlice" if assign else "getSlice"
                 self.ch.line += [
-                    f".{method}_(objects.Slice(None,None,None)"
+                    f".{method}_({slce}({null},{null},{null})"
                     + ")" if method == "getSlice" else ","
                 ]
             # <<index>>
@@ -156,18 +159,18 @@ class Parser:
         method = "setSlice" if assign else "getSlice"
         # <<**step>>
         if tokens[0] == Token.SLICE_STEP:
-            self.ch.line += f".{method}_(objects.Slice(None,None,"
+            self.ch.line += f".{method}_({slce}({null},{null},"
             for t in tokens[1:]:
                 self.parse_token(t)
-            self.ch.line += ")" + "," * assign
+            self.ch.line += ")" + (")", ",")[assign]
         # <<start..>>
         elif tokens[-1] == Token.WHILE:
-            self.ch.line += f".{method}_(objects.Slice("
+            self.ch.line += f".{method}_({slce}("
             for t in tokens[:-1]:
                 self.parse_token(t)
-            self.ch.line += ",None,None)" + "," * assign
+            self.ch.line += f",{null},{null})" + (")", ",")[assign]
         elif tokens[0] == Token.WHILE:
-            self.ch.line += f".{method}_(objects.Slice(None,"
+            self.ch.line += f".{method}_({slce}({null},"
             # <<..end**step>>
             if Token.SLICE_STEP in tokens:
                 step_index = tokens.index(Token.SLICE_STEP)
@@ -176,14 +179,14 @@ class Parser:
                 self.ch.line += ","
                 for t in tokens[step_index + 1:]:
                     self.parse_token(t)
-                self.ch.line += ")" + "," * assign
+                self.ch.line += ")" + (")", ",")[assign]
             # <<..end>>
             else:
                 for t in tokens[1:]:
                     self.parse_token(t)
-                self.ch.line += ",None)" + "," * assign
+                self.ch.line += f",{null})" + (")", ",")[assign]
         elif Token.WHILE in tokens or Token.SLICE_STEP in tokens:
-            self.ch.line += f".{method}_(objects.Slice("
+            self.ch.line += f".{method}_({slce}("
             with suppress(IndexError):
                 while_index = tokens.index(Token.WHILE)
                 step_index = tokens.index(Token.SLICE_STEP)
@@ -199,7 +202,7 @@ class Parser:
                         self.parse_token(t)
                     if i < 2:
                         self.ch.line += ","
-                self.ch.line += ")" + "," * assign
+                self.ch.line += ")" + (")", ",")[assign]
             # <<start..end>>
             elif Token.WHILE in tokens:
                 for i in tokens[:while_index]:
@@ -207,15 +210,15 @@ class Parser:
                 self.ch.line += ","
                 for i in tokens[while_index + 1:]:
                     self.parse_token(i)
-                self.ch.line += ",None)" + "," * assign
+                self.ch.line += f",{null})" + (")", ",")[assign]
             # <<start**step>>
             else:
                 for i in tokens[:step_index]:
                     self.parse_token(i)
-                self.ch.line += ",None,"
+                self.ch.line += f",{null},"
                 for i in tokens[step_index + 1:]:
                     self.parse_token(i)
-                self.ch.line += ")" + "," * assign
+                self.ch.line += ")" + (")", ",")[assign]
         else:
             handle_exception(SamariumSyntaxError())
         return assign
