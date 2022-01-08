@@ -133,7 +133,10 @@ class Parser:
 
     def parse_slice(self):
         assign = self.slice_tokens[-1] == Token.ASSIGN
-        tokens = self.slice_tokens[1:-1 - assign]
+        tokens = [
+            i for i in self.slice_tokens if i not in
+            {Token.SLICE_OPEN, Token.SLICE_CLOSE, Token.ASSIGN}
+        ]
         null = "objects.Null()"
         slce = "objects.Slice"
         if all(
@@ -141,63 +144,58 @@ class Parser:
             for token in {Token.WHILE, Token.SLICE_STEP}
         ):
             method = "setItem" if assign else "getItem"
+            # <<index>>
+            if tokens:
+                self.ch.line += [f".{method}_("]
+                for t in tokens:
+                    self.parse_token(t)
+                self.ch.line += [")" if method == "getItem" else ","]
             # <<>>
-            if not tokens:
-                print("<<>>")
+            else:
                 method = "setSlice" if assign else "getSlice"
                 self.ch.line += [
                     f".{method}_({slce}({null},{null},{null})"
-                    + ")" if method == "getSlice" else ","
+                    + "),"[assign]
                 ]
-            # <<index>>
-            else:
-                print("<<index>>")
-                self.ch.line += f".{method}_("
-                for t in tokens:
-                    self.parse_token(t)
-                self.ch.line += ")" if method == "getItem" else ","
+            self.slice_tokens = []
+            self.slicing = False
             return assign
         method = "setSlice" if assign else "getSlice"
         # <<**step>>
         if tokens[0] == Token.SLICE_STEP:
-            print("<<**step>>")
-            self.ch.line += f".{method}_({slce}({null},{null},"
+            self.ch.line += [f".{method}_({slce}({null},{null},"]
             for t in tokens[1:]:
                 self.parse_token(t)
-            self.ch.line += ")" + (")", ",")[assign]
+            self.ch.line += [")" + "),"[assign]]
         # <<start..>>
         elif tokens[-1] == Token.WHILE:
-            print("<<start..>>")
-            self.ch.line += f".{method}_({slce}("
+            self.ch.line += [f".{method}_({slce}("]
             for t in tokens[:-1]:
                 self.parse_token(t)
-            self.ch.line += f",{null},{null})" + (")", ",")[assign]
+            self.ch.line += [f",{null},{null})" + "),"[assign]]
         elif tokens[0] == Token.WHILE:
-            self.ch.line += f".{method}_({slce}({null},"
+            self.ch.line += [f".{method}_({slce}({null},"]
             # <<..end**step>>
             if Token.SLICE_STEP in tokens:
-                print("<<..end**step>>")
                 step_index = tokens.index(Token.SLICE_STEP)
                 for t in tokens[1:step_index]:
                     self.parse_token(t)
                 self.ch.line += ","
                 for t in tokens[step_index + 1:]:
                     self.parse_token(t)
-                self.ch.line += ")" + (")", ",")[assign]
+                self.ch.line += [")" + "),"[assign]]
             # <<..end>>
             else:
-                print("<<..end>>")
                 for t in tokens[1:]:
                     self.parse_token(t)
-                self.ch.line += f",{null})" + (")", ",")[assign]
+                self.ch.line += [f",{null})" + "),"[assign]]
         elif Token.WHILE in tokens or Token.SLICE_STEP in tokens:
-            self.ch.line += f".{method}_({slce}("
-            with suppress(IndexError):
+            self.ch.line += [f".{method}_({slce}("]
+            with suppress(ValueError):
                 while_index = tokens.index(Token.WHILE)
                 step_index = tokens.index(Token.SLICE_STEP)
             # <<start..end**step>>
             if Token.WHILE in tokens and Token.SLICE_STEP in tokens:
-                print("<start..end**step>>")
                 slices = [
                     slice(None, while_index),
                     slice(while_index + 1, step_index),
@@ -208,27 +206,26 @@ class Parser:
                         self.parse_token(t)
                     if i < 2:
                         self.ch.line += ","
-                self.ch.line += ")" + (")", ",")[assign]
+                self.ch.line += [")" + "),"[assign]]
             # <<start..end>>
             elif Token.WHILE in tokens:
-                print("<<start..end>>")
                 for i in tokens[:while_index]:
                     self.parse_token(i)
                 self.ch.line += ","
                 for i in tokens[while_index + 1:]:
                     self.parse_token(i)
-                self.ch.line += f",{null})" + (")", ",")[assign]
+                self.ch.line += [f",{null})" + "),"[assign]]
             # <<start**step>>
             else:
-                print("<<start**step>>")
                 for i in tokens[:step_index]:
                     self.parse_token(i)
-                self.ch.line += f",{null},"
+                self.ch.line += [f",{null},"]
                 for i in tokens[step_index + 1:]:
                     self.parse_token(i)
-                self.ch.line += ")" + (")", ",")[assign]
+                self.ch.line += [")" + "),"[assign]]
         else:
             handle_exception(SamariumSyntaxError())
+        self.slice_tokens = []
         self.slicing = False
         return assign
 
