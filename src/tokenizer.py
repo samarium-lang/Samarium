@@ -31,6 +31,9 @@ MULTISEMANTIC = {
 
 def tokenize(program: str) -> list[Tokenlike]:
 
+    # Removing ` from the program
+    program = "".join(i for i in program if i != "`")
+
     comment = False
     scroller = handlers.Scroller(program)
     string = False

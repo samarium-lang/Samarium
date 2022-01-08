@@ -75,7 +75,7 @@ def dot(scroller: Scroller) -> Token:
 def question(scroller: Scroller) -> Token:
     if scroller.next() == "?":
         return (Token.TRY, Token.STDIN)[scroller.next(2) == "?"]
-    return Token.IF
+    return (Token.IF, Token.TYPE)[scroller.next() == "!"]
 
 
 def exclamation(scroller: Scroller) -> Token:

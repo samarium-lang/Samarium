@@ -308,11 +308,14 @@ class Parser:
         }.get(token, 0)
         match token:
             case Token.STDIN:
-                if isinstance(self.ch.line[-1], str):
-                    return f"readline({self.ch.line.pop()})"
+                with suppress(IndexError):
+                    if isinstance(self.ch.line[-1], str):
+                        return f"readline({self.ch.line.pop()})"
                 return "readline()"
             case Token.CAST:
                 self.ch.line[-1] = f"cast_type({self.ch.line[-1]})"
+            case Token.TYPE:
+                self.ch.line[-1] = f"get_type({self.ch.line[-1]})"
             case Token.RANDOM:
                 self.ch.switches["random"] = not self.ch.switches["random"]
                 return out

@@ -83,4 +83,5 @@ class Token(Enum):
     STRING = '"'
     TO = "->"
     SIZE = ":!:"
+    TYPE = "?!"
     HASH = "##"

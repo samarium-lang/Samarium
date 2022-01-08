@@ -26,6 +26,10 @@ def check_none(function: Callable):
     return wrapper
 
 
+def get_type(obj: objects.Class) -> objects.String:
+    return objects.String(obj.__class__.__name__)
+
+
 def import_module(data: str, *, ch: CodeHandler = None, imported: CodeHandler):
     name, objects = data.split(".")
     name = name[:-1]
