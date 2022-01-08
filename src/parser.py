@@ -76,6 +76,7 @@ class Parser:
             if self.slicing:
                 self.slice_tokens.append(token)
                 if token == Token.SLICE_CLOSE:
+                    self.slicing = False
                     if self.tokens[index + 1] == Token.ASSIGN:
                         self.slice_tokens.append(Token.ASSIGN)
                     self.set_slice = self.parse_slice()
@@ -337,7 +338,7 @@ class Parser:
 
     def parse_control_flow(self, token: Parsable) -> str | int:
         out = {
-            Token.WHILE: (",", "while ")[self.slicing],
+            Token.WHILE: "while ",
             Token.FOR: "for ",
             Token.ELSE: "else ",
             Token.IN: " in "
