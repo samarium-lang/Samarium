@@ -61,6 +61,22 @@ class Parser:
             array = array[x - 1:]
         return out + ["".join(array)]
 
+    def safewrap(self, cmd: str):
+        unsafe = {
+            ")": "(",
+            "])": "objects.Array([",
+            "})": "objects.Table({"
+        }
+        i = 0
+        pair = unsafe.get(self.ch.line[~i])
+        if pair is None:
+            self.ch.line[-1] = f"{cmd}({self.ch.line[~i]})"
+            return
+        while self.ch.line[~i] != pair:
+            i += 1
+        self.ch.line[~i] = f"{cmd}({self.ch.line[~i]}"
+        self.ch.line += ")"
+
     def parse(self):
         for index, token in enumerate(self.tokens):
             self.parse_token(token, index)
@@ -313,9 +329,9 @@ class Parser:
                         return f"readline({self.ch.line.pop()})"
                 return "readline()"
             case Token.CAST:
-                self.ch.line[-1] = f"cast_type({self.ch.line[-1]})"
+                self.safewrap("cast_type")
             case Token.TYPE:
-                self.ch.line[-1] = f"get_type({self.ch.line[-1]})"
+                self.safewrap("get_type")
             case Token.RANDOM:
                 self.ch.switches["random"] = not self.ch.switches["random"]
                 return out
