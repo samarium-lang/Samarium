@@ -67,8 +67,8 @@ dropWhile array function * {
 }
 
 accumulate array function * {
-    prev : array(\);
-    o : [array(\)];
+    prev : array<<\>>;
+    o : [array<<\>>];
     ... e ->? array {
         o +: [function(prev, e)];
         prev : e;
