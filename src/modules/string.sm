@@ -1,3 +1,5 @@
+<-iter.range;
+
 uppercase : "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 lowercase : "abcdefghijklmnopqrstuvwxyz";
 letters : uppercase + lowercase;
@@ -30,12 +32,14 @@ center string length char:" " * {
 
 startsWith string prefix * {
     ? prefix$ > string$ { * \; }
-    == TODO: Implement slicing
+    ? prefix :: string { * /; }
+    * string<<..prefix$>> :: prefix;
 }
 
 endsWith string suffix * {
     ? suffix$ > string$ { * \; }
-    == TODO: Implement slicing
+    ? suffix :: string { * /; }
+    * string<<-suffix$..>> :: suffix;
 }
 
 split string delimiter:" " * {
@@ -57,7 +61,7 @@ split string delimiter:" " * {
 }
 
 capitalize string * {
-    * \; == TODO: Implement slicing;
+    * toUpper(string<<\>>) + string<</..>>;
 }
 
 title string * {
@@ -67,8 +71,11 @@ title string * {
 join iterable delimiter:" " * {
     o : "";
     ... e ->? iterable {
-        \; == TODO: Implement slicing;
+        o +: e;
+        o +: delimiter;
     }
+    o : o<<..-delimiter$>>;
+    * o;
 }
 
 stripLeft string prefix * {
@@ -89,4 +96,50 @@ strip string chars * {
 
 isWrapped string chars * {
     * startsWith(string, chars) && endsWith(string, chars);
+}
+
+toLower string * {
+    ? string?! ::: "String" {
+        "Invalid type: " + string?!!!!;
+    }
+    out : "";
+    ... char ->? string {
+        ? char% ->? range(/\\\\\/, /\//\/\) {
+            out +: (char% + /\\\\\)%;
+        } ,, {
+            out +: char;
+        }
+    }
+    * out;
+}
+
+toUpper string * {
+    ? string?! ::: "String" {
+        "Invalid type: " + string?!!!!;
+    }
+    out : "";
+    ... char ->? string {
+        ? char% ->? range(//\\\\/, ////\/\) {
+            out +: (char% - /\\\\\)%;
+        } ,, {
+            out +: char;
+        }
+    }
+    * out;
+}
+
+isUpper string * {
+    * string :: toUpper(string);
+}
+
+isLower string * {
+    * string :: toLower(string);
+}
+
+isTitle string * {
+    * string :: title(string);
+}
+
+isCapitalized string * {
+    * string :: capitalize(string);
 }
