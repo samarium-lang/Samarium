@@ -1,47 +1,43 @@
 @ Stack {
-    init size * {
-        'sstack : [];
-        'ssize : size;
+
+    create size:-/ * {
+        'stack : [];
+        'size : size;
     }
 
     push data * {
-        ? 'isFull() {
-            "The stack is full (size " + 'ssize.toString() + ")"!!!;
-        }
-        'sstack +: data;
+        ? 'isFull() { "The stack is full (size " + 'size.toString() + ")"!!!; }
+        'stack +: [data];
     }
 
-    special * { * 'sstack$; }
+    pushAll data * { ... element ->? data { 'push(element); } }
 
-    pop * { 'sstack -: 'sstack$ - /; }
+    special * { * 'stack$; }
 
-    peek * { * 'sstack(-/); }
-
-    toBoolean * { * 'sstack$ > \; }
-
-    isFull * { * 'ssize :: 'sstack$; }
-
-    toString * { * "Stack(size=" + 'ssize.toString() + ", top=" + 'peek(); }
-}
-
-@ Set {
-    init * {
-        'sdata : [];
+    pop * {
+        ? 'isEmpty() { "The stack is empty"!!!; }
+        out : 'stack<<-/>>;
+        'stack -: 'stack$ - /;
+        * out;
     }
 
-    add data * {
-        ... e ->? data {
-            ? e ~~ ->? 'sdata {
-                'sdata +: e;
-            }
-        }
+    peek * {
+        ? 'isEmpty() { "The stack is empty"!!!; }
+        * 'stack<<-/>>;
     }
+
+    toBoolean * { * 'stack$ > \; }
+
+    isFull * { * 'size :: 'stack$; }
+
+    isEmpty * { * 'stack$ :: \; }
 
     toString * {
-        * "Set(data=" + 'sdata.join(", ") + ")";
-    }
-
-    special * {
-        * 'sdata$;
+        ?? { top : 'peek(); }
+        !! { top : _; }
+        * "Stack(capacity=" + 'size.toString()
+        + ", size=" + 'stack$.toString()
+        + ", top=" + top.toString()
+        + ")";
     }
 }
