@@ -4,7 +4,7 @@ from tokenizer import Tokenlike
 from tokens import Token
 from typing import Any
 
-Parsable = Tokenlike | None
+Transpilable = Tokenlike | None
 
 
 class CodeHandler:
@@ -29,7 +29,7 @@ class CodeHandler:
         self.all_tokens = []
 
 
-class Parser:
+class Transpiler:
     def __init__(self, tokens: list[Tokenlike], code_handler: CodeHandler):
         self.tokens = tokens
         self.ch = code_handler
@@ -77,11 +77,11 @@ class Parser:
         self.ch.line[~i] = f"{cmd}({self.ch.line[~i]}"
         self.ch.line += ")"
 
-    def parse(self):
+    def transpile(self):
         for index, token in enumerate(self.tokens):
-            self.parse_token(token, index)
+            self.transpile_token(token, index)
 
-    def parse_token(self, token: Parsable, index: int = None):
+    def transpile_token(self, token: Transpilable, index: int = None):
 
         if token == Token.SLICE_OPEN:
             self.slicing = True
@@ -95,7 +95,7 @@ class Parser:
                     self.slicing = False
                     if self.tokens[index + 1] == Token.ASSIGN:
                         self.slice_tokens.append(Token.ASSIGN)
-                    self.set_slice = self.parse_slice()
+                    self.set_slice = self.transpile_slice()
                 return
 
             if (
@@ -104,7 +104,7 @@ class Parser:
             ):
                 return
 
-        # For when `parse_token(None)` is called recursively
+        # For when `transpile_token(None)` is called recursively
         if token is not None:
             self.ch.line_tokens += [token]
 
@@ -137,9 +137,9 @@ class Parser:
             return
 
         for func in [
-            self.parse_operator, self.parse_bracket,
-            self.parse_exec, self.parse_control_flow,
-            self.parse_error_handling, self.parse_misc
+            self.transpile_operator, self.transpile_bracket,
+            self.transpile_exec, self.transpile_control_flow,
+            self.transpile_error_handling, self.transpile_misc
         ]:
             out = func(token)
             if not out:
@@ -148,7 +148,7 @@ class Parser:
                 self.ch.line += [out]
             break
 
-    def parse_slice(self):
+    def transpile_slice(self):
         assign = self.slice_tokens[-1] == Token.ASSIGN
         tokens = [
             i for i in self.slice_tokens if i not in
@@ -165,7 +165,7 @@ class Parser:
             if tokens:
                 self.ch.line += [f".{method}_("]
                 for t in tokens:
-                    self.parse_token(t)
+                    self.transpile_token(t)
                 self.ch.line += [")" if method == "getItem" else ","]
             # <<>>
             else:
@@ -182,13 +182,13 @@ class Parser:
         if tokens[0] == Token.SLICE_STEP:
             self.ch.line += [f".{method}_({slce}({null},{null},"]
             for t in tokens[1:]:
-                self.parse_token(t)
+                self.transpile_token(t)
             self.ch.line += [")" + "),"[assign]]
         # <<start..>>
         elif tokens[-1] == Token.WHILE:
             self.ch.line += [f".{method}_({slce}("]
             for t in tokens[:-1]:
-                self.parse_token(t)
+                self.transpile_token(t)
             self.ch.line += [f",{null},{null})" + "),"[assign]]
         elif tokens[0] == Token.WHILE:
             self.ch.line += [f".{method}_({slce}({null},"]
@@ -196,15 +196,15 @@ class Parser:
             if Token.SLICE_STEP in tokens:
                 step_index = tokens.index(Token.SLICE_STEP)
                 for t in tokens[1:step_index]:
-                    self.parse_token(t)
+                    self.transpile_token(t)
                 self.ch.line += ","
                 for t in tokens[step_index + 1:]:
-                    self.parse_token(t)
+                    self.transpile_token(t)
                 self.ch.line += [")" + "),"[assign]]
             # <<..end>>
             else:
                 for t in tokens[1:]:
-                    self.parse_token(t)
+                    self.transpile_token(t)
                 self.ch.line += [f",{null})" + "),"[assign]]
         elif Token.WHILE in tokens or Token.SLICE_STEP in tokens:
             self.ch.line += [f".{method}_({slce}("]
@@ -220,25 +220,25 @@ class Parser:
                 ]
                 for i, s in enumerate(slices):
                     for t in tokens[s]:
-                        self.parse_token(t)
+                        self.transpile_token(t)
                     if i < 2:
                         self.ch.line += ","
                 self.ch.line += [")" + "),"[assign]]
             # <<start..end>>
             elif Token.WHILE in tokens:
                 for i in tokens[:while_index]:
-                    self.parse_token(i)
+                    self.transpile_token(i)
                 self.ch.line += ","
                 for i in tokens[while_index + 1:]:
-                    self.parse_token(i)
+                    self.transpile_token(i)
                 self.ch.line += [f",{null})" + "),"[assign]]
             # <<start**step>>
             else:
                 for i in tokens[:step_index]:
-                    self.parse_token(i)
+                    self.transpile_token(i)
                 self.ch.line += [f",{null},"]
                 for i in tokens[step_index + 1:]:
-                    self.parse_token(i)
+                    self.transpile_token(i)
                 self.ch.line += [")" + "),"[assign]]
         else:
             handle_exception(SamariumSyntaxError())
@@ -246,7 +246,7 @@ class Parser:
         self.slicing = False
         return assign
 
-    def parse_operator(self, token: Parsable) -> str | int:
+    def transpile_operator(self, token: Transpilable) -> str | int:
         return {
             # Arithmetic
             Token.ADD: "+",
@@ -273,7 +273,7 @@ class Parser:
             Token.XOR: "^"
         }.get(token, 0)
 
-    def parse_bracket(self, token: Parsable) -> str | int:
+    def transpile_bracket(self, token: Transpilable) -> str | int:
         out = {
             Token.BRACKET_OPEN: "objects.Array([",
             Token.BRACKET_CLOSE: "])",
@@ -307,10 +307,10 @@ class Parser:
                 self.ch.class_indent.pop()
         else:
             return out
-        self.parse_token(None)
+        self.transpile_token(None)
         return 1
 
-    def parse_exec(self, token: Parsable) -> str | int:
+    def transpile_exec(self, token: Transpilable) -> str | int:
         out = {
             Token.INSTANCE: "self",
             Token.ASSIGN: "=",
@@ -342,7 +342,7 @@ class Parser:
                 self.ch.switches["newline"] = True
                 if self.set_slice:
                     self.ch.line += ")"
-                self.parse_token(None)
+                self.transpile_token(None)
             case Token.STDOUT:
                 x = bool(self.ch.indent)
                 self.ch.line = [
@@ -355,7 +355,7 @@ class Parser:
                 return out
         return 1
 
-    def parse_control_flow(self, token: Parsable) -> str | int:
+    def transpile_control_flow(self, token: Transpilable) -> str | int:
         out = {
             Token.WHILE: "while ",
             Token.FOR: "for ",
@@ -380,11 +380,11 @@ class Parser:
                     self.ch.line += ["import_module('"]
                 else:
                     self.ch.line += ["break"]
-                    self.parse_token(Token.END)
+                    self.transpile_token(Token.END)
             case Token.TO:
                 if self.is_first_token():
                     self.ch.line += ["continue"]
-                    self.parse_token(Token.END)
+                    self.transpile_token(Token.END)
                     return 1
                 elif self.ch.switches["random"]:
                     return ","
@@ -401,7 +401,7 @@ class Parser:
                 return out
         return 1
 
-    def parse_error_handling(self, token: Parsable) -> str | int:
+    def transpile_error_handling(self, token: Transpilable) -> str | int:
         out = {
             Token.TRY: "try",
             Token.CATCH: "except Exception"
@@ -417,7 +417,7 @@ class Parser:
             return 1
         return out
 
-    def parse_misc(self, token: Parsable) -> str | int:
+    def transpile_misc(self, token: Transpilable) -> str | int:
         match token:
             case Token.FUNCTION:
                 with suppress(IndexError):

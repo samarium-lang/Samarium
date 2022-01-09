@@ -1,7 +1,7 @@
 import exceptions
 import objects
 import sys
-from parser import Parser, CodeHandler
+from transpiler import Transpiler, CodeHandler
 from secrets import randbelow
 from tokenizer import tokenize
 from typing import Callable
@@ -92,9 +92,9 @@ def run(
     imported: CodeHandler
 ) -> CodeHandler:
     tokens = tokenize(code)
-    parser = Parser(tokens, ch or CodeHandler(globals()))
-    parser.parse()
-    ch = parser.ch
+    transpiler = Transpiler(tokens, ch or CodeHandler(globals()))
+    transpiler.transpile()
+    ch = transpiler.ch
     imports = []
     ind = 0
     while ch.code[ind].startswith("import_module"):
