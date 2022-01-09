@@ -108,7 +108,7 @@ def run(
         code = "\n".join(imported.code + ch.code)
         if "--debug" in sys.argv:
             for i, line in enumerate(code.splitlines()):
-                print(f"{i+1:^4}" * ("--nolines" not in sys.argv) + line)
+                print(f"{i+1:^4}" * ("--showlines" in sys.argv) + line)
         exec(code, globals() | ch.globals)
     except Exception as e:
         exceptions.handle_exception(e)
