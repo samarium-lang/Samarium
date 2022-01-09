@@ -432,7 +432,7 @@ class Transpiler:
                     self.ch.line.insert(x, "return ")
                     return 1
                 self.ch.line = [
-                    *self.ch.line[:x], "@check_none\n",
+                    *self.ch.line[:x], "@assert_smtype\n",
                     *self.ch.line[:x], "def ",
                     self.ch.line[x], "(",
                     ",".join(self.groupnames(

@@ -16,13 +16,22 @@ def cast_type(obj: Castable) -> Castable:
     elif isinstance(obj, objects.Integer):
         return objects.String(chr(int(obj)))
     else:
-        raise exceptions.SamariumTypeError(str(type(obj)))
+        raise exceptions.SamariumTypeError(type(obj).__name__)
 
 
-def check_none(function: Callable):
+def assert_smtype(function: Callable):
     def wrapper(*args, **kwargs):
         result = function(*args, **kwargs)
-        return objects.Null() if result is None else result
+        if isinstance(result, objects.Class):
+            return result
+        elif isinstance(result, tuple):
+            return objects.Array([*result])
+        elif isinstance(result, type(None)):
+            return objects.Null()
+        else:
+            raise exceptions.SamariumTypeError(
+                f"Invalid return type: {type(result).__name__}"
+            )
     return wrapper
 
 
