@@ -80,14 +80,16 @@ join iterable delimiter:" " * {
 
 stripLeft string prefix * {
     .. startsWith(string, prefix) {
-        \; == TODO: Implement slicing;
+        string : string<<prefix$..>>;
     }
+    * string;
 }
 
 stripRight string suffix * {
     .. endsWith(string, suffix) {
-        \; == TODO: Implement slicing;
+        string : string<<..-suffix$>>;
     }
+    * string;
 }
 
 strip string chars * {
@@ -142,4 +144,31 @@ isTitle string * {
 
 isCapitalized string * {
     * string :: capitalize(string);
+}
+
+isInGroup string group * {
+    ... char ->? string {
+        ? char ~~->? group { * \; }
+    }
+    * /;
+}
+
+isAlphabetic string * {
+    * isInGroup(string, letters);
+}
+
+isAlphanumeric string * {
+    * isInGroup(string, letters + digits);
+}
+
+isDecimal string * {
+    * isInGroup(string, digits);
+}
+
+isOctal string * {
+    * isInGroup(string, octdigits);
+}
+
+isHexadecimal string * {
+    * isInGroup(string, hexdigits);
 }
