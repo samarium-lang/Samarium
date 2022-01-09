@@ -39,7 +39,7 @@ reverse array * {
     o : [];
     i : array$ - /;
     .. i >: \ {
-        o +: [array(i)];
+        o +: [array<<i>>];
         i -: /;
     }
     * o;
@@ -67,7 +67,7 @@ dropWhile array function * {
             <-
         }
     }
-    ... e ->? array(i, array$) {
+    ... e ->? array<<i..array$>> {
         o +: e;
     }
     * o;

@@ -58,7 +58,7 @@ sqrt n * {
 }
 
 max array * {
-    o : array(\);
+    o : array<<\>>;
     ... e ->? array {
         ? e > o {
             o : e;
@@ -68,7 +68,7 @@ max array * {
 }
 
 min array * {
-    o : array(\);
+    o : array<<\>>;
     ... e ->? array {
         ? e < o {
             o : e;
