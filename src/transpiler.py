@@ -17,6 +17,7 @@ class CodeHandler:
         self.locals = {}
         self.globals = globals
         self.switches = {
+            "class_def": False,
             "class": False,
             "function": False,
             "import": False,
@@ -284,15 +285,16 @@ class Transpiler:
             Token.BRACE_OPEN: ":"
         }.get(token, 0)
         if token == Token.BRACE_OPEN:
-            if self.ch.switches["class"]:
+            if self.ch.switches["class_def"]:
+                self.ch.switches["class_def"] = False
                 if self.ch.line_tokens[-1] == Token.PAREN_CLOSE:
                     self.ch.line[-1] == ","
-                    return "objects.Class)"
+                    self.ch.line += ["objects.Class)"]
                 elif self.ch.line_tokens[-2] != Token.FUNCTION:
-                    return "(objects.Class)"
+                    self.ch.line += ["(objects.Class)"]
             self.ch.switches["newline"] = True
             self.ch.indent += 1
-            return out
+            self.ch.line += [out]
         elif token == Token.BRACE_CLOSE:
             self.ch.switches["newline"] = True
             self.ch.indent -= 1
@@ -440,6 +442,7 @@ class Transpiler:
                 ]
             case Token.CLASS:
                 self.ch.switches["class"] = True
+                self.ch.switches["class_def"] = True
                 self.ch.class_indent += [self.ch.indent]
                 return "class "
             case Token.LAMBDA:
