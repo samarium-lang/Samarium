@@ -1,14 +1,14 @@
 import objects
 import sys
-from parser import CodeHandler
+from transpiler import CodeHandler
 from core import run, readfile
 
 PUBLIC = CodeHandler(globals())
-imported = CodeHandler(globals())
+IMPORTED = CodeHandler(globals())
 
 
 def main():
-    run(readfile(sys.argv[1]), ch=PUBLIC, imported=imported)
+    run(readfile(sys.argv[1]), ch=PUBLIC, imported=IMPORTED)
 
 
 if __name__ == "__main__":
