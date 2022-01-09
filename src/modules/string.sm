@@ -1,4 +1,4 @@
-<-iter.range;
+<-iter.range,find;
 
 uppercase : "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 lowercase : "abcdefghijklmnopqrstuvwxyz";
@@ -199,4 +199,45 @@ isOctal string * {
 
 isHexadecimal string * {
     * isInGroup(string, hexdigits);
+}
+
+replace string replacement count:-/ * {
+    replaceOne string from to * {
+        replaced : \;
+        i : find(string, from);
+        ? i >: \ {
+            replaced : /;
+            string : string<<..i>> + to + string<<i + from$..>>;
+        }
+        * [string, replaced];
+    }
+
+    ? replacement?! :: "Array" {
+        ? replacement$ ::: /\ {
+            "Invalid replacement format"!!!;
+        }
+        replacements : \;
+        .. replacements ::: count {
+            string, replaced : replaceOne(
+                string,
+                replacement<<\>>,
+                replacement<</>>
+            );
+            ? ~~ replaced { <- }
+            replacements +: /;
+        }
+    } ,, ? replacement?! :: "Table" {
+        ... k ->? replacement {
+            v : replacement<<k>>;
+            replacements : \;
+            .. replacements ::: count {
+                string, replaced : replaceOne(string, k, v);
+                ? ~~ replaced { <- }
+                replacements +: /;
+            }
+        }
+    } ,, {
+        "Invalid type: " + replacement?!!!!;
+    }
+    * string;
 }
