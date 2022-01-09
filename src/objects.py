@@ -37,7 +37,7 @@ class Class:
         return str(self.toString_().value)
 
     def __iter__(self) -> Iterator:
-        return iter(self.iterate_().array)
+        return iter(self.iterate_().value)
 
     def __contains__(self, element: Any) -> Integer:
         return self.has_(element)
@@ -497,102 +497,102 @@ class Integer(Class):
 
 class Table(Class):
 
-    def create_(self, table: dict[Any, Any]):
-        self.table = table
+    def create_(self, value: dict[Any, Any]):
+        self.value = {k.value: v.value for k, v in value.items()}
 
     def size_(self) -> Integer:
-        return Integer(self.table.__sizeof__())
+        return Integer(self.value.__sizeof__())
 
     def special_(self) -> Array:
-        return Array([*self.table.values()])
+        return Array([*self.value.values()])
 
     def toString_(self) -> String:
         return String(
             "{{" + ", ".join(
                 f"{get_repr(k)} -> {get_repr(v)}"
-                for k, v in self.table.items()
+                for k, v in self.value.items()
             ) + "}}"
         )
 
     def toBit_(self) -> Integer:
-        return Integer(bool(self.table))
+        return Integer(bool(self.value))
 
     def getItem_(self, key: Any) -> Any:
-        return self.table[key]
+        return self.value[key]
 
     def setItem_(self, key: Any, value: Any):
-        self.table[key] = value
+        self.value[key] = value
 
     def iterate_(self) -> Array:
-        return Array([*self.table.keys()])
+        return Array([*self.value.keys()])
 
     def has_(self, element: Any) -> Integer:
-        return Integer(element in self.table)
+        return Integer(element in self.value)
 
     def equals_(self, other: Table) -> Integer:
-        return Integer(self.table == other.table)
+        return Integer(self.value == other.value)
 
     def add_(self, other: Table) -> Table:
-        return Table(self.table | other.table)
+        return Table(self.value | other.value)
 
     def addAssign_(self, other: Table) -> Table:
-        self.table |= other.table
+        self.value |= other.value
         return self
 
 
 class Array(Class):
 
-    def create_(self, array: list[Any]):
-        self.array = array
+    def create_(self, value: list[Any]):
+        self.value = [type(i)(i.value) for i in value]
 
     def size_(self) -> Integer:
-        return Integer(self.array.__sizeof__())
+        return Integer(self.value.__sizeof__())
 
     def special_(self) -> Integer:
-        return Integer(len(self.array))
+        return Integer(len(self.value))
 
     def toString_(self) -> String:
-        return String(f"[{', '.join(get_repr(i) for i in self.array)}]")
+        return String(f"[{', '.join(get_repr(i) for i in self.value)}]")
 
     def toBit_(self) -> Integer:
-        return Integer(bool(self.array))
+        return Integer(bool(self.value))
 
     def __iter__(self) -> Iterator:
-        yield from self.array
+        yield from self.value
 
     def iterate_(self) -> Array:
         return self
 
     def has_(self, element: Any) -> Integer:
-        return Integer(element in self.array)
+        return Integer(element in self.value)
 
     def equals_(self, other: Array) -> Integer:
-        return Integer(self.array == other.array)
+        return Integer(self.value == other.value)
 
     def greaterThan_(self, other: Array) -> Integer:
-        return Integer(self.array > other.array)
+        return Integer(self.value > other.value)
 
     def getItem_(self, index: Integer) -> Any:
-        return self.array[index.value]
+        return self.value[index.value]
 
     def setItem_(self, index: Integer, value: Any):
-        self.array[index.value] = value
+        self.value[index.value] = value
 
     def getSlice_(self, slice: Slice) -> Array:
-        return Array(self.array[slice.value])
+        return Array(self.value[slice.value])
 
     def setSlice_(self, slice: Slice, value: Any):
-        self.array[slice.value] = value
+        self.value[slice.value] = value
 
     def add_(self, other: Array) -> Array:
-        return Array(self.array + other.array)
+        return Array(self.value + other.value)
 
     def addAssign_(self, other: Array) -> Array:
-        self.array += other.array
+        self.value += other.value
         return self
 
     def subtract_(self, other: Array | Integer) -> Array:
-        new_array = self.array.copy()
+        new_array = self.value.copy()
         if isinstance(other, Array):
             for i in other:
                 new_array.remove(i)
@@ -605,16 +605,16 @@ class Array(Class):
     def subtractAssign_(self, other: Array | Integer) -> Array:
         if isinstance(other, Array):
             for i in other:
-                self.array.remove(i)
+                self.value.remove(i)
         elif isinstance(other, Integer):
-            self.array.pop(other.value)
+            self.value.pop(other.value)
         else:
             raise SamariumTypeError(type(other).__name__)
         return self
 
     def multiply_(self, other: Integer) -> Array:
-        return Array(self.array * other.value)
+        return Array(self.value * other.value)
 
     def multiplyAssign_(self, other: Integer) -> Array:
-        self.array *= other.value
+        self.value *= other.value
         return self
