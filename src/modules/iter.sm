@@ -2,11 +2,18 @@
 
 find array target * {
     index : \;
-    ... e ->? array {
-        ? e :: target {
-            * index;
+    ? array?! :: "String" {
+        .. index + target$ <: array$ {
+            ? array<<index..index+target$>> :: target {
+                * index;
+            }
+            index +: /;
         }
-        index +: /;
+    } ,, {
+        ... e ->? array {
+            ? e :: target { * index; }
+            index +: /;
+        }
     }
     * -/;
 }
