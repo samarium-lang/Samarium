@@ -130,6 +130,34 @@ toUpper string * {
     * out;
 }
 
+swapcase string * {
+    out : "";
+    ... char ->? string {
+        ? isUpper(char) {
+            out +: toLower(char);
+        } ,, {
+            out +: toUpper(char);
+        }
+    }
+    * out;
+}
+
+pad string length char:" " * {
+    ? char$ > / {
+        "char has to be of length 1"!!!;
+    }
+    ? length <: string$ { * string; }
+    * char ++ (length - string$);
+}
+
+leftpad string length char:" " * {
+    * pad(string, length, char) + string;
+}
+
+rightpad string length char:" " * {
+    * string + pad(string, length, char);
+}
+
 isUpper string * {
     * string :: toUpper(string);
 }
