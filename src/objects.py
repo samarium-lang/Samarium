@@ -498,7 +498,10 @@ class Integer(Class):
 class Table(Class):
 
     def create_(self, value: dict[Any, Any]):
-        self.value = {k.value: v.value for k, v in value.items()}
+        self.value = {
+            type(k)(k.value): type(v)(v.value)
+            for k, v in value.items()
+        }
 
     def size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
