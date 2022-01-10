@@ -4,9 +4,9 @@ import sys
 from transpiler import Transpiler, CodeHandler
 from secrets import randbelow
 from tokenizer import tokenize
-from typing import Callable
+from typing import Callable, Dict, Tuple, Union
 
-Castable = objects.Integer | objects.String
+Castable = Union[objects.Integer, objects.String]
 MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
 
 
@@ -60,7 +60,7 @@ def import_module(data: str, *, ch: CodeHandler = None, imported: CodeHandler):
             )
 
 
-def parse_smmeta(metadata: str) -> dict[str, tuple[int, int]]:
+def parse_smmeta(metadata: str) -> Dict[str, Tuple[int, int]]:
     data = {}
     for line in metadata.splitlines():
         if not line:
@@ -118,7 +118,7 @@ def run(
         if "--debug" in sys.argv:
             for i, line in enumerate(code.splitlines()):
                 print(f"{i+1:^4}" * ("--showlines" in sys.argv) + line)
-        exec(code, globals() | ch.globals)
+        exec(code, {**globals(), **ch.globals})
     except Exception as e:
         exceptions.handle_exception(e)
     return ch

@@ -1,11 +1,11 @@
 from contextlib import suppress
 from exceptions import SamariumSyntaxError, handle_exception
-from math import log
 from tokens import Token
+from typing import List, Tuple, Union
 import handlers
 import sys
 
-Tokenlike = Token | str | int
+Tokenlike = Union[Token, str, int]
 
 MULTISEMANTIC = {
     "+": handlers.plus,
@@ -29,7 +29,7 @@ MULTISEMANTIC = {
 }
 
 
-def tokenize(program: str) -> list[Tokenlike]:
+def tokenize(program: str) -> List[Tokenlike]:
 
     # Removing ` from the program
     program = "".join(i for i in program if i != "`")
@@ -38,7 +38,7 @@ def tokenize(program: str) -> list[Tokenlike]:
     scroller = handlers.Scroller(program)
     string = False
     temp = ""
-    tokens: list[Tokenlike] = []
+    tokens: List[Tokenlike] = []
 
     while scroller.program:
 
@@ -93,7 +93,7 @@ def tokenize(program: str) -> list[Tokenlike]:
     return exclude_comments(tokens)
 
 
-def tokenize_number(scroller: handlers.Scroller) -> tuple[int, int]:
+def tokenize_number(scroller: handlers.Scroller) -> Tuple[int, int]:
     temp = ""
     for char in scroller.program:
         if char not in "/\\":
@@ -103,14 +103,16 @@ def tokenize_number(scroller: handlers.Scroller) -> tuple[int, int]:
     return int(temp, 2), len(temp)
 
 
-def exclude_comments(tokens: list[Tokenlike]) -> list[Tokenlike]:
+def exclude_comments(tokens: List[Tokenlike]) -> List[Tokenlike]:
     out = []
     ignore = False
     for token in tokens:
-        match token:
-            case Token.COMMENT_OPEN: ignore = True
-            case Token.COMMENT_CLOSE: ignore = False
-            case _: out += [token] * (not ignore)
+        if token == Token.COMMENT_OPEN:
+            ignore = True
+        elif token == Token.COMMENT_CLOSE:
+            ignore = False
+        else:
+            out += [token] * (not ignore)
     return out
 
 

@@ -26,10 +26,11 @@ def plus(scroller: Scroller) -> Token:
 
 
 def minus(scroller: Scroller) -> Token:
-    match scroller.next():
-        case ">": return (Token.TO, Token.IN)[scroller.next(2) == "?"]
-        case "-": return (Token.DIV, Token.MOD)[scroller.next(2) == "-"]
-        case _: return Token.SUB
+    tokens = {
+        ">": (Token.TO, Token.IN)[scroller.next(2) == "?"],
+        "-": (Token.DIV, Token.MOD)[scroller.next(2) == "-"]
+    }
+    return tokens.get(scroller.next(), Token.SUB)
 
 
 def colon(scroller: Scroller) -> Token:
@@ -41,20 +42,22 @@ def colon(scroller: Scroller) -> Token:
 
 
 def less(scroller: Scroller) -> Token:
-    match scroller.next():
-        case "-": return Token.FROM
-        case "<": return Token.SLICE_OPEN
-        case ":": return Token.LE
-        case _: return Token.LT
+    tokens = {
+        "-": Token.FROM,
+        "<": Token.SLICE_OPEN,
+        ":": Token.LE
+    }
+    return tokens.get(scroller.next(), Token.LT)
 
 
 def greater(scroller: Scroller) -> Token:
     if scroller.program[:3] == ">==":
         return Token.COMMENT_CLOSE
-    match scroller.next():
-        case ">": return Token.SLICE_CLOSE
-        case ":": return Token.GE
-        case _: return Token.GT
+    tokens = {
+        ">": Token.SLICE_CLOSE,
+        ":": Token.GE
+    }
+    return tokens.get(scroller.next(), Token.GT)
 
 
 def equal(scroller: Scroller) -> Token | None:

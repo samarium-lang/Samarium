@@ -2,13 +2,13 @@ from contextlib import suppress
 from exceptions import handle_exception, SamariumSyntaxError
 from tokenizer import Tokenlike
 from tokens import Token
-from typing import Any
+from typing import Any, Dict, List, Optional, Union
 
-Transpilable = Tokenlike | None
+Transpilable = Optional[Tokenlike]
 
 
 class CodeHandler:
-    def __init__(self, globals: dict[str, Any]):
+    def __init__(self, globals: Dict[str, Any]):
         self.class_indent = []
         self.code = []
         self.line = []
@@ -31,7 +31,7 @@ class CodeHandler:
 
 
 class Transpiler:
-    def __init__(self, tokens: list[Tokenlike], code_handler: CodeHandler):
+    def __init__(self, tokens: List[Tokenlike], code_handler: CodeHandler):
         self.tokens = tokens
         self.ch = code_handler
         self.set_slice = False
@@ -43,8 +43,8 @@ class Transpiler:
             len(self.ch.line) == 1 and self.ch.line[0].isspace()
         )
 
-    def groupnames(self, array: list[str]) -> list[str]:
-        def find_2nd(array: list[str]) -> int:
+    def groupnames(self, array: List[str]) -> List[str]:
+        def find_2nd(array: List[str]) -> int:
             x = 0
             for i, c in enumerate(array):
                 x += c == "="
@@ -247,7 +247,7 @@ class Transpiler:
         self.slicing = False
         return assign
 
-    def transpile_operator(self, token: Transpilable) -> str | int:
+    def transpile_operator(self, token: Transpilable) -> Union[str, int]:
         return {
             # Arithmetic
             Token.ADD: "+",
@@ -274,7 +274,7 @@ class Transpiler:
             Token.XOR: "^"
         }.get(token, 0)
 
-    def transpile_bracket(self, token: Transpilable) -> str | int:
+    def transpile_bracket(self, token: Transpilable) -> Union[str, int]:
         out = {
             Token.BRACKET_OPEN: "objects.Array([",
             Token.BRACKET_CLOSE: "])",
@@ -312,7 +312,7 @@ class Transpiler:
         self.transpile_token(None)
         return 1
 
-    def transpile_exec(self, token: Transpilable) -> str | int:
+    def transpile_exec(self, token: Transpilable) -> Union[str, int]:
         out = {
             Token.INSTANCE: "self",
             Token.ASSIGN: "=",
@@ -324,40 +324,39 @@ class Transpiler:
             Token.SIZE: ".__sizeof__()",
             Token.RANDOM: ")" if self.ch.switches["random"] else "random("
         }.get(token, 0)
-        match token:
-            case Token.STDIN:
-                with suppress(IndexError):
-                    if isinstance(self.ch.line[-1], str):
-                        return f"readline({self.ch.line.pop()})"
-                return "readline()"
-            case Token.CAST:
-                self.safewrap("cast_type")
-            case Token.TYPE:
-                self.safewrap("get_type")
-            case Token.RANDOM:
-                self.ch.switches["random"] = not self.ch.switches["random"]
-                return out
-            case Token.END:
-                if self.ch.switches["import"]:
-                    self.ch.switches["import"] = False
-                    self.ch.line += ["', imported=imported)"]
-                self.ch.switches["newline"] = True
-                if self.set_slice:
-                    self.ch.line += ")"
-                self.transpile_token(None)
-            case Token.STDOUT:
-                x = bool(self.ch.indent)
-                self.ch.line = [
-                    *self.ch.line[:x],
-                    "print(",
-                    *self.ch.line[x:],
-                    ")"
-                ]
-            case _:
-                return out
+        if token == Token.STDIN:
+            with suppress(IndexError):
+                if isinstance(self.ch.line[-1], str):
+                    return f"readline({self.ch.line.pop()})"
+            return "readline()"
+        elif token == Token.CAST:
+            self.safewrap("cast_type")
+        elif token == Token.TYPE:
+            self.safewrap("get_type")
+        elif token == Token.RANDOM:
+            self.ch.switches["random"] = not self.ch.switches["random"]
+            return out
+        elif token == Token.END:
+            if self.ch.switches["import"]:
+                self.ch.switches["import"] = False
+                self.ch.line += ["', imported=imported)"]
+            self.ch.switches["newline"] = True
+            if self.set_slice:
+                self.ch.line += ")"
+            self.transpile_token(None)
+        elif token == Token.STDOUT:
+            x = bool(self.ch.indent)
+            self.ch.line = [
+                *self.ch.line[:x],
+                "print(",
+                *self.ch.line[x:],
+                ")"
+            ]
+        else:
+            return out
         return 1
 
-    def transpile_control_flow(self, token: Transpilable) -> str | int:
+    def transpile_control_flow(self, token: Transpilable) -> Union[str, int]:
         out = {
             Token.WHILE: "while ",
             Token.FOR: "for ",
@@ -369,41 +368,40 @@ class Transpiler:
             and not self.is_first_token()
         ):
             self.ch.line += [" "]
-        match token:
-            case Token.IF:
-                with suppress(IndexError):
-                    if self.ch.line_tokens[-2] == Token.ELSE:
-                        self.ch.line[-2:] = "elif", " "
-                        return 1
-                return "if "
-            case Token.FROM:
-                if not self.ch.line:
-                    self.ch.switches["import"] = True
-                    self.ch.line += ["import_module('"]
-                else:
-                    self.ch.line += ["break"]
-                    self.transpile_token(Token.END)
-            case Token.TO:
-                if self.is_first_token():
-                    self.ch.line += ["continue"]
-                    self.transpile_token(Token.END)
+        if token == Token.IF:
+            with suppress(IndexError):
+                if self.ch.line_tokens[-2] == Token.ELSE:
+                    self.ch.line[-2:] = "elif", " "
                     return 1
-                elif self.ch.switches["random"]:
-                    return ","
-                elif self.ch.switches["lambda"]:
-                    x = 0
-                    while self.ch.line[~x] != "lambda ":
-                        x += 1
-                    self.ch.line[~x + 1:] = ",".join(
-                        self.groupnames(self.ch.line[~x + 1:])
-                    )
-                    self.ch.switches["lambda"] = False
-                return ":"
-            case _:
-                return out
+            return "if "
+        elif token == Token.FROM:
+            if not self.ch.line:
+                self.ch.switches["import"] = True
+                self.ch.line += ["import_module('"]
+            else:
+                self.ch.line += ["break"]
+                self.transpile_token(Token.END)
+        elif token == Token.TO:
+            if self.is_first_token():
+                self.ch.line += ["continue"]
+                self.transpile_token(Token.END)
+                return 1
+            elif self.ch.switches["random"]:
+                return ","
+            elif self.ch.switches["lambda"]:
+                x = 0
+                while self.ch.line[~x] != "lambda ":
+                    x += 1
+                self.ch.line[~x + 1:] = ",".join(
+                    self.groupnames(self.ch.line[~x + 1:])
+                )
+                self.ch.switches["lambda"] = False
+            return ":"
+        else:
+            return out
         return 1
 
-    def transpile_error_handling(self, token: Transpilable) -> str | int:
+    def transpile_error_handling(self, token: Transpilable) -> Union[str, int]:
         out = {
             Token.TRY: "try",
             Token.CATCH: "except Exception"
@@ -419,35 +417,34 @@ class Transpiler:
             return 1
         return out
 
-    def transpile_misc(self, token: Transpilable) -> str | int:
-        match token:
-            case Token.FUNCTION:
-                with suppress(IndexError):
-                    if self.ch.line_tokens[0] == Token.FROM:
-                        return "*"
-                x = bool(self.ch.indent)
-                self.ch.switches["function"] = bool(self.ch.line[x:])
-                self.ch.line = [i for i in self.ch.line if i]
-                if not self.ch.switches["function"]:
-                    self.ch.line.insert(x, "return ")
-                    return 1
-                self.ch.line = [
-                    *self.ch.line[:x], "@assert_smtype\n",
-                    *self.ch.line[:x], "def ",
-                    self.ch.line[x], "(",
-                    ",".join(self.groupnames(
-                        (["self"] * self.ch.switches["class"])
-                        + self.ch.line[x + 1:]
-                    )), ")"
-                ]
-            case Token.CLASS:
-                self.ch.switches["class"] = True
-                self.ch.switches["class_def"] = True
-                self.ch.class_indent += [self.ch.indent]
-                return "class "
-            case Token.LAMBDA:
-                self.ch.switches["lambda"] = True
-                return "lambda "
-            case _:
-                return 0
+    def transpile_misc(self, token: Transpilable) -> Union[str, int]:
+        if token == Token.FUNCTION:
+            with suppress(IndexError):
+                if self.ch.line_tokens[0] == Token.FROM:
+                    return "*"
+            x = bool(self.ch.indent)
+            self.ch.switches["function"] = bool(self.ch.line[x:])
+            self.ch.line = [i for i in self.ch.line if i]
+            if not self.ch.switches["function"]:
+                self.ch.line.insert(x, "return ")
+                return 1
+            self.ch.line = [
+                *self.ch.line[:x], "@assert_smtype\n",
+                *self.ch.line[:x], "def ",
+                self.ch.line[x], "(",
+                ",".join(self.groupnames(
+                    (["self"] * self.ch.switches["class"])
+                    + self.ch.line[x + 1:]
+                )), ")"
+            ]
+        elif token == Token.CLASS:
+            self.ch.switches["class"] = True
+            self.ch.switches["class_def"] = True
+            self.ch.class_indent += [self.ch.indent]
+            return "class "
+        elif token == Token.LAMBDA:
+            self.ch.switches["lambda"] = True
+            return "lambda "
+        else:
+            return 0
         return 1

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from contextlib import suppress
 from exceptions import NotDefinedError, SamariumTypeError
-from typing import Any, Callable, Iterator, TypeVar
+from typing import Any, Callable, Dict, Iterator, List, TypeVar, Union
 
 T = TypeVar("T")
 
@@ -497,7 +497,7 @@ class Integer(Class):
 
 class Table(Class):
 
-    def create_(self, value: dict[Any, Any]):
+    def create_(self, value: Dict[Any, Any]):
         self.value = {
             type(k)(k.value): type(v)(v.value)
             for k, v in value.items()
@@ -536,16 +536,16 @@ class Table(Class):
         return Integer(self.value == other.value)
 
     def add_(self, other: Table) -> Table:
-        return Table(self.value | other.value)
+        return Table({**self.value, **other.value})
 
     def addAssign_(self, other: Table) -> Table:
-        self.value |= other.value
+        self.value.update(other.value)
         return self
 
 
 class Array(Class):
 
-    def create_(self, value: list[Any]):
+    def create_(self, value: List[Any]):
         self.value = [type(i)(i.value) for i in value]
 
     def size_(self) -> Integer:
@@ -594,7 +594,7 @@ class Array(Class):
         self.value += other.value
         return self
 
-    def subtract_(self, other: Array | Integer) -> Array:
+    def subtract_(self, other: Union[Array, Integer]) -> Array:
         new_array = self.value.copy()
         if isinstance(other, Array):
             for i in other:
@@ -605,7 +605,7 @@ class Array(Class):
             raise SamariumTypeError(type(other).__name__)
         return Array(new_array)
 
-    def subtractAssign_(self, other: Array | Integer) -> Array:
+    def subtractAssign_(self, other: Union[Array, Integer]) -> Array:
         if isinstance(other, Array):
             for i in other:
                 self.value.remove(i)
