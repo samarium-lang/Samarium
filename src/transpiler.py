@@ -298,15 +298,16 @@ class Transpiler:
         elif token == Token.BRACE_CLOSE:
             self.ch.switches["newline"] = True
             self.ch.indent -= 1
-            if self.ch.switches["function"] and not self.ch.line_tokens:
+            if self.ch.switches["function"]:
                 self.ch.switches["function"] = False
-                return "pass"
             if (
                 self.ch.switches["class"]
                 and self.ch.indent == self.ch.class_indent[-1]
             ):
                 self.ch.switches["class"] = False
                 self.ch.class_indent.pop()
+            if self.ch.all_tokens[-1] == Token.BRACE_OPEN:
+                self.ch.line += ["pass"]
         else:
             return out
         self.transpile_token(None)

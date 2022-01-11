@@ -58,7 +58,7 @@
 - [x] 17. Remove the need for commas in lambda parameters
 - [ ] 18. SMNull wrapper for lambdas
 - [ ] 19. Ban genexprs
-- [ ] 20. Empty class bodies
+- [x] 20. Empty class bodies
 - [x] 21. Include all non-Samarium types in `assert_smtype`
 - [x] 22. Replace slicing syntax
 - [x] 23. Fix `}` tokenizing at the end of the file
