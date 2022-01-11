@@ -7,6 +7,6 @@ sum:37,43
 sqrt:45,58
 max:60,68
 min:70,78
-fromDecimal:80,105
-shl:107,109
-shr:111,113
+fromDecimal:80,99
+shl:101,103
+shr:105,107
