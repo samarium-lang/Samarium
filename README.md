@@ -93,7 +93,7 @@ Operator | Meaning
 `++` | Multiplication
 `--` | Integer division
 `+++` | Exponentiation
-`---` | Modulus
+`---` | Modulo
 
 </center>
 
