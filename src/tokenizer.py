@@ -31,17 +31,8 @@ MULTISEMANTIC = {
 
 def tokenize(program: str) -> List[Tokenlike]:
 
-    # Removing ` from the program
-    filtered_program = ""
-    skip = False
-    for i, c in enumerate(program):
-        if c == '"' and program[i - 1] != "\\":
-            skip = not skip
-        if c == "`" and skip or c != "`":
-            filtered_program += c
-
     comment = False
-    scroller = handlers.Scroller(filtered_program)
+    scroller = handlers.Scroller(exclude_backticks(program))
     string = False
     temp = ""
     tokens: List[Tokenlike] = []
@@ -91,6 +82,7 @@ def tokenize(program: str) -> List[Tokenlike]:
             number, length = tokenize_number(scroller)
             tokens.append(number)
             scroller.shift(length)
+
         else:
             with suppress(ValueError):
                 tokens.append(Token(scroller.pointer))
@@ -107,6 +99,17 @@ def tokenize_number(scroller: handlers.Scroller) -> Tuple[int, int]:
         temp += char
     temp = temp.replace("/", "1").replace("\\", "0")
     return int(temp, 2), len(temp)
+
+
+def exclude_backticks(program: str) -> str:
+    out = ""
+    skip = False
+    for i, c in enumerate(program):
+        if c == '"' and program[i - 1] != "\\":
+            skip = not skip
+        if c == "`" and skip or c != "`":
+            out += c
+    return out
 
 
 def exclude_comments(tokens: List[Tokenlike]) -> List[Tokenlike]:
