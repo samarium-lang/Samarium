@@ -137,7 +137,7 @@
 - [ ] 7. sqrt
 - [x] 8. max
 - [x] 9. min
-- [ ] 10. fromDecimal
+- [x] 10. fromDecimal
 - [x] 11. shl
 - [x] 12. shr
 ----
