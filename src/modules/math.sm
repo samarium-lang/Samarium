@@ -81,27 +81,21 @@ fromDecimal string * {
     neg : \;
     o : \;
     i : \;
+    errorMsg : "invalid decimal literal for fromDecimal";
     .. i < string$ {
         digit : string<<i>>;
         ? digit :: "-" {
-            ? i ::: \ {
-                "invalid decimal literal for fromDecimal"!!!;
-            }
+            ? i ::: \ { errorMsg!!!; }
             neg : /;
         }
-        ,,? digit ~~->? "0123456789" {
-            "invalid decimal literal for fromDecimal"!!!;
-        }
+        ,,? digit ~~->? "0123456789" { errorMsg!!!; }
         ,, {
             o ++: /\/\;
             o +: digit% - "0"%;
         }
         i +: /;
     }
-    ? neg :: / {
-        * -o
-    }
-    * o;
+    * -o ? neg ,, o;
 }
 
 shl a b * {
