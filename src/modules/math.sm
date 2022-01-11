@@ -77,6 +77,33 @@ min array * {
     * o;
 }
 
+fromDecimal string * {
+    neg : \;
+    o : \;
+    i : \;
+    .. i < string$ {
+        digit : string<<i>>;
+        ? digit :: "-" {
+            ? i ::: \ {
+                "invalid decimal literal for fromDecimal"!!!;
+            }
+            neg : /;
+        }
+        ,,? digit ~~->? "0123456789" {
+            "invalid decimal literal for fromDecimal"!!!;
+        }
+        ,, {
+            o ++: /\/\;
+            o +: digit% - "0"%;
+        }
+        i +: /;
+    }
+    ? neg :: / {
+        * -o
+    }
+    * o;
+}
+
 shl a b * {
     * a ++ /\ +++ b;
 }
