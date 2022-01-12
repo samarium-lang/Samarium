@@ -1,5 +1,6 @@
 import exceptions
 import objects
+import os
 import sys
 from transpiler import Transpiler, CodeHandler
 from secrets import randbelow
@@ -43,15 +44,19 @@ def import_module(data: str, *, ch: CodeHandler = None, imported: CodeHandler):
     name, objects = data.split(".")
     name = name[:-1]
     objects = objects.split(",")
+    path = os.path.join(
+        os.path.dirname(__file__),
+        "modules"
+    )
     if name not in MODULE_NAMES:
         raise exceptions.SamariumImportError(name)
-    module = readfile(f"modules/{name}.sm").splitlines()
+    module = readfile(f"{path}/{name}.sm").splitlines()
     if objects == ["*"]:
         imported.code.extend(
-            run(readfile(f"modules/{name}.sm"), ch=ch, imported=imported).code
+            run(readfile(f"{path}/{name}.sm"), ch=ch, imported=imported).code
         )
     else:
-        metadata = parse_smmeta(readfile(f"modules/{name}.smmeta"))
+        metadata = parse_smmeta(readfile(f"{path}/{name}.smmeta"))
         for obj in objects:
             imported.code.extend(
                 run("\n".join(module[
@@ -118,7 +123,8 @@ def run(
         if "--debug" in sys.argv:
             for i, line in enumerate(code.splitlines()):
                 print(f"{i+1:^4}" * ("--showlines" in sys.argv) + line)
-        exec(code, {**globals(), **ch.globals})
+        ch.globals = {**globals(), **ch.globals}
+        exec(code, ch.globals)
     except Exception as e:
         exceptions.handle_exception(e)
     return ch
