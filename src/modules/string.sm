@@ -1,31 +1,31 @@
 <-iter.range,find;
 
-uppercase : "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-lowercase : "abcdefghijklmnopqrstuvwxyz";
-letters : uppercase + lowercase;
+uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+lowercase: "abcdefghijklmnopqrstuvwxyz";
+letters: uppercase + lowercase;
 
-octdigits : "01234567";
-digits : octdigits + "89";
-hexdigits : digits + "abcdef";
+octdigits: "01234567";
+digits: octdigits + "89";
+hexdigits: digits + "abcdef";
 
-punctuation : "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
-whitespace : " \t\n\r\f\v";
+punctuation: "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+whitespace: " \t\n\r\f\v";
 
-printable : letters + digits + punctuation + whitespace;
+printable: letters + digits + punctuation + whitespace;
 
 center string length char:" " * {
     ? char$ > / {
         "char has to be of length 1"!!!;
     }
-    index : \;
+    index: \;
     .. string$ < length {
         ? index {
-            string : char + string;
+            string: char + string;
         } ,, {
-            string +: char;
+            string+: char;
         }
-        index +: /;
-        index ---: /\;
+        index+: /;
+        index---: /\;
     }
     * string;
 }
@@ -46,17 +46,17 @@ split string delimiter:" " * {
     ? delimiter ~~ ->? string {
         * [string];
     }
-    out : [];
-    temp : "";
+    out: [];
+    temp: "";
     ... char ->? string {
         ? char :: delimiter {
-            out +: [temp];
-            temp : "";
+            out+: [temp];
+            temp: "";
         } ,, {
-            temp +: char;
+            temp+: char;
         }
     }
-    out +: [temp];
+    out+: [temp];
     * out;
 }
 
@@ -69,25 +69,25 @@ title string * {
 }
 
 join iterable delimiter:" " * {
-    o : "";
+    o: "";
     ... e ->? iterable {
-        o +: e;
-        o +: delimiter;
+        o+: e.toString();
+        o+: delimiter;
     }
-    o : o<<..-delimiter$>>;
+    o: o<<..-delimiter$>>;
     * o;
 }
 
 stripLeft string prefix * {
     .. startsWith(string, prefix) {
-        string : string<<prefix$..>>;
+        string: string<<prefix$..>>;
     }
     * string;
 }
 
 stripRight string suffix * {
     .. endsWith(string, suffix) {
-        string : string<<..-suffix$>>;
+        string: string<<..-suffix$>>;
     }
     * string;
 }
@@ -104,12 +104,12 @@ toLower string * {
     ? string?! ::: "String" {
         "Invalid type: " + string?!!!!;
     }
-    out : "";
+    out: "";
     ... char ->? string {
         ? char% ->? range(/\\\\\/, /\//\/\) {
-            out +: (char% + /\\\\\)%;
+            out+: (char% + /\\\\\)%;
         } ,, {
-            out +: char;
+            out+: char;
         }
     }
     * out;
@@ -119,24 +119,24 @@ toUpper string * {
     ? string?! ::: "String" {
         "Invalid type: " + string?!!!!;
     }
-    out : "";
+    out: "";
     ... char ->? string {
         ? char% ->? range(//\\\\/, ////\/\) {
-            out +: (char% - /\\\\\)%;
+            out+: (char% - /\\\\\)%;
         } ,, {
-            out +: char;
+            out+: char;
         }
     }
     * out;
 }
 
 swapcase string * {
-    out : "";
+    out: "";
     ... char ->? string {
         ? isUpper(char) {
-            out +: toLower(char);
+            out+: toLower(char);
         } ,, {
-            out +: toUpper(char);
+            out+: toUpper(char);
         }
     }
     * out;
@@ -201,13 +201,17 @@ isHexadecimal string * {
     * isInGroup(string, hexdigits);
 }
 
+wrap string wrapper * {
+    * wrapper + string + wrapper;
+}
+
 replace string replacement count:-/ * {
     replaceOne string from to * {
-        replaced : \;
-        i : find(string, from);
+        replaced: \;
+        i: find(string, from);
         ? i >: \ {
-            replaced : /;
-            string : string<<..i>> + to + string<<i + from$..>>;
+            replaced: /;
+            string: string<<..i>> + to + string<<i + from$..>>;
         }
         * [string, replaced];
     }
@@ -216,24 +220,24 @@ replace string replacement count:-/ * {
         ? replacement$ ::: /\ {
             "Invalid replacement format"!!!;
         }
-        replacements : \;
+        replacements: \;
         .. replacements ::: count {
-            string, replaced : replaceOne(
+            string, replaced: replaceOne(
                 string,
                 replacement<<\>>,
                 replacement<</>>
             );
             ? ~~ replaced { <- }
-            replacements +: /;
+            replacements+: /;
         }
     } ,, ? replacement?! :: "Table" {
         ... k ->? replacement {
-            v : replacement<<k>>;
-            replacements : \;
+            v: replacement<<k>>;
+            replacements: \;
             .. replacements ::: count {
-                string, replaced : replaceOne(string, k, v);
+                string, replaced: replaceOne(string, k, v);
                 ? ~~ replaced { <- }
-                replacements +: /;
+                replacements+: /;
             }
         }
     } ,, {
