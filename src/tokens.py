@@ -85,3 +85,4 @@ class Token(Enum):
     SIZE = ":!:"
     TYPE = "?!"
     HASH = "##"
+    MAIN = "=>"

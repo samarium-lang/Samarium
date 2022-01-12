@@ -82,14 +82,14 @@ class Transpiler:
         for index, token in enumerate(self.tokens):
             self.transpile_token(token, index)
 
-    def transpile_token(self, token: Transpilable, index: int = None):
+    def transpile_token(self, token: Transpilable, index: int = -1):
 
         if token == Token.SLICE_OPEN:
             self.slicing = True
             self.slice_tokens.append(token)
             return
 
-        if index is not None:
+        if index >= 0:
             if self.slicing:
                 self.slice_tokens.append(token)
                 if token == Token.SLICE_CLOSE:
@@ -143,7 +143,7 @@ class Transpiler:
             self.transpile_exec, self.transpile_control_flow,
             self.transpile_error_handling, self.transpile_misc
         ]:
-            out = func(token)
+            out = func(token, index)
             if not out:
                 continue
             if isinstance(out, str):
@@ -248,7 +248,7 @@ class Transpiler:
         self.slicing = False
         return assign
 
-    def transpile_operator(self, token: Transpilable) -> Union[str, int]:
+    def transpile_operator(self, token: Transpilable, _) -> Union[str, int]:
         return {
             # Arithmetic
             Token.ADD: "+",
@@ -275,7 +275,7 @@ class Transpiler:
             Token.XOR: "^"
         }.get(token, 0)
 
-    def transpile_bracket(self, token: Transpilable) -> Union[str, int]:
+    def transpile_bracket(self, token: Transpilable, _) -> Union[str, int]:
         out = {
             Token.BRACKET_OPEN: "objects.Array([",
             Token.BRACKET_CLOSE: "])",
@@ -314,7 +314,9 @@ class Transpiler:
         self.transpile_token(None)
         return 1
 
-    def transpile_exec(self, token: Transpilable) -> Union[str, int]:
+    def transpile_exec(
+        self, token: Transpilable, index: int
+    ) -> Union[str, int]:
         out = {
             Token.INSTANCE: "self",
             Token.ASSIGN: "=",
@@ -331,6 +333,11 @@ class Transpiler:
                 if isinstance(self.ch.line[-1], str):
                     return f"readline({self.ch.line.pop()})"
             return "readline()"
+        elif (
+            token == Token.MAIN and
+            not isinstance(self.tokens[index - 1], str)
+        ):
+            return "entry "
         elif token == Token.CAST:
             self.safewrap("cast_type")
         elif token == Token.TYPE:
@@ -341,7 +348,7 @@ class Transpiler:
         elif token == Token.END:
             if self.ch.switches["import"]:
                 self.ch.switches["import"] = False
-                self.ch.line += ["', imported=imported)"]
+                self.ch.line += ["', MAIN)"]
             self.ch.switches["newline"] = True
             if self.set_slice:
                 self.ch.line += ")"
@@ -358,7 +365,9 @@ class Transpiler:
             return out
         return 1
 
-    def transpile_control_flow(self, token: Transpilable) -> Union[str, int]:
+    def transpile_control_flow(
+        self, token: Transpilable, index: int
+    ) -> Union[str, int]:
         out = {
             Token.WHILE: "while ",
             Token.FOR: "for ",
@@ -377,7 +386,7 @@ class Transpiler:
                     return 1
             return "if "
         elif token == Token.FROM:
-            if not self.ch.line:
+            if isinstance(self.tokens[index + 1], str):
                 self.ch.switches["import"] = True
                 self.ch.line += ["import_module('"]
             else:
@@ -403,7 +412,7 @@ class Transpiler:
             return out
         return 1
 
-    def transpile_error_handling(self, token: Transpilable) -> Union[str, int]:
+    def transpile_error_handling(self, token: Transpilable, _) -> Union[str, int]:
         out = {
             Token.TRY: "try",
             Token.CATCH: "except Exception"
@@ -419,7 +428,7 @@ class Transpiler:
             return 1
         return out
 
-    def transpile_misc(self, token: Transpilable) -> Union[str, int]:
+    def transpile_misc(self, token: Transpilable, _) -> Union[str, int]:
         if token == Token.FUNCTION:
             with suppress(IndexError):
                 if self.ch.line_tokens[0] == Token.FROM:
