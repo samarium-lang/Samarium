@@ -126,6 +126,7 @@ class Transpiler:
         if isinstance(token, str):
             # objects.String handling
             if token[0] == token[-1] == '"':
+                token = token.replace("\n", "\\n")
                 self.ch.line += [f"objects.String({token})"]
                 return
 
