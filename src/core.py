@@ -2,6 +2,7 @@ import exceptions
 import objects
 import os
 import sys
+from contextlib import contextmanager
 from transpiler import Transpiler, CodeHandler
 from secrets import randbelow
 from tokenizer import tokenize
@@ -40,40 +41,35 @@ def get_type(obj: objects.Class) -> objects.String:
     return objects.String(obj.__class__.__name__)
 
 
-def import_module(data: str, *, ch: CodeHandler = None, imported: CodeHandler):
+def import_module(data: str, ch: CodeHandler):
+
+    @contextmanager
+    def silence_stdout():
+        stdout = sys.stdout
+        sys.stdout = open(os.devnull, "w")
+        yield
+        sys.stdout = stdout
+
     name, objects = data.split(".")
     name = name[:-1]
     objects = objects.split(",")
-    path = os.path.join(
-        os.path.dirname(__file__),
-        "modules"
-    )
-    if name not in MODULE_NAMES:
-        raise exceptions.SamariumImportError(name)
-    module = readfile(f"{path}/{name}.sm").splitlines()
-    if objects == ["*"]:
-        imported.code.extend(
-            run(readfile(f"{path}/{name}.sm"), ch=ch, imported=imported).code
+    path = "."
+
+    if f"{name}.sm" not in os.listdir():
+        if name not in MODULE_NAMES:
+            raise exceptions.SamariumImportError(name)
+        path = os.path.join(
+            os.path.dirname(__file__),
+            "modules"
         )
+
+    with silence_stdout():
+        imported = run(readfile(f"{path}/{name}.sm"), CodeHandler(globals()))
+    if objects == ["*"]:
+        ch.globals.update(imported.globals)
     else:
-        metadata = parse_smmeta(readfile(f"{path}/{name}.smmeta"))
         for obj in objects:
-            imported.code.extend(
-                run("\n".join(module[
-                    slice(*metadata[obj[:-1]])
-                ]), ch=ch, imported=imported).code
-            )
-
-
-def parse_smmeta(metadata: str) -> Dict[str, Tuple[int, int]]:
-    data = {}
-    for line in metadata.splitlines():
-        if not line:
-            continue
-        name, linedata = line.split(":")
-        start, end = linedata.split(",")
-        data[name] = (int(start) - 1, int(end))
-    return data
+            ch.globals[obj] = imported.globals[obj]
 
 
 def random(start: objects.Integer, end: objects.Integer) -> objects.Integer:
@@ -100,26 +96,25 @@ def readline(prompt: str = ""):
         return objects.String(in_)
 
 
-def run(
-    code: str, *,
-    ch: CodeHandler = None,
-    imported: CodeHandler
-) -> CodeHandler:
+def run(code: str, ch: CodeHandler) -> CodeHandler:
+
     tokens = tokenize(code)
-    transpiler = Transpiler(tokens, ch or CodeHandler(globals()))
+    transpiler = Transpiler(tokens, ch)
     transpiler.transpile()
     ch = transpiler.ch
-    imports = []
-    ind = 0
-    while ch.code[ind].startswith("import_module"):
-        imports.append(ch.code[ind])
-        ind += 1
-    ch.code = ch.code[ind:]
+    prefix = [
+        "import sys",
+        "import os",
+        "STDOUT = sys.stdout",
+        "sys.stdout = open(os.devnull, 'w')"
+    ]
+    suffix = [
+        "if __name__ == '__main__':",
+        "    sys.stdout = STDOUT",
+        "    entry()"
+    ]
+    code = "\n".join(prefix + ch.code + suffix)
     try:
-        import_code = "\n".join(imports)
-        if import_code:
-            exec(import_code)
-        code = "\n".join(imported.code + ch.code)
         if "--debug" in sys.argv:
             for i, line in enumerate(code.splitlines()):
                 print(f"{i+1:^4}" * ("--showlines" in sys.argv) + line)
