@@ -6,10 +6,14 @@ from contextlib import contextmanager
 from transpiler import Transpiler, CodeHandler
 from secrets import randbelow
 from tokenizer import tokenize
-from typing import Callable, Dict, Tuple, Union
+from typing import Callable, Union
 
 Castable = Union[objects.Integer, objects.String]
 MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
+
+
+class ImportLevel:
+    il = 0
 
 
 def cast_type(obj: Castable) -> Castable:
@@ -118,8 +122,10 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
         if "--debug" in sys.argv:
             for i, line in enumerate(code.splitlines()):
                 print(f"{i+1:^4}" * ("--showlines" in sys.argv) + line)
+        ImportLevel.il += 1
         ch.globals = {**globals(), **ch.globals}
         exec(code, ch.globals)
+        ImportLevel.il -= 1
     except Exception as e:
         exceptions.handle_exception(e)
     return ch

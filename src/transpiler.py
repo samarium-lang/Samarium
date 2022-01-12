@@ -348,7 +348,9 @@ class Transpiler:
         elif token == Token.END:
             if self.ch.switches["import"]:
                 self.ch.switches["import"] = False
-                self.ch.line += ["', MAIN)"]
+                self.ch.line += [
+                    "', CodeHandler(globals())) if ImportLevel.il else MAIN"
+                ]
             self.ch.switches["newline"] = True
             if self.set_slice:
                 self.ch.line += ")"
