@@ -4,9 +4,9 @@ gcd:18,23
 lcm:25,27
 product:29,35
 sum:37,43
-sqrt:45,58
-max:60,68
-min:70,78
-fromDecimal:80,99
-shl:101,103
-shr:105,107
+max:45,53
+min:55,63
+fromDecimal:65,84
+sqrt:86,111
+shl:105,107
+shr:109,111

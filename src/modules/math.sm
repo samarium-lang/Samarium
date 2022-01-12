@@ -42,21 +42,6 @@ sum array * {
     * o;
 }
 
-sqrt n * {
-    ? n < \ {
-        "sqrt is defined only for non-negative numbers"!!!;
-    }
-    ? n < /\ {
-        * n;
-    }
-    a : n -- /\;
-    b : (a + n -- a) --- /\;
-    .. a > b {
-        b : (a + n -- a) --- /\;
-    }
-    * a;
-}
-
 max array * {
     o : array<<\>>;
     ... e ->? array {
@@ -96,6 +81,25 @@ fromDecimal string * {
         i +: /;
     }
     * -o ? neg ,, o;
+}
+
+sqrt n * {
+    ? n < \ {
+        "sqrt is defined only for non-negative numbers"!!!;
+    }
+    root : \;
+    rmdr : \;
+    s : n$$ - (/ ? n$$ --- /\ ,, /\);
+    .. s >: \ {
+        bits : shr(n,s) & //;
+        rmdr : shl(rmdr,/\) | bits;
+        cand : shl(root,/\) | /;
+        bitnext : rmdr >: cand;
+        root : shl(root,/) | bitnext;
+        rmdr -: cand ++ bitnext;
+        s -: /\;
+    }
+    * root;
 }
 
 shl a b * {

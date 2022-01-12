@@ -135,8 +135,6 @@ Operator | Meaning
 `\|` | Bitwise OR
 `^` | Bitwise XOR
 `~` | Bitwise NOT
-`<<` | Left shift
-`>>` | Right shift
 
 </center>
 
