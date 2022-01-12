@@ -1,28 +1,30 @@
+<-string.join,wrap;
+
 @ Stack {
 
     create size:-/ * {
-        'stack : [];
-        'size : size;
+        'stack: [];
+        'size: size;
     }
 
-    push data * {
-        ? 'isFull() { "The stack is full (size " + 'size.toString() + ")"!!!; }
-        'stack +: [data];
+    push item * {
+        ? 'isFull() { "stack is full (size " + 'size.toString() + ")"!!!; }
+        'stack+: [item];
     }
 
-    pushAll data * { ... element ->? data { 'push(element); } }
+    pushAll item * { ... element ->? item { 'push(element); } }
 
     special * { * 'stack$; }
 
     pop * {
-        ? 'isEmpty() { "The stack is empty"!!!; }
-        out : 'stack<<-/>>;
-        'stack -: 'stack$ - /;
+        ? 'isEmpty() { "stack is empty"!!!; }
+        out: 'stack<<-/>>;
+        'stack-: 'stack$ - /;
         * out;
     }
 
     peek * {
-        ? 'isEmpty() { "The stack is empty"!!!; }
+        ? 'isEmpty() { "stack is empty"!!!; }
         * 'stack<<-/>>;
     }
 
@@ -33,11 +35,62 @@
     isEmpty * { * 'stack$ :: \; }
 
     toString * {
-        ?? { top : 'peek(); }
-        !! { top : _; }
-        * "Stack(capacity=" + 'size.toString()
-        + ", size=" + 'stack$.toString()
-        + ", top=" + top.toString()
+        ?? { top: 'peek(); }
+        !! { top: _; }
+        ? top?! :: "String" { top: wrap(top.toString(), "\""); }
+        * "Stack(capacity:" + 'size.toString()
+        + ", size:" + 'stack$.toString()
+        + ", top:" + top.toString()
         + ")";
+    }
+}
+
+@ Queue {
+
+    create size:-/ * {
+        'queue: [];
+        'size: size;
+    }
+
+    special * { * 'queue$; }
+    isEmpty * { * 'special() :: \; }
+    isFull * { * 'special() :: 'size; }
+
+    throwEmpty * { ? 'isEmpty() { "queue is empty"!!!; } }
+
+    put item * {
+        ? 'isFull() { "queue is full (size " + 'size.toString() + ")"!!!; }
+        'queue+: [item];
+    }
+
+    putAll items * {
+        ... item ->? items { 'put(item); }
+    }
+
+    get * {
+        'throwEmpty();
+        out: 'queue<<\>>;
+        'queue-: \;
+        * out;
+    }
+
+    first * { 'throwEmpty(); * 'queue<<\>>; }
+    last * { 'throwEmpty(); * 'queue<<-/>>; }
+
+    toString * {
+        ? 'special() <: /\/ {
+            items: 'queue.toString();
+        } ,, ? 'special() > /\/ {
+            first: 'first().toString();
+            last: 'last().toString();
+            ? first?! :: "String" { first: wrap(first, "\""); }
+            ? last?! :: "String" { last: wrap(last, "\""); }
+            items: "[" + first.toString() + ", ..., " + last.toString() + "]";
+        } ,, {
+            items: "[]";
+        }
+        * "Queue(capacity:" + 'size.toString()
+        + ", size:" + 'queue$.toString()
+        + ", items:" + items + ")";
     }
 }

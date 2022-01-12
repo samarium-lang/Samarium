@@ -201,7 +201,7 @@
 
 (task)
 📦 Collections:
-- [ ] 1. Queue
+- [x] 1. Queue
 - [ ] 2. Deque
 - [ ] 3. Set
 - [x] 4. Stack
