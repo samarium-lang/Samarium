@@ -112,7 +112,7 @@
 📚 Standard Library:
 - [ ] 1. collections
 - [ ] 2. iter
-- [ ] 3. math
+- [x] 3. math
 - [x] 4. random
 - [x] 5. string
 - [ ] 6. types
@@ -134,7 +134,7 @@
 - [x] 4. lcm
 - [x] 5. product
 - [x] 6. sum
-- [ ] 7. sqrt
+- [x] 7. sqrt
 - [x] 8. max
 - [x] 9. min
 - [x] 10. fromDecimal
