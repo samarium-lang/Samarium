@@ -3,20 +3,20 @@ choice array * {
 }
 
 shuffle array * {
-    shuffledArray : [];
-    oldArray : array<<>>;
+    shuffledArray: [];
+    oldArray: array<<>>;
     .. oldArray$ > \ {
-        e : oldArray<<^^\ -> oldArray$ - /^^>>;
-        shuffledArray +: [e];
-        oldArray -: [e];
+        e: oldArray<<^^\ -> oldArray$ - /^^>>;
+        shuffledArray+: [e];
+        oldArray-: [e];
     }
     * shuffledArray;
 }
 
 choices array k * {
-    o : [];
+    o: [];
     .. o$ < k {
-        o +: [array<<^^\ -> array$ - /^^>>];
+        o+: [array<<^^\ -> array$ - /^^>>];
     }
     * o;
 }
@@ -25,12 +25,12 @@ sample array k * {
     ? k > array$ {
         "The sample can't be bigger than the array"!!!;
     }
-    o : [];
-    oldArray : array<<>>;
+    o: [];
+    oldArray: array<<>>;
     .. o$ < k {
-        e : oldArray<<^^\ -> oldArray$ - /^^>>;
-        o +: [e];
-        oldArray -: [e];
+        e: oldArray<<^^\ -> oldArray$ - /^^>>;
+        o+: [e];
+        oldArray-: [e];
     }
     * o;
 }

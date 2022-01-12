@@ -7,17 +7,17 @@ factorial n * {
     ? n < \ {
         "factorial is defined only for non-negative numbers"!!!;
     }
-    o : /;
+    o: /;
     .. n > \ {
-        o ++: n;
-        n -: /;
+        o++: n;
+        n-: /;
     }
     * o;
 }
 
 gcd a b * {
     .. b {
-        a, b : b, a --- b;
+        a, b: b, a --- b;
     }
     * a;
 }
@@ -27,58 +27,58 @@ lcm a b * {
 }
 
 product array * {
-    o : /;
+    o: /;
     ... e ->? array {
-        o ++: e;
+        o++: e;
     }
     * o;
 }
 
 sum array * {
-    o : \;
+    o: \;
     ... e ->? array {
-        o +: e;
+        o+: e;
     }
     * o;
 }
 
 max array * {
-    o : array<<\>>;
+    o: array<<\>>;
     ... e ->? array {
         ? e > o {
-            o : e;
+            o: e;
         }
     }
     * o;
 }
 
 min array * {
-    o : array<<\>>;
+    o: array<<\>>;
     ... e ->? array {
         ? e < o {
-            o : e;
+            o: e;
         }
     }
     * o;
 }
 
 fromDecimal string * {
-    neg : \;
-    o : \;
-    i : \;
-    errorMsg : "invalid decimal literal for fromDecimal";
+    neg: \;
+    o: \;
+    i: \;
+    errorMsg: "invalid decimal literal for fromDecimal";
     .. i < string$ {
-        digit : string<<i>>;
+        digit: string<<i>>;
         ? digit :: "-" {
             ? i ::: \ { errorMsg!!!; }
-            neg : /;
+            neg: /;
         }
         ,,? digit ~~->? "0123456789" { errorMsg!!!; }
         ,, {
-            o ++: /\/\;
-            o +: digit% - "0"%;
+            o++: /\/\;
+            o+: digit% - "0"%;
         }
-        i +: /;
+        i+: /;
     }
     * -o ? neg ,, o;
 }
@@ -87,17 +87,17 @@ sqrt n * {
     ? n < \ {
         "sqrt is defined only for non-negative numbers"!!!;
     }
-    root : \;
-    rmdr : \;
-    s : n$$ - (/ ? n$$ --- /\ ,, /\);
+    root: \;
+    rmdr: \;
+    s: n$$ - (/ ? n$$ --- /\ ,, /\);
     .. s >: \ {
-        bits : shr(n,s) & //;
-        rmdr : shl(rmdr,/\) | bits;
-        cand : shl(root,/\) | /;
-        bitnext : rmdr >: cand;
-        root : shl(root,/) | bitnext;
-        rmdr -: cand ++ bitnext;
-        s -: /\;
+        bits: shr(n,s) & //;
+        rmdr: shl(rmdr,/\) | bits;
+        cand: shl(root,/\) | /;
+        bitnext: rmdr >: cand;
+        root: shl(root,/) | bitnext;
+        rmdr-: cand ++ bitnext;
+        s-: /\;
     }
     * root;
 }

@@ -1,18 +1,18 @@
 <-math.sum;
 
 find array target * {
-    index : \;
+    index: \;
     ? array?! :: "String" {
         .. index + target$ <: array$ {
             ? array<<index..index+target$>> :: target {
                 * index;
             }
-            index +: /;
+            index+: /;
         }
     } ,, {
         ... e ->? array {
             ? e :: target { * index; }
-            index +: /;
+            index+: /;
         }
     }
     * -/;
@@ -36,20 +36,20 @@ map array function * {
 }
 
 reverse array * {
-    o : [];
-    i : array$ - /;
+    o: [];
+    i: array$ - /;
     .. i >: \ {
-        o +: [array<<i>>];
-        i -: /;
+        o+: [array<<i>>];
+        i-: /;
     }
     * o;
 }
 
 takeWhile array function * {
-    o : [];
+    o: [];
     ... e ->? array {
         ? function(e) {
-            o +: [e];
+            o+: [e];
             ->
         }
         <-
@@ -58,37 +58,37 @@ takeWhile array function * {
 }
 
 dropWhile array function * {
-    o : [];
-    i : \;
+    o: [];
+    i: \;
     ... e ->? array {
-        i +: /;
+        i+: /;
         ? ~~ function(e) {
-            o +: [e];
+            o+: [e];
             <-
         }
     }
     ... e ->? array<<i..array$>> {
-        o +: e;
+        o+: e;
     }
     * o;
 }
 
 accumulate array function * {
-    prev : array<<\>>;
-    o : [array<<\>>];
+    prev: array<<\>>;
+    o: [array<<\>>];
     ... e ->? array {
-        o +: [function(prev, e)];
-        prev : e;
+        o+: [function(prev, e)];
+        prev: e;
     }
     * o;
 }
 
 enumerate array * {
-    o : [];
-    i : \;
+    o: [];
+    i: \;
     ... e ->? array {
-        o +: [[i, e]];
-        i +: /;
+        o+: [[i, e]];
+        i+: /;
     }
     * o;
 }
@@ -98,16 +98,16 @@ range start stop:_ step:/ * {
         "step cannot be zero"!!!;
     }
     ? _ :: stop {
-        stop : start;
-        start : \;
+        stop: start;
+        start: \;
     }
-    o : [];
+    o: [];
     .. (step < \) ^ (start < stop) {
-        o +: [start];
-        start +: step;
+        o+: [start];
+        start+: step;
     }
     ? step < \ && o {
-        o -: -/;
+        o-: -/;
     }
     * o;
 }
