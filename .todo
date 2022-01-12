@@ -67,6 +67,7 @@
 - [x] 26. Slicing
 - [x] 27. Switch token behavior around Token.IF, Token.ATTRIBUTE, Token.STDIN
 - [x] 28. Token concepts
+- [ ] 29. Add main function
 ----
 
 (task)
@@ -95,6 +96,7 @@
 - [x] 1. Require imports to be but in the first lines of the file
 - [x] 2. Split import part from the rest of the code
 - [x] 3. Execute import part, add result to the global namespace
+- [ ] 4. Get rid of smmeta files
 ----
 
 (task)
