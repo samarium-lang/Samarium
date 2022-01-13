@@ -69,7 +69,9 @@ def tokenize(program: str) -> List[Tokenlike]:
         # Multisemantic token handling
         elif scroller.pointer in MULTISEMANTIC:
             if not (out := MULTISEMANTIC[scroller.pointer](scroller)):
-                handle_exception(SamariumSyntaxError(scroller.pointer))
+                handle_exception(
+                    SamariumSyntaxError(f"invalid token: {scroller.pointer}")
+                )
             if out == Token.COMMENT:
                 comment = True
                 scroller.shift(2)
