@@ -87,17 +87,8 @@ def readfile(path: str) -> str:
         return f.read()
 
 
-def readline(prompt: str = ""):
-    in_ = input(prompt)
-    if set(in_) == {"/", "\\"}:
-        return objects.Integer(int(
-            in_.replace("/", "1")
-            .replace("\\", "0"), 2
-        ))
-    elif in_.isdigit():
-        return objects.Integer(int(in_))
-    else:
-        return objects.String(in_)
+def readline(prompt: str = "") -> objects.String:
+    return objects.String(input(prompt))
 
 
 def run(code: str, ch: CodeHandler) -> CodeHandler:
