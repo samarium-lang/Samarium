@@ -25,15 +25,14 @@ class SamariumError(Exception):
 
 
 class SamariumImportError(SamariumError):
-    blank = "Import error"
-    prefix = "Invalid module: "
+    blank = "import error"
+    prefix = "invalid module: "
 
 
 class SamariumSyntaxError(SamariumError):
-    blank = "Invalid syntax"
-    prefix = "Unsupported character: "
+    blank = "invalid syntax"
 
 
 class SamariumTypeError(SamariumError):
-    blank = "Invalid type"
-    prefix = "Unsupported type: "
+    blank = "invalid type"
+    prefix = "unsupported type: "
