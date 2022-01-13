@@ -151,7 +151,7 @@
 🔁 Iter:
 - [x] 1. find
 - [x] 2. count
-- [ ] 3. accumulate
+- [x] 3. accumulate
 - [x] 4. dropWhile
 - [x] 5. enumerate
 - [x] 6. filter
@@ -161,6 +161,7 @@
 - [x] 10. reverse
 - [x] 11. takeWhile
 - [ ] 12. sort
+- [x] 13. reduce
 ----
 
 (task)
