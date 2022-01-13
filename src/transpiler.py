@@ -334,7 +334,10 @@ class Transpiler:
         }.get(token, 0)
         if token == Token.STDIN:
             with suppress(IndexError):
-                if isinstance(self.ch.line[-1], str):
+                if (
+                    isinstance(self.ch.line[-1], str) and
+                    not self.ch.line[-1].isspace()
+                ):
                     return f"readline({self.ch.line.pop()})"
             return "readline()"
         elif (
