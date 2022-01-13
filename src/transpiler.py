@@ -37,6 +37,7 @@ class Transpiler:
         self.set_slice = False
         self.slicing = False
         self.slice_tokens = []
+        self.random_tokens = []
 
     def is_first_token(self) -> bool:
         return not self.ch.line or (
@@ -108,6 +109,9 @@ class Transpiler:
         # For when `transpile_token(None)` is called recursively
         if token is not None:
             self.ch.line_tokens += [token]
+
+        if self.ch.switches["random"]:
+            self.random_tokens += [token]
 
         if self.ch.switches["newline"]:
             self.ch.code += ["".join(self.ch.line)]
@@ -243,7 +247,7 @@ class Transpiler:
                     self.transpile_token(i)
                 self.ch.line += [")" + "),"[assign]]
         else:
-            handle_exception(SamariumSyntaxError())
+            handle_exception(SamariumSyntaxError("invalid slice syntax"))
         self.slice_tokens = []
         self.slicing = False
         return assign
@@ -344,6 +348,11 @@ class Transpiler:
             self.safewrap("get_type")
         elif token == Token.RANDOM:
             self.ch.switches["random"] = not self.ch.switches["random"]
+            if (
+                not self.ch.switches["random"]
+                and Token.TO not in self.random_tokens
+            ):
+                handle_exception(SamariumSyntaxError("missing '->' in random"))
             return out
         elif token == Token.END:
             if self.ch.switches["import"]:
