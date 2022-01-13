@@ -57,9 +57,9 @@ def import_module(data: str, ch: CodeHandler):
     name, objects = data.split(".")
     name = name[:-1]
     objects = objects.split(",")
-    path = "."
+    path = sys.argv[1][:sys.argv[1].rfind("/") + 1]
 
-    if f"{name}.sm" not in os.listdir():
+    if f"{name}.sm" not in os.listdir(path):
         if name not in MODULE_NAMES:
             raise exceptions.SamariumImportError(name)
         path = os.path.join(

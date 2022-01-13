@@ -68,7 +68,7 @@
 - [x] 27. Switch token behavior around Token.IF, Token.ATTRIBUTE, Token.STDIN
 - [x] 28. Token concepts
 - [x] 29. Add main function
-- [x] 30. Support import chaining
+
 ----
 
 (task)
@@ -98,6 +98,8 @@
 - [x] 2. Split import part from the rest of the code
 - [x] 3. Execute import part, add result to the global namespace
 - [x] 4. Get rid of smmeta files
+- [x] 5. Support import chaining
+- [x] 6. Support local imports
 ----
 
 (task)
