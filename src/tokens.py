@@ -19,11 +19,13 @@ class Token(Enum):
     EQ = "::"
     NE = ":::"
 
-    # Logical and Bitwise
+    # Logical and Membership
     AND = "&&"
     OR = "||"
     NOT = "~~"
+    IN = "->?"
 
+    # Biwise
     BINAND = "&"
     BINOR = "|"
     BINNOT = "~"
@@ -50,39 +52,40 @@ class Token(Enum):
     TRY = "??"
     CATCH = "!!"
     THROW = "!!!"
+    FROM = "<-"
+    TO = "->"
 
     # Comments
     COMMENT = "=="
     COMMENT_OPEN = "==<"
     COMMENT_CLOSE = ">=="
 
-    # OOP
+    # OOP / Functions
     FUNCTION = "*"
     CLASS = "@"
     LAMBDA = "#"
     INSTANCE = "'"
+    MAIN = "=>"
 
     # Slicing
     SLICE_OPEN = "<<"
     SLICE_CLOSE = ">>"
     SLICE_STEP = "**"
 
-    # Other
-    ASSIGN = ":"
-    ATTRIBUTE = "."
+    # Object Manipulation
     CAST = "%"
     DOLLAR = "$"
-    END = ";"
-    FROM = "<-"
-    IN = "->?"
-    NULL = "_"
-    RANDOM = "^^"
-    SEP = ","
-    STDIN = "???"
-    STDOUT = "!"
-    STRING = '"'
-    TO = "->"
     SIZE = ":!:"
     TYPE = "?!"
     HASH = "##"
-    MAIN = "=>"
+    STDIN = "???"
+    STDOUT = "!"
+
+    # Other
+    ASSIGN = ":"
+    ATTRIBUTE = "."
+    END = ";"
+    NULL = "_"
+    RANDOM = "^^"
+    SEP = ","
+    STRING = '"'
