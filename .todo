@@ -68,7 +68,8 @@
 - [x] 27. Switch token behavior around Token.IF, Token.ATTRIBUTE, Token.STDIN
 - [x] 28. Token concepts
 - [x] 29. Add main function
-
+- [ ] 30. Add file IO
+- [ ] 31. Add sleep
 ----
 
 (task)
