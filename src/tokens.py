@@ -81,6 +81,23 @@ class Token(Enum):
     STDIN = "???"
     STDOUT = "!"
 
+    # File I/O
+    CREATE = "?~>"
+    READ = "<~~"
+    WRITE = "~~>"
+    READ_WRITE = "<~>"
+    APPEND = "&~~>"
+    BINARY_READ = "<~%"
+    BINARY_WRITE = "%~>"
+    BINARY_READ_WRITE = "<%>"
+    BINARY_APPEND = "&%~>"
+    QUICK_READ = "<~"
+    QUICK_WRITE = "~>"
+    QUICK_APPEND = "&~>"
+    QUICK_BINARY_READ = "<%"
+    QUICK_BINARY_WRITE = "%>"
+    QUICK_BINARY_APPEND = "&%>"
+
     # Other
     ASSIGN = ":"
     ATTRIBUTE = "."
