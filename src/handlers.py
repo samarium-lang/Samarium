@@ -1,4 +1,5 @@
 from tokens import Token
+from typing import Optional
 
 
 class Scroller:
@@ -41,11 +42,23 @@ def colon(scroller: Scroller) -> Token:
     return Token.ASSIGN
 
 
-def less(scroller: Scroller) -> Token:
+def less(scroller: Scroller) -> Optional[Token]:
+    if scroller.next() == "~":
+        if scroller.next(2) == "~":
+            return Token.FILE_READ
+        elif scroller.next(2) == ">":
+            return Token.FILE_READ_WRITE
+        elif scroller.next(2) == "%":
+            return Token.FILE_BINARY_READ
+    elif scroller.next() == "%":
+        if scroller.next(2) == ">":
+            return Token.FILE_BINARY_READ_WRITE
     tokens = {
         "-": Token.FROM,
         "<": Token.SLICE_OPEN,
-        ":": Token.LE
+        ":": Token.LE,
+        "%": Token.FILE_QUICK_BINARY_READ,
+        "~": Token.FILE_QUICK_READ
     }
     return tokens.get(scroller.next(), Token.LT)
 
@@ -60,7 +73,7 @@ def greater(scroller: Scroller) -> Token:
     return tokens.get(scroller.next(), Token.GT)
 
 
-def equal(scroller: Scroller) -> Token | None:
+def equal(scroller: Scroller) -> Optional[Token]:
     if scroller.next() == "=":
         try:
             return (Token.COMMENT, Token.COMMENT_OPEN)[scroller.next(2) == "<"]
@@ -78,6 +91,9 @@ def dot(scroller: Scroller) -> Token:
 def question(scroller: Scroller) -> Token:
     if scroller.next() == "?":
         return (Token.TRY, Token.STDIN)[scroller.next(2) == "?"]
+    elif scroller.next() == "~":
+        if scroller.next(2) == ">":
+            return Token.FILE_CREATE
     return (Token.IF, Token.TYPE)[scroller.next() == "!"]
 
 
@@ -92,11 +108,25 @@ def pipe(scroller: Scroller) -> Token:
 
 
 def ampersand(scroller: Scroller) -> Token:
+    if scroller.program[:4] == "&~~>":
+        return Token.FILE_APPEND
+    elif scroller.program[:4] == "&%~>":
+        return Token.FILE_BINARY_APPEND
+    elif scroller.program[:3] == "&~>":
+        return Token.FILE_QUICK_APPEND
+    elif scroller.program[:3] == "&%>":
+        return Token.FILE_QUICK_BINARY_APPEND
     return (Token.BINAND, Token.AND)[scroller.next() == "&"]
 
 
 def tilde(scroller: Scroller) -> Token:
-    return (Token.BINNOT, Token.NOT)[scroller.next() == "~"]
+    if scroller.next() == "~" and scroller.next(2) == ">":
+        return Token.FILE_WRITE
+    tokens = {
+        ">": Token.FILE_QUICK_WRITE,
+        "~": Token.NOT
+    }
+    return tokens.get(scroller.next(), Token.BINNOT)
 
 
 def caret(scroller: Scroller) -> Token:
@@ -124,3 +154,12 @@ def hash_(scroller: Scroller) -> Token:
 
 def asterisk(scroller: Scroller) -> Token:
     return (Token.FUNCTION, Token.SLICE_STEP)[scroller.next() == "*"]
+
+
+def percent(scroller: Scroller) -> Optional[Token]:
+    if scroller.next() == ">":
+        return Token.FILE_QUICK_BINARY_WRITE
+    elif scroller.next() == "~":
+        if scroller.next(2) == ">":
+            return Token.FILE_BINARY_WRITE
+    return None
