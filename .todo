@@ -69,28 +69,29 @@
 - [x] 28. Token concepts
 - [x] 29. Add main function
 - [ ] 30. Add file IO
-    - [ ] 1. Create File
-    - [ ] 2. Open Text File
+    - [ ] 1. Add handlers
+    - [ ] 2. Create File
+    - [ ] 3. Open Text File
         - [ ] 1. Read
         - [ ] 2. Write
         - [ ] 3. Read & Write
         - [ ] 4. Append
-    - [ ] 3. Open Binary File
+    - [ ] 4. Open Binary File
         - [ ] 1. Read
         - [ ] 2. Write
         - [ ] 3. Read & Write
         - [ ] 4. Append
-    - [ ] 4. Close File
-    - [ ] 5. Position
-    - [ ] 6. Quick Text
+    - [ ] 5. Close File
+    - [ ] 6. Position
+    - [ ] 7. Quick Text
         - [ ] 1. Read
         - [ ] 2. Write
         - [ ] 3. Append
-    - [ ] 7. Quick Binary
+    - [ ] 8. Quick Binary
         - [ ] 1. Read
         - [ ] 2. Write
         - [ ] 3. Append
-    - [ ] 8. File Operations
+    - [ ] 9. File Operations
         - [ ] 1. Text Load
         - [ ] 2. Text Load (n bytes)
         - [ ] 3. Text Write
@@ -98,6 +99,7 @@
         - [ ] 5. Binary Load (n bytes)
         - [ ] 6. Binary Write
 - [ ] 31. Add sleep
+- [ ] 32. Add assert(?)
 ----
 
 (task)
