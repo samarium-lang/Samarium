@@ -1,5 +1,3 @@
-<-iter.range,find;
-
 uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 lowercase: "abcdefghijklmnopqrstuvwxyz";
 letters: uppercase + lowercase;
@@ -101,6 +99,7 @@ isWrapped string chars * {
 }
 
 toLower string * {
+    <-iter.range;
     ? string?! ::: "String" {
         "Invalid type: " + string?!!!!;
     }
@@ -116,6 +115,7 @@ toLower string * {
 }
 
 toUpper string * {
+    <-iter.range;
     ? string?! ::: "String" {
         "Invalid type: " + string?!!!!;
     }
@@ -207,6 +207,7 @@ wrap string wrapper * {
 
 replace string replacement count:-/ * {
     replaceOne string from to * {
+        <-iter.find;
         replaced: \;
         i: find(string, from);
         ? i >: \ {

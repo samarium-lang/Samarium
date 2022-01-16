@@ -150,7 +150,7 @@
 - [ ] 4. Fix highlighting for class with parents on separate lines
 - [ ] 5. Fix highlighting for functions with params on separate lines
 - [ ] 6. Fix function definition highlighting when default arguments are used
-- [ ] 7. Fix first parameter of a lambda function being highlighted like a function name
+- [x] 7. Fix first parameter of a lambda function being highlighted like a function name
 ----
 
 (task)
