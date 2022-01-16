@@ -68,36 +68,36 @@
 - [x] 27. Switch token behavior around Token.IF, Token.ATTRIBUTE, Token.STDIN
 - [x] 28. Token concepts
 - [x] 29. Add main function
-- [ ] 30. Add file IO
+- [x] 30. Add file IO
     - [x] 1. Add handlers
     - [x] 2. Create File
-    - [ ] 3. Open Text File
-        - [ ] 1. Read
-        - [ ] 2. Write
-        - [ ] 3. Read & Write
-        - [ ] 4. Append
-    - [ ] 4. Open Binary File
-        - [ ] 1. Read
-        - [ ] 2. Write
-        - [ ] 3. Read & Write
-        - [ ] 4. Append
+    - [x] 3. Open Text File
+        - [x] 1. Read
+        - [x] 2. Write
+        - [x] 3. Read & Write
+        - [x] 4. Append
+    - [x] 4. Open Binary File
+        - [x] 1. Read
+        - [x] 2. Write
+        - [x] 3. Read & Write
+        - [x] 4. Append
     - [x] 5. Close File
-    - [ ] 6. Position
+    - [x] 6. Position
     - [x] 7. Quick Text
         - [x] 1. Read
         - [x] 2. Write
         - [x] 3. Append
-    - [ ] 8. Quick Binary
-        - [ ] 1. Read
-        - [ ] 2. Write
-        - [ ] 3. Append
-    - [ ] 9. File Operations
+    - [x] 8. Quick Binary
+        - [x] 1. Read
+        - [x] 2. Write
+        - [x] 3. Append
+    - [x] 9. File Operations
         - [x] 1. Text Load
-        - [ ] 2. Text Load (n bytes)
-        - [ ] 3. Text Write
-        - [ ] 4. Binary Load
-        - [ ] 5. Binary Load (n bytes)
-        - [ ] 6. Binary Write
+        - [x] 2. Text Load (n bytes)
+        - [x] 3. Text Write
+        - [x] 4. Binary Load
+        - [x] 5. Binary Load (n bytes)
+        - [x] 6. Binary Write
 - [ ] 31. Add sleep
 - [ ] 32. Add assert(?)
 ----
