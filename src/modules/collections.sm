@@ -1,4 +1,5 @@
 <-string.join,wrap;
+<-iter.find;
 
 @ Stack {
 
@@ -53,8 +54,8 @@
     }
 
     special * { * 'queue$; }
-    isEmpty * { * 'special() :: \; }
-    isFull * { * 'special() :: 'size; }
+    isEmpty * { * '$ :: \; }
+    isFull * { * '$ :: 'size; }
 
     throwEmpty * { ? 'isEmpty() { "queue is empty"!!!; } }
 
@@ -78,9 +79,9 @@
     last * { 'throwEmpty(); * 'queue<<-/>>; }
 
     toString * {
-        ? 'special() <: /\/ {
+        ? '$ <: /\/ {
             items: 'queue.toString();
-        } ,, ? 'special() > /\/ {
+        } ,, ? '$ > /\/ {
             first: 'first().toString();
             last: 'last().toString();
             ? first?! :: "String" { first: wrap(first, "\""); }
@@ -92,5 +93,113 @@
         * "Queue(capacity:" + 'size.toString()
         + ", size:" + 'queue$.toString()
         + ", items:" + items + ")";
+    }
+}
+
+@ Set {
+
+    create items:[] capacity:-/ * {
+        'items: [i ... i ->? items] ? items ,, [];
+        'capacity: capacity;
+    }
+
+    special * { * 'items$; }
+
+    add value * {
+        ? ~~ 'has(value) {
+            ? 'isFull() {
+                "set is full (capacity " + 'capacity.toString() + ")"!!!;
+            }
+            'items+: [value];
+            * /;
+        }
+        * \;
+    }
+
+    toBit * { * ~~ 'isEmpty(); }
+
+    toString * {
+        * "Set(capacity:" + 'capacity.toString()
+        + ", size:" + '$.toString()
+        + ", items:" + 'items.toString()
+        + ")";
+    }
+
+    remove value * {
+        idx: find('items, value);
+        ? idx < \ { * _; }
+        popped: 'items - idx;
+        * popped;
+    }
+
+    has value * { * find('items, value) >: \; }
+
+    values * { * 'items; }
+
+    clear * { 'items: []; }
+
+    isEmpty * { * '$ :: \; }
+
+    isFull * { * '$ :: 'capacity; }
+
+    newSetSize a b * { * a$ ? a$ > b$ ,, b$; }
+
+    union other * {
+        ? other?! ::: "Set" {
+            "expected Set, received " + other?!!!!;
+        }
+
+        unionSet: Set('values(), 'newSetSize(', other));
+
+        ... value ->? other.values() {
+            unionSet.add(value);
+        }
+
+        * unionSet;
+    }
+
+    intersection other * {
+        ? other?! ::: "Set" {
+            "expected Set, received " + other?!!!!;
+        }
+
+        intersectionSet: Set(size: 'newSetSize(', other));
+
+        ... value ->? 'values() {
+            ? other.has(value) {
+                intersectionSet.add(value);
+            }
+        }
+
+        * intersectionSet;
+    }
+
+    difference other * {
+        ? other?! ::: "Set" {
+            "expected Set, received " + other?!!!!;
+        }
+
+        differenceSet: Set(size: 'newSetSize(', other));
+
+        ... value ->? 'values() {
+            ? ~~ other.has(value) {
+                differenceSet.add(value);
+            }
+        }
+
+        * differenceSet;
+    }
+
+    isSubset other * {
+        ? other?! ::: "Set" {
+            "expected Set, received " + other?!!!!;
+        }
+
+        ? '$ > other$ { * \; }
+
+        ... value ->? 'values() {
+            ? ~~ other.has(value) { * \; }
+        }
+        * /;
     }
 }
