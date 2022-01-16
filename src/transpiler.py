@@ -307,13 +307,9 @@ class Transpiler:
             )
         elif "QUICK" in raw_token.name:
             if "READ" in raw_token.name:
-                quick_template.insert(
-                    0, f"{before_token}="
-                )
+                quick_template.insert(0, f"{before_token}=")
             else:
-                quick_template.insert(
-                    2, f"data={before_token},"
-                )
+                quick_template.insert(2, f"data={before_token},")
             return "".join(quick_template).format(
                 raw_token.name.split("_")[-1]
             )
