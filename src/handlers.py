@@ -42,7 +42,7 @@ def colon(scroller: Scroller) -> Token:
     return Token.ASSIGN
 
 
-def less(scroller: Scroller) -> Optional[Token]:
+def less(scroller: Scroller) -> Token:
     if scroller.next() == "~":
         if scroller.next(2) == "~":
             return Token.FILE_READ
