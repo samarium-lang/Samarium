@@ -57,7 +57,7 @@
 - [x] 16. SMNull wrapper for functions
 - [x] 17. Remove the need for commas in lambda parameters
 - [ ] 18. SMNull wrapper for lambdas
-- [ ] 19. Ban genexprs
+- [ ] 19. Filter Python types (e.g. `genexpr` or `tuple`)
 - [x] 20. Empty class bodies
 - [x] 21. Include all non-Samarium types in `assert_smtype`
 - [x] 22. Replace slicing syntax
@@ -69,8 +69,8 @@
 - [x] 28. Token concepts
 - [x] 29. Add main function
 - [ ] 30. Add file IO
-    - [ ] 1. Add handlers
-    - [ ] 2. Create File
+    - [x] 1. Add handlers
+    - [x] 2. Create File
     - [ ] 3. Open Text File
         - [ ] 1. Read
         - [ ] 2. Write
@@ -81,18 +81,18 @@
         - [ ] 2. Write
         - [ ] 3. Read & Write
         - [ ] 4. Append
-    - [ ] 5. Close File
+    - [x] 5. Close File
     - [ ] 6. Position
-    - [ ] 7. Quick Text
-        - [ ] 1. Read
-        - [ ] 2. Write
-        - [ ] 3. Append
+    - [x] 7. Quick Text
+        - [x] 1. Read
+        - [x] 2. Write
+        - [x] 3. Append
     - [ ] 8. Quick Binary
         - [ ] 1. Read
         - [ ] 2. Write
         - [ ] 3. Append
     - [ ] 9. File Operations
-        - [ ] 1. Text Load
+        - [x] 1. Text Load
         - [ ] 2. Text Load (n bytes)
         - [ ] 3. Text Write
         - [ ] 4. Binary Load
