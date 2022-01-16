@@ -247,7 +247,7 @@
 📦 Collections:
 - [x] 1. Queue
 - [ ] 2. Deque
-- [ ] 3. Set
+- [x] 3. Set
 - [x] 4. Stack
 - [ ] 5. Tuple
 - [ ] 6. StaticArray
