@@ -54,14 +54,18 @@ def smhash(obj) -> Integer:
     return Integer(hash(str(hash(obj))))
 
 
-def verify_type(obj: Any):
-    if isinstance(obj, (Class, Callable)):
+def verify_type(obj: Any, *args):
+    if args:
+        for i in [obj, *args]:
+            verify_type(i)
+    elif isinstance(obj, (Class, Callable)):
         return obj
     elif isinstance(obj, tuple):
         raise SamariumSyntaxError("missing brackets")
     elif isinstance(obj, type(i for i in [])):
         raise SamariumSyntaxError("invalid comprehension")
-    raise SamariumTypeError()
+    else:
+        raise SamariumTypeError()
 
 
 class Class:
