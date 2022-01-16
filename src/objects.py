@@ -1,7 +1,12 @@
+# type: ignore
 from __future__ import annotations
 from contextlib import suppress
-from exceptions import NotDefinedError, SamariumTypeError
-from typing import Any, Callable, Dict, Iterator, List, TypeVar, Union
+from enum import auto, Enum
+from exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
+from typing import (
+    Any, Callable, Dict, Iterator, IO,
+    List, Optional, TypeVar, Tuple, Union
+)
 
 T = TypeVar("T")
 
@@ -621,3 +626,99 @@ class Array(Class):
     def multiplyAssign_(self, other: Integer) -> Array:
         self.value *= other.value
         return self
+
+
+class Mode(Enum):
+    READ = "r"
+    WRITE = "w"
+    READ_WRITE = "r+"
+    APPEND = "a"
+
+
+class FileManager:
+
+    @staticmethod
+    def create(path: String):
+        with open(path.value, "x") as _:
+            pass
+
+    @staticmethod
+    def open(
+        path: String,
+        mode: Mode,
+        *, binary: bool = False
+    ) -> Tuple[IO, bool]:
+        f = open(path.value, mode.value + "b" * binary)
+        return File(f, path.value, binary)
+
+    @staticmethod
+    def open_binary(path: String, mode: Mode) -> Tuple[IO, bool]:
+        return FileManager.open(path, mode, binary=True)
+
+    @staticmethod
+    def quick(
+        path: Union[String, File],
+        mode: Mode,
+        *,
+        data: Optional[String] = None,
+        binary: bool = False
+    ) -> Optional[Union[String, Array]]:
+        if isinstance(path, String):
+            with open(path.value, mode.value) as f:
+                if mode == Mode.READ:
+                    if binary:
+                        return Array([Integer(i) for i in f.read()])
+                    return String(f.read())
+                if data is not None:
+                    if isinstance(data, Array):
+                        b"".join([int(x).to_bytes(1, "big") for x in data])
+                    else:
+                        f.write(data.value)
+                else:
+                    raise SamariumValueError("missing data")
+        else:
+            file = path
+            if mode == Mode.READ:
+                return file.load()
+            if data is not None:
+                file.save(data)
+            else:
+                raise SamariumValueError("missing data")
+
+
+class File(Class):
+
+    def create_(self, file: IO, path: str, binary: bool):
+        self.binary = binary
+        self.path = path
+        self.value = file
+
+    def toString_(self) -> String:
+        return String(f"File(path:{self.path})")
+
+    def not_(self):
+        self.value.close()
+
+    def getSlice_(self, slice: Slice) -> Integer:
+        if all(i is None for i in slice.special_().value.values()):
+            return Integer(self.value.tell())
+
+    def getItem_(self, index: Integer):
+        self.value.seek(index.value)
+
+    def load(self, bytes: Optional[Integer] = None) -> Union[String, Array]:
+        if bytes is None:
+            bytes = Integer(-1)
+        val = self.value.read(bytes.value)
+        return Array([Integer(i) for i in val]) if self.binary else String(val)
+
+    def save(self, data: Union[String, Array]):
+        if (
+            self.binary and isinstance(data, String)
+            or not self.binary and isinstance(data, Array)
+        ):
+            raise SamariumTypeError(type(data).__name__)
+        if isinstance(data, Array):
+            b"".join([int(x).to_bytes(1, "big") for x in data])
+        else:
+            self.value.write(data.value)
