@@ -1,4 +1,3 @@
-import objects
 import sys
 from transpiler import CodeHandler
 from core import run, readfile
