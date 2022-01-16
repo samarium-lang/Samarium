@@ -65,8 +65,8 @@ def verify_type(obj: Any):
 
 
 class Class:
-    def __init__(self, *args: Any):
-        self.create_(*args)
+    def __init__(self, *args: Any, **kwargs: Any):
+        self.create_(*args, **kwargs)
 
     def __bool__(self) -> bool:
         return bool(self.toBit_().value)
@@ -201,7 +201,7 @@ class Class:
             other
         )
 
-    def create_(self, *args: Any):
+    def create_(self, *args: Any, **kwargs: Any):
         raise NotDefinedError(self, "create")
 
     def toBit_(self) -> Integer:

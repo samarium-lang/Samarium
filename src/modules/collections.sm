@@ -179,7 +179,7 @@
             "expected Set, received " + other?!!!!;
         }
 
-        differenceSet: Set(size: 'newSetSize(', other));
+        differenceSet: Set(capacity: 'newSetSize(', other));
 
         ... value ->? 'values() {
             ? ~~ other.has(value) {
