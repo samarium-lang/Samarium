@@ -62,13 +62,12 @@ def import_module(data: str, ch: CodeHandler):
 
 def print_safe(*args):
     types = [type(i) for i in args]
-    if any(i in {type(x for x in ""), tuple} for i in types):
+    if any(i in (tuple, type(i for i in [])) for i in types):
         raise exceptions.SamariumSyntaxError(
             "missing brackets"
             if tuple in types else
             "invalid comprehension"
         )
-    
     print(*args)
 
 

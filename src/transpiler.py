@@ -424,9 +424,10 @@ class Transpiler:
                 handle_exception(SamariumSyntaxError("missing '->' in random"))
             return out
         elif token == Token.END:
+            start = self.ch.indent > 0
             if any(token in FILE_IO_TOKENS for token in self.ch.line):
-                self.ch.line[self.ch.indent > 0:] = [
-                    self.transpile_fileio(self.ch.line[self.ch.indent > 0:])
+                self.ch.line[start:] = [
+                    self.transpile_fileio(self.ch.line[start:])
                 ]
             if self.ch.switches["import"]:
                 self.ch.switches["import"] = False
@@ -439,7 +440,6 @@ class Transpiler:
                 self.set_slice = False
             if "=" in self.ch.line:
                 assign_idx = self.ch.line.index("=")
-                start = self.ch.indent > 0
                 stop = assign_idx - (
                     self.ch.line[assign_idx - 1] in {
                         "+", "-", "*", "%", "**",
@@ -451,6 +451,10 @@ class Transpiler:
                         "".join(self.ch.line[start:stop])
                     )
                 ]
+            if self.ch.line[start:][0] == "assert ":
+                # '->' index
+                arr_idx = len(self.ch.line) - self.ch.line[::-1].index(":") - 1
+                self.ch.line[arr_idx] = ","
             self.transpile_token(None)
         elif token == Token.STDOUT:
             x = bool(self.ch.indent)
@@ -554,9 +558,13 @@ class Transpiler:
             self.ch.switches["class_def"] = True
             self.ch.class_indent += [self.ch.indent]
             return "class "
-        elif token == Token.LAMBDA:
-            self.ch.switches["lambda"] = True
-            return "lambda "
+        elif token == Token.ASSERT:
+            if self.ch.line[self.ch.indent > 0:]:
+                handle_exception(SamariumSyntaxError(
+                    "# can only start a statement"
+                ))
+            else:
+                self.ch.line += ["assert "]
         else:
             return 0
         return 1

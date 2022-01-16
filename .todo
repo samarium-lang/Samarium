@@ -65,7 +65,7 @@
 - [x] 15. Exclude indentation from `throw`
 - [x] 16. SMNull wrapper for functions
 - [x] 17. Remove the need for commas in lambda parameters
-- [ ] 18. SMNull wrapper for lambdas
+- [x] 18. SMNull wrapper for lambdas
 - [x] 19. Filter Python types (e.g. `genexpr` or `tuple`)
 - [x] 20. Empty class bodies
 - [x] 21. Include all non-Samarium types in `assert_smtype`
@@ -108,7 +108,7 @@
         - [x] 5. Binary Load (n bytes)
         - [x] 6. Binary Write
 - [ ] 31. Add sleep
-- [ ] 32. Add assert(?)
+- [x] 32. Add assert(?)
 ----
 
 (task)

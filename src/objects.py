@@ -1,14 +1,14 @@
 # type: ignore
 from __future__ import annotations
 from contextlib import suppress
-from enum import auto, Enum
+from enum import Enum
 from exceptions import (
     NotDefinedError, SamariumSyntaxError,
     SamariumTypeError, SamariumValueError
 )
 from typing import (
-    Any, Callable, Dict, Iterator, IO,
-    List, Optional, TypeVar, Tuple, Union
+    Any, Callable, Dict, Generator, Iterator,
+    IO, List, Optional, TypeVar, Tuple, Union
 )
 
 T = TypeVar("T")
@@ -57,7 +57,7 @@ def verify_type(obj: Any):
         return
     elif isinstance(obj, tuple):
         raise SamariumSyntaxError("missing brackets")
-    elif isinstance(obj, type(i for i in "")):
+    elif isinstance(obj, type(i for i in [])):
         raise SamariumSyntaxError("invalid comprehension")
     raise SamariumTypeError()
 

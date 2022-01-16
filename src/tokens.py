@@ -63,7 +63,6 @@ class Token(Enum):
     # OOP / Functions
     FUNCTION = "*"
     CLASS = "@"
-    LAMBDA = "#"
     INSTANCE = "'"
     MAIN = "=>"
 
@@ -99,6 +98,7 @@ class Token(Enum):
     FILE_QUICK_BINARY_APPEND = "&%>"
 
     # Other
+    ASSERT = "#"
     ASSIGN = ":"
     ATTRIBUTE = "."
     END = ";"

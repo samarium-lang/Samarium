@@ -1,6 +1,6 @@
 def handle_exception(exception: Exception):
     name = exception.__class__.__name__
-    if name != "NotDefinedError":
+    if name not in {"NotDefinedError", "AssertionError"}:
         if not name.startswith("Samarium"):
             name = "External" + name
         else:
