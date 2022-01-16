@@ -433,7 +433,7 @@ class Transpiler:
             if self.ch.switches["import"]:
                 self.ch.switches["import"] = False
                 self.ch.line += [
-                    "', CodeHandler(globals())) if ImportLevel.il else MAIN"
+                    "', CodeHandler(globals()) if ImportLevel.il else MAIN)"
                 ]
             self.ch.switches["newline"] = True
             if self.set_slice:
