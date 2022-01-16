@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from transpiler import Transpiler, CodeHandler
 from secrets import randbelow
 from tokenizer import tokenize
-from typing import Callable, Union
+from typing import Any, Callable, Union
 
 Castable = Union[objects.Integer, objects.String]
 MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
@@ -27,6 +27,8 @@ def cast_type(obj: Castable) -> Castable:
 
 def assert_smtype(function: Callable):
     def wrapper(*args, **kwargs):
+        for i in [*args, *kwargs.values()]:
+            verify_type(i)
         result = function(*args, **kwargs)
         if isinstance(result, objects.Class):
             return result
@@ -42,7 +44,7 @@ def assert_smtype(function: Callable):
 
 
 def get_type(obj: objects.Class) -> objects.String:
-    return objects.String(obj.__class__.__name__)
+    return objects.String(obj.__class__.__name__.capitalize())
 
 
 def import_module(data: str, ch: CodeHandler):
@@ -74,6 +76,17 @@ def import_module(data: str, ch: CodeHandler):
     else:
         for obj in objects:
             ch.globals[obj] = imported.globals[obj]
+
+
+def print_(*args):
+    types = [type(i) for i in args]
+    if any(i in {type(x for x in ""), tuple} for i in types):
+        raise exceptions.SamariumSyntaxError(
+            "missing brackets"
+            if tuple in types else
+            "invalid comprehension"
+        )
+    print(*args)
 
 
 def random(start: objects.Integer, end: objects.Integer) -> objects.Integer:
@@ -124,3 +137,17 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
 
 def throw(message: str = ""):
     raise exceptions.SamariumError(message)
+
+
+def verify_type(obj: Any):
+    if isinstance(obj, objects.Class):
+        return
+    elif isinstance(obj, tuple):
+        raise exceptions.SamariumSyntaxError(
+            "missing brackets"
+        )
+    elif isinstance(obj, type(i for i in "")):
+        raise exceptions.SamariumSyntaxError(
+            "invalid comprehension"
+        )
+    raise exceptions.SamariumTypeError()

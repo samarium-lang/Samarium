@@ -278,7 +278,7 @@ class Transpiler:
         )
         quick_template = [
             f"objects.FileManager.quick({after_token},",
-            f"objects.Mode.{{}},",
+            "objects.Mode.{},",
             f"binary={'BINARY' in raw_token.name})"
         ]
         open_keywords = {"READ", "WRITE", "READ_WRITE", "APPEND"}
@@ -434,12 +434,24 @@ class Transpiler:
             if self.set_slice:
                 self.ch.line += ")"
                 self.set_slice = False
+            if "=" in self.ch.line:
+                assign_idx = self.ch.line.index("=")
+                start = self.ch.indent > 0
+                stop = assign_idx - (
+                    self.ch.line[assign_idx - 1] in {
+                        "+", "-", "*", "%", "**",
+                        "//", "&", "|", "^"
+                    }
+                )
+                self.ch.line += [
+                    f";verify_type({''.join(self.ch.line[start:stop])})"
+                ]
             self.transpile_token(None)
         elif token == Token.STDOUT:
             x = bool(self.ch.indent)
             self.ch.line = [
                 *self.ch.line[:x],
-                "print(",
+                "print_(",
                 *self.ch.line[x:],
                 ")"
             ]

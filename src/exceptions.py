@@ -21,7 +21,10 @@ class SamariumError(Exception):
     prefix = ""
 
     def __init__(self, message: str = ""):
-        super().__init__(f"{self.prefix}{message}" or self.blank)
+        super().__init__(
+            f"{self.prefix}{message}"
+            if message else self.blank
+        )
 
 
 class SamariumImportError(SamariumError):
