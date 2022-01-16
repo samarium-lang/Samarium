@@ -1,11 +1,11 @@
 (task)
 📝 Documentation:
-- [ ] 1. Introduction
-- [ ] 2. Variables
-- [ ] 3. Operators
-- [ ] 4. Numbers
-- [ ] 5. Strings
-- [ ] 6. Arrays
+- [x] 1. Introduction
+- [x] 2. Variables
+- [x] 3. Operators
+- [x] 4. Numbers
+- [x] 5. Strings
+- [x] 6. Arrays
 - [ ] 7. Tables
 - [ ] 8. Slices
 - [ ] 9. Built-in Functions
