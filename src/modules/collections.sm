@@ -149,7 +149,7 @@
             "expected Set, received " + other?!!!!;
         }
 
-        unionSet: Set('values(), 'newSetSize(', other));
+        unionSet: Set('values(), 'newSetSize(', other) ++ /\);
 
         ... value ->? other.values() {
             unionSet.add(value);
