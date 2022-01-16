@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from transpiler import Transpiler, CodeHandler
 from secrets import randbelow
 from tokenizer import tokenize
-from typing import Any, Callable, Union
+from typing import Union
 
 Castable = Union[objects.Integer, objects.String]
 MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
@@ -23,24 +23,6 @@ def cast_type(obj: Castable) -> Castable:
         return objects.String(chr(int(obj)))
     else:
         raise exceptions.SamariumTypeError(type(obj).__name__)
-
-
-def assert_smtype(function: Callable):
-    def wrapper(*args, **kwargs):
-        for i in [*args, *kwargs.values()]:
-            verify_type(i)
-        result = function(*args, **kwargs)
-        if isinstance(result, objects.Class):
-            return result
-        elif isinstance(result, tuple):
-            return objects.Array([*result])
-        elif isinstance(result, type(None)):
-            return objects.Null()
-        else:
-            raise exceptions.SamariumTypeError(
-                f"Invalid return type: {type(result).__name__}"
-            )
-    return wrapper
 
 
 def get_type(obj: objects.Class) -> objects.String:
@@ -78,7 +60,7 @@ def import_module(data: str, ch: CodeHandler):
             ch.globals[obj] = imported.globals[obj]
 
 
-def print_(*args):
+def print_safe(*args):
     types = [type(i) for i in args]
     if any(i in {type(x for x in ""), tuple} for i in types):
         raise exceptions.SamariumSyntaxError(
@@ -86,6 +68,7 @@ def print_(*args):
             if tuple in types else
             "invalid comprehension"
         )
+    
     print(*args)
 
 
@@ -108,8 +91,7 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
 
     tokens = tokenize(code)
     transpiler = Transpiler(tokens, ch)
-    transpiler.transpile()
-    ch = transpiler.ch
+    ch = transpiler.transpile()
     prefix = [
         "import sys",
         "import os",
@@ -137,17 +119,3 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
 
 def throw(message: str = ""):
     raise exceptions.SamariumError(message)
-
-
-def verify_type(obj: Any):
-    if isinstance(obj, objects.Class):
-        return
-    elif isinstance(obj, tuple):
-        raise exceptions.SamariumSyntaxError(
-            "missing brackets"
-        )
-    elif isinstance(obj, type(i for i in "")):
-        raise exceptions.SamariumSyntaxError(
-            "invalid comprehension"
-        )
-    raise exceptions.SamariumTypeError()

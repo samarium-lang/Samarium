@@ -76,12 +76,15 @@ class Transpiler:
             return
         while self.ch.line[~i] != pair:
             i += 1
+        if self.ch.line[~i - 1].isidentifier():
+            i += 1
         self.ch.line[~i] = f"{cmd}({self.ch.line[~i]}"
         self.ch.line += ")"
 
     def transpile(self):
         for index, token in enumerate(self.tokens):
             self.transpile_token(token, index)
+        return self.ch
 
     def transpile_token(self, token: Transpilable, index: int = -1):
 
@@ -444,14 +447,16 @@ class Transpiler:
                     }
                 )
                 self.ch.line += [
-                    f";verify_type({''.join(self.ch.line[start:stop])})"
+                    ";objects.verify_type({})".format(
+                        "".join(self.ch.line[start:stop])
+                    )
                 ]
             self.transpile_token(None)
         elif token == Token.STDOUT:
             x = bool(self.ch.indent)
             self.ch.line = [
                 *self.ch.line[:x],
-                "print_(",
+                "print_safe(",
                 *self.ch.line[x:],
                 ")"
             ]
@@ -536,7 +541,7 @@ class Transpiler:
                 self.ch.line.insert(x, "return ")
                 return 1
             self.ch.line = [
-                *self.ch.line[:x], "@assert_smtype\n",
+                *self.ch.line[:x], "@objects.assert_smtype\n",
                 *self.ch.line[:x], "def ",
                 self.ch.line[x], "(",
                 ",".join(self.groupnames(

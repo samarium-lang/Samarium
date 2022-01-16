@@ -2,13 +2,34 @@
 from __future__ import annotations
 from contextlib import suppress
 from enum import auto, Enum
-from exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
+from exceptions import (
+    NotDefinedError, SamariumSyntaxError,
+    SamariumTypeError, SamariumValueError
+)
 from typing import (
     Any, Callable, Dict, Iterator, IO,
     List, Optional, TypeVar, Tuple, Union
 )
 
 T = TypeVar("T")
+
+
+def assert_smtype(function: Callable):
+    def wrapper(*args, **kwargs):
+        for i in [*args, *kwargs.values()]:
+            verify_type(i)
+        result = function(*args, **kwargs)
+        if isinstance(result, Class):
+            return result
+        elif isinstance(result, tuple):
+            return Array([*result])
+        elif isinstance(result, type(None)):
+            return Null()
+        else:
+            raise SamariumTypeError(
+                f"Invalid return type: {type(result).__name__}"
+            )
+    return wrapper
 
 
 def get_repr(obj: Class) -> str:
@@ -29,6 +50,16 @@ def run_with_backup(
 
 def smhash(obj) -> Integer:
     return Integer(hash(str(hash(obj))))
+
+
+def verify_type(obj: Any):
+    if isinstance(obj, (Class, Callable)):
+        return
+    elif isinstance(obj, tuple):
+        raise SamariumSyntaxError("missing brackets")
+    elif isinstance(obj, type(i for i in "")):
+        raise SamariumSyntaxError("invalid comprehension")
+    raise SamariumTypeError()
 
 
 class Class:
@@ -507,7 +538,8 @@ class Table(Class):
 
     def create_(self, value: Dict[Any, Any]):
         self.value = {
-            type(k)(k.value): type(v)(v.value)
+            type(verify_type(k))(k.value):
+            type(verify_type(v))(v.value)
             for k, v in value.items()
         }
 
@@ -554,7 +586,10 @@ class Table(Class):
 class Array(Class):
 
     def create_(self, value: List[Any]):
-        self.value = [type(i)(i.value) for i in value]
+        self.value = [
+            type(verify_type(i))(i.value)
+            for i in value
+        ]
 
     def size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
