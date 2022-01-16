@@ -1,26 +1,35 @@
 (task)
 📝 Documentation:
 - [ ] 1. Introduction
-- [ ] 2. Strings
-- [x] 3. Numbers
-- [x] 4. Creating Variables
-- [x] 5. Operators
+- [ ] 2. Variables
+- [ ] 3. Operators
+- [ ] 4. Numbers
+- [ ] 5. Strings
 - [ ] 6. Arrays
-- [ ] 7. Built-in Functions
+- [ ] 7. Tables
+- [ ] 8. Slices
+- [ ] 9. Built-in Functions
     - [ ] 1. STDIN
     - [ ] 2. STDOUT
     - [ ] 3. STDERR
-- [ ] 8. Control Flow
+    - [ ] 4. HASH
+    - [ ] 5. TYPEOF
+    - [ ] 6. SIZEOF
+    - [ ] 7. CAST
+- [ ] 10. Control Flow
     - [ ] 1. if/else
     - [ ] 2. for loop
     - [ ] 3. while loop
     - [ ] 4. break/continue
     - [ ] 5. try/catch
-- [ ] 9. Functions
-- [ ] 10. Lambda functions
-- [ ] 11. Importing
-- [ ] 12. Classes
-- [ ] 13. Standard Library
+- [ ] 11. Functions
+    - [ ] 1. Defining functions
+    - [ ] 2. Main function
+    - [ ] 3. Default parameter value
+    - [ ] 4. Lambda functions
+- [ ] 12. Importing
+- [ ] 13. Classes
+- [ ] 14. Standard Library
     - [ ] 1. `collections` module
     - [ ] 2. `iter` module
     - [ ] 3. `math` module
@@ -57,7 +66,7 @@
 - [x] 16. SMNull wrapper for functions
 - [x] 17. Remove the need for commas in lambda parameters
 - [ ] 18. SMNull wrapper for lambdas
-- [ ] 19. Ban genexprs
+- [ ] 19. Filter Python types (e.g. `genexpr` or `tuple`)
 - [x] 20. Empty class bodies
 - [x] 21. Include all non-Samarium types in `assert_smtype`
 - [x] 22. Replace slicing syntax
@@ -68,8 +77,38 @@
 - [x] 27. Switch token behavior around Token.IF, Token.ATTRIBUTE, Token.STDIN
 - [x] 28. Token concepts
 - [x] 29. Add main function
-- [ ] 30. Add file IO
+- [x] 30. Add file IO
+    - [x] 1. Add handlers
+    - [x] 2. Create File
+    - [x] 3. Open Text File
+        - [x] 1. Read
+        - [x] 2. Write
+        - [x] 3. Read & Write
+        - [x] 4. Append
+    - [x] 4. Open Binary File
+        - [x] 1. Read
+        - [x] 2. Write
+        - [x] 3. Read & Write
+        - [x] 4. Append
+    - [x] 5. Close File
+    - [x] 6. Position
+    - [x] 7. Quick Text
+        - [x] 1. Read
+        - [x] 2. Write
+        - [x] 3. Append
+    - [x] 8. Quick Binary
+        - [x] 1. Read
+        - [x] 2. Write
+        - [x] 3. Append
+    - [x] 9. File Operations
+        - [x] 1. Text Load
+        - [x] 2. Text Load (n bytes)
+        - [x] 3. Text Write
+        - [x] 4. Binary Load
+        - [x] 5. Binary Load (n bytes)
+        - [x] 6. Binary Write
 - [ ] 31. Add sleep
+- [ ] 32. Add assert(?)
 ----
 
 (task)
