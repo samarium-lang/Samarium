@@ -53,8 +53,8 @@ def import_module(data: str, ch: CodeHandler):
             "modules"
         )
 
-    # with silence_stdout():
-    imported = run(readfile(f"{path}/{name}.sm"), CodeHandler(globals()))
+    with silence_stdout():
+        imported = run(readfile(f"{path}/{name}.sm"), CodeHandler(globals()))
     if objects == ["*"]:
         ch.globals.update(imported.globals)
     else:
@@ -93,18 +93,18 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
     tokens = tokenize(code)
     transpiler = Transpiler(tokens, ch)
     ch = transpiler.transpile()
-    # prefix = [
-    #     "import sys",
-    #     "import os",
-    #     "STDOUT = sys.stdout",
-    #     "sys.stdout = open(os.devnull, 'w')"
-    # ]
+    prefix = [
+        "import sys",
+        "import os",
+        "STDOUT = sys.stdout",
+        "sys.stdout = open(os.devnull, 'w')"
+    ]
     suffix = [
         "if __name__ == '__main__':",
-        # "    sys.stdout = STDOUT",
+        "    sys.stdout = STDOUT",
         "    entry()"
     ]
-    code = "\n".join(ch.code + suffix)
+    code = "\n".join(prefix + ch.code + suffix)
     try:
         if "--debug" in sys.argv:
             for i, line in enumerate(code.splitlines()):
