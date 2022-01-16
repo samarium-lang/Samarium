@@ -28,7 +28,8 @@ filter array function * {
 }
 
 filterFalse array function * {
-    * filter(array, # x -> ~~ function(x));
+    flip arg * { * ~~ function(arg); }
+    * filter(array, flip);
 }
 
 map array function * {
