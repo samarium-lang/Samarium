@@ -19,15 +19,17 @@ def assert_smtype(function: Callable):
         for i in [*args, *kwargs.values()]:
             verify_type(i)
         result = function(*args, **kwargs)
-        if isinstance(result, Class):
+        if isinstance(result, (Class, Callable)):
             return result
         elif isinstance(result, tuple):
             return Array([*result])
         elif isinstance(result, type(None)):
             return Null()
+        elif isinstance(result, bool):
+            return Integer(int(result))
         else:
             raise SamariumTypeError(
-                f"Invalid return type: {type(result).__name__}"
+                f"invalid return type: {type(result).__name__}"
             )
     return wrapper
 
