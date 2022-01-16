@@ -162,4 +162,4 @@ def percent(scroller: Scroller) -> Optional[Token]:
     elif scroller.next() == "~":
         if scroller.next(2) == ">":
             return Token.FILE_BINARY_WRITE
-    return None
+    return Token.CAST
