@@ -61,7 +61,7 @@ split string delimiter:" " * {
 }
 
 capitalize string * {
-    * toUpper(string<<\>>) + string<</..>>;
+    * toUpper(string<<\>>) + toLower(string<</..>>);
 }
 
 title string * {
