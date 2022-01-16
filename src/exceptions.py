@@ -38,7 +38,6 @@ class SamariumSyntaxError(SamariumError):
 
 class SamariumTypeError(SamariumError):
     blank = "invalid type"
-    prefix = "unsupported type: "
 
 
 class SamariumValueError(SamariumError):

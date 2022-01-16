@@ -22,7 +22,9 @@ def cast_type(obj: Castable) -> Castable:
     elif isinstance(obj, Integer):
         return String(chr(int(obj)))
     else:
-        raise exceptions.SamariumTypeError(type(obj).__name__)
+        raise exceptions.SamariumTypeError(
+            "unsupported type: " + type(obj).__name__
+        )
 
 
 def get_type(obj: Class) -> String:
