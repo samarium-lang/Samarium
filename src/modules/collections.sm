@@ -163,7 +163,7 @@
             "expected Set, received " + other?!!!!;
         }
 
-        intersectionSet: Set(size: 'newSetSize(', other));
+        intersectionSet: Set(capacity: 'newSetSize(', other));
 
         ... value ->? 'values() {
             ? other.has(value) {
