@@ -25,7 +25,8 @@ MULTISEMANTIC = {
     "}": handlers.close_brace,
     "^": handlers.caret,
     "#": handlers.hash_,
-    "*": handlers.asterisk
+    "*": handlers.asterisk,
+    "%": handlers.percent
 }
 
 

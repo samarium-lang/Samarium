@@ -81,6 +81,23 @@ class Token(Enum):
     STDIN = "???"
     STDOUT = "!"
 
+    # File I/O
+    FILE_CREATE = "?~>"
+    FILE_READ = "<~~"
+    FILE_WRITE = "~~>"
+    FILE_READ_WRITE = "<~>"
+    FILE_APPEND = "&~~>"
+    FILE_BINARY_READ = "<~%"
+    FILE_BINARY_WRITE = "%~>"
+    FILE_BINARY_READ_WRITE = "<%>"
+    FILE_BINARY_APPEND = "&%~>"
+    FILE_QUICK_READ = "<~"
+    FILE_QUICK_WRITE = "~>"
+    FILE_QUICK_APPEND = "&~>"
+    FILE_QUICK_BINARY_READ = "<%"
+    FILE_QUICK_BINARY_WRITE = "%>"
+    FILE_QUICK_BINARY_APPEND = "&%>"
+
     # Other
     ASSIGN = ":"
     ATTRIBUTE = "."
@@ -89,3 +106,9 @@ class Token(Enum):
     RANDOM = "^^"
     SEP = ","
     STRING = '"'
+
+
+FILE_IO_TOKENS = [
+    token for name, token in Token.__members__.items()
+    if name.startswith("FILE_")
+]

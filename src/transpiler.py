@@ -1,7 +1,7 @@
 from contextlib import suppress
 from exceptions import handle_exception, SamariumSyntaxError
 from tokenizer import Tokenlike
-from tokens import Token
+from tokens import FILE_IO_TOKENS, Token
 from typing import Any, Dict, List, Optional, Union
 
 Transpilable = Optional[Tokenlike]
@@ -85,6 +85,14 @@ class Transpiler:
 
     def transpile_token(self, token: Transpilable, index: int = -1):
 
+        # For when `transpile_token(None)` is called recursively
+        if token is not None:
+            self.ch.line_tokens += [token]
+
+        if token in FILE_IO_TOKENS:
+            self.ch.line += [token]
+            return
+
         if token == Token.SLICE_OPEN:
             self.slicing = True
             self.slice_tokens.append(token)
@@ -105,10 +113,6 @@ class Transpiler:
                 and self.tokens[index - 1] == Token.SLICE_CLOSE
             ):
                 return
-
-        # For when `transpile_token(None)` is called recursively
-        if token is not None:
-            self.ch.line_tokens += [token]
 
         if self.ch.switches["random"]:
             self.random_tokens += [token]
@@ -252,6 +256,65 @@ class Transpiler:
         self.slicing = False
         return assign
 
+    def transpile_fileio(
+        self,
+        tokens: list[str]
+    ) -> str:
+        def remove_prefix(s: str, prefix: str) -> str:
+            return s[len(prefix):] if s.startswith(prefix) else s
+
+        raw_tokens = [token for token in tokens if token in FILE_IO_TOKENS]
+        if len(raw_tokens) > 2:
+            handle_exception(SamariumSyntaxError(
+                "can only perform one file operation at a time"
+            ))
+        raw_token = raw_tokens[0]
+        raw_token_index = tokens.index(raw_token)
+        before_token = "".join(tokens[:raw_token_index])
+        after_token = "".join(tokens[raw_token_index + 1:])
+        open_template = (
+            f"{before_token}=objects.FileManager.{{}}"
+            f"({after_token}, objects.Mode.{{}})"
+        )
+        quick_template = [
+            f"objects.FileManager.quick({after_token},",
+            f"objects.Mode.{{}},",
+            f"binary={'BINARY' in raw_token.name})"
+        ]
+        open_keywords = {"READ", "WRITE", "READ_WRITE", "APPEND"}
+
+        if raw_token == Token.FILE_CREATE:
+            if before_token:
+                handle_exception(SamariumSyntaxError(
+                    "file create operator must start the line"
+                ))
+            return f"objects.FileManager.create({after_token})"
+        if not before_token:
+            handle_exception(SamariumSyntaxError(
+                "missing variable for file operation"
+            ))
+        if not after_token:
+            handle_exception(SamariumSyntaxError("missing file path"))
+        if remove_prefix(raw_token.name, "FILE_") in open_keywords:
+            return open_template.format(
+                "open",
+                remove_prefix(raw_token.name, "FILE_")
+            )
+        elif remove_prefix(raw_token.name, "FILE_BINARY_") in open_keywords:
+            return open_template.format(
+                "open_binary",
+                remove_prefix(raw_token.name, "FILE_BINARY_")
+            )
+        elif "QUICK" in raw_token.name:
+            if "READ" in raw_token.name:
+                quick_template.insert(0, f"{before_token}=")
+            else:
+                quick_template.insert(2, f"data={before_token},")
+            return "".join(quick_template).format(
+                raw_token.name.split("_")[-1]
+            )
+        return ""
+
     def transpile_operator(self, token: Transpilable, _) -> Union[str, int]:
         return {
             # Arithmetic
@@ -358,6 +421,10 @@ class Transpiler:
                 handle_exception(SamariumSyntaxError("missing '->' in random"))
             return out
         elif token == Token.END:
+            if any(token in FILE_IO_TOKENS for token in self.ch.line):
+                self.ch.line[self.ch.indent > 0:] = [
+                    self.transpile_fileio(self.ch.line[self.ch.indent > 0:])
+                ]
             if self.ch.switches["import"]:
                 self.ch.switches["import"] = False
                 self.ch.line += [
@@ -366,6 +433,7 @@ class Transpiler:
             self.ch.switches["newline"] = True
             if self.set_slice:
                 self.ch.line += ")"
+                self.set_slice = False
             self.transpile_token(None)
         elif token == Token.STDOUT:
             x = bool(self.ch.indent)
@@ -426,7 +494,9 @@ class Transpiler:
             return out
         return 1
 
-    def transpile_error_handling(self, token: Transpilable, _) -> Union[str, int]:
+    def transpile_error_handling(
+        self, token: Transpilable, _
+    ) -> Union[str, int]:
         out = {
             Token.TRY: "try",
             Token.CATCH: "except Exception"
