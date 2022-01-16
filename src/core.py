@@ -1,14 +1,14 @@
 import exceptions
-import objects
 import os
 import sys
 from contextlib import contextmanager
+from objects import *
 from transpiler import Transpiler, CodeHandler
 from secrets import randbelow
 from tokenizer import tokenize
 from typing import Union
 
-Castable = Union[objects.Integer, objects.String]
+Castable = Union[Integer, String]
 MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
 
 
@@ -17,16 +17,16 @@ class ImportLevel:
 
 
 def cast_type(obj: Castable) -> Castable:
-    if isinstance(obj, objects.String):
-        return objects.Integer(ord(str(obj)))
-    elif isinstance(obj, objects.Integer):
-        return objects.String(chr(int(obj)))
+    if isinstance(obj, String):
+        return Integer(ord(str(obj)))
+    elif isinstance(obj, Integer):
+        return String(chr(int(obj)))
     else:
         raise exceptions.SamariumTypeError(type(obj).__name__)
 
 
-def get_type(obj: objects.Class) -> objects.String:
-    return objects.String(obj.__class__.__name__.capitalize())
+def get_type(obj: Class) -> String:
+    return String(obj.__class__.__name__.capitalize().rstrip("_"))
 
 
 def import_module(data: str, ch: CodeHandler):
@@ -71,8 +71,8 @@ def print_safe(*args):
     print(*args)
 
 
-def random(start: objects.Integer, end: objects.Integer) -> objects.Integer:
-    return objects.Integer(
+def random(start: Integer, end: Integer) -> Integer:
+    return Integer(
         randbelow(int(end) - int(start) + 1) + int(start)
     )
 
@@ -82,8 +82,8 @@ def readfile(path: str) -> str:
         return f.read()
 
 
-def readline(prompt: str = "") -> objects.String:
-    return objects.String(input(prompt))
+def readline(prompt: str = "") -> String:
+    return String(input(prompt))
 
 
 def run(code: str, ch: CodeHandler) -> CodeHandler:

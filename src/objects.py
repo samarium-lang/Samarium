@@ -7,7 +7,7 @@ from exceptions import (
     SamariumTypeError, SamariumValueError
 )
 from typing import (
-    Any, Callable, Dict, Generator, Iterator,
+    Any, Callable, Dict, Iterator,
     IO, List, Optional, TypeVar, Tuple, Union
 )
 
@@ -54,7 +54,7 @@ def smhash(obj) -> Integer:
 
 def verify_type(obj: Any):
     if isinstance(obj, (Class, Callable)):
-        return
+        return obj
     elif isinstance(obj, tuple):
         raise SamariumSyntaxError("missing brackets")
     elif isinstance(obj, type(i for i in [])):
