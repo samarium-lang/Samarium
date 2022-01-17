@@ -1,5 +1,3 @@
-<-collections.Stack;
-
 find array target * {
     index: \;
     ? array?! :: "String" {
@@ -119,6 +117,8 @@ range start stop:_ step:/ * {
 }
 
 sort arr * {
+    <-collections.Stack;
+    
     l: \;
     h: arr$ - /;
     stack: Stack(h - l + /);
