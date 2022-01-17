@@ -405,14 +405,14 @@ class String(Class):
         return String(self.value + other.value)
 
     def addAssign_(self, other: String) -> String:
-        self.value += other.value
+        self = self.add_(other)
         return self
 
     def multiply_(self, times: Integer) -> String:
         return String(self.value * times.value)
 
     def multiplyAssign_(self, times: Integer) -> String:
-        self.value *= times.value
+        self = self.multiply_(times)
         return self
 
     def equals_(self, other: String) -> Integer:
@@ -462,63 +462,63 @@ class Integer(Class):
         return Integer(self.value + other.value)
 
     def addAssign_(self, other: Integer) -> Integer:
-        self.value += other.value
+        self = self.add_(other)
         return self
 
     def subtract_(self, other: Integer) -> Integer:
         return Integer(self.value - other.value)
 
     def subtractAssign_(self, other: Integer) -> Integer:
-        self.value -= other.value
+        self = self.subtract_(other)
         return self
 
     def multiply_(self, other: Integer) -> Integer:
         return Integer(self.value * other.value)
 
     def multiplyAssign_(self, other: Integer) -> Integer:
-        self.value *= other.value
+        self = self.multiply_(other)
         return self
 
     def divide_(self, other: Integer) -> Integer:
         return Integer(self.value // other.value)
 
     def divideAssign_(self, other: Integer) -> Integer:
-        self.value //= other.value
+        self = self.divide_(other)
         return self
 
     def mod_(self, other: Integer) -> Integer:
         return Integer(self.value % other.value)
 
     def modAssign_(self, other: Integer) -> Integer:
-        self.value %= other.value
+        self = self.mod_(other)
         return self
 
     def power_(self, other: Integer) -> Integer:
         return Integer(self.value ** other.value)
 
     def powerAssign_(self, other: Integer) -> Integer:
-        self.value **= other.value
+        self = self.power_(other)
         return self
 
     def and_(self, other: Integer) -> Integer:
         return Integer(self.value & other.value)
 
     def andAssign_(self, other: Integer) -> Integer:
-        self.value &= other.value
+        self = self.and_(other)
         return self
 
     def or_(self, other: Integer) -> Integer:
         return Integer(self.value | other.value)
 
     def orAssign_(self, other: Integer) -> Integer:
-        self.value |= other.value
+        self = self.or_(other)
         return self
 
     def xor_(self, other: Integer) -> Integer:
         return Integer(self.value ^ other.value)
 
     def xorAssign_(self, other: Integer) -> Integer:
-        self.value ^= other.value
+        self = self.xor_(other)
         return self
 
     def not_(self) -> Integer:
