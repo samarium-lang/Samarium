@@ -26,7 +26,7 @@
         * 'stack<<-/>>;
     }
 
-    toBoolean * { * 'stack$ > \; }
+    toBit * { * 'stack$ > \; }
 
     isFull * { * 'size :: 'stack$; }
 
@@ -75,6 +75,8 @@
 
     first * { 'throwEmpty(); * 'queue<<\>>; }
     last * { 'throwEmpty(); * 'queue<<-/>>; }
+
+    toBit * { * '$ > \;}
 
     toString * {
         <-string.wrap;
