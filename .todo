@@ -156,7 +156,7 @@
 (task)
 📚 Standard Library:
 - [ ] 1. collections
-- [ ] 2. iter
+- [x] 2. iter
 - [x] 3. math
 - [x] 4. random
 - [x] 5. string
@@ -200,7 +200,7 @@
 - [x] 9. range
 - [x] 10. reverse
 - [x] 11. takeWhile
-- [ ] 12. sort
+- [x] 12. sort
 - [x] 13. reduce
 ----
 
