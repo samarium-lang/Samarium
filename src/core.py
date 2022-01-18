@@ -12,8 +12,9 @@ Castable = Union[Integer, String]
 MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
 
 
-class ImportLevel:
-    il = 0
+class Runtime:
+    frozen = []
+    import_level = 0
 
 
 def cast_type(obj: Castable) -> Castable:
@@ -25,6 +26,14 @@ def cast_type(obj: Castable) -> Castable:
         raise exceptions.SamariumTypeError(
             "unsupported type: " + type(obj).__name__
         )
+
+
+def freeze(obj: Class) -> Class:
+    def throw_immutable(*_):
+        raise exceptions.SamariumTypeError("object is immutable")
+    obj.setSlice_ = throw_immutable
+    obj.setItem_ = throw_immutable
+    return obj
 
 
 def get_type(obj: Class) -> String:
@@ -109,10 +118,10 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
         if "--debug" in sys.argv:
             for i, line in enumerate(code.splitlines()):
                 print(f"{i+1:^4}" * ("--showlines" in sys.argv) + line)
-        ImportLevel.il += 1
+        Runtime.import_level += 1
         ch.globals = {**globals(), **ch.globals}
         exec(code, ch.globals)
-        ImportLevel.il -= 1
+        Runtime.import_level -= 1
     except Exception as e:
         exceptions.handle_exception(e)
     return ch
@@ -120,3 +129,8 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
 
 def throw(message: str = ""):
     raise exceptions.SamariumError(message)
+
+
+def verify_mutable(string: str):
+    if string in Runtime.frozen:
+        raise exceptions.SamariumTypeError("object is immutable")

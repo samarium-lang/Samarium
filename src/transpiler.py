@@ -11,22 +11,17 @@ class CodeHandler:
     def __init__(self, globals: Dict[str, Any]):
         self.class_indent = []
         self.code = []
+        self.frozen = ""
         self.line = []
         self.line_tokens = []
         self.indent = 0
         self.locals = {}
         self.globals = globals
-        self.switches = {
-            "class_def": False,
-            "class": False,
-            "function": False,
-            "import": False,
-            "lambda": False,
-            "multiline_comment": False,
-            "newline": False,
-            "random": False,
-            "slice": False
-        }
+        self.switches = {k: False for k in {
+            "class_def", "class", "const",
+            "function", "import", "multiline_comment",
+            "newline", "random", "slice"
+        }}
         self.all_tokens = []
 
 
@@ -407,6 +402,13 @@ class Transpiler:
                 ):
                     return f"readline({self.ch.line.pop()})"
             return "readline()"
+        elif token == Token.CONST:
+            if self.is_first_token():
+                self.ch.switches["const"] = True
+        elif token == Token.ASSIGN:
+            if self.ch.switches["const"]:
+                self.ch.frozen = "".join(self.ch.line[self.ch.indent > 0:])
+            return out
         elif (
             token == Token.MAIN and
             not isinstance(self.tokens[index - 1], str)
@@ -433,7 +435,8 @@ class Transpiler:
             if self.ch.switches["import"]:
                 self.ch.switches["import"] = False
                 self.ch.line += [
-                    "', CodeHandler(globals()) if ImportLevel.il else MAIN)"
+                    "', CodeHandler(globals()) "
+                    "if Runtime.import_level else MAIN)"
                 ]
             self.ch.switches["newline"] = True
             if self.set_slice:
@@ -447,11 +450,18 @@ class Transpiler:
                         "//", "&", "|", "^"
                     }
                 )
+                variable = "".join(self.ch.line[start:stop])
                 self.ch.line += [
-                    ";verify_type({})".format(
-                        "".join(self.ch.line[start:stop])
+                    ";verify_type({0});verify_mutable('{0}')".format(
+                        variable
                     )
                 ]
+                if self.ch.switches["const"]:
+                    self.ch.line += [
+                        f";Runtime.frozen += ['{variable}']"
+                        f";freeze({variable})"
+                    ]
+                    self.ch.switches["const"] = False
             if self.ch.line[start:][0] == "assert ":
                 # '->' index
                 arr_idx = len(self.ch.line) - self.ch.line[::-1].index(":") - 1
@@ -503,14 +513,6 @@ class Transpiler:
                 return 1
             elif self.ch.switches["random"]:
                 return ","
-            elif self.ch.switches["lambda"]:
-                x = 0
-                while self.ch.line[~x] != "lambda ":
-                    x += 1
-                self.ch.line[~x + 1:] = ",".join(
-                    self.groupnames(self.ch.line[~x + 1:])
-                )
-                self.ch.switches["lambda"] = False
             return ":"
         else:
             return out

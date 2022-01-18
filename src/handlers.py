@@ -55,6 +55,7 @@ def less(scroller: Scroller) -> Token:
             return Token.FILE_BINARY_READ_WRITE
     tokens = {
         "-": Token.FROM,
+        ">": Token.CONST,
         "<": Token.SLICE_OPEN,
         ":": Token.LE,
         "%": Token.FILE_QUICK_BINARY_READ,

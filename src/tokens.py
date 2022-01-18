@@ -101,6 +101,7 @@ class Token(Enum):
     ASSERT = "#"
     ASSIGN = ":"
     ATTRIBUTE = "."
+    CONST = "<>"
     END = ";"
     NULL = "_"
     RANDOM = "^^"
