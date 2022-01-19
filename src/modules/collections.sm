@@ -52,7 +52,7 @@
     }
 
     special * { * 'queue$; }
-    isEmpty * { * '$ :: \; }
+    isEmpty * { * ~~ '$; }
     isFull * { * '$ :: 'size; }
 
     throwEmpty * { ? 'isEmpty() { "queue is empty"!!!; } }
@@ -204,5 +204,62 @@
             ? ~~ other.has(value) { * \; }
         }
         * /;
+    }
+}
+
+@ Deque {
+    create size:-/ * {
+        'deque: [];
+        'size: size;
+    }
+
+    special * { * 'deque$; }
+    isEmpty * { * ~~ '$; }
+    isFull * { * '$ :: 'size; }
+
+    throwEmpty * { ? 'isEmpty() { "deque is empty"!!!; } }
+    throwFull * { ? 'isFull() { "deque is full (size " + 'size.toString() + ")"!!!; } }
+
+    putFront item * { 'throwFull(); 'deque: [item] + 'deque; }
+    put item * { 'throwFull(); 'deque+: [item]; }
+
+    putFrontAll items * { ... item ->? items { 'putFront(item); } }
+    putAll items * { ... item ->? items { 'putBack(item); } }
+
+    front * { * 'deque<<\>>; }
+    back * { * 'deque<<-/>>; }
+
+    toBit * { * '$ > \; }
+
+    getFront * {
+        'throwEmpty();
+        out: 'deque<<\>>;
+        'deque-: \;
+        * out;
+    }
+
+    get * {
+        'throwEmpty();
+        out: 'deque<<-/>>;
+        'deque-: 'deque$ - /;
+        * out;
+    }
+
+    toString * {
+        <-string.wrap;
+        ? '$ <: /\/ {
+            items: 'deque.toString();
+        } ,, ? '$ > /\/ {
+            first: 'first().toString();
+            last: 'last().toString();
+            ? first?! :: "String" { first: wrap(first, "\""); }
+            ? last?! :: "String" { last: wrap(last, "\""); }
+            items: "[" + first.toString() + ", ..., " + last.toString() + "]";
+        } ,, {
+            items: "[]";
+        }
+        * "Deque(capacity:" + 'size.toString()
+        + ", size:" + 'deque$.toString()
+        + ", items:" + items + ")";
     }
 }

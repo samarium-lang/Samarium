@@ -247,7 +247,7 @@
 (task)
 📦 Collections:
 - [x] 1. Queue
-- [ ] 2. Deque
+- [x] 2. Deque
 - [x] 3. Set
 - [x] 4. Stack
 - [x] 5. Tuple
