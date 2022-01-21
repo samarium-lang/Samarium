@@ -1,5 +1,5 @@
 (task)
-📝 Documentation:
+(D) 📝 Documentation:
 - [x] 1. Introduction
 - [x] 2. Variables
 - [x] 3. Operators
@@ -24,7 +24,7 @@
     - [ ] 5. try/catch
 - [ ] 11. Functions
     - [ ] 1. Defining functions
-    - [ ] 2. Main function
+    - [ ] 2. Main function (+argv)
     - [ ] 3. Default parameter value
     - [ ] 4. Lambda functions
 - [ ] 12. Importing
@@ -39,7 +39,7 @@
 ----
 
 (task)
-🚀 Core:
+(C) 🚀 Core:
 - [ ] 1. Features
 - [x] 2. Types
 - [x] 3. Imports
@@ -47,7 +47,7 @@
 ----
 
 (task)
-✨ Features:
+(CF) ✨ Features:
 - [x] 1. Default parameter values - cancelled
 - [x] 2. Generators - cancelled
 - [x] 3. Python code evaluation - cancelled
@@ -117,7 +117,7 @@
 ----
 
 (task)
-🔣 Types:
+(CT) 🔣 Types:
 - [x] 1. Class methods
 - [x] 2. Null
 - [x] 3. String formatting
@@ -138,7 +138,7 @@
 ----
 
 (task)
-🚚 Imports:
+(CI) 🚚 Imports:
 - [x] 1. Require imports to be but in the first lines of the file
 - [x] 2. Split import part from the rest of the code
 - [x] 3. Execute import part, add result to the global namespace
@@ -148,28 +148,28 @@
 ----
 
 (task)
-🎨 Extension:
+(CE) 🎨 Extension:
 - [x] 1. Class with no parents
 - [x] 2. Fix function calls highlighting the left parenthesis
 - [x] 3. Fix escape sequences
-- [ ] 4. Fix highlighting for class with parents on separate lines
-- [ ] 5. Fix highlighting for functions with params on separate lines
+- [x] 4. Fix highlighting for class with parents on separate lines
+- [x] 5. Fix highlighting for functions with params on separate lines
 - [ ] 6. Fix function definition highlighting when default arguments are used
 - [x] 7. Fix first parameter of a lambda function being highlighted like a function name
 ----
 
 (task)
-📚 Standard Library:
-- [ ] 1. collections
+(S) 📚 Standard Library:
+- [x] 1. collections
 - [x] 2. iter
 - [x] 3. math
 - [x] 4. random
 - [x] 5. string
-- [ ] 6. types
+- [x] 6. types
 ----
 
 (task)
-🎲 Random:
+(SR) 🎲 Random:
 - [x] 1. choice
 - [x] 2. choices
 - [x] 3. sample
@@ -177,7 +177,7 @@
 ----
 
 (task)
-🔢 Math:
+(SM) 🔢 Math:
 - [x] 1. abs
 - [x] 2. factorial
 - [x] 3. gcd
@@ -193,7 +193,7 @@
 ----
 
 (task)
-🔁 Iter:
+(SI) 🔁 Iter:
 - [x] 1. find
 - [x] 2. count
 - [x] 3. accumulate
@@ -210,7 +210,7 @@
 ----
 
 (task)
-🧶 String:
+(SS) 🧶 String:
 - [x] 1. uppercase
 - [x] 2. lowercase
 - [x] 3. letters
@@ -249,16 +249,16 @@
 ----
 
 (task)
-📦 Collections:
+(SC) 📦 Collections:
 - [x] 1. Queue
 - [x] 2. Deque
 - [x] 3. Set
 - [x] 4. Stack
 - [x] 5. Tuple
-- [ ] 6. StaticArray
+- [x] 6. StaticArray
 ----
 
 (task)
-🔣 Types:
-- [ ] 1. Boolean
+(ST) 🔣 Types:
+- [x] 1. Boolean
 ----
