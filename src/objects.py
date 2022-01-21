@@ -205,6 +205,16 @@ class Class:
             other
         )
 
+    @property
+    def type(self) -> String:
+        return String(
+            self
+            .__class__
+            .__name__
+            .capitalize()
+            .rstrip("_")
+        )
+
     def create_(self, *args: Any, **kwargs: Any):
         raise NotDefinedError(self, "create")
 
@@ -325,6 +335,9 @@ class Class:
     def greaterThanOrEqual_(self, other: Class) -> Integer:
         raise NotDefinedError(self, "greaterThanOrEqual")
 
+    def cast_(self):
+        raise NotDefinedError(self, "cast")
+
 
 class Slice(Class):
 
@@ -379,6 +392,13 @@ class String(Class):
 
     def hash_(self) -> Integer:
         return smhash(self.value)
+
+    def cast_(self) -> Integer:
+        if len(self.value) != 1:
+            raise SamariumTypeError(
+                f"cannot cast a string of length {len(self.value)}"
+            )
+        return Integer(ord(self.value))
 
     def create_(self, value: str):
         self.value = value
@@ -442,6 +462,9 @@ class Integer(Class):
 
     def __int__(self) -> int:
         return self.value
+
+    def cast_(self) -> String:
+        return String(chr(self.value))
 
     def hash_(self) -> Integer:
         return smhash(self.value)

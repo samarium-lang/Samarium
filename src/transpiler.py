@@ -392,6 +392,8 @@ class Transpiler:
             Token.DOLLAR: ".special_()",
             Token.HASH: ".hash_()",
             Token.SIZE: ".__sizeof__()",
+            Token.TYPE: ".type",
+            Token.CAST: ".cast_()",
             Token.RANDOM: ")" if self.ch.switches["random"] else "random("
         }.get(token, 0)
         if token == Token.STDIN:
@@ -414,10 +416,6 @@ class Transpiler:
             not isinstance(self.tokens[index - 1], str)
         ):
             return "entry "
-        elif token == Token.CAST:
-            self.safewrap("cast_type")
-        elif token == Token.TYPE:
-            self.safewrap("get_type")
         elif token == Token.RANDOM:
             self.ch.switches["random"] = not self.ch.switches["random"]
             if (

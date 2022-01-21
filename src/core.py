@@ -17,17 +17,6 @@ class Runtime:
     import_level = 0
 
 
-def cast_type(obj: Castable) -> Castable:
-    if isinstance(obj, String):
-        return Integer(ord(str(obj)))
-    elif isinstance(obj, Integer):
-        return String(chr(int(obj)))
-    else:
-        raise exceptions.SamariumTypeError(
-            "unsupported type: " + type(obj).__name__
-        )
-
-
 def freeze(obj: Class) -> Class:
     def throw_immutable(*_):
         raise exceptions.SamariumTypeError("object is immutable")
@@ -35,9 +24,6 @@ def freeze(obj: Class) -> Class:
     obj.setItem_ = throw_immutable
     return obj
 
-
-def get_type(obj: Class) -> String:
-    return String(obj.__class__.__name__.capitalize().rstrip("_"))
 
 
 def import_module(data: str, ch: CodeHandler):
