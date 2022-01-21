@@ -111,7 +111,10 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
     suffix = [
         "if __name__ == '__main__':",
         "    sys.stdout = STDOUT",
-        "    entry()"
+        "    try:"
+        "        entry(Array([String(i) for i in sys.argv[1:]]))",
+        "    except TypeError:",
+        "        entry()"
     ]
     code = "\n".join(prefix + ch.code + suffix)
     try:

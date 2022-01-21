@@ -110,7 +110,7 @@
 - [ ] 31. Add sleep
 - [x] 32. Add assert(?)
 - [x] 33. Add const
-- [ ] 34. Add argv support
+- [x] 34. Add argv support
 - [ ] 35. Make `cast` a special method
 - [ ] 36. Add exit
 - [ ] 37. Transform `get_type` into a `Class` property
