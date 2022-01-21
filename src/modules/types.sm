@@ -1,0 +1,38 @@
+@ Boolean {
+
+    create value * {
+        ? value?! :: "String" {
+            <-string.toLower;
+            'value: {{"true" -> /, "false" -> \}}<<toLower(value)>>;
+        } ,, {
+            'value: value.toBit();
+        }
+    }
+
+    toString * { * "true" ? 'value ,, "false"; }
+    toBit * { * 'value; }
+
+    equals other * { * Boolean('value :: other.value); }
+    greaterThan other * { * Boolean('value > other.value); }
+
+    add other * {
+        out: 'value + other.value;
+        ? out > / { * out; }
+        ,, { * Boolean(out); }
+    }
+
+    subtract other * {
+        out: 'value - other.value;
+        ? out < \ { * out; }
+        ,, { * Boolean(out); }
+    }
+
+    multiply other * { * Boolean('value ++ other.value); }
+    divide other * { * Boolean('value -- other.value); }
+    power other * { * Boolean('value +++ other.value); }
+    mod other * { * Boolean('value --- other.value); }
+    and other * { * Boolean('value & other.value); }
+    xor other * { * Boolean('value ^ other.value); }
+    or other * { * Boolean('value | other.value); }
+    not * { * Boolean(\ ? 'value ,, /); }
+}
