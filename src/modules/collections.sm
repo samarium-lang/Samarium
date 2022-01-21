@@ -208,6 +208,7 @@
 }
 
 @ Deque {
+
     create size:-/ * {
         'deque: [];
         'size: size;
@@ -262,4 +263,71 @@
         + ", size:" + 'deque$.toString()
         + ", items:" + items + ")";
     }
+}
+
+@ StaticArray {
+
+    create value type:_ * {
+        ? value?! :: "Integer" {
+            'value: {{}};
+            'size: value;
+            'type: type;
+        } ,, ? value?! :: "Array" {
+            'value: {{}};
+            'size: value$;
+            'type: type;
+            i: \;
+            ... e ->? value {
+                ? _ ::: type ::: e?! {
+                    "expected " + type + ", found " + e?!!!!;
+                }
+                'value<<i>>: e;
+                i+: /;
+            }
+        } ,, {
+            "expected Integer or Array, found " + value?!!!!;
+        }
+    }
+
+    special * { * 'value$; }
+
+    toString * {
+        * "StaticArray(size:" + 'size.toString()
+        + ", type:" + 'type.toString()
+        + ", items:" + 'value.toString()
+        + ")";
+    }
+
+    toBit * { * 'value.toBit(); }
+
+    throwInvalidIndex arg * {
+        ? arg?! ::: "Integer" {
+            "expected Integer, received " + arg?!!!!;
+        }
+        ? ~~ (\ <: arg < 'size) {
+            "index " + arg.toString() + " is out of bounds (size " + 'size.toString() + ")"!!!;
+        }
+    }
+
+    throwInvalidType type * {
+        ? _ ::: 'type ::: type {
+            "expected " + 'type + ", received " + type!!!;
+        }
+    }
+
+    getItem index * {
+        'throwInvalidIndex(index);
+        * 'value<<index>>;
+    }
+
+    setItem index value * {
+        'throwInvalidIndex(index);
+        'throwInvalidType(value?!);
+        'value<<index>>: value;
+    }
+}
+
+=> * {
+    arr: StaticArray(/\, \?!);
+    arr<</>>: "woof";
 }
