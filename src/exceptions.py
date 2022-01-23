@@ -1,6 +1,11 @@
 def handle_exception(exception: Exception):
     name = exception.__class__.__name__
-    if name not in {"NotDefinedError", "AssertionError"}:
+    if name == "SyntaxError":
+        exception = SamariumSyntaxError(
+            "invalid syntax at "
+            + hex(int(str(exception).split()[-1][:-1]))
+        )
+    if name not in {"SyntaxError", "NotDefinedError", "AssertionError"}:
         if not name.startswith("Samarium"):
             name = "External" + name
         else:
