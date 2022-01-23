@@ -207,13 +207,14 @@ class Class:
 
     @property
     def type(self) -> String:
-        return String(
-            self
-            .__class__
-            .__name__
-            .capitalize()
-            .rstrip("_")
-        )
+        return Type(self.__class__)
+
+    @property
+    def parent(self) -> Union[Array, Type]:
+        parents = [*self.__class__.__bases__]
+        if len(parents) == 1:
+            return Type(parents[0])
+        return Array([Type(p) for p in parents])
 
     def create_(self, *args: Any, **kwargs: Any):
         raise NotDefinedError(self, "create")
@@ -337,6 +338,24 @@ class Class:
 
     def cast_(self):
         raise NotDefinedError(self, "cast")
+
+
+class Type(Class):
+
+    def create_(self, type_: type):
+        self.value = type_
+
+    def toString_(self) -> String:
+        return String(
+            self
+            .value
+            .__name__
+            .capitalize()
+            .rstrip("_")
+        )
+
+    def call_(self, *args) -> Class:
+        return self.value(*args)
 
 
 class Slice(Class):
