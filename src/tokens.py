@@ -74,9 +74,11 @@ class Token(Enum):
     # Object Manipulation
     CAST = "%"
     DOLLAR = "$"
+    EXIT = "=>!"
+    HASH = "##"
+    PARENT = "!?"
     SIZE = ":!:"
     TYPE = "?!"
-    HASH = "##"
     STDIN = "???"
     STDOUT = "!"
 
