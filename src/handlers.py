@@ -80,7 +80,8 @@ def equal(scroller: Scroller) -> Optional[Token]:
             return (Token.COMMENT, Token.COMMENT_OPEN)[scroller.next(2) == "<"]
         except IndexError:
             return Token.COMMENT
-    return (None, Token.MAIN)[scroller.next() == ">"]
+    if scroller.next() == ">":
+        return (Token.MAIN, Token.EXIT)[scroller.next(2) == "!"]
 
 
 def dot(scroller: Scroller) -> Token:
@@ -101,7 +102,7 @@ def question(scroller: Scroller) -> Token:
 def exclamation(scroller: Scroller) -> Token:
     if scroller.next() == "!":
         return (Token.CATCH, Token.THROW)[scroller.next(2) == "!"]
-    return Token.STDOUT
+    return (Token.STDOUT, Token.PARENT)[scroller.next() == "?"]
 
 
 def pipe(scroller: Scroller) -> Token:
