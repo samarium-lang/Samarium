@@ -354,10 +354,7 @@ class Transpiler:
         if token == Token.BRACE_OPEN:
             if self.ch.switches["class_def"]:
                 self.ch.switches["class_def"] = False
-                if self.ch.line_tokens[-1] == Token.PAREN_CLOSE:
-                    self.ch.line[-1] == ","
-                    self.ch.line += ["Class)"]
-                elif self.ch.line_tokens[-2] != Token.FUNCTION:
+                if not isinstance(self.ch.line_tokens[-3], str):
                     self.ch.line += ["(Class)"]
             self.ch.switches["newline"] = True
             self.ch.indent += 1
@@ -393,6 +390,7 @@ class Transpiler:
             Token.HASH: ".hash_()",
             Token.SIZE: ".__sizeof__()",
             Token.TYPE: ".type",
+            Token.PARENT: ".parent",
             Token.CAST: ".cast_()",
             Token.RANDOM: ")" if self.ch.switches["random"] else "random("
         }.get(token, 0)
@@ -416,6 +414,9 @@ class Transpiler:
             not isinstance(self.tokens[index - 1], str)
         ):
             return "entry "
+        elif token == Token.EXIT:
+            self.ch.line += ["exit("]
+            self.ch.switches["exit"] = True
         elif token == Token.RANDOM:
             self.ch.switches["random"] = not self.ch.switches["random"]
             if (
@@ -440,6 +441,11 @@ class Transpiler:
             if self.set_slice:
                 self.ch.line += ")"
                 self.set_slice -= 1
+            if self.ch.switches["exit"]:
+                if self.ch.line_tokens[-2] == Token.EXIT:
+                    self.ch.line += "Integer(0)"
+                self.ch.line += ".value)"
+                self.ch.switches["exit"] = False
             if "=" in self.ch.line:
                 assign_idx = self.ch.line.index("=")
                 stop = assign_idx - (
@@ -461,7 +467,6 @@ class Transpiler:
                     ]
                     self.ch.switches["const"] = False
             if self.ch.line[start:][0] == "assert ":
-                # '->' index
                 arr_idx = len(self.ch.line) - self.ch.line[::-1].index(":") - 1
                 self.ch.line[arr_idx] = ","
             self.transpile_token(None)
