@@ -2,6 +2,7 @@ import exceptions
 import os
 import sys
 from contextlib import contextmanager
+from datetime import datetime
 from objects import *
 from transpiler import Transpiler, CodeHandler
 from secrets import randbelow
@@ -15,6 +16,15 @@ MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
 class Runtime:
     frozen = []
     import_level = 0
+
+
+def dtnow() -> Array:
+    utcnow = datetime.utcnow()
+    now = [*datetime.now().timetuple()]
+    utcnow_tl = [*datetime.utcnow().timetuple()]
+    tz = [now[3] - utcnow_tl[3], now[4] - utcnow_tl[4]]
+    utcnow_tl = utcnow_tl[:-3] + [utcnow.microsecond // 1000] + tz
+    return Array([Integer(i) for i in utcnow_tl])
 
 
 def freeze(obj: Class) -> Class:
