@@ -40,7 +40,7 @@
 
 (task)
 (C) 🚀 Core:
-- [ ] 1. Features
+- [x] 1. Features
 - [x] 2. Types
 - [x] 3. Imports
 - [ ] 4. Extension
@@ -107,7 +107,7 @@
         - [x] 4. Binary Load
         - [x] 5. Binary Load (n bytes)
         - [x] 6. Binary Write
-- [ ] 31. Add sleep
+- [x] 31. Add sleep
 - [x] 32. Add assert(?)
 - [x] 33. Add const
 - [x] 34. Add argv support

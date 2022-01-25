@@ -1,4 +1,5 @@
 import sys
+from contextlib import suppress
 from transpiler import CodeHandler
 from core import run, readfile
 
@@ -10,4 +11,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    with suppress(BaseException):
+        main()

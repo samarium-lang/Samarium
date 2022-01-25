@@ -109,6 +109,7 @@ class Token(Enum):
     NULL = "_"
     RANDOM = "^^"
     SEP = ","
+    SLEEP = ",.,"
     STRING = '"'
 
 

@@ -20,7 +20,7 @@ class CodeHandler:
         self.switches = {k: False for k in {
             "class_def", "class", "const", "exit",
             "function", "import", "multiline_comment",
-            "newline", "random", "slice"
+            "newline", "random", "sleep", "slice"
         }}
         self.all_tokens = []
 
@@ -416,8 +416,11 @@ class Transpiler:
         ):
             return "entry "
         elif token == Token.EXIT:
-            self.ch.line += ["exit("]
+            self.ch.line += ["exit(("]
             self.ch.switches["exit"] = True
+        elif token == Token.SLEEP:
+            self.ch.line += ["sleep(("]
+            self.ch.switches["sleep"] = True
         elif token == Token.RANDOM:
             self.ch.switches["random"] = not self.ch.switches["random"]
             if (
@@ -442,11 +445,14 @@ class Transpiler:
             if self.set_slice:
                 self.ch.line += ")"
                 self.set_slice -= 1
-            if self.ch.switches["exit"]:
-                if self.ch.line_tokens[-2] == Token.EXIT:
+            if self.ch.switches["exit"] or self.ch.switches["sleep"]:
+                if self.ch.line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
                     self.ch.line += "Integer(0)"
-                self.ch.line += ".value)"
-                self.ch.switches["exit"] = False
+                self.ch.line += ").value)"
+                if self.ch.switches["exit"]:
+                    self.ch.switches["exit"] = False
+                else:
+                    self.ch.switches["sleep"] = False
             if "=" in self.ch.line:
                 assign_idx = self.ch.line.index("=")
                 stop = assign_idx - (

@@ -4,9 +4,10 @@ import sys
 from contextlib import contextmanager
 from datetime import datetime
 from objects import *
-from transpiler import Transpiler, CodeHandler
 from secrets import randbelow
+from time import sleep as _sleep
 from tokenizer import tokenize
+from transpiler import Transpiler, CodeHandler
 from typing import Union
 
 Castable = Union[Integer, String]
@@ -124,6 +125,10 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
     except Exception as e:
         exceptions.handle_exception(e)
     return ch
+
+
+def sleep(time: int):
+    _sleep(time / 1000)
 
 
 def throw(message: str = ""):

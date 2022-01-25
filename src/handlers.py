@@ -136,6 +136,8 @@ def caret(scroller: Scroller) -> Token:
 
 
 def comma(scroller: Scroller) -> Token:
+    if scroller.program[1:3] == ".,":
+        return Token.SLEEP
     return (Token.SEP, Token.ELSE)[scroller.next() == ","]
 
 
