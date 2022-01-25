@@ -18,7 +18,7 @@ class CodeHandler:
         self.locals = {}
         self.globals = globals
         self.switches = {k: False for k in {
-            "class_def", "class", "const",
+            "class_def", "class", "const", "exit",
             "function", "import", "multiline_comment",
             "newline", "random", "slice"
         }}
@@ -386,6 +386,7 @@ class Transpiler:
             Token.SEP: ",",
             Token.ATTRIBUTE: ".",
             Token.NULL: "Null()",
+            Token.DTNOW: "dtnow()",
             Token.DOLLAR: ".special_()",
             Token.HASH: ".hash_()",
             Token.SIZE: ".__sizeof__()",
