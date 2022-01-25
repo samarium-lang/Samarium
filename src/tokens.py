@@ -104,6 +104,7 @@ class Token(Enum):
     ASSIGN = ":"
     ATTRIBUTE = "."
     CONST = "<>"
+    DTNOW = "@@"
     END = ";"
     NULL = "_"
     RANDOM = "^^"
