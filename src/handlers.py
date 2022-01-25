@@ -165,3 +165,7 @@ def percent(scroller: Scroller) -> Optional[Token]:
         if scroller.next(2) == ">":
             return Token.FILE_BINARY_WRITE
     return Token.CAST
+
+
+def at(scroller: Scroller) -> Token:
+    return (Token.CLASS, Token.DTNOW)[scroller.next() == "@"]
