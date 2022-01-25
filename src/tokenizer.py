@@ -26,7 +26,8 @@ MULTISEMANTIC = {
     "^": handlers.caret,
     "#": handlers.hash_,
     "*": handlers.asterisk,
-    "%": handlers.percent
+    "%": handlers.percent,
+    "@": handlers.at
 }
 
 
