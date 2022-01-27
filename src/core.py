@@ -3,7 +3,11 @@ import os
 import sys
 from contextlib import contextmanager
 from datetime import datetime
-from objects import *
+from objects import (
+    assert_smtype, smhash, verify_type,
+    Class, Type, Slice, Null, String, Integer,
+    Table, Array, Mode, FileManager, File
+)
 from secrets import randbelow
 from time import sleep as _sleep
 from tokenizer import tokenize
