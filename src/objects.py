@@ -1,4 +1,3 @@
-# type: ignore
 from __future__ import annotations
 from contextlib import suppress
 from enum import Enum
@@ -788,7 +787,7 @@ class File(Class):
     def not_(self):
         self.value.close()
 
-    def getSlice_(self, slice: Slice) -> Integer:
+    def getSlice_(self, slice: Slice) -> Union[Array, String, Integer]:
         if slice.is_empty():
             return Integer(self.value.tell())
         if isinstance(slice.step, Integer):
@@ -802,7 +801,7 @@ class File(Class):
             if isinstance(data, bytes):
                 data = [*data]
             self.value.seek(current_position)
-            return data
+            return Array([Integer(i) for i in data])
         raise SamariumValueError("cannot use stop exclusively")
 
     def getItem_(self, index: Integer):
