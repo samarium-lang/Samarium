@@ -807,11 +807,13 @@ class File(Class):
     def getItem_(self, index: Integer):
         self.value.seek(index.value)
 
-    def load(self, bytes: Optional[Integer] = None) -> Union[String, Array]:
-        if bytes is None:
-            bytes = Integer(-1)
-        val = self.value.read(bytes.value)
-        return Array([Integer(i) for i in val]) if self.binary else String(val)
+    def load(self, bytes_: Optional[Integer] = None) -> Union[String, Array]:
+        if bytes_ is None:
+            bytes_ = Integer(-1)
+        val = self.value.read(bytes_.value)
+        if self.binary:
+            return Array([Integer(i) for i in val])
+        return String(val)
 
     def save(self, data: Union[String, Array]):
         if (
