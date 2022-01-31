@@ -326,8 +326,3 @@
         'value<<index>>: value;
     }
 }
-
-=> * {
-    arr: StaticArray(/\, \?!);
-    arr<</>>: "woof";
-}
