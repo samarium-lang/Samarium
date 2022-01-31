@@ -398,7 +398,7 @@ class Transpiler:
         if token == Token.STDIN:
             with suppress(IndexError):
                 if (
-                    isinstance(self.ch.line[-1], str) and
+                    isinstance(self.ch.line_tokens[-2], str) and
                     not self.ch.line[-1].isspace()
                 ):
                     return f"readline({self.ch.line.pop()})"
