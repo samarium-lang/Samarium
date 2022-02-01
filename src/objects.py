@@ -345,6 +345,9 @@ class Type(Class):
     def _create_(self, type_: type):
         self.value = type_
 
+    def _equals_(self, other: Type) -> Integer:
+        return Integer(self.value == other.value)
+
     def _toString_(self) -> String:
         return String(
             self
