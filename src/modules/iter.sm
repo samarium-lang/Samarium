@@ -1,6 +1,6 @@
 find array target * {
     index: \;
-    ? array?! :: "String" {
+    ? array?! :: ""?! {
         .. index + target$ <: array$ {
             ? array<<index..index+target$>> :: target {
                 * index;

@@ -36,7 +36,7 @@
         <-string.wrap;
         ?? { top: 'peek(); }
         !! { top: _; }
-        ? top?! :: "String" { top: wrap(top.toString(), "\""); }
+        ? top?! :: ""?! { top: wrap(top.toString(), "\""); }
         * "Stack(capacity:" + 'size.toString()
         + ", size:" + 'stack$.toString()
         + ", top:" + top.toString()
@@ -85,8 +85,8 @@
         } ,, ? '$ > /\/ {
             first: 'first().toString();
             last: 'last().toString();
-            ? first?! :: "String" { first: wrap(first, "\""); }
-            ? last?! :: "String" { last: wrap(last, "\""); }
+            ? first?! :: ""?! { first: wrap(first, "\""); }
+            ? last?! :: ""?! { last: wrap(last, "\""); }
             items: "[" + first.toString() + ", ..., " + last.toString() + "]";
         } ,, {
             items: "[]";
@@ -253,8 +253,8 @@
         } ,, ? '$ > /\/ {
             first: 'first().toString();
             last: 'last().toString();
-            ? first?! :: "String" { first: wrap(first, "\""); }
-            ? last?! :: "String" { last: wrap(last, "\""); }
+            ? first?! :: ""?! { first: wrap(first, "\""); }
+            ? last?! :: ""?! { last: wrap(last, "\""); }
             items: "[" + first.toString() + ", ..., " + last.toString() + "]";
         } ,, {
             items: "[]";
@@ -268,11 +268,11 @@
 @ StaticArray {
 
     create value type:_ * {
-        ? value?! :: "Integer" {
+        ? value?! :: \?! {
             'value: {{}};
             'size: value;
             'type: type;
-        } ,, ? value?! :: "Array" {
+        } ,, ? value?! :: []?! {
             'value: {{}};
             'size: value$;
             'type: type;
