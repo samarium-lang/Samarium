@@ -35,10 +35,9 @@ def dtnow() -> Array:
 def freeze(obj: Class) -> Class:
     def throw_immutable(*_):
         raise exceptions.SamariumTypeError("object is immutable")
-    obj.setSlice_ = throw_immutable
-    obj.setItem_ = throw_immutable
+    obj._setSlice_ = throw_immutable
+    obj._setItem_ = throw_immutable
     return obj
-
 
 
 def import_module(data: str, ch: CodeHandler):
@@ -51,7 +50,7 @@ def import_module(data: str, ch: CodeHandler):
         sys.stdout = stdout
 
     name, objects = data.split(".")
-    name = name[:-1]
+    name = name.strip("_")
     objects = objects.split(",")
     path = sys.argv[1][:sys.argv[1].rfind("/") + 1] or "."
 
@@ -112,8 +111,9 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
     suffix = [
         "if __name__ == '__main__':",
         "    sys.stdout = STDOUT",
+        "    argv = Array([String(i) for i in sys.argv[1:]])"
         "    try:",
-        "        ex = entry(Array([String(i) for i in sys.argv[1:]]))",
+        "        ex = entry(argv)",
         "    except TypeError:",
         "        ex = entry()",
         "    sys.exit(ex.value)"

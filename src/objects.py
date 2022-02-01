@@ -35,8 +35,8 @@ def assert_smtype(function: Callable):
 
 def get_repr(obj: Class) -> str:
     if type(obj) is String:
-        return f'"{obj.toString_()}"'
-    return obj.toString_().value
+        return f'"{obj._toString_()}"'
+    return obj._toString_().value
 
 
 def run_with_backup(
@@ -68,144 +68,145 @@ def verify_type(obj: Any, *args):
 
 
 class Class:
+
     def __init__(self, *args: Any, **kwargs: Any):
-        self.create_(*args, **kwargs)
+        self._create_(*args, **kwargs)
 
     def __bool__(self) -> bool:
-        return bool(self.toBit_().value)
+        return bool(self._toBit_().value)
 
     def __str__(self) -> str:
-        return str(self.toString_().value)
+        return str(self._toString_().value)
 
     def __iter__(self) -> Iterator:
-        return iter(self.iterate_().value)
+        return iter(self._iterate_().value)
 
     def __contains__(self, element: Any) -> Integer:
-        return self.has_(element)
+        return self._has_(element)
 
     def __call__(self, *args: Any) -> Any:
-        return self.call_(*args)
+        return self._call_(*args)
 
     def __sizeof__(self) -> Integer:
-        return self.size_() + Integer(1072)
+        return self._size_() + Integer(1072)
 
     def __hash__(self) -> int:
-        return self.hash_().value
+        return self._hash_().value
 
     def __sub__(self, other: Class) -> Class:
-        return self.subtract_(other)
+        return self._subtract_(other)
 
     def __isub__(self, other: Class) -> Class:
-        return self.subtractAssign_(other)
+        return self._subtractAssign_(other)
 
     def __add__(self, other: Class) -> Class:
-        return self.add_(other)
+        return self._add_(other)
 
     def __iadd__(self, other: Class) -> Class:
-        return self.addAssign_(other)
+        return self._addAssign_(other)
 
     def __mul__(self, other: Class) -> Class:
-        return self.multiply_(other)
+        return self._multiply_(other)
 
     def __imul__(self, other: Class) -> Class:
-        return self.multiplyAssign_(other)
+        return self._multiplyAssign_(other)
 
     def __floordiv__(self, other: Class) -> Class:
-        return self.divide_(other)
+        return self._divide_(other)
 
     def __ifloordiv__(self, other: Class) -> Class:
-        return self.divideAssign_(other)
+        return self._divideAssign_(other)
 
     def __mod__(self, other: Class) -> Class:
-        return self.mod_(other)
+        return self._mod_(other)
 
     def __imod__(self, other: Class) -> Class:
-        return self.modAssign_(other)
+        return self._modAssign_(other)
 
     def __pow__(self, other: Class) -> Class:
-        return self.power_(other)
+        return self._power_(other)
 
     def __ipow__(self, other: Class) -> Class:
-        return self.powerAssign_(other)
+        return self._powerAssign_(other)
 
     def __and__(self, other: Class) -> Class:
-        return self.and_(other)
+        return self._and_(other)
 
     def __iand__(self, other: Class) -> Class:
-        return self.andAssign_(other)
+        return self._andAssign_(other)
 
     def __or__(self, other: Class) -> Class:
-        return self.or_(other)
+        return self._or_(other)
 
     def __ior__(self, other: Class) -> Class:
-        return self.orAssign_(other)
+        return self._orAssign_(other)
 
     def __xor__(self, other: Class) -> Class:
-        return self.xor_(other)
+        return self._xor_(other)
 
     def __ixor__(self, other: Class) -> Class:
-        return self.xorAssign_(other)
+        return self._xorAssign_(other)
 
     def __neg__(self) -> Class:
-        return self.negative_()
+        return self._negative_()
 
     def __pos__(self) -> Class:
-        return self.positive_()
+        return self._positive_()
 
     def __invert__(self) -> Class:
-        return self.not_()
+        return self._not_()
 
     def __getitem__(self, index: Integer) -> Any:
-        return self.getItem_(index)
+        return self._getItem_(index)
 
     def __setitem__(self, index: Integer, value: Any):
-        return self.setItem_(index, value)
+        return self._setItem_(index, value)
 
     def __getslice__(self, slice: Slice) -> Any:
-        return self.getSlice_(slice)
+        return self._getSlice_(slice)
 
     def __setslice__(self, slice: Slice, value: Any):
-        return self.setSlice_(slice, value)
+        return self._setSlice_(slice, value)
 
     def __eq__(self, other: Class) -> Integer:
-        return self.equals_(other)
+        return self._equals_(other)
 
     def __ne__(self, other: Class) -> Integer:
         return run_with_backup(
-            self.notEquals_,
-            lambda x: Integer(not self.equals_(x)),
+            self._notEquals_,
+            lambda x: Integer(not self._equals_(x)),
             other
         )
 
     def __lt__(self, other: Class) -> Integer:
         return run_with_backup(
-            self.lessThan_,
+            self._lessThan_,
             lambda x: Integer(
-                not self.greaterThan_(x)
-                and not self.equals_(x)
+                not self._greaterThan_(x)
+                and not self._equals_(x)
             ),
             other
         )
 
     def __le__(self, other: Class) -> Integer:
         return run_with_backup(
-            self.lessThanOrEqual_,
-            lambda x: Integer(not self.greaterThan_(x)),
+            self._lessThanOrEqual_,
+            lambda x: Integer(not self._greaterThan_(x)),
             other
         )
 
     def __gt__(self, other: Class) -> Integer:
-        return self.greaterThan_(other)
+        return self._greaterThan_(other)
 
     def __ge__(self, other: Class) -> Integer:
         return run_with_backup(
-            self.greaterThanOrEqual_,
-            lambda x: Integer(self.greaterThan_(x) or self.equals_(x)),
+            self._greaterThanOrEqual_,
+            lambda x: Integer(self._greaterThan_(x) or self._equals_(x)),
             other
         )
 
     @property
-    def type(self) -> String:
+    def type(self) -> Type:
         return Type(self.__class__)
 
     @property
@@ -215,191 +216,194 @@ class Class:
             return Type(parents[0])
         return Array([Type(p) for p in parents])
 
-    def create_(self, *args: Any, **kwargs: Any):
+    def _create_(self, *args: Any, **kwargs: Any):
         raise NotDefinedError(self, "create")
 
-    def toBit_(self) -> Integer:
+    def _toBit_(self) -> Integer:
         raise NotDefinedError(self, "toBit")
 
-    def toString_(self) -> String:
+    def _toString_(self) -> String:
         raise NotDefinedError(self, "toString")
 
-    def special_(self) -> Any:
+    def _special_(self) -> Any:
         raise NotDefinedError(self, "special")
 
-    def has_(self, element: Any) -> Integer:
+    def _has_(self, element: Any) -> Integer:
         raise NotDefinedError(self, "has")
 
-    def iterate_(self) -> Array:
+    def _iterate_(self) -> Array:
         raise NotDefinedError(self, "iterate")
 
-    def call_(self, *args: Any) -> Any:
+    def _call_(self, *args: Any) -> Any:
         raise NotDefinedError(self, "call")
 
-    def size_(self) -> Integer:
+    def _size_(self) -> Integer:
         raise NotDefinedError(self, "size")
 
-    def hash_(self) -> Integer:
+    def _hash_(self) -> Integer:
         raise NotDefinedError(self, "hash")
 
-    def subtract_(self, other: Class) -> Class:
+    def _subtract_(self, other: Class) -> Class:
         raise NotDefinedError(self, "subtract")
 
-    def subtractAssign_(self, other: Class) -> Class:
+    def _subtractAssign_(self, other: Class) -> Class:
         raise NotDefinedError(self, "subtractAssign")
 
-    def add_(self, other: Class) -> Class:
+    def _add_(self, other: Class) -> Class:
         raise NotDefinedError(self, "add")
 
-    def addAssign_(self, other: Class) -> Class:
+    def _addAssign_(self, other: Class) -> Class:
         raise NotDefinedError(self, "addAssign")
 
-    def multiply_(self, other: Class) -> Class:
+    def _multiply_(self, other: Class) -> Class:
         raise NotDefinedError(self, "multiply")
 
-    def multiplyAssign_(self, other: Class) -> Class:
+    def _multiplyAssign_(self, other: Class) -> Class:
         raise NotDefinedError(self, "multiplyAssign")
 
-    def divide_(self, other: Class) -> Class:
+    def _divide_(self, other: Class) -> Class:
         raise NotDefinedError(self, "divide")
 
-    def divideAssign_(self, other: Class) -> Class:
+    def _divideAssign_(self, other: Class) -> Class:
         raise NotDefinedError(self, "divideAssign")
 
-    def mod_(self, other: Class) -> Class:
+    def _mod_(self, other: Class) -> Class:
         raise NotDefinedError(self, "mod")
 
-    def modAssign_(self, other: Class) -> Class:
+    def _modAssign_(self, other: Class) -> Class:
         raise NotDefinedError(self, "modAssign")
 
-    def power_(self, other: Class) -> Class:
+    def _power_(self, other: Class) -> Class:
         raise NotDefinedError(self, "power")
 
-    def powerAssign_(self, other: Class) -> Class:
+    def _powerAssign_(self, other: Class) -> Class:
         raise NotDefinedError(self, "powerAssign")
 
-    def and_(self, other: Class) -> Class:
+    def _and_(self, other: Class) -> Class:
         raise NotDefinedError(self, "and")
 
-    def andAssign_(self, other: Class) -> Class:
+    def _andAssign_(self, other: Class) -> Class:
         raise NotDefinedError(self, "andAssign")
 
-    def or_(self, other: Class) -> Class:
+    def _or_(self, other: Class) -> Class:
         raise NotDefinedError(self, "or")
 
-    def orAssign_(self, other: Class) -> Class:
+    def _orAssign_(self, other: Class) -> Class:
         raise NotDefinedError(self, "orAssign")
 
-    def xor_(self, other: Class) -> Class:
+    def _xor_(self, other: Class) -> Class:
         raise NotDefinedError(self, "xor")
 
-    def xorAssign_(self, other: Class) -> Class:
+    def _xorAssign_(self, other: Class) -> Class:
         raise NotDefinedError(self, "xorAssign")
 
-    def negative_(self) -> Class:
+    def _negative_(self) -> Class:
         raise NotDefinedError(self, "negative")
 
-    def positive_(self) -> Class:
+    def _positive_(self) -> Class:
         raise NotDefinedError(self, "positive")
 
-    def not_(self) -> Class:
+    def _not_(self) -> Class:
         raise NotDefinedError(self, "not")
 
-    def getItem_(self, index: Integer) -> Any:
+    def _getItem_(self, index: Integer) -> Any:
         raise NotDefinedError(self, "getItem")
 
-    def setItem_(self, index: Integer, value: Any):
+    def _setItem_(self, index: Integer, value: Any):
         raise NotDefinedError(self, "setItem")
 
-    def getSlice_(self, slice: Slice) -> Any:
+    def _getSlice_(self, slice: Slice) -> Any:
         raise NotDefinedError(self, "getSlice")
 
-    def setSlice_(self, slice: Slice, value: Any):
+    def _setSlice_(self, slice: Slice, value: Any):
         raise NotDefinedError(self, "setSlice")
 
-    def equals_(self, other: Class) -> Integer:
+    def _equals_(self, other: Class) -> Integer:
         raise NotDefinedError(self, "equals")
 
-    def notEquals_(self, other: Class) -> Integer:
+    def _notEquals_(self, other: Class) -> Integer:
         raise NotDefinedError(self, "notEquals")
 
-    def lessThan_(self, other: Class) -> Integer:
+    def _lessThan_(self, other: Class) -> Integer:
         raise NotDefinedError(self, "lessThan")
 
-    def lessThanOrEqual_(self, other: Class) -> Integer:
+    def _lessThanOrEqual_(self, other: Class) -> Integer:
         raise NotDefinedError(self, "lessThanOrEqual")
 
-    def greaterThan_(self, other: Class) -> Integer:
+    def _greaterThan_(self, other: Class) -> Integer:
         raise NotDefinedError(self, "greaterThan")
 
-    def greaterThanOrEqual_(self, other: Class) -> Integer:
+    def _greaterThanOrEqual_(self, other: Class) -> Integer:
         raise NotDefinedError(self, "greaterThanOrEqual")
 
-    def cast_(self):
+    def _cast_(self):
         raise NotDefinedError(self, "cast")
 
 
 class Type(Class):
 
-    def create_(self, type_: type):
+    def _create_(self, type_: type):
         self.value = type_
 
-    def toString_(self) -> String:
+    def _toString_(self) -> String:
         return String(
             self
             .value
             .__name__
+            .strip("_")
             .capitalize()
-            .rstrip("_")
         )
 
-    def call_(self, *args) -> Class:
-        return self.value(*args)
+    def _toBit_(self) -> Integer:
+        return Integer(1)
+
+    def _call_(self, *args) -> Class:
+        return self.value(*(i.value for i in args))
 
 
 class Slice(Class):
 
-    def create_(self, start: Any, stop: Any, step: Any):
+    def _create_(self, start: Any, stop: Any, step: Any):
         self.start = start or Null()
         self.stop = stop or Null()
         self.step = step or Null()
         self.value = slice(start.value, stop.value, step.value)
 
-    def size_(self) -> Integer:
+    def _size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
 
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == Null()
 
-    def special_(self) -> Table:
+    def _special_(self) -> Table:
         return Table({
             "start": self.start,
             "stop": self.stop,
             "step": self.step
         })
 
-    def toString_(self) -> String:
+    def _toString_(self) -> String:
         return String(f"Slice<<{self.start}, {self.stop}, {self.step}>>")
 
 
 class Null(Class):
 
-    def create_(self):
+    def _create_(self):
         self.value = None
 
-    def toString_(self) -> String:
+    def _toString_(self) -> String:
         return String("null")
 
-    def hash_(self) -> Integer:
+    def _hash_(self) -> Integer:
         return smhash(self.value)
 
-    def size_(self) -> Integer:
+    def _size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
 
-    def toBit_(self) -> Integer:
+    def _toBit_(self) -> Integer:
         return Integer(0)
 
-    def equals_(self, other: Null) -> Integer:
+    def _equals_(self, other: Null) -> Integer:
         return Integer(type(other) is Null)
 
 
@@ -408,69 +412,69 @@ class String(Class):
     def __str__(self) -> str:
         return self.value
 
-    def hash_(self) -> Integer:
+    def _hash_(self) -> Integer:
         return smhash(self.value)
 
-    def cast_(self) -> Integer:
+    def _cast_(self) -> Integer:
         if len(self.value) != 1:
             raise SamariumTypeError(
                 f"cannot cast a string of length {len(self.value)}"
             )
         return Integer(ord(self.value))
 
-    def create_(self, value: str):
+    def _create_(self, value: str):
         self.value = value
 
-    def has_(self, element: String) -> Integer:
+    def _has_(self, element: String) -> Integer:
         return Integer(element.value in self.value)
 
-    def iterate_(self) -> Array:
+    def _iterate_(self) -> Array:
         return Array([String(char) for char in self.value])
 
-    def size_(self) -> Integer:
+    def _size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
 
-    def special_(self) -> Integer:
+    def _special_(self) -> Integer:
         return Integer(len(self.value))
 
-    def toBit_(self) -> Integer:
+    def _toBit_(self) -> Integer:
         return Integer(bool(self.value))
 
-    def toString_(self) -> String:
+    def _toString_(self) -> String:
         return self
 
-    def add_(self, other: String) -> String:
+    def _add_(self, other: String) -> String:
         return String(self.value + other.value)
 
-    def addAssign_(self, other: String) -> String:
-        self = self.add_(other)
+    def _addAssign_(self, other: String) -> String:
+        self = self._add_(other)
         return self
 
-    def multiply_(self, times: Integer) -> String:
+    def _multiply_(self, times: Integer) -> String:
         return String(self.value * times.value)
 
-    def multiplyAssign_(self, times: Integer) -> String:
-        self = self.multiply_(times)
+    def _multiplyAssign_(self, times: Integer) -> String:
+        self = self._multiply_(times)
         return self
 
-    def equals_(self, other: String) -> Integer:
+    def _equals_(self, other: String) -> Integer:
         return Integer(self.value == other.value)
 
-    def greaterThan_(self, other: String) -> Integer:
+    def _greaterThan_(self, other: String) -> Integer:
         return Integer(self.value > other.value)
 
-    def getItem_(self, index: Integer) -> String:
+    def _getItem_(self, index: Integer) -> String:
         return String(self.value[index.value])
 
-    def setItem_(self, index: Integer, value: String):
+    def _setItem_(self, index: Integer, value: String):
         string = [*self.value]
         string[index.value] = value.value
         self.value = "".join(string)
 
-    def getSlice_(self, slice: Slice) -> String:
+    def _getSlice_(self, slice: Slice) -> String:
         return String(self.value[slice.value])
 
-    def setSlice_(self, slice: Slice, value: String):
+    def _setSlice_(self, slice: Slice, value: String):
         string = [*self.value]
         string[slice.value] = value.value
         self.value = "".join(string)
@@ -481,122 +485,122 @@ class Integer(Class):
     def __int__(self) -> int:
         return self.value
 
-    def cast_(self) -> String:
+    def _cast_(self) -> String:
         return String(chr(self.value))
 
-    def hash_(self) -> Integer:
+    def _hash_(self) -> Integer:
         return smhash(self.value)
 
-    def size_(self) -> Integer:
+    def _size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
 
-    def create_(self, value: int):
+    def _create_(self, value: int):
         self.value = int(value)
 
-    def toBit_(self) -> Integer:
+    def _toBit_(self) -> Integer:
         return Integer(bool(self.value))
 
-    def toString_(self) -> String:
+    def _toString_(self) -> String:
         return String(str(self.value))
 
-    def add_(self, other: Integer) -> Integer:
+    def _add_(self, other: Integer) -> Integer:
         return Integer(self.value + other.value)
 
-    def addAssign_(self, other: Integer) -> Integer:
-        self = self.add_(other)
+    def _addAssign_(self, other: Integer) -> Integer:
+        self = self._add_(other)
         return self
 
-    def subtract_(self, other: Integer) -> Integer:
+    def _subtract_(self, other: Integer) -> Integer:
         return Integer(self.value - other.value)
 
-    def subtractAssign_(self, other: Integer) -> Integer:
-        self = self.subtract_(other)
+    def _subtractAssign_(self, other: Integer) -> Integer:
+        self = self._subtract_(other)
         return self
 
-    def multiply_(self, other: Integer) -> Integer:
+    def _multiply_(self, other: Integer) -> Integer:
         return Integer(self.value * other.value)
 
-    def multiplyAssign_(self, other: Integer) -> Integer:
-        self = self.multiply_(other)
+    def _multiplyAssign_(self, other: Integer) -> Integer:
+        self = self._multiply_(other)
         return self
 
-    def divide_(self, other: Integer) -> Integer:
+    def _divide_(self, other: Integer) -> Integer:
         return Integer(self.value // other.value)
 
-    def divideAssign_(self, other: Integer) -> Integer:
-        self = self.divide_(other)
+    def _divideAssign_(self, other: Integer) -> Integer:
+        self = self._divide_(other)
         return self
 
-    def mod_(self, other: Integer) -> Integer:
+    def _mod_(self, other: Integer) -> Integer:
         return Integer(self.value % other.value)
 
-    def modAssign_(self, other: Integer) -> Integer:
-        self = self.mod_(other)
+    def _modAssign_(self, other: Integer) -> Integer:
+        self = self._mod_(other)
         return self
 
-    def power_(self, other: Integer) -> Integer:
+    def _power_(self, other: Integer) -> Integer:
         return Integer(self.value ** other.value)
 
-    def powerAssign_(self, other: Integer) -> Integer:
-        self = self.power_(other)
+    def _powerAssign_(self, other: Integer) -> Integer:
+        self = self._power_(other)
         return self
 
-    def and_(self, other: Integer) -> Integer:
+    def _and_(self, other: Integer) -> Integer:
         return Integer(self.value & other.value)
 
-    def andAssign_(self, other: Integer) -> Integer:
-        self = self.and_(other)
+    def _andAssign_(self, other: Integer) -> Integer:
+        self = self._and_(other)
         return self
 
-    def or_(self, other: Integer) -> Integer:
+    def _or_(self, other: Integer) -> Integer:
         return Integer(self.value | other.value)
 
-    def orAssign_(self, other: Integer) -> Integer:
-        self = self.or_(other)
+    def _orAssign_(self, other: Integer) -> Integer:
+        self = self._or_(other)
         return self
 
-    def xor_(self, other: Integer) -> Integer:
+    def _xor_(self, other: Integer) -> Integer:
         return Integer(self.value ^ other.value)
 
-    def xorAssign_(self, other: Integer) -> Integer:
-        self = self.xor_(other)
+    def _xorAssign_(self, other: Integer) -> Integer:
+        self = self._xor_(other)
         return self
 
-    def not_(self) -> Integer:
+    def _not_(self) -> Integer:
         return Integer(~self.value)
 
-    def negative_(self) -> Integer:
+    def _negative_(self) -> Integer:
         return Integer(-self.value)
 
-    def positive_(self) -> Integer:
+    def _positive_(self) -> Integer:
         return Integer(+self.value)
 
-    def equals_(self, other: Integer) -> Integer:
+    def _equals_(self, other: Integer) -> Integer:
         return Integer(self.value == other.value)
 
-    def greaterThan_(self, other: Integer) -> Integer:
+    def _greaterThan_(self, other: Integer) -> Integer:
         return Integer(self.value > other.value)
 
-    def special_(self) -> String:
+    def _special_(self) -> String:
         return String(f"{self.value:b}")
 
 
 class Table(Class):
 
-    def create_(self, value: Dict[Any, Any]):
+    def _create_(self, value: Dict[Any, Any]):
         self.value = {
             type(verify_type(k))(k.value):
             type(verify_type(v))(v.value)
             for k, v in value.items()
         }
 
-    def size_(self) -> Integer:
+    def _size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
 
-    def special_(self) -> Array:
+    def _special_(self) -> Array:
         return Array([*self.value.values()])
 
-    def toString_(self) -> String:
+    def _toString_(self) -> String:
         return String(
             "{{" + ", ".join(
                 f"{get_repr(k)} -> {get_repr(v)}"
@@ -604,87 +608,87 @@ class Table(Class):
             ) + "}}"
         )
 
-    def toBit_(self) -> Integer:
+    def _toBit_(self) -> Integer:
         return Integer(bool(self.value))
 
-    def getItem_(self, key: Any) -> Any:
+    def _getItem_(self, key: Any) -> Any:
         return self.value[key]
 
-    def setItem_(self, key: Any, value: Any):
+    def _setItem_(self, key: Any, value: Any):
         self.value[key] = value
 
-    def iterate_(self) -> Array:
+    def _iterate_(self) -> Array:
         return Array([*self.value.keys()])
 
-    def has_(self, element: Any) -> Integer:
+    def _has_(self, element: Any) -> Integer:
         return Integer(element in self.value)
 
-    def equals_(self, other: Table) -> Integer:
+    def _equals_(self, other: Table) -> Integer:
         return Integer(self.value == other.value)
 
-    def add_(self, other: Table) -> Table:
+    def _add_(self, other: Table) -> Table:
         return Table({**self.value, **other.value})
 
-    def addAssign_(self, other: Table) -> Table:
+    def _addAssign_(self, other: Table) -> Table:
         self.value.update(other.value)
         return self
 
 
 class Array(Class):
 
-    def create_(self, value: List[Any]):
+    def _create_(self, value: List[Any]):
         self.value = [
             type(verify_type(i))(i.value)
             for i in value
         ]
 
-    def size_(self) -> Integer:
+    def _size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
 
-    def special_(self) -> Integer:
+    def _special_(self) -> Integer:
         return Integer(len(self.value))
 
-    def toString_(self) -> String:
+    def _toString_(self) -> String:
         return String(f"[{', '.join(get_repr(i) for i in self.value)}]")
 
-    def toBit_(self) -> Integer:
+    def _toBit_(self) -> Integer:
         return Integer(bool(self.value))
 
     def __iter__(self) -> Iterator:
         yield from self.value
 
-    def iterate_(self) -> Array:
+    def _iterate_(self) -> Array:
         return self
 
-    def has_(self, element: Any) -> Integer:
+    def _has_(self, element: Any) -> Integer:
         return Integer(element in self.value)
 
-    def equals_(self, other: Array) -> Integer:
+    def _equals_(self, other: Array) -> Integer:
         return Integer(self.value == other.value)
 
-    def greaterThan_(self, other: Array) -> Integer:
+    def _greaterThan_(self, other: Array) -> Integer:
         return Integer(self.value > other.value)
 
-    def getItem_(self, index: Integer) -> Any:
+    def _getItem_(self, index: Integer) -> Any:
         return self.value[index.value]
 
-    def setItem_(self, index: Integer, value: Any):
+    def _setItem_(self, index: Integer, value: Any):
         self.value[index.value] = value
 
-    def getSlice_(self, slice: Slice) -> Array:
+    def _getSlice_(self, slice: Slice) -> Array:
         return Array(self.value[slice.value])
 
-    def setSlice_(self, slice: Slice, value: Any):
+    def _setSlice_(self, slice: Slice, value: Any):
         self.value[slice.value] = value
 
-    def add_(self, other: Array) -> Array:
+    def _add_(self, other: Array) -> Array:
         return Array(self.value + other.value)
 
-    def addAssign_(self, other: Array) -> Array:
+    def _addAssign_(self, other: Array) -> Array:
         self.value += other.value
         return self
 
-    def subtract_(self, other: Union[Array, Integer]) -> Array:
+    def _subtract_(self, other: Union[Array, Integer]) -> Array:
         new_array = self.value.copy()
         if isinstance(other, Array):
             for i in other:
@@ -695,7 +699,7 @@ class Array(Class):
             raise SamariumTypeError(type(other).__name__)
         return Array(new_array)
 
-    def subtractAssign_(self, other: Union[Array, Integer]) -> Array:
+    def _subtractAssign_(self, other: Union[Array, Integer]) -> Array:
         if isinstance(other, Array):
             for i in other:
                 self.value.remove(i)
@@ -705,10 +709,10 @@ class Array(Class):
             raise SamariumTypeError(type(other).__name__)
         return self
 
-    def multiply_(self, other: Integer) -> Array:
+    def _multiply_(self, other: Integer) -> Array:
         return Array(self.value * other.value)
 
-    def multiplyAssign_(self, other: Integer) -> Array:
+    def _multiplyAssign_(self, other: Integer) -> Array:
         self.value *= other.value
         return self
 
@@ -754,15 +758,14 @@ class FileManager:
                     if binary:
                         return Array([Integer(i) for i in f.read()])
                     return String(f.read())
-                if data is not None:
-                    if isinstance(data, Array):
-                        f.write(b"".join([
-                            int(x).to_bytes(1, "big") for x in data.value
-                        ]))
-                    else:
-                        f.write(data.value)
-                else:
+                if data is None:
                     raise SamariumValueError("missing data")
+                if isinstance(data, Array):
+                    f.write(b"".join([
+                        int(x).to_bytes(1, "big") for x in data.value
+                    ]))
+                else:
+                    f.write(data.value)
         else:
             file = path
             if mode == Mode.READ:
@@ -775,19 +778,19 @@ class FileManager:
 
 class File(Class):
 
-    def create_(self, file: IO, mode: str, path: str, binary: bool):
+    def _create_(self, file: IO, mode: str, path: str, binary: bool):
         self.binary = binary
         self.mode = mode
         self.path = path
         self.value = file
 
-    def toString_(self) -> String:
+    def _toString_(self) -> String:
         return String(f"File(path:{self.path}, mode:{self.mode})")
 
-    def not_(self):
+    def _not_(self):
         self.value.close()
 
-    def getSlice_(self, slice: Slice) -> Union[Array, String, Integer]:
+    def _getSlice_(self, slice: Slice) -> Union[Array, String, Integer]:
         if slice.is_empty():
             return Integer(self.value.tell())
         if isinstance(slice.step, Integer):
@@ -804,7 +807,7 @@ class File(Class):
             return Array([Integer(i) for i in data])
         raise SamariumValueError("cannot use stop exclusively")
 
-    def getItem_(self, index: Integer):
+    def _getItem_(self, index: Integer):
         self.value.seek(index.value)
 
     def load(self, bytes_: Optional[Integer] = None) -> Union[String, Array]:

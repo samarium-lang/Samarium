@@ -180,7 +180,7 @@ class Transpiler:
             else:
                 method = "setSlice" if assign else "getSlice"
                 self.ch.line += [
-                    f".{method}_({slce}({null},{null},{null})"
+                    f"._{method}_({slce}({null},{null},{null})"
                     + "),"[assign]
                 ]
             self.slice_tokens = []
@@ -189,18 +189,18 @@ class Transpiler:
         method = "setSlice" if assign else "getSlice"
         # <<**step>>
         if tokens[0] == Token.SLICE_STEP:
-            self.ch.line += [f".{method}_({slce}({null},{null},"]
+            self.ch.line += [f"._{method}_({slce}({null},{null},"]
             for t in tokens[1:]:
                 self.transpile_token(t)
             self.ch.line += [")" + "),"[assign]]
         # <<start..>>
         elif tokens[-1] == Token.WHILE:
-            self.ch.line += [f".{method}_({slce}("]
+            self.ch.line += [f"._{method}_({slce}("]
             for t in tokens[:-1]:
                 self.transpile_token(t)
             self.ch.line += [f",{null},{null})" + "),"[assign]]
         elif tokens[0] == Token.WHILE:
-            self.ch.line += [f".{method}_({slce}({null},"]
+            self.ch.line += [f"._{method}_({slce}({null},"]
             # <<..end**step>>
             if Token.SLICE_STEP in tokens:
                 step_index = tokens.index(Token.SLICE_STEP)
@@ -387,12 +387,12 @@ class Transpiler:
             Token.ATTRIBUTE: ".",
             Token.NULL: "Null()",
             Token.DTNOW: "dtnow()",
-            Token.DOLLAR: ".special_()",
-            Token.HASH: ".hash_()",
+            Token.DOLLAR: "._special_()",
+            Token.HASH: "._hash_()",
             Token.SIZE: ".__sizeof__()",
             Token.TYPE: ".type",
             Token.PARENT: ".parent",
-            Token.CAST: ".cast_()",
+            Token.CAST: "._cast_()",
             Token.RANDOM: ")" if self.ch.switches["random"] else "random("
         }.get(token, 0)
         if token == Token.STDIN:
@@ -538,10 +538,8 @@ class Transpiler:
         if token == Token.THROW:
             x = bool(self.ch.indent)
             self.ch.line = [
-                *self.ch.line[:x],
-                "throw(",
-                *self.ch.line[x:],
-                ")"
+                *self.ch.line[:x], "throw(",
+                *self.ch.line[x:], ")"
             ]
             return 1
         return out
