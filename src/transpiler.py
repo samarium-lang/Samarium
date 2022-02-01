@@ -141,7 +141,7 @@ class Transpiler:
             elif len(self.ch.line_tokens) > 1:
                 if self.ch.line_tokens[-2] == Token.INSTANCE:
                     self.ch.line += ["."]
-            self.ch.line += [f"{token}_"]
+            self.ch.line += [f"_{token}_"]
             return
 
         for func in [

@@ -59,12 +59,12 @@ def tokenize(program: str) -> List[Tokenlike]:
             scroller.shift()
 
         # String content and name handling
-        elif scroller.pointer.isalpha() or string:
+        elif scroller.pointer.isalnum() or string:
             temp += scroller.pointer
             scroller.shift()
 
         # Namespace submitting
-        elif temp and not scroller.pointer.isalpha() and not string:
+        elif temp and not scroller.pointer.isalnum() and not string:
             tokens.append(temp)
             temp = ""
 
