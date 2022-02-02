@@ -23,19 +23,20 @@ The following guide assumes that you are familiar with the basics of programming
 - [Strings](#strings)
 - [Arrays](#arrays)
 - [Tables](#tables)
+- [Slices](#slices)
 - [Comments](#comments)
 - [Built-in functions](#built-in-functions)
 - [Control flow](#control-flow)
 - [Functions](#functions)
 - [Importing](#importing)
 - [Classes](#classes)
+- [File I/O](#file-io)
 - [Standard Library](#standard-library)
-
 
 # Variables
 
 Variables are defined using the assignment operator `:`, like so:
-```rs
+```
 myVar: /;
 ```
 Variables may be integers, strings, arrays, tables, or null.
@@ -46,11 +47,22 @@ Only letters can be used for variable names, thus camelCase is recommended for n
 The character `_` represents a null value, such as for default arguments in a function.
 Assignments to `_` are not allowed.
 
+## Constant variables
+
+Variables can be made constant by prefixing them with `<>`.
+Any attempt to assign a new value to a constant variable will raise a `TypeError`.
+```
+<>x: //;
+x: \;
+```
+This example raises `[TypeError] object is immutable`.
+
 
 # Numbers
 
 Numbers are represented in base 2, using slashes and backslashes to represent 1 and 0 respectively.
 Only integers are supported in Samarium.
+Negative numbers are represented as normal, with a `-` sign before them.
 
 Let's see some examples of numbers:
 
@@ -67,13 +79,21 @@ Base 10 | Base 2  | Samarium
 
 Since Samarium is transpiled to Python, there's no limit to how large a number can be:
 
-```hs
+```
 //\\/\\//////\\\\///\\////\\/\\/\\\\\\/////\\\\\\\\/////\\//\\/\\////\\////////\\////\\///\\\\\\\\//\\\\//\\///\\/\\\\\\/\\////\\//\\\\/\\\\/\\////\\/////\\/\\\\/\\\\\\\\\\//\\\\\\//\\\\/\\/\\\\//\\\\\\///\\/\\\\\\/\\\\\\/\\\\///\\//\\\\/\\\\//\\\\///\\//\\\\\\\\\\\\////////////////////////////////////////////////////////////////////////////////
 ```
 Or in base 10: 
 ```py
 99999999999999999999999999999999999999999999999999999999999999999999999999999999
 ```
+
+## Random numbers
+
+A random number in a particular range can be generated using `^^`, like so:
+
+`^^/ -> /\/\^^` generates a random integer from 1 to 10 inclusive.
+
+More random number generation-related functions can be found in the [`random` module](#random-module)
 
 
 # Operators
@@ -160,7 +180,7 @@ Strings can be manipulated using some arithmetic operators:
 # Arrays
 
 Arrays are defined using square brackets:
-```rs
+```
 [\, \/, \\]
 ```
 
@@ -168,14 +188,14 @@ Arrays can be concatenated with the `+` operator:
 
 `[/, //] + [/\]` is the same as `[/, //, /\]`
 
-Elements can also be removed from an array using the `-` operator:
+Elements can also be removed (by index) from an array using the `-` operator:
 
-`[/, //\, /\, //] - //\` gives `[/, /\, //]`
+`[/, //\, /\, //] - /` gives `[/, /\, //]`
 
 
 # Tables
 
-Tables are defined using double curly braces:
+Tables are defined using double curly brackets:
 ```hs
 {{"key" -> "value", / -> //\}}
 ```
@@ -212,7 +232,7 @@ Slice                   | Returns
 # Comments
 
 Comments are written using `==`, and comment blocks are written with `==<` and `>==`:
-```hs
+```
 == single-line comment
 
 ==< comment block
@@ -252,3 +272,92 @@ The program may be exited with `=>!`.
 If a particular exit code is desired, it may be put after the exclamation mark:
 
 `=>!//` will exit the program with exit code 3.
+
+## HASH
+
+The hash function `##` returns as an integer the hash value of an object if it has one (arrays and tables do not).
+The value it returns will remain consistent for the life of the program, but may vary if the program is run multiple times.
+
+`"hash"##` will return the hash value of the string `"hash"`.
+
+## TYPEOF
+
+The type function `?!` returns the type of an object, as an instance of the `Type` class.
+
+`/?!` returns `Integer`.
+
+`"abc"?!` returns `String`.
+
+`/?!?!` returns `Type`.
+
+
+# Control flow
+
+## if/else
+
+`if` statements are written using a `?` character, and `else` is written as `,,`.
+Blocks are enclosed in curly brackets.
+`else if` can also be written using `,, ?`.
+
+```
+? x < \ {
+    "x is negative"!;
+} ,, ? x > / {
+    "x is positive"!;
+} ,, {
+    "x == 0"!;
+}
+```
+
+
+# Functions
+
+Functions are defined using the `*` character.
+Both the function's name and its parameters come before this `*` character, in that order, separated by spaces.
+The function body is enclosed in curly brackets.
+The function's return value is preceded by a `*` character as well.
+(Functions may also have multiple return statements, or none at all.)
+
+```
+func arg1 arg2 * {
+    sum: arg1 + arg2;
+    * sum;
+}
+```
+
+Calling a function is done as in C-like languages, with the function name, followed by its arguments in parentheses, separated by commas.
+
+```
+a: /;
+b: /\;
+c: func(a, b);      == using `func` from the previous example (c = 3)
+```
+
+## Main function
+
+The main function/entrypoint of the program is denoted by `=>`.
+This function will be implicitly called on execution of the program.
+The return value of the main function indicates the exit code of the program (optional, defaults to 0).
+Attempts to write to stdout outside the scope of this or any other function will be ignored. 
+Command line arguments can be gotten as an array with an optional parameter in this function.
+
+```
+=> argv * {
+    == program here...
+}
+```
+
+## Default arguments
+
+Default arguments may be given by using the assignment operator in the function definition.
+Default arguments must come after any other arguments.
+
+```
+func a b c: "arg" d: _ * {
+    == ...
+}
+
+func(/, /\);
+func(/, /\, //);
+func(/, /\, //, /\\);   == all valid calls
+```
