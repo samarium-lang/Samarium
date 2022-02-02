@@ -1,3 +1,6 @@
+import sys
+
+
 def handle_exception(exception: Exception):
     name = exception.__class__.__name__
     if name == "SyntaxError":
@@ -11,7 +14,7 @@ def handle_exception(exception: Exception):
         else:
             name = name.removeprefix("Samarium")
     color = f"\033[{4 - (name == 'Error')}1m"
-    print(f"{color}[{name}] {exception}\033[0m")
+    sys.stderr.write(f"{color}[{name}] {exception}\033[0m\n")
     exit(1)
 
 
