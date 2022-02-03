@@ -4,15 +4,12 @@ Samarium is a dynamic interpreted language transpiled to Python.
 Samarium, in its most basic form, doesn't use any digits or letters.
 
 Here's a `Hello, World!` program written in Samarium:
-```rs
-=> * {
-  "Hello, World!"!;
-}
-```
+<img src="images/helloworld.png" height="250px">
 
 Note: Every statement in Samarium must end in a semicolon.
 
 The following guide assumes that you are familiar with the basics of programming.
+
 
 # Table of Contents
 - [Introduction](#introduction)
@@ -25,13 +22,14 @@ The following guide assumes that you are familiar with the basics of programming
 - [Tables](#tables)
 - [Slices](#slices)
 - [Comments](#comments)
-- [Built-in functions](#built-in-functions)
-- [Control flow](#control-flow)
+- [Built-in Functions](#built-in-functions)
+- [Control Flow](#control-flow)
 - [Functions](#functions)
 - [Importing](#importing)
 - [Classes](#classes)
 - [File I/O](#file-io)
 - [Standard Library](#standard-library)
+
 
 # Variables
 
@@ -40,14 +38,14 @@ Variables are defined using the assignment operator `:`, like so:
 myVar: /;
 ```
 Variables may be integers, strings, arrays, tables, or null.
-Only letters can be used for variable names, thus camelCase is recommended for names consisting of multiple words.
+Only letters and numbers can be used for variable names, thus camelCase is recommended for names consisting of multiple words.
 
 ## Null
 
 The character `_` represents a null value, such as for default arguments in a function.
 Assignments to `_` are not allowed.
 
-## Constant variables
+## Constant Variables
 
 Variables can be made constant by prefixing them with `<>`.
 Any attempt to assign a new value to a constant variable will raise a `TypeError`.
@@ -87,7 +85,7 @@ Or in base 10:
 99999999999999999999999999999999999999999999999999999999999999999999999999999999
 ```
 
-## Random numbers
+## Random Numbers
 
 A random number in a particular range can be generated using `^^`, like so:
 
@@ -219,7 +217,7 @@ All valid slice parameters are as follows:
 Slice                   | Returns
 ---                     | ---
 `<<>>`                  | the whole iterable
-`<<index>>`             | the element at index `index`
+`<<index>>`             | the element at position `index`
 `<<..stop>>`            | all elements up to index `stop`
 `<<**step>>`            | all elements separated by gaps of size `step`
 `<<start..>>`           | all elements starting from index `start`
@@ -241,7 +239,7 @@ on newlines >==
 ```
 
 
-# Built-in functions
+# Built-in Functions
 
 ## STDIN
 
@@ -249,6 +247,8 @@ Standard input can be read from with `???`.
 It will read until it receives a newline character.
 
 `x: ???` will assign to `x` as a string what it reads from standard input, stopping at a newline character.
+
+A prompt can be given by preceding the `???` with a string, for example `"input: "???`
 
 ## STDOUT
 
@@ -282,7 +282,7 @@ The value it returns will remain consistent for the life of the program, but may
 
 ## TYPEOF
 
-The type function `?!` returns the type of an object, as an instance of the `Type` class.
+The typeof function `?!` returns the type of an object, as an instance of the `Type` class.
 
 `/?!` returns `Integer`.
 
@@ -291,13 +291,13 @@ The type function `?!` returns the type of an object, as an instance of the `Typ
 `/?!?!` returns `Type`.
 
 
-# Control flow
+# Control Flow
 
 ## if/else
 
 `if` statements are written using a `?` character, and `else` is written as `,,`.
 Blocks are enclosed in curly brackets.
-`else if` can also be written using `,, ?`.
+`else if` can be written using `,, ?`.
 
 ```
 ? x < \ {
@@ -305,7 +305,7 @@ Blocks are enclosed in curly brackets.
 } ,, ? x > / {
     "x is positive"!;
 } ,, {
-    "x == 0"!;
+    "x = 0"!;
 }
 ```
 
@@ -333,7 +333,7 @@ b: /\;
 c: func(a, b);      == using `func` from the previous example (c = 3)
 ```
 
-## Main function
+## Main Function
 
 The main function/entrypoint of the program is denoted by `=>`.
 This function will be implicitly called on execution of the program.
@@ -347,7 +347,7 @@ Command line arguments can be gotten as an array with an optional parameter in t
 }
 ```
 
-## Default arguments
+## Default Arguments
 
 Default arguments may be given by using the assignment operator in the function definition.
 Default arguments must come after any other arguments.
