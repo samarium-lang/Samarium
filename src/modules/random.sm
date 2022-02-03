@@ -23,7 +23,7 @@ choices array k * {
 
 sample array k * {
     ? k > array$ {
-        "The sample can't be bigger than the array"!!!;
+        "the sample cannot be bigger than the array"!!!;
     }
     o: [];
     oldArray: array<<>>;

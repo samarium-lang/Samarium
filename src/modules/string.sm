@@ -100,8 +100,8 @@ isWrapped string chars * {
 
 toLower string * {
     <-iter.range;
-    ? string?! ::: "String" {
-        "Invalid type: " + string?!!!!;
+    ? string?! ::: ""?! {
+        "invalid type: " + string?!!!!;
     }
     out: "";
     ... char ->? string {
@@ -116,8 +116,8 @@ toLower string * {
 
 toUpper string * {
     <-iter.range;
-    ? string?! ::: "String" {
-        "Invalid type: " + string?!!!!;
+    ? string?! ::: ""?! {
+        "invalid type: " + string?!!!!;
     }
     out: "";
     ... char ->? string {
@@ -219,7 +219,7 @@ replace string replacement count:-/ * {
 
     ? replacement?! :: []?! {
         ? replacement$ ::: /\ {
-            "Invalid replacement format"!!!;
+            "invalid replacement format"!!!;
         }
         replacements: \;
         .. replacements ::: count {
@@ -242,7 +242,7 @@ replace string replacement count:-/ * {
             }
         }
     } ,, {
-        "Invalid type: " + replacement?!!!!;
+        invalid type: " + replacement?!!!!;
     }
     * string;
 }

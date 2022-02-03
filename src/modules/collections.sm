@@ -148,7 +148,7 @@
     newSetSize a b * { * a$ ? a$ > b$ ,, b$; }
 
     union other * {
-        ? other?! ::: "Set" {
+        ? other?! ::: Set()?! {
             "expected Set, received " + other?!!!!;
         }
 
@@ -162,7 +162,7 @@
     }
 
     intersection other * {
-        ? other?! ::: "Set" {
+        ? other?! ::: Set()?! {
             "expected Set, received " + other?!!!!;
         }
 
@@ -178,7 +178,7 @@
     }
 
     difference other * {
-        ? other?! ::: "Set" {
+        ? other?! ::: Set()?! {
             "expected Set, received " + other?!!!!;
         }
 
@@ -194,7 +194,7 @@
     }
 
     isSubset other * {
-        ? other?! ::: "Set" {
+        ? other?! ::: Set()?! {
             "expected Set, received " + other?!!!!;
         }
 
@@ -301,7 +301,7 @@
     toBit * { * 'value.toBit(); }
 
     throwInvalidIndex arg * {
-        ? arg?! ::: "Integer" {
+        ? arg?! ::: \?! {
             "expected Integer, received " + arg?!!!!;
         }
         ? ~~ (\ <: arg < 'size) {
