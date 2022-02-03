@@ -5,7 +5,7 @@ Samarium, in its most basic form, doesn't use any digits or letters.
 
 Here's a `Hello, World!` program written in Samarium:
 <p align="left"><span style="display:inline-block">
-    <img src="images/00helloworld.png" width="50%">
+    <img src="images/00helloworld.png" width="45%">
 </span></p>
 
 Note: Every statement in Samarium must end in a semicolon.
