@@ -80,6 +80,11 @@ def print_safe(*args):
             "invalid comprehension"
         )
     print(*args)
+    if len(args) > 1:
+        return Array([*args])
+    elif not args or types[0] is Null:
+        return Null()
+    return args[0]
 
 
 def random(start: Integer, end: Integer) -> Integer:

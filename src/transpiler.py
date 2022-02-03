@@ -478,7 +478,10 @@ class Transpiler:
                 self.ch.line[arr_idx] = ","
             self.transpile_token(None)
         elif token == Token.STDOUT:
-            x = bool(self.ch.indent)
+            try:
+                x = self.ch.line.index("=") + 1
+            except ValueError:
+                x = bool(self.ch.indent)
             self.ch.line = [
                 *self.ch.line[:x],
                 "print_safe(",
