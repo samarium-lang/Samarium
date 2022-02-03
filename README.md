@@ -4,9 +4,9 @@ Samarium is a dynamic interpreted language transpiled to Python.
 Samarium, in its most basic form, doesn't use any digits or letters.
 
 Here's a `Hello, World!` program written in Samarium:
-<span style="display: inline-block" align="left">
+<p align="left"><span style="display: inline-block">
     <img src="images/00helloworld.png" width="50%">
-</span>
+</span></p>
 
 Note: Every statement in Samarium must end in a semicolon.
 
