@@ -2,34 +2,52 @@
 (D) 📝 Documentation:
 - [x] 1. Introduction
 - [x] 2. Variables
-- [x] 3. Operators
-- [x] 4. Numbers
+    - [x] 1. Null
+    - [x] 2. Const variables
+- [x] 3. Numbers
+    - [x] 1. Random numbers
+- [x] 4. Operators
 - [x] 5. Strings
 - [x] 6. Arrays
+    - [ ] 1. Array comprehension
 - [ ] 7. Tables
-- [ ] 8. Slices
-- [ ] 9. Built-in Functions
-    - [ ] 1. STDIN
-    - [ ] 2. STDOUT
-    - [ ] 3. STDERR
-    - [ ] 4. HASH
-    - [ ] 5. TYPEOF
-    - [ ] 6. SIZEOF
-    - [ ] 7. CAST
-- [ ] 10. Control Flow
-    - [ ] 1. if/else
-    - [ ] 2. for loop
+    - [ ] 1. Table comprehension
+- [x] 8. Slices
+- [x] 9. Comments
+- [ ] 10. Built-in Functions
+    - [x] 1. STDIN
+    - [x] 2. STDOUT
+    - [x] 3. STDERR
+    - [x] 4. EXIT
+    - [x] 5. HASH
+    - [x] 6. TYPEOF
+    - [ ] 7. SIZEOF
+    - [ ] 8. CAST
+    - [ ] 9. SPECIAL
+    - [ ] 10. DTNOW
+    - [ ] 11. SLEEP
+    - [ ] 12. ASSERT
+    - [ ] 13. PARENT
+- [ ] 11. Control Flow
+    - [x] 1. if/else
+    - [x] 2. foreach loop
     - [ ] 3. while loop
     - [ ] 4. break/continue
     - [ ] 5. try/catch
-- [ ] 11. Functions
-    - [ ] 1. Defining functions
-    - [ ] 2. Main function (+argv)
-    - [ ] 3. Default parameter value
-    - [ ] 4. Lambda functions
-- [ ] 12. Importing
-- [ ] 13. Classes
-- [ ] 14. Standard Library
+- [x] 12. Functions
+    - [x] 1. Defining functions
+    - [x] 2. Main function (+argv)
+    - [x] 3. Default parameter value
+- [ ] 13. Importing
+- [ ] 14. Classes
+- [ ] 15. File I/O
+    - [ ] 1. Creating
+    - [ ] 2. Reading
+    - [ ] 3. Writing
+    - [ ] 4. Appending
+    - [ ] 5. Closing
+    - [ ] 6. Quick Actions
+- [ ] 16. Standard Library
     - [ ] 1. `collections` module
     - [ ] 2. `iter` module
     - [ ] 3. `math` module
