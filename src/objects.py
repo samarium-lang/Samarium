@@ -5,6 +5,7 @@ from exceptions import (
     NotDefinedError, SamariumSyntaxError,
     SamariumTypeError, SamariumValueError
 )
+from functools import wraps
 from typing import (
     Any, Callable, Dict, Iterator,
     IO, List, Optional, TypeVar, Tuple, Union
@@ -14,6 +15,7 @@ T = TypeVar("T")
 
 
 def assert_smtype(function: Callable):
+    @wraps(function)
     def wrapper(*args, **kwargs):
         for i in [*args, *kwargs.values()]:
             verify_type(i)
@@ -30,7 +32,13 @@ def assert_smtype(function: Callable):
             raise SamariumTypeError(
                 f"invalid return type: {type(result).__name__}"
             )
+    wrapper.type = Type(type(lambda: 0))
     return wrapper
+
+
+def class_attributes(cls):
+    cls.type = Type(Type)
+    return cls
 
 
 def get_repr(obj: Class) -> str:
@@ -57,6 +65,8 @@ def verify_type(obj: Any, *args):
     if args:
         for i in [obj, *args]:
             verify_type(i)
+    elif isinstance(obj, type):
+        return Type(obj)
     elif isinstance(obj, (Class, Callable)):
         return obj
     elif isinstance(obj, tuple):
@@ -361,6 +371,8 @@ class Type(Class):
         return Integer(1)
 
     def _call_(self, *args) -> Class:
+        if isinstance(lambda: 0, self.value):
+            raise SamariumTypeError("cannot instantiate a function")
         return self.value(*(i.value for i in args))
 
 

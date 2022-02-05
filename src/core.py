@@ -4,7 +4,7 @@ import sys
 from contextlib import contextmanager
 from datetime import datetime
 from objects import (
-    assert_smtype, smhash, verify_type,
+    assert_smtype, class_attributes, smhash, verify_type,
     Class, Type, Slice, Null, String, Integer,
     Table, Array, Mode, FileManager, File
 )
@@ -72,6 +72,10 @@ def import_module(data: str, ch: CodeHandler):
 
 
 def print_safe(*args):
+    args = [
+        Type(i) if isinstance(i, (type, type(lambda: 0))) else i
+        for i in args
+    ]
     types = [type(i) for i in args]
     if any(i in (tuple, type(i for i in [])) for i in types):
         raise exceptions.SamariumSyntaxError(
