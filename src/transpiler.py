@@ -58,24 +58,6 @@ class Transpiler:
             array = array[x - 1:]
         return out + ["".join(array)]
 
-    def safewrap(self, cmd: str):
-        unsafe = {
-            ")": "(",
-            "])": "Array([",
-            "})": "Table({"
-        }
-        i = 0
-        pair = unsafe.get(self.ch.line[~i])
-        if pair is None:
-            self.ch.line[-1] = f"{cmd}({self.ch.line[~i]})"
-            return
-        while self.ch.line[~i] != pair:
-            i += 1
-        if self.ch.line[~i - 1].isidentifier():
-            i += 1
-        self.ch.line[~i] = f"{cmd}({self.ch.line[~i]}"
-        self.ch.line += ")"
-
     def transpile(self):
         for index, token in enumerate(self.tokens):
             self.transpile_token(token, index)
@@ -571,7 +553,7 @@ class Transpiler:
             self.ch.switches["class"] = True
             self.ch.switches["class_def"] = True
             self.ch.class_indent += [self.ch.indent]
-            return "class "
+            return f"@class_attributes\n{'    ' * self.ch.indent}class "
         elif token == Token.ASSERT:
             if self.ch.line[self.ch.indent > 0:]:
                 handle_exception(SamariumSyntaxError(
