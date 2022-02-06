@@ -151,38 +151,38 @@ class Transpiler:
             token not in tokens
             for token in {Token.WHILE, Token.SLICE_STEP}
         ):
-            method = "setItem" if assign else "getItem"
+            method = "_setItem_" if assign else "_getItem_"
             # <<index>>
             if tokens:
-                self.ch.line += [f".{method}_("]
+                self.ch.line += [f".{method}("]
                 for t in tokens:
                     self.transpile_token(t)
-                self.ch.line += [")" if method == "getItem" else ","]
+                self.ch.line += [")" if method == "_getItem_" else ","]
             # <<>>
             else:
-                method = "setSlice" if assign else "getSlice"
+                method = "_setSlice_" if assign else "_getSlice_"
                 self.ch.line += [
-                    f"._{method}_({slce}({null},{null},{null})"
+                    f".{method}({slce}({null},{null},{null})"
                     + "),"[assign]
                 ]
             self.slice_tokens = []
             self.slicing = False
             return assign
-        method = "setSlice" if assign else "getSlice"
+        method = "_setSlice_" if assign else "_getSlice_"
         # <<**step>>
         if tokens[0] == Token.SLICE_STEP:
-            self.ch.line += [f"._{method}_({slce}({null},{null},"]
+            self.ch.line += [f".{method}({slce}({null},{null},"]
             for t in tokens[1:]:
                 self.transpile_token(t)
             self.ch.line += [")" + "),"[assign]]
         # <<start..>>
         elif tokens[-1] == Token.WHILE:
-            self.ch.line += [f"._{method}_({slce}("]
+            self.ch.line += [f".{method}({slce}("]
             for t in tokens[:-1]:
                 self.transpile_token(t)
             self.ch.line += [f",{null},{null})" + "),"[assign]]
         elif tokens[0] == Token.WHILE:
-            self.ch.line += [f"._{method}_({slce}({null},"]
+            self.ch.line += [f".{method}({slce}({null},"]
             # <<..end**step>>
             if Token.SLICE_STEP in tokens:
                 step_index = tokens.index(Token.SLICE_STEP)
@@ -198,7 +198,7 @@ class Transpiler:
                     self.transpile_token(t)
                 self.ch.line += [f",{null})" + "),"[assign]]
         elif Token.WHILE in tokens or Token.SLICE_STEP in tokens:
-            self.ch.line += [f".{method}_({slce}("]
+            self.ch.line += [f".{method}({slce}("]
             with suppress(ValueError):
                 while_index = tokens.index(Token.WHILE)
                 step_index = tokens.index(Token.SLICE_STEP)

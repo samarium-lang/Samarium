@@ -25,7 +25,7 @@ class Token(Enum):
     NOT = "~~"
     IN = "->?"
 
-    # Biwise
+    # Bitwise
     BINAND = "&"
     BINOR = "|"
     BINNOT = "~"
