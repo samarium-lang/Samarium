@@ -101,7 +101,7 @@ isWrapped string chars * {
 toLower string * {
     <-iter.range;
     ? string?! ::: ""?! {
-        "invalid type: " + string?!!!!;
+        "invalid type: " + string?!.toString()!!!;
     }
     out: "";
     ... char ->? string {
@@ -117,7 +117,7 @@ toLower string * {
 toUpper string * {
     <-iter.range;
     ? string?! ::: ""?! {
-        "invalid type: " + string?!!!!;
+        "invalid type: " + string?!.toString()!!!;
     }
     out: "";
     ... char ->? string {
@@ -228,7 +228,7 @@ replace string replacement count:-/ * {
             }
         }
     } ,, {
-        "invalid type: " + replacement?!!!!;
+        "invalid type: " + replacement?!.toString()!!!;
     }
     * string;
 }

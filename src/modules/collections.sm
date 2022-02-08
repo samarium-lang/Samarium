@@ -149,7 +149,7 @@
 
     union other * {
         ? other?! ::: Set()?! {
-            "expected Set, received " + other?!!!!;
+            "expected Set, received " + other?!.toString()!!!;
         }
 
         unionSet: Set('values(), 'newSetSize(', other) ++ /\);
@@ -163,7 +163,7 @@
 
     intersection other * {
         ? other?! ::: Set()?! {
-            "expected Set, received " + other?!!!!;
+            "expected Set, received " + other?!.toString()!!!;
         }
 
         intersectionSet: Set(capacity: 'newSetSize(', other));
@@ -179,7 +179,7 @@
 
     difference other * {
         ? other?! ::: Set()?! {
-            "expected Set, received " + other?!!!!;
+            "expected Set, received " + other?!.toString()!!!;
         }
 
         differenceSet: Set(capacity: 'newSetSize(', other));
@@ -195,7 +195,7 @@
 
     isSubset other * {
         ? other?! ::: Set()?! {
-            "expected Set, received " + other?!!!!;
+            "expected Set, received " + other?!.toString()!!!;
         }
 
         ? '$ > other$ { * \; }
@@ -279,13 +279,13 @@
             i: \;
             ... e ->? value {
                 ? _ ::: type ::: e?! {
-                    "expected " + type + ", found " + e?!!!!;
+                    "expected " + type + ", found " + e?!.toString()!!!;
                 }
                 'value<<i>>: e;
                 i+: /;
             }
         } ,, {
-            "expected Integer or Array, found " + value?!!!!;
+            "expected Integer or Array, found " + value?!.toString()!!!;
         }
     }
 
@@ -302,7 +302,7 @@
 
     throwInvalidIndex arg * {
         ? arg?! ::: \?! {
-            "expected Integer, received " + arg?!!!!;
+            "expected Integer, received " + arg?!.toString()!!!;
         }
         ? ~~ (\ <: arg < 'size) {
             "index " + arg.toString() + " is out of bounds (size " + 'size.toString() + ")"!!!;
