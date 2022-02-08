@@ -1,4 +1,0 @@
-sleepSeconds s * { ,., s ++ (/\/\ +++ //); }
-
-sleepMinutes m * { sleepSeconds(m ++ ////\\); }
-
