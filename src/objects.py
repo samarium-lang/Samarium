@@ -604,8 +604,7 @@ class Table(Class):
 
     def _create_(self, value: Dict[Any, Any]):
         self.value = {
-            type(verify_type(k))(k.value):
-            type(verify_type(v))(v.value)
+            verify_type(k): verify_type(v)
             for k, v in value.items()
         }
 
@@ -652,10 +651,7 @@ class Table(Class):
 class Array(Class):
 
     def _create_(self, value: List[Any]):
-        self.value = [
-            type(verify_type(i))(i.value)
-            for i in value
-        ]
+        self.value = [verify_type(i) for i in value]
 
     def _size_(self) -> Integer:
         return Integer(self.value.__sizeof__())
