@@ -1,17 +1,17 @@
-import exceptions
+from . import exceptions
 import os
 import sys
 from contextlib import contextmanager
 from datetime import datetime
-from objects import (
+from .objects import (
     assert_smtype, class_attributes, smhash, verify_type,
     Class, Type, Slice, Null, String, Integer,
     Table, Array, Mode, FileManager, File
 )
 from secrets import randbelow
 from time import sleep as _sleep
-from tokenizer import tokenize
-from transpiler import Transpiler, CodeHandler
+from .tokenizer import tokenize
+from .transpiler import Transpiler, CodeHandler
 from typing import Union
 
 Castable = Union[Integer, String]
@@ -118,7 +118,7 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
         "sys.stdout = open(os.devnull, 'w')"
     ]
     suffix = [
-        "if __name__ == '__main__':",
+        "if __name__ == 'samarium':",
         "    sys.stdout = STDOUT",
         "    argv = Array([String(i) for i in sys.argv[1:]])",
         "    try:",

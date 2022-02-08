@@ -1,7 +1,7 @@
 from __future__ import annotations
 from contextlib import suppress
 from enum import Enum
-from exceptions import (
+from .exceptions import (
     NotDefinedError, SamariumSyntaxError,
     SamariumTypeError, SamariumValueError
 )

@@ -1,8 +1,8 @@
 from contextlib import suppress
-from exceptions import SamariumSyntaxError, handle_exception
-from tokens import Token
+from .exceptions import SamariumSyntaxError, handle_exception
+from .tokens import Token
 from typing import List, Tuple, Union
-import handlers
+from . import handlers
 import sys
 
 Tokenlike = Union[Token, str, int]

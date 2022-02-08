@@ -1,7 +1,7 @@
 from contextlib import suppress
-from exceptions import handle_exception, SamariumSyntaxError
-from tokenizer import Tokenlike
-from tokens import FILE_IO_TOKENS, Token
+from .exceptions import handle_exception, SamariumSyntaxError
+from .tokenizer import Tokenlike
+from .tokens import FILE_IO_TOKENS, Token
 from typing import Any, Dict, List, Optional, Union
 
 Transpilable = Optional[Tokenlike]

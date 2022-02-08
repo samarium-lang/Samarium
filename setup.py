@@ -4,7 +4,7 @@ with open("README.md") as f:
     long_description = f.read()
 
 setuptools.setup(
-    name="Samarium",
+    name="samarium",
     version="0.1.0",
     author="trag1c",
     description="",
@@ -21,6 +21,8 @@ setuptools.setup(
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
+    package_data={"samarium": ["modules/*.sm"]},
+    include_package_data=True,
     python_requires=">=3.8",
     entry_points={
         "console_scripts": [
