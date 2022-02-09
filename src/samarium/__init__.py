@@ -7,5 +7,7 @@ MAIN = CodeHandler(globals())
 
 
 def main():
+    if sys.argv[1] == "-v":
+        sys.exit(print("Samarium 0.1.0"))
     with suppress(Exception, KeyboardInterrupt):
         run(readfile(sys.argv[1]), MAIN)
