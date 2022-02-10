@@ -106,7 +106,7 @@ def readline(prompt: str = "") -> String:
     return String(input(prompt))
 
 
-def run(code: str, ch: CodeHandler) -> CodeHandler:
+def run(code: str, ch: CodeHandler, debug: bool = False) -> CodeHandler:
 
     tokens = tokenize(code)
     transpiler = Transpiler(tokens, ch)
@@ -129,9 +129,9 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
     ]
     code = "\n".join(prefix + ch.code + suffix)
     try:
-        if "--debug" in sys.argv:
-            for i, line in enumerate(code.splitlines()):
-                print(f"{i+1:^4}" * ("--showlines" in sys.argv) + line)
+        if debug:
+            for line in code.splitlines():
+                print(line)
         Runtime.import_level += 1
         ch.globals = {**globals(), **ch.globals}
         exec(code, ch.globals)
