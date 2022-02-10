@@ -379,9 +379,9 @@ class Type(Class):
 class Slice(Class):
 
     def _create_(self, start: Any, stop: Any, step: Any):
-        self.start = start or Null()
-        self.stop = stop or Null()
-        self.step = step or Null()
+        self.start = start
+        self.stop = stop
+        self.step = step
         self.value = slice(start.value, stop.value, step.value)
 
     def _size_(self) -> Integer:
@@ -740,7 +740,7 @@ class FileManager:
     @staticmethod
     def create(path: String):
         with open(path.value, "x") as _:
-            pass
+            return Null()
 
     @staticmethod
     def open(
@@ -785,6 +785,7 @@ class FileManager:
                 file.save(data)
             else:
                 raise SamariumValueError("missing data")
+        return Null()
 
 
 class File(Class):
@@ -800,6 +801,7 @@ class File(Class):
 
     def _not_(self):
         self.value.close()
+        return Null()
 
     def _getSlice_(self, slice: Slice) -> Union[Array, String, Integer]:
         if slice.is_empty():
@@ -812,14 +814,17 @@ class File(Class):
             current_position = self.value.tell()
             self.value.seek(slice.start.value)
             data = self.value.read(slice.stop.value - slice.start.value)
-            if isinstance(data, bytes):
-                data = [*data]
             self.value.seek(current_position)
-            return Array([Integer(i) for i in data])
-        raise SamariumValueError("cannot use stop exclusively")
+            if self.binary:
+                if isinstance(data, bytes):
+                    data = [*data]
+                return Array([Integer(i) for i in data])
+            return String(data)
+        return self._getSlice_(Slice(Integer(0), slice.stop, slice.step))
 
     def _getItem_(self, index: Integer):
         self.value.seek(index.value)
+        return Null()
 
     def load(self, bytes_: Optional[Integer] = None) -> Union[String, Array]:
         if bytes_ is None:
@@ -841,3 +846,4 @@ class File(Class):
             ]))
         else:
             self.value.write(data.value)
+        return Null()
