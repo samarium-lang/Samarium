@@ -97,9 +97,6 @@ class Class:
     def __call__(self, *args: Any) -> Any:
         return self._call_(*args)
 
-    def __sizeof__(self) -> Integer:
-        return self._size_() + Integer(1072)
-
     def __hash__(self) -> int:
         return self._hash_().value
 
@@ -247,9 +244,6 @@ class Class:
     def _call_(self, *args: Any) -> Any:
         raise NotDefinedError(self, "call")
 
-    def _size_(self) -> Integer:
-        raise NotDefinedError(self, "size")
-
     def _hash_(self) -> Integer:
         raise NotDefinedError(self, "hash")
 
@@ -384,9 +378,6 @@ class Slice(Class):
         self.step = step
         self.value = slice(start.value, stop.value, step.value)
 
-    def _size_(self) -> Integer:
-        return Integer(self.value.__sizeof__())
-
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == Null()
 
@@ -411,9 +402,6 @@ class Null(Class):
 
     def _hash_(self) -> Integer:
         return smhash(self.value)
-
-    def _size_(self) -> Integer:
-        return Integer(self.value.__sizeof__())
 
     def _toBit_(self) -> Integer:
         return Integer(0)
@@ -445,9 +433,6 @@ class String(Class):
 
     def _iterate_(self) -> Array:
         return Array([String(char) for char in self.value])
-
-    def _size_(self) -> Integer:
-        return Integer(self.value.__sizeof__())
 
     def _special_(self) -> Integer:
         return Integer(len(self.value))
@@ -505,9 +490,6 @@ class Integer(Class):
 
     def _hash_(self) -> Integer:
         return smhash(self.value)
-
-    def _size_(self) -> Integer:
-        return Integer(self.value.__sizeof__())
 
     def _create_(self, value: int):
         self.value = int(value)
@@ -608,9 +590,6 @@ class Table(Class):
             for k, v in value.items()
         }
 
-    def _size_(self) -> Integer:
-        return Integer(self.value.__sizeof__())
-
     def _special_(self) -> Array:
         return Array([*self.value.values()])
 
@@ -652,9 +631,6 @@ class Array(Class):
 
     def _create_(self, value: List[Any]):
         self.value = [verify_type(i) for i in value]
-
-    def _size_(self) -> Integer:
-        return Integer(self.value.__sizeof__())
 
     def _special_(self) -> Integer:
         return Integer(len(self.value))

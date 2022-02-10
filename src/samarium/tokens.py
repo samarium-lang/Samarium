@@ -77,7 +77,6 @@ class Token(Enum):
     EXIT = "=>!"
     HASH = "##"
     PARENT = "!?"
-    SIZE = ":!:"
     TYPE = "?!"
     STDIN = "???"
     STDOUT = "!"

@@ -371,7 +371,6 @@ class Transpiler:
             Token.DTNOW: "dtnow()",
             Token.DOLLAR: "._special_()",
             Token.HASH: "._hash_()",
-            Token.SIZE: ".__sizeof__()",
             Token.TYPE: ".type",
             Token.PARENT: ".parent",
             Token.CAST: "._cast_()",

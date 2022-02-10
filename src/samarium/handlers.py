@@ -37,8 +37,6 @@ def minus(scroller: Scroller) -> Token:
 def colon(scroller: Scroller) -> Token:
     if scroller.next() == ":":
         return (Token.EQ, Token.NE)[scroller.next(2) == ":"]
-    if scroller.next() == "!" and scroller.next(2) == ":":
-        return Token.SIZE
     return Token.ASSIGN
 
 
