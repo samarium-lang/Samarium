@@ -10,11 +10,10 @@ def handle_exception(exception: Exception):
         )
     if name not in {"SyntaxError", "NotDefinedError", "AssertionError"}:
         if not name.startswith("Samarium"):
-            name = "External" + name
+            name = f"External{name}"
         else:
             name = name.removeprefix("Samarium")
-    color = f"\033[{4 - (name == 'Error')}1m"
-    sys.stderr.write(f"{color}[{name}] {exception}\033[0m\n")
+    sys.stderr.write(f"\033[31m[{name}] {exception}\033[0m\n")
     exit(1)
 
 
