@@ -21,17 +21,17 @@
     - [x] 4. EXIT
     - [x] 5. HASH
     - [x] 6. TYPEOF
-    - [ ] 7. SIZEOF
-    - [ ] 8. CAST
-    - [ ] 9. SPECIAL
-    - [ ] 10. DTNOW
+    - [x] 7. SIZEOF
+    - [x] 8. CAST
+    - [x] 9. SPECIAL
+    - [x] 10. DTNOW
     - [ ] 11. SLEEP
     - [ ] 12. ASSERT
     - [ ] 13. PARENT
 - [ ] 11. Control Flow
     - [x] 1. if/else
     - [x] 2. foreach loop
-    - [ ] 3. while loop
+    - [x] 3. while loop
     - [ ] 4. break/continue
     - [ ] 5. try/catch
 - [x] 12. Functions
@@ -41,8 +41,8 @@
 - [ ] 13. Importing
 - [ ] 14. Classes
 - [ ] 15. File I/O
-    - [ ] 1. Creating
-    - [ ] 2. Reading
+    - [x] 1. Creating
+    - [x] 2. Reading
     - [ ] 3. Writing
     - [ ] 4. Appending
     - [ ] 5. Closing
