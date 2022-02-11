@@ -206,6 +206,7 @@ wrap string wrapper * {
 }
 
 replace string replacement count:-/ * {
+
     replaceOne string from to * {
         <-iter.find;
         replaced: \;
@@ -217,18 +218,19 @@ replace string replacement count:-/ * {
         * [string, replaced];
     }
 
-    ? replacement?! :: {{}}?! {
-        ... k ->? replacement {
-            v: replacement<<k>>;
-            replacements: \;
-            .. replacements ::: count {
-                string, replaced: replaceOne(string, k, v);
-                ? ~~ replaced { <- }
-                replacements+: /;
-            }
-        }
-    } ,, {
+    ? replacement?! ::: {{}}?! {
         "invalid type: " + replacement?!.toString()!!!;
     }
+
+    ... k ->? replacement {
+        v: replacement<<k>>;
+        replacements: \;
+        .. replacements ::: count {
+            string, replaced: replaceOne(string, k, v);
+            ? ~~ replaced { <- }
+            replacements+: /;
+        }
+    }
+
     * string;
 }
