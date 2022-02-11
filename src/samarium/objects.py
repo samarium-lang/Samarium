@@ -381,16 +381,6 @@ class Slice(Class):
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == Null()
 
-    def _special_(self) -> Table:
-        return Table({
-            "start": self.start,
-            "stop": self.stop,
-            "step": self.step
-        })
-
-    def _toString_(self) -> String:
-        return String(f"Slice<<{self.start}, {self.stop}, {self.step}>>")
-
 
 class Null(Class):
 
