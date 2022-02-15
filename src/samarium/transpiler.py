@@ -388,6 +388,10 @@ class Transpiler:
             if self.is_first_token():
                 self.ch.switches["const"] = True
         elif token == Token.ASSIGN:
+            if self.ch.line_tokens.count(token) > 1:
+                handle_exception(
+                    SamariumSyntaxError("cannot use multiple assignment")
+                )
             if self.ch.switches["const"]:
                 self.ch.frozen = "".join(self.ch.line[self.ch.indent > 0:])
             return out
