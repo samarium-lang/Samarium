@@ -813,3 +813,16 @@ class File(Class):
         else:
             self.value.write(data.value)
         return Null()
+
+
+class Module(Class):
+
+    def _create_(self, name: str, objects: dict[str, Class]):
+        self.name = name
+        self.objects = objects
+
+    def _toString_(self) -> String:
+        return String(f"module '{self.name}'")
+
+    def __getattr__(self, key: str) -> Class:
+        return self.objects[key]

@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from .objects import (
     assert_smtype, class_attributes, smhash, verify_type,
-    Class, Type, Slice, Null, String, Integer,
+    Class, Type, Slice, Null, String, Integer, Module,
     Table, Array, Mode, FileManager, File
 )
 from secrets import randbelow
@@ -49,9 +49,15 @@ def import_module(data: str, ch: CodeHandler):
         yield
         sys.stdout = stdout
 
-    name, objects = data.split(".")
+    module_import = False
+    try:
+        name, objects = data.split(".")
+        objects = objects.split(",")
+    except ValueError:
+        name = data
+        objects = []
+        module_import = True
     name = name.strip("_")
-    objects = objects.split(",")
     path = sys.argv[1][:sys.argv[1].rfind("/") + 1] or "."
 
     if f"{name}.sm" not in os.listdir(path):
@@ -64,7 +70,10 @@ def import_module(data: str, ch: CodeHandler):
 
     with silence_stdout():
         imported = run(readfile(f"{path}/{name}.sm"), CodeHandler(globals()))
-    if objects == ["*"]:
+
+    if module_import:
+        ch.globals.update({f"_{name}_": Module(name, imported.globals)})
+    elif objects == ["*"]:
         ch.globals.update(imported.globals)
     else:
         for obj in objects:
