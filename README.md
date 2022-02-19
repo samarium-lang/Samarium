@@ -51,6 +51,7 @@ The following guide assumes that you are familiar with the basics of programming
 - [Functions](#functions)
   - [Main Function](#main-function)
   - [Default Arguments](#default-arguments)
+- [Importing](#importing)
 - [File I/O](#file-io)
   - [Creating](#creating)
   - [Reading](#reading)
@@ -470,6 +471,27 @@ func a b c: "arg" d: _ * {
 func(/, /\);
 func(/, /\, //);
 func(/, /\, //, /\\);   == all valid calls
+```
+
+
+# Importing
+
+Modules can be imported using the `<-` operator, followed by the module's name (with `.sm` omitted). Functions and variables from this module can then be accessed with the `.` operator.
+
+```
+<-string;   == imports the `string` module from Samarium's standard library
+
+string.toUpper("abc")!;   == prints "ABC"
+
+string.digits!;           == prints "0123456789"
+```
+
+Functions and variables can also be directly imported from a module one by one, in which case they don't need to be preceded by the module name when using them:
+
+```
+<-math.sqrt, abs;
+
+sqrt(/\\/)!;    == prints 3
 ```
 
 
