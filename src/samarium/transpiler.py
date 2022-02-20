@@ -432,8 +432,8 @@ class Transpiler:
                 self.set_slice -= 1
             if self.ch.switches["exit"] or self.ch.switches["sleep"]:
                 if self.ch.line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
-                    self.ch.line += "Integer(0)"
-                self.ch.line += ").value)"
+                    self.ch.line += ["Integer(0)"]
+                self.ch.line += [").value)"]
                 if self.ch.switches["exit"]:
                     self.ch.switches["exit"] = False
                 else:
@@ -458,7 +458,11 @@ class Transpiler:
                         f";freeze({variable})"
                     ]
                     self.ch.switches["const"] = False
-            if self.ch.line[start:][0] == "assert " and ":" in self.ch.line:
+            if (
+                self.ch.line[start:]
+                and self.ch.line[start:][0] == "assert "
+                and ":" in self.ch.line
+            ):
                 arr_idx = len(self.ch.line) - self.ch.line[::-1].index(":") - 1
                 self.ch.line[arr_idx] = ","
             self.transpile_token(None)
