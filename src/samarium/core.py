@@ -74,6 +74,10 @@ def import_module(data: str, ch: CodeHandler):
     if module_import:
         ch.globals.update({f"_{name}_": Module(name, imported.globals)})
     elif objects == ["*"]:
+        imported.globals = {
+            k: v for k, v in imported.globals.items()
+            if not k.startswith("__") and not k[0].isalnum()
+        }
         ch.globals.update(imported.globals)
     else:
         for obj in objects:
