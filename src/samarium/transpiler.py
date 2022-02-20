@@ -458,7 +458,7 @@ class Transpiler:
                         f";freeze({variable})"
                     ]
                     self.ch.switches["const"] = False
-            if self.ch.line[start:][0] == "assert ":
+            if self.ch.line[start:][0] == "assert " and ":" in self.ch.line:
                 arr_idx = len(self.ch.line) - self.ch.line[::-1].index(":") - 1
                 self.ch.line[arr_idx] = ","
             self.transpile_token(None)
