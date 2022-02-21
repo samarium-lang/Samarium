@@ -3,9 +3,9 @@
 - [x] 1. Introduction
 - [x] 2. Variables
     - [x] 1. Null
-    - [ ] 2. Const variables
+    - [x] 2. Const variables
 - [x] 3. Numbers
-    - [ ] 1. Random numbers
+    - [x] 1. Random numbers
 - [x] 4. Operators
 - [x] 5. Strings
 - [x] 6. Arrays
@@ -19,28 +19,34 @@
     - [x] 2. STDOUT
     - [x] 3. STDERR
     - [x] 4. EXIT
-    - [ ] 5. HASH
-    - [ ] 6. TYPEOF
-    - [ ] 7. SIZEOF
-    - [ ] 8. CAST
-    - [ ] 9. SPECIAL
-    - [ ] 10. DTNOW
-    - [ ] 11. SLEEP
-    - [ ] 12. ASSERT
-    - [ ] 13. PARENT
+    - [x] 5. HASH
+    - [x] 6. TYPEOF
+    - [x] 7. CAST
+    - [x] 8. SPECIAL
+    - [x] 9. DTNOW
+    - [x] 10. SLEEP
+    - [x] 11. ASSERT
+    - [ ] 12. PARENT
 - [ ] 11. Control Flow
-    - [ ] 1. if/else
-    - [ ] 2. for loop
-    - [ ] 3. while loop
-    - [ ] 4. break/continue
+    - [x] 1. if/else
+    - [x] 2. foreach loop
+    - [x] 3. while loop
+    - [x] 4. break/continue
     - [ ] 5. try/catch
-- [ ] 12. Functions
-    - [ ] 1. Defining functions
-    - [ ] 2. Main function (+argv)
-    - [ ] 3. Default parameter value
-- [ ] 13. Importing
+- [x] 12. Functions
+    - [x] 1. Defining functions
+    - [x] 2. Main function (+argv)
+    - [x] 3. Default parameter value
+- [x] 13. Importing
 - [ ] 14. Classes
-- [ ] 15. Standard Library
+- [x] 15. File I/O
+    - [x] 1. Creating
+    - [x] 2. Reading
+    - [x] 3. Writing
+    - [x] 4. Appending
+    - [x] 5. Closing
+    - [x] 6. Quick Actions
+- [ ] 16. Standard Library
     - [ ] 1. `collections` module
     - [ ] 2. `iter` module
     - [ ] 3. `math` module

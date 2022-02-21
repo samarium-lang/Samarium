@@ -44,17 +44,25 @@ The following guide assumes that you are familiar with the basics of programming
   - [CAST](#cast)
   - [SPECIAL](#special)
   - [DTNOW](#dtnow)
+  - [SLEEP](#sleep)
+  - [ASSERT](#assert)
 - [Control Flow](#control-flow)
   - [`if`/`else`](#ifelse)
   - [`foreach` loop](#foreach-loop)
   - [`while` loop](#while-loop)
+  - [`break`/`continue`](#breakcontinue)
 - [Functions](#functions)
   - [Main Function](#main-function)
   - [Default Arguments](#default-arguments)
-- [Importing](#importing)
+- [Modules](#modules)
+  - [Importing](#importing)
 - [File I/O](#file-io)
   - [Creating](#creating)
   - [Reading](#reading)
+  - [Writing](#writing)
+  - [Appending](#appending)
+  - [Closing](#closing)
+  - [Quick Operations](#quick-operations)
 
 
 # Variables
@@ -64,7 +72,7 @@ Variables are defined using the assignment operator `:`, like so:
   <img src="images/01variables.png" style="transform: scale(0.6)">
 </p>
 Variables may be integers, strings, arrays, tables, or null.
-Only letters and numbers can be used for variable names, thus camelCase is recommended for names consisting of multiple words.
+Only letters and numbers can be used for variable names (case sensitive), thus camelCase is recommended for names consisting of multiple words.
 
 ## Null
 
@@ -374,6 +382,25 @@ For example:
 
 The dtnow function `@@` gets the system's current date and time as an array of integers, in the format `[year, month, day, hour, minute, second, millisecond, utc_hour_offset, utc_minute_offset]`.
 
+## SLEEP
+
+The sleep function `,.,` pauses execution for the specified number of milliseconds.
+
+```
+,., /////\/\\\;   == sleep for 1000 milliseconds (1 second)
+```
+
+## ASSERT
+
+The assert function `#` is used as a debugging tool.
+If the input to this function is falsy (i.e. empty iterable, null, or just false), an `AssertionError` will be raised, otherwise, nothing will happen.
+A custom error message can be provided by putting it after a `->`.
+
+```
+# / > /\, "error message";
+```
+will raise `[AssertionError] error message`.
+
 
 # Control Flow
 
@@ -419,6 +446,40 @@ x: \;
 }
 == prints 2, 4, 6, 8, 10
 ```
+
+## `break`/`continue`
+
+`break` statements are written with `<-`, and terminate the enclosing loop immediately.
+They can be used in both `for` and `while` loops.
+
+```
+x: \;
+.. x < /\/ {
+  x+: /;
+  ? x :: // {
+    <-;
+  }
+  x!;
+}
+```
+
+This program will print 1, 2, and then terminate the `while` loop on the third iteration, before printing 3.
+
+`continue` statements are written with `->`, and immediately finish the current iteration of the enclosing loop.
+These can also be used in both `for` and `while` loops.
+
+```
+x: \;
+.. x < /\/ {
+  x+: /;
+  ? x :: // {
+    ->;
+  }
+  x!;
+}
+```
+
+This program will print 1, 2, skip the third iteration of the `while` loop, then print 4, 5, and end the loop normally.
 
 
 # Functions
@@ -474,9 +535,16 @@ func(/, /\, //, /\\);   == all valid calls
 ```
 
 
-# Importing
+# Modules
 
-Modules can be imported using the `<-` operator, followed by the module's name (with `.sm` omitted). Functions and variables from this module can then be accessed with the `.` operator.
+Modules can contain functions and variables that a user may wish to import.
+Modules are named after their filename (with `.sm` omitted).
+Like variables, module names must consist of only letters and numbers, and are case sensitive.
+
+## Importing
+
+Modules can be imported using the `<-` operator, followed by the module's name.
+Objects (classes, functions, variables) from this module can then be accessed with the `.` operator.
 
 ```
 <-string;   == imports the `string` module from Samarium's standard library
@@ -486,12 +554,22 @@ string.toUpper("abc")!;   == prints "ABC"
 string.digits!;           == prints "0123456789"
 ```
 
-Functions and variables can also be directly imported from a module one by one, in which case they don't need to be preceded by the module name when using them:
+Objects can also be directly imported from a module one by one, in which case they don't need to be preceded by the module name when using them:
 
 ```
 <-math.sqrt, abs;
 
-sqrt(/\\/)!;    == prints 3
+sqrt(/\\/)!;      == prints 3
+abs(-/\)!;        == prints 2
+```
+
+All objects in a module can be directly imported at once by using the wildcard character `*`.
+Importing everything in this way is typically advised against, as it may cause poorly readable code and/or name collisions.
+
+```
+<-math.*;
+
+factorial(//)!;   == prints 6
 ```
 
 
@@ -511,6 +589,8 @@ pos: f<<>>;
 Files can be created with the unary `?~>` operator.
 `?~> "file.txt"` will create an empty file called `file.txt` in the program directory.
 
+Note: files will also be created if they are opened in write or append mode.
+
 ## Reading
 
 Files can be opened for reading in two ways:
@@ -523,7 +603,6 @@ f <~% "file.bin";
 == opens `file.bin` for reading, in binary mode, and stores the file I/O object in `f`.
 ```
 
-
 These file I/O objects can be read into a variable (a string for text mode, and an array of integers for binary mode) for use in the program.
 
 ```
@@ -532,4 +611,82 @@ string <~ f;
 
 array <% f;
 == reads the full contents of the file I/O object `f` into `array` (assuming `f` is in binary read mode)
+```
+
+## Writing
+
+Files can be opened for writing in two ways:
+
+```
+f ~~> "file.txt";
+== opens/creates `file.txt` for writing, in text mode, and stores the file I/O object in `f`.
+
+f %~> "file.bin";
+== opens/creates `file.bin` for writing, in binary mode, and stores the file I/O object in `f`.
+```
+
+These file I/O objects can be written to from a variable (a string for text mode, and an array of integers for binary mode).
+
+```
+string ~> f;
+== writes the entirety of `string` into the file I/O object `f` (assuming `f` is in text write mode)
+
+array %> f;
+== writes the entirety of `array` into the file I/O object `f` (assuming `f` is in binary write mode)
+```
+
+## Appending
+
+Files can be opened for appending in two ways:
+
+```
+f &~~> "file.txt";
+== opens/creates `file.txt` for appending, in text mode, and stores the file I/O object in `f`.
+
+f &%~> "file.bin";
+== opens/creates `file.bin` for appending, in binary mode, and stores the file I/O object in `f`.
+```
+
+The contents of these file I/O objects can be added to from a variable (a string for text mode, and an array of integers for binary mode).
+
+```
+string &~> f;
+== appends the entirety of `string` to the current contents of file I/O object `f` (assuming `f` is in text append mode)
+
+array &%> f;
+== appends the entirety of `array` to the current contents of the file I/O object `f` (assuming `f` is in binary append mode)
+```
+
+## Closing
+
+Files can be closed with the `~` operator.
+If files are not closed manually by the user, they will be automatically closed once the program terminates.
+Note that the file I/O object will not be released from memory, but it still cannot be used.
+
+```
+~f;   == closes the file I/O object `f`
+```
+
+## Quick Operations
+
+Files can be read from, written to or appended to directly using the filename, with quick operations.
+These will open the file in the relevant mode, perform the operation, and close it, all in one.
+
+Mode          | Operator
+---           | ---
+Text read     | `<~`
+Text write    | `~>`
+Text append   | `&~>`
+Binary read   | `<%`
+Binary write  | `%>`
+Binary append | `&%>`
+
+For example:
+
+```
+string ~> "file.txt";
+== writes the entirety of `string` directly into `file.txt`
+
+array <% "file.bin";
+== reads the full contents of `file.bin` directly into `array`
 ```
