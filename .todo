@@ -25,28 +25,28 @@
     - [x] 8. CAST
     - [x] 9. SPECIAL
     - [x] 10. DTNOW
-    - [ ] 11. SLEEP
-    - [ ] 12. ASSERT
+    - [x] 11. SLEEP
+    - [x] 12. ASSERT
     - [ ] 13. PARENT
-- [ ] 11. Control Flow
+- [x] 11. Control Flow
     - [x] 1. if/else
     - [x] 2. foreach loop
     - [x] 3. while loop
-    - [ ] 4. break/continue
-    - [ ] 5. try/catch
+    - [x] 4. break/continue
+    - [x] 5. try/catch
 - [x] 12. Functions
     - [x] 1. Defining functions
     - [x] 2. Main function (+argv)
     - [x] 3. Default parameter value
-- [ ] 13. Importing
+- [x] 13. Importing
 - [ ] 14. Classes
-- [ ] 15. File I/O
+- [x] 15. File I/O
     - [x] 1. Creating
     - [x] 2. Reading
-    - [ ] 3. Writing
-    - [ ] 4. Appending
-    - [ ] 5. Closing
-    - [ ] 6. Quick Actions
+    - [x] 3. Writing
+    - [x] 4. Appending
+    - [x] 5. Closing
+    - [x] 6. Quick Actions
 - [ ] 16. Standard Library
     - [ ] 1. `collections` module
     - [ ] 2. `iter` module
