@@ -86,7 +86,9 @@ def import_module(data: str, ch: CodeHandler):
 
 def print_safe(*args):
     args = [
-        Type(i) if isinstance(i, (type, type(lambda: 0))) else i
+        assert_smtype(
+            lambda: Type(i) if isinstance(i, (type, type(lambda: 0))) else i
+        )()
         for i in args
     ]
     types = [type(i) for i in args]
