@@ -1,5 +1,4 @@
 from .tokens import Token
-from typing import Optional
 
 
 class Scroller:
@@ -72,7 +71,7 @@ def greater(scroller: Scroller) -> Token:
     return tokens.get(scroller.next(), Token.GT)
 
 
-def equal(scroller: Scroller) -> Optional[Token]:
+def equal(scroller: Scroller) -> Token:
     if scroller.next() == "=":
         try:
             return (Token.COMMENT, Token.COMMENT_OPEN)[scroller.next(2) == "<"]
@@ -80,6 +79,7 @@ def equal(scroller: Scroller) -> Optional[Token]:
             return Token.COMMENT
     if scroller.next() == ">":
         return (Token.MAIN, Token.EXIT)[scroller.next(2) == "!"]
+    raise ValueError("invalid token")
 
 
 def dot(scroller: Scroller) -> Token:
@@ -158,7 +158,7 @@ def asterisk(scroller: Scroller) -> Token:
     return (Token.FUNCTION, Token.SLICE_STEP)[scroller.next() == "*"]
 
 
-def percent(scroller: Scroller) -> Optional[Token]:
+def percent(scroller: Scroller) -> Token:
     if scroller.next() == ">":
         return Token.FILE_QUICK_BINARY_WRITE
     elif scroller.next() == "~":
