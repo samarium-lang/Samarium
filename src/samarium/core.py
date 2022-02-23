@@ -19,7 +19,7 @@ MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
 
 
 class Runtime:
-    frozen = []
+    frozen: list[str] = []
     import_level = 0
 
 
@@ -51,8 +51,8 @@ def import_module(data: str, ch: CodeHandler):
 
     module_import = False
     try:
-        name, objects = data.split(".")
-        objects = objects.split(",")
+        name, object_string = data.split(".")
+        objects = object_string.split(",")
     except ValueError:
         name = data
         objects = []
@@ -123,9 +123,7 @@ def readline(prompt: str = "") -> String:
 
 def run(code: str, ch: CodeHandler, debug: bool = False) -> CodeHandler:
 
-    tokens = tokenize(code)
-    transpiler = Transpiler(tokens, ch)
-    ch = transpiler.transpile()
+    ch = Transpiler(tokenize(code), ch).transpile()
     prefix = [
         "import sys",
         "import os",
