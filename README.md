@@ -51,6 +51,7 @@ The following guide assumes that you are familiar with the basics of programming
   - [`foreach` loop](#foreach-loop)
   - [`while` loop](#while-loop)
   - [`break`/`continue`](#breakcontinue)
+  - [`try`/`catch`](#trycatch)
 - [Functions](#functions)
   - [Main Function](#main-function)
   - [Default Arguments](#default-arguments)
@@ -480,6 +481,23 @@ x: \;
 ```
 
 This program will print 1, 2, skip the third iteration of the `while` loop, then print 4, 5, and end the loop normally.
+
+## `try`/`catch`
+
+`try`-`catch` statements are used for error handling.
+`try` clauses are written with `??`, and enclosed in curly brackets.
+If, during execution of the contents of the `try` clause, an error is thrown, the rest of the clause is skipped, the error will be silenced, and the adjoining `catch` clause will be executed.
+`catch` clauses are written with `!!`, and are also enclosed in curly brackets.
+
+```
+?? {
+  == error prone code here...
+  / -- \;
+  "unreachable"!;
+} !! {
+  "error caught"!;
+}
+```
 
 
 # Functions

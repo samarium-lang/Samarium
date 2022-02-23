@@ -27,12 +27,12 @@
     - [x] 10. SLEEP
     - [x] 11. ASSERT
     - [ ] 12. PARENT
-- [ ] 11. Control Flow
+- [x] 11. Control Flow
     - [x] 1. if/else
     - [x] 2. foreach loop
     - [x] 3. while loop
     - [x] 4. break/continue
-    - [ ] 5. try/catch
+    - [x] 5. try/catch
 - [x] 12. Functions
     - [x] 1. Defining functions
     - [x] 2. Main function (+argv)
