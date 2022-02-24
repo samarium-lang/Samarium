@@ -8,16 +8,16 @@ MAIN = CodeHandler(globals())
 
 def main(debug: bool = False):
     if sys.argv[1] == "-v":
-        print("Samarium 0.1.0")
+        sys.exit(print("Samarium 0.1.0"))
     elif sys.argv[1] == "-c":
         sys.exit(run(f"=> * {{{sys.argv[2]}!;}}", MAIN, debug))
+    try:
+        file = readfile(sys.argv[1])
+    except IOError:
+        print(f"file not found: {sys.argv[1]}")
     else:
-        try:
-            readfile(sys.argv[1])
-        except IOError:
-            print(f"file not found: {sys.argv[1]}")
         with suppress(Exception, KeyboardInterrupt):
-            run(readfile(sys.argv[1]), MAIN, debug)
+            run(file, MAIN, debug)
 
 
 def main_debug():
