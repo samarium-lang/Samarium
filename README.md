@@ -33,6 +33,7 @@ The following guide assumes that you are familiar with the basics of programming
 - [Arrays](#arrays)
   - [Array Comprehension](#array-comprehension)
 - [Tables](#tables)
+  - [Table Comprehension](#table-comprehension)
 - [Slices](#slices)
 - [Comments](#comments)
 - [Built-in Functions](#built-in-functions)
@@ -202,13 +203,13 @@ x---: /\\;
 
 Strings are defined using double quotation marks:
 
-```rs
-"Hello!"
+```
+str: "Hello!";
 ```
 
 Multiline strings do not require any additional syntax:
 
-```rs
+```
 "This
 is a
 multiline
@@ -224,10 +225,10 @@ Strings can be manipulated using some arithmetic operators:
 
 # Arrays
 
-Arrays are defined using square brackets:
+Arrays are defined using square brackets, with elements separated by commas:
 
 ```
-[/, /\, //]
+arr: [/, /\, //];
 ```
 
 Arrays can be concatenated with the `+` operator:
@@ -287,22 +288,61 @@ In both cases, `filtered` is equal to `[1, 9, 25]`.
 
 # Tables
 
-Tables are defined using double curly brackets:
+Tables map hashable values to arbitrary objects.
+They are defined using double curly brackets, with `->` mapping each key to each value:
 
-```hs
-{{"key" -> "value", / -> //\}}
 ```
+tab: {{"key" -> "value", / -> [/\, "a"]}};
+```
+
+A table may be indexed by its keys, which will return their corresponding values, for example, from the previous table:
+
+`tab<<"key">>` returns `"value"`
+
+`tab<</>>` returns `[2, "a"]`
+
+After its initialization, the items of a table can be set using this indexing syntax.
+If the key doesn't already exist in the table, it will be created.
+
+`tab<<"key">>: "newvalue"` will overwrite the previous value of `tab<<"key">>`.
+
+`tab<<"newkey">>: //\` will create a new item in the table, with key `"newkey"` and value `6`.
+
+Tables can be merged together with the addition operator `+`.
+The values of the table to the right of the operator take priority when both tables share keys.
+
+## Table Comprehension
+
+Tables can be created using table comprehension, using a similar syntax to [array comprehensions](#array-comprehension):
+
+```
+{{key -> value ... member ->? iterable}}
+{{key -> value ... member ->? iterable ? condition}}
+```
+
+For example, both of the following approaches are equivalent:
+
+```
+tab: {{}};
+... x ->? [/\, /\\, //\] {
+    tab<<x>>: x ++ x;
+}
+
+tab: {{x -> x ++ x ... x ->? [/\, /\\, //\]}};
+```
+
+In both cases, `tab` is equal to `{{2 -> 4, 4 -> 16, 6 -> 36}}`.
 
 
 # Slices
 
-Slices are used to access a range of elements in an iterable (strings, arrays, keys of a table).
+Slices are used to access a range of elements in an iterable (strings, arrays, tables).
 They don't do anything by themselves.
 Slices are enclosed in double angle brackets.
 They have three parameters, `start`, `stop` and `step`, any of which may be omitted.
 `..` is used to indicate `stop`, and `**` is used to indicate `step`.
 
-```hs
+```
 str: "abcdefgh";
 str<<\>> :: "a";
 str<<//..//\>> :: "def";
@@ -423,7 +463,7 @@ Table   | Returns an array of the table's values
 For example:
 
 ```
-"string"$!;     == writes `6` to stdout
+"string"$!;         == writes `6` to stdout
 ```
 
 ## DTNOW
@@ -612,11 +652,11 @@ Modules can be imported using the `<-` operator, followed by the module's name.
 Objects (classes, functions, variables) from this module can then be accessed with the `.` operator.
 
 ```
-<-string;                 == imports the `string` module from Samarium's standard library
+<-string;                   == imports the `string` module from Samarium's standard library
 
-string.toUpper("abc")!;   == prints "ABC"
+string.toUpper("abc")!;     == prints "ABC"
 
-string.digits!;           == prints "0123456789"
+string.digits!;             == prints "0123456789"
 ```
 
 Objects can also be directly imported from a module one by one, in which case they don't need to be preceded by the module name when using them:

@@ -10,8 +10,8 @@
 - [x] 5. Strings
 - [x] 6. Arrays
     - [x] 1. Array comprehension
-- [ ] 7. Tables
-    - [ ] 1. Table comprehension
+- [x] 7. Tables
+    - [x] 1. Table comprehension
 - [x] 8. Slices
 - [x] 9. Comments
 - [ ] 10. Built-in Functions
