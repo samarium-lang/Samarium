@@ -9,7 +9,7 @@
 - [x] 4. Operators
 - [x] 5. Strings
 - [x] 6. Arrays
-    - [ ] 1. Array comprehension
+    - [x] 1. Array comprehension
 - [ ] 7. Tables
     - [ ] 1. Table comprehension
 - [x] 8. Slices

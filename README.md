@@ -20,7 +20,7 @@ The following guide assumes that you are familiar with the basics of programming
 - [Table of Contents](#table-of-contents)
 - [Variables](#variables)
   - [Null](#null)
-  - [Constant Variables](#constant-variables)
+  - [Constants](#constants)
 - [Numbers](#numbers)
   - [Random Numbers](#random-numbers)
 - [Operators](#operators)
@@ -31,6 +31,7 @@ The following guide assumes that you are familiar with the basics of programming
   - [Assignment](#assignment)
 - [Strings](#strings)
 - [Arrays](#arrays)
+  - [Array Comprehension](#array-comprehension)
 - [Tables](#tables)
 - [Slices](#slices)
 - [Comments](#comments)
@@ -70,17 +71,18 @@ The following guide assumes that you are familiar with the basics of programming
 
 Variables are defined using the assignment operator `:`, like so:
 <p align="left">
-  <img src="images/01variables.png" style="transform: scale(0.6)">
+    <img src="images/01variables.png" style="transform: scale(0.6)">
 </p>
-Variables may be integers, strings, arrays, tables, or null.
-Only letters and numbers can be used for variable names (case sensitive), thus camelCase is recommended for names consisting of multiple words.
+Variables can have many types, such as integers, strings, arrays, tables, and null.
+Functions and classes may also be treated as first-class variables.
+Only letters and/or numbers can be used for variable names (case sensitive), thus camelCase is recommended for names consisting of multiple words.
 
 ## Null
 
 The character `_` represents a null value, such as for default arguments in a function.
 Assignments to `_` are not allowed.
 
-## Constant Variables
+## Constants
 
 Variables can be made constant by prefixing them with `<>`.
 Any attempt to assign a new value to a constant variable will raise a `TypeError`.
@@ -164,7 +166,7 @@ Operator | Meaning
 `&&`     | Logical AND
 `\|\|`   | Logical OR
 `~~`     | Logical NOT
-`->?`    | `x ->? y` is equivalent to `x in y` in Python
+`->?`    | `x ->? y` returns 1 if `x` is a member of `y`, and 0 if not
 
 ## Bitwise
 
@@ -215,7 +217,7 @@ string"
 
 Strings can be manipulated using some arithmetic operators:
 
-`"hello" + "world"` is the same as  `"helloworld"`
+`"hello" + "world"` is the same as `"helloworld"`
 
 `"hello" ++ //` is the same as `"hellohellohello"`
 
@@ -235,6 +237,52 @@ Arrays can be concatenated with the `+` operator:
 Elements can also be removed (by index) from an array using the `-` operator:
 
 `[/, //\, /\, //] - /` gives `[/, /\, //]`
+
+## Array Comprehension
+
+Array comprehensions are a way to create an array based on another iterable.
+Uses may include performing an operation on each element of the iterable, or creating a subsequence of those elements that satisfy a certain condition.
+
+They are written similarly to [foreach loops](#foreach-loop); they can come in two forms, as follows:
+
+```
+[expression ... member ->? iterable]
+[expression ... member ->? iterable ? condition]
+```
+
+For example, say we want to create an array of square numbers.
+Here are two equivalent approaches:
+
+```
+input: [/, /\, //, /\\, /\/];
+
+arr: [];
+... n ->? input {
+    arr+: [n ++ n];
+}
+
+arr: [n ++ n ... n ->? input];
+```
+
+In both cases, `arr` is equal to `[1, 4, 9, 16, 25]`.
+
+Now suppose we want to filter this result to only the odd-numbered elements.
+There are again two equivalent approaches:
+
+```
+arr: [/, /\\, /\\/, /\\\\, //\\/];
+
+filtered: [];
+... n ->? arr {
+    ? n --- /\ :: / {
+        filtered+: [n];
+    }
+}
+
+filtered: [n ... n ->? arr ? n --- /\ :: /];
+```
+
+In both cases, `filtered` is equal to `[1, 9, 25]`.
 
 
 # Tables
@@ -327,7 +375,7 @@ This will throw an error, and exit the program if the error is not caught.
 The program may be exited with `=>!`.
 If a particular exit code is desired, it may be put after the exclamation mark:
 
-`=>!//` will exit the program with exit code 3.
+`=>! //` will exit the program with exit code 3.
 
 ## HASH
 
@@ -346,7 +394,7 @@ The typeof function `?!` returns the type of an object, as an instance of the `T
 
 `/?!?!` returns `Type`.
 
-These types can be used as functions to convert variables into that type, like so:
+These instances are callable and can be used to convert variables into that type, like so:
 
 ```
 /?!("123")!;
@@ -375,8 +423,7 @@ Table   | Returns an array of the table's values
 For example:
 
 ```
-"string"$!;
-== writes `6` to stdout
+"string"$!;     == writes `6` to stdout
 ```
 
 ## DTNOW
@@ -388,7 +435,7 @@ The dtnow function `@@` gets the system's current date and time as an array of i
 The sleep function `,.,` pauses execution for the specified number of milliseconds.
 
 ```
-,., /////\/\\\;   == sleep for 1000 milliseconds (1 second)
+,., /////\/\\\;     == sleep for 1000 milliseconds (1 second)
 ```
 
 ## ASSERT
@@ -414,7 +461,7 @@ Blocks are enclosed in curly brackets.
 ```
 ? x < \ {
     "x is negative"!;
-} ,, ? x > / {
+} ,, ? x > \ {
     "x is positive"!;
 } ,, {
     "x = 0"!;
@@ -456,11 +503,11 @@ They can be used in both `for` and `while` loops.
 ```
 x: \;
 .. x < /\/ {
-  x+: /;
-  ? x :: // {
-    <-;
-  }
-  x!;
+    x+: /;
+    ? x :: // {
+        <-;
+    }
+    x!;
 }
 ```
 
@@ -472,11 +519,11 @@ These can also be used in both `for` and `while` loops.
 ```
 x: \;
 .. x < /\/ {
-  x+: /;
-  ? x :: // {
-    ->;
-  }
-  x!;
+    x+: /;
+    ? x :: // {
+        ->;
+    }
+    x!;
 }
 ```
 
@@ -491,11 +538,11 @@ If, during execution of the contents of the `try` clause, an error is thrown, th
 
 ```
 ?? {
-  == error prone code here...
-  / -- \;
-  "unreachable"!;
+    == error prone code here...
+    / -- \;
+    "unreachable"!;
 } !! {
-  "error caught"!;
+    "error caught"!;
 }
 ```
 
@@ -565,7 +612,7 @@ Modules can be imported using the `<-` operator, followed by the module's name.
 Objects (classes, functions, variables) from this module can then be accessed with the `.` operator.
 
 ```
-<-string;   == imports the `string` module from Samarium's standard library
+<-string;                 == imports the `string` module from Samarium's standard library
 
 string.toUpper("abc")!;   == prints "ABC"
 
