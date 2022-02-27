@@ -39,7 +39,12 @@ def assert_smtype(function: Callable):
 
 def class_attributes(cls):
     cls.type = Type(Type)
-    cls.parent = Type(cls.__base__)
+    parents = [*cls.__bases__]
+    cls.parent = (
+        Type(parents[0])
+        if len(parents) == 1
+        else Array([Type(p) for p in parents])
+    )
     return cls
 
 
