@@ -33,11 +33,13 @@ def assert_smtype(function: Callable):
                 f"invalid return type: {type(result).__name__}"
             )
     wrapper.type = Type(type(lambda: 0))
+    wrapper.parent = Type(Class)
     return wrapper
 
 
 def class_attributes(cls):
     cls.type = Type(Type)
+    cls.parent = Type(cls.__base__)
     return cls
 
 
