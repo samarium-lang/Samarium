@@ -752,28 +752,28 @@ class File(Class):
         self.value.close()
         return Null()
 
-    def _getSlice_(self, slice: Slice) -> Union[Array, String, Integer]:
-        if slice.is_empty():
-            return Integer(self.value.tell())
-        if isinstance(slice.step, Integer):
-            raise SamariumValueError("cannot use step")
-        if isinstance(slice.start, Integer):
-            if not isinstance(slice.stop, Integer):
-                return self.load(slice.start)
-            current_position = self.value.tell()
-            self.value.seek(slice.start.value)
-            data = self.value.read(slice.stop.value - slice.start.value)
-            self.value.seek(current_position)
-            if self.binary:
-                if isinstance(data, bytes):
-                    data = [*data]
-                return Array([Integer(i) for i in data])
-            return String(data)
-        return self._getSlice_(Slice(Integer(0), slice.stop, slice.step))
-
-    def _getItem_(self, index: Integer):
-        self.value.seek(index.value)
-        return Null()
+    def _getItem_(self, index: Union[Integer, Slice]) -> Union[Array, String, Integer]:
+        if isinstance(index, Slice):
+            if index.is_empty():
+                return Integer(self.value.tell())
+            if isinstance(index.step, Integer):
+                raise SamariumValueError("cannot use step")
+            if isinstance(index.start, Integer):
+                if not isinstance(index.stop, Integer):
+                    return self.load(index.start)
+                current_position = self.value.tell()
+                self.value.seek(index.start.value)
+                data = self.value.read(index.stop.value - index.start.value)
+                self.value.seek(current_position)
+                if self.binary:
+                    if isinstance(data, bytes):
+                        data = [*data]
+                    return Array([Integer(i) for i in data])
+                return String(data)
+            return self._getItem_(Slice(Integer(0), slice.stop, slice.step))
+        else:
+            self.value.seek(index.value)
+            return Null()
 
     def load(self, bytes_: Optional[Integer] = None) -> Union[String, Array]:
         if bytes_ is None:
