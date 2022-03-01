@@ -423,7 +423,7 @@ class String(Class):
         return Integer(ord(self.value))
 
     def _create_(self, value: str):
-        self.value = value
+        self.value = str(value)
 
     def _has_(self, element: String) -> Integer:
         return Integer(element.value in self.value)
