@@ -147,11 +147,11 @@ class Transpiler:
         ]
         null = "Null()"
         slce = "Slice"
+        method = "_setItem_" if assign else "_getItem_"
         if all(
             token not in tokens
             for token in {Token.WHILE, Token.SLICE_STEP}
         ):
-            method = "_setItem_" if assign else "_getItem_"
             # <<index>>
             if tokens:
                 self.ch.line += [f".{method}("]
@@ -160,7 +160,6 @@ class Transpiler:
                 self.ch.line += [")" if method == "_getItem_" else ","]
             # <<>>
             else:
-                method = "_setSlice_" if assign else "_getSlice_"
                 self.ch.line += [
                     f".{method}({slce}({null},{null},{null})"
                     + "),"[assign]
@@ -168,7 +167,6 @@ class Transpiler:
             self.slice_tokens = []
             self.slicing = False
             return assign
-        method = "_setSlice_" if assign else "_getSlice_"
         # <<**step>>
         if tokens[0] == Token.SLICE_STEP:
             self.ch.line += [f".{method}({slce}({null},{null},"]

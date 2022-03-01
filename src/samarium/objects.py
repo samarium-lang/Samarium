@@ -170,17 +170,11 @@ class Class:
     def __invert__(self) -> Class:
         return self._not_()
 
-    def __getitem__(self, index: Integer) -> Any:
+    def __getitem__(self, index: Union[Integer, Slice]) -> Any:
         return self._getItem_(index)
 
-    def __setitem__(self, index: Integer, value: Any):
+    def __setitem__(self, index: Union[Integer, Slice], value: Any):
         return self._setItem_(index, value)
-
-    def __getslice__(self, slice: Slice) -> Any:
-        return self._getSlice_(slice)
-
-    def __setslice__(self, slice: Slice, value: Any):
-        return self._setSlice_(slice, value)
 
     def __eq__(self, other: Class) -> Integer:
         return self._equals_(other)
@@ -317,17 +311,11 @@ class Class:
     def _not_(self) -> Class:
         raise NotDefinedError(self, "not")
 
-    def _getItem_(self, index: Integer) -> Any:
+    def _getItem_(self, index: Union[Integer, Slice]) -> Any:
         raise NotDefinedError(self, "getItem")
 
-    def _setItem_(self, index: Integer, value: Any):
+    def _setItem_(self, index: Union[Integer, Slice], value: Any):
         raise NotDefinedError(self, "setItem")
-
-    def _getSlice_(self, slice: Slice) -> Any:
-        raise NotDefinedError(self, "getSlice")
-
-    def _setSlice_(self, slice: Slice, value: Any):
-        raise NotDefinedError(self, "setSlice")
 
     def _equals_(self, other: Class) -> Integer:
         raise NotDefinedError(self, "equals")
@@ -460,20 +448,12 @@ class String(Class):
     def _greaterThan_(self, other: String) -> Integer:
         return Integer(self.value > other.value)
 
-    def _getItem_(self, index: Integer) -> String:
+    def _getItem_(self, index: Union[Integer, Slice]) -> String:
         return String(self.value[index.value])
 
-    def _setItem_(self, index: Integer, value: String):
+    def _setItem_(self, index: Union[Integer, Slice], value: String):
         string = [*self.value]
         string[index.value] = value.value
-        self.value = "".join(string)
-
-    def _getSlice_(self, slice: Slice) -> String:
-        return String(self.value[slice.value])
-
-    def _setSlice_(self, slice: Slice, value: String):
-        string = [*self.value]
-        string[slice.value] = value.value
         self.value = "".join(string)
 
 
@@ -653,17 +633,13 @@ class Array(Class):
     def _greaterThan_(self, other: Array) -> Integer:
         return Integer(self.value > other.value)
 
-    def _getItem_(self, index: Integer) -> Any:
-        return self.value[index.value]
+    def _getItem_(self, index: Union[Integer, Slice]) -> Any:
+        if isinstance(index, Integer):
+            return self.value[index.value]
+        return Array(self.value[index.value])
 
-    def _setItem_(self, index: Integer, value: Any):
+    def _setItem_(self, index: Union[Integer, Slice], value: Any):
         self.value[index.value] = value
-
-    def _getSlice_(self, slice: Slice) -> Array:
-        return Array(self.value[slice.value])
-
-    def _setSlice_(self, slice: Slice, value: Any):
-        self.value[slice.value] = value
 
     def _add_(self, other: Array) -> Array:
         return Array(self.value + other.value)
