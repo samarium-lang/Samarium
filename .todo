@@ -14,7 +14,7 @@
     - [x] 1. Table comprehension
 - [x] 8. Slices
 - [x] 9. Comments
-- [ ] 10. Built-in Functions
+- [x] 10. Built-in Functions
     - [x] 1. STDIN
     - [x] 2. STDOUT
     - [x] 3. STDERR
@@ -26,7 +26,7 @@
     - [x] 9. DTNOW
     - [x] 10. SLEEP
     - [x] 11. ASSERT
-    - [ ] 12. PARENT
+    - [x] 12. PARENT
 - [x] 11. Control Flow
     - [x] 1. if/else
     - [x] 2. foreach loop
@@ -38,7 +38,7 @@
     - [x] 2. Main function (+argv)
     - [x] 3. Default parameter value
 - [x] 13. Importing
-- [ ] 14. Classes
+- [x] 14. Classes
 - [x] 15. File I/O
     - [x] 1. Creating
     - [x] 2. Reading
@@ -49,7 +49,7 @@
 - [ ] 16. Standard Library
     - [ ] 1. `collections` module
     - [ ] 2. `iter` module
-    - [ ] 3. `math` module
+    - [x] 3. `math` module
     - [ ] 4. `random` module
     - [ ] 5. `string` module
     - [ ] 6. `types` module
