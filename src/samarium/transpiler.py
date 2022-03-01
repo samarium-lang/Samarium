@@ -386,7 +386,12 @@ class Transpiler:
             if self.is_first_token():
                 self.ch.switches["const"] = True
         elif token == Token.ASSIGN:
-            if self.ch.line_tokens.count(token) > 1:
+            if (
+                self.ch.line_tokens.count(token) > 1
+                and Token.FUNCTION in self.tokens[
+                    index:self.tokens[index:].index(Token.BRACE_OPEN)
+                ]
+            ):
                 handle_exception(
                     SamariumSyntaxError("cannot use multiple assignment")
                 )
