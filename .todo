@@ -50,7 +50,7 @@
     - [ ] 1. `collections` module
     - [ ] 2. `iter` module
     - [x] 3. `math` module
-    - [ ] 4. `random` module
-    - [ ] 5. `string` module
+    - [x] 4. `random` module
+    - [x] 5. `string` module
     - [ ] 6. `types` module
 ----

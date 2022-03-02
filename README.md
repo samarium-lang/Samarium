@@ -71,6 +71,7 @@ The following guide assumes that you are familiar with the basics of programming
 - [Standard Library](#standard-library)
   - [`math` module](#math-module)
   - [`random` module](#random-module)
+  - [`string` module](#string-module)
 
 
 # Variables
@@ -753,44 +754,44 @@ Parent classes are inherited from right to left, i.e. the first class in the inh
 There are a number of special methods that the user can implement to override certain functionality of a class, such as how it's initialized (with the `create` method), or how it interacts with different operators.
 These methods are as follows (where `func(...)` indicates a variable number of arguments):
 
-Function                  | Python     | Use
----                       | ---        | ---
-create(...)               | init       | Initializes an instance of a class, takes any number of arguments. Typically used for setting instance variables based on these arguments. No return value necessary.
-toString()                | str        | Returns the string representation of an object.
-toBit()                   | bool       | Implements boolean value testing, returns `1` (truthy) or `0` (falsy). Used for conditional statements and logical operators.
-has(item)                 | contains   | Implements membership testing, returns `1` (object contains `item`) or `0` (object does not contain `item`). Interacts with `->?` operator.
-call(...)                 | call       | Called when an instance itself is "called" as a function; `x(...)` roughly translates to `x?!.call(x, ...)`.
-hash()                    | hash       | Called by built-in hash function `##`, and for keys in a table. Objects which compare equal should have the same hash value.
-iterate()                 | iter       | Called when iterating over an object in a `foreach` loop. Returns an array of objects to iterate over.
-subtract(other)           | sub        | Interacts with the subtraction operator `-`. `x - y` is equivalent to `x.subtract(y)`.
-subtractAssign(other)     | isub       | Interacts with the subtraction assignment operator `-:`. `x-: y` is equivalent to `x.subtractAssign(y)` (or `x: x - y`).
-add(other)                | add        | Interacts with the addition operator `+`.
-addAssign(other)          | iadd       | Interacts with the addition assignment operator `+:`.
-multiply(other)           | mul        | Interacts with the multiplication operator `++`.
-multiplyAssign(other)     | imul       | Interacts with the multiplication assignment operator `++:`.
-divide(other)             | floordiv   | Interacts with the division operator `--`.
-divideAssign(other)       | ifloordiv  | Interacts with the division assignment operator `--:`.
-mod(other)                | mod        | Interacts with the modulo operator `---`.
-modAssign(other)          | imod       | Interacts with the modulo assignment operator `---:`.
-power(other)              | pow        | Interacts with the exponentiation operator `+++`.
-powerAssign(other)        | ipow       | Interacts with the exponentiation assignment operator `+++:`.
-and(other)                | and        | Interacts with the bitwise AND operator `&`.
-andAssign(other)          | iand       | Interacts with the bitwise AND assignment operator `&:`.
-or(other)                 | or         | Interacts with the bitwise OR operator `|`.
-orAssign(other)           | ior        | Interacts with the bitwise OR assignment operator `|:`.
-xor(other)                | xor        | Interacts with the bitwise XOR operator `^`.
-xorAssign(other)          | ixor       | Interacts with the bitwise XOR assignment operator `^:`.
-negative()                | neg        | Interacts with the negative unary operator `-`.
-positive()                | pos        | Interacts with the positive unary operator `+`.
-not()                     | invert     | Interacts with the bitwise NOT operator `~`.
-getItem(index)            | getitem    | Implements indexing an object; `x<<index>>` is equivalent to `x.getItem(index)`.
-setItem(index, value)     | setitem    | Implements assigning to an index of an object; `x<<index>>: value` is equivalent to `x.setItem(index, value)`.
-equals(other)             | eq         | Implements the equality operator `::`. `x :: y` is equivalent to `x.equals(y)`.
-notEquals(other)          | ne         | Implements the inequality operator `:::`.
-lessThan(other)           | lt         | Implements the less than operator `<`.
-greaterThan(other)        | gt         | Implements the greater than operator `>`.
-lessThanOrEqual(other)    | le         | Implements the less than or equal operator `<:`.
-greaterThanOrEqual(other) | ge         | Implements the greater than or equal operator `>:`.
+Function                    | Python       | Use
+---                         | ---          | ---
+`create(...)`               | `init`       | Initializes an instance of a class, takes any number of arguments. Typically used for setting instance variables based on these arguments. No return value necessary.
+`toString()`                | `str`        | Returns the string representation of an object.
+`toBit()`                   | `bool`       | Implements boolean value testing, returns `1` (truthy) or `0` (falsy). Used for conditional statements and logical operators.
+`has(item)`                 | `contains`   | Implements membership testing, returns `1` (object contains `item`) or `0` (object does not contain `item`). Interacts with `->?` operator.
+`call(...)`                 | `call`       | Called when an instance itself is "called" as a function; `x(...)` roughly translates to `x?!.call(x, ...)`.
+`hash()`                    | `hash`       | Called by the built-in hash function `##`, and for keys in a table. Objects which compare equal should have the same hash value.
+`iterate()`                 | `iter`       | Called when iterating over an object in a `foreach` loop. Returns an array of objects to iterate over.
+`subtract(other)`           | `sub`        | Interacts with the subtraction operator `-`. `x - y` is equivalent to `x.subtract(y)`.
+`subtractAssign(other)`     | `isub`       | Interacts with the subtraction assignment operator `-:`. `x-: y` is equivalent to `x.subtractAssign(y)` (or `x: x - y`).
+`add(other)`                | `add`        | Interacts with the addition operator `+`.
+`addAssign(other)`          | `iadd`       | Interacts with the addition assignment operator `+:`.
+`multiply(other)`           | `mul`        | Interacts with the multiplication operator `++`.
+`multiplyAssign(other)`     | `imul`       | Interacts with the multiplication assignment operator `++:`.
+`divide(other)`             | `floordiv`   | Interacts with the division operator `--`.
+`divideAssign(other)`       | `ifloordiv`  | Interacts with the division assignment operator `--:`.
+`mod(other)`                | `mod`        | Interacts with the modulo operator `---`.
+`modAssign(other)`          | `imod`       | Interacts with the modulo assignment operator `---:`.
+`power(other)`              | `pow`        | Interacts with the exponentiation operator `+++`.
+`powerAssign(other)`        | `ipow`       | Interacts with the exponentiation assignment operator `+++:`.
+`and(other)`                | `and`        | Interacts with the bitwise AND operator `&`.
+`andAssign(other)`          | `iand`       | Interacts with the bitwise AND assignment operator `&:`.
+`or(other)`                 | `or`         | Interacts with the bitwise OR operator `\|`.
+`orAssign(other)`           | `ior`        | Interacts with the bitwise OR assignment operator `\|:`.
+`xor(other)`                | `xor`        | Interacts with the bitwise XOR operator `^`.
+`xorAssign(other)`          | `ixor`       | Interacts with the bitwise XOR assignment operator `^:`.
+`negative()`                | `neg`        | Interacts with the negative unary operator `-`.
+`positive()`                | `pos`        | Interacts with the positive unary operator `+`.
+`not()`                     | `invert`     | Interacts with the bitwise NOT operator `~`.
+`getItem(index)`            | `getitem`    | Implements indexing an object; `x<<index>>` is equivalent to `x.getItem(index)`.
+`setItem(index, value)`     | `setitem`    | Implements assigning to an index of an object; `x<<index>>: value` is equivalent to `x.setItem(index, value)`.
+`equals(other)`             | `eq`         | Implements the equality operator `::`. `x :: y` is equivalent to `x.equals(y)`.
+`notEquals(other)`          | `ne`         | Implements the inequality operator `:::`.
+`lessThan(other)`           | `lt`         | Implements the less than operator `<`.
+`greaterThan(other)`        | `gt`         | Implements the greater than operator `>`.
+`lessThanOrEqual(other)`    | `le`         | Implements the less than or equal operator `<:`.
+`greaterThanOrEqual(other)` | `ge`         | Implements the greater than or equal operator `>:`.
 
 Note: Some of the comparison operators can be inferred from others, so not all of them are necessary to provide implementations for.
 The specific operators needed to infer each comparison operator are listed in the following table:
@@ -949,9 +950,62 @@ Function              | Use
 
 The `random` module implements functions that make use of the [random number generator `^^`](#random-numbers).
 
-Function          | Use
----               | ---
-choice(array)     | Returns a random element from `array`. `array` may be of type Array or String. `array` must not be empty.
-shuffle(array)    | Returns a randomly shuffled 
-choices(array, k) | 
-sample(array, k)  | 
+Function           | Use
+---                | ---
+`choice(iter)`     | Returns a random element from `iter`. `iter` may be of type Array or String. `iter` must not be empty.
+`shuffle(array)`   | Randomly shuffles `array` and returns the result. `array` must be of type Array.
+`choices(iter, k)` | Randomly selects an item from `iter` `k` times and returns the resulting choices as an array.
+`sample(array, k)` | Randomly selects `k` unique items from `array`, and returns the resulting choices as an array.
+
+## `string` module
+
+The `string` module contains several useful functions for string manipulation, as well as some variables containing groups of similar characters.
+
+Variable      | Contents
+---           | ---
+`uppercase`   | `ABCDEFGHIJKLMNOPQRSTUVWXYZ`
+`lowercase`   | `abcdefghijklmnopqrstuvwxyz`
+`letters`     | `uppercase + lowercase`
+`octdigits`   | `01234567`
+`digits`      | `0123456789`
+`hexdigits`   | `0123456789abcdef`
+`punctuation` | ``!"#$%&'()*+,-./:;<=>?@[\]^_`{\|}~``
+`whitespace`  | `[space]\t\n\r\f\v`
+`printable`   | `letters + digits + punctuation + whitespace`
+
+Function                                                       | Use
+---                                                            | ---
+`center(string, length[, char])`[<sup>a</sup>](#string-note-a) | Returns `string` centered in a new string of length `length`, padded using the specified `char`. If `char` is not specified, it defaults to `" "` (space). `string` is returned unchanged if `length` is less than or equal to the length of `string`.
+`startsWith(string, prefix)`                                   | Returns `1` if `string` starts with the substring `prefix`, otherwise returns `0`.
+`endsWith(string, suffix)`                                     | Returns `1` if `string` ends with the substring `suffix`, otherwise returns `0`.
+`split(string[, delimiter])`                                   | Returns an array of the words in `string`, separated by `delimiter`. If `delimiter` is not specified, it defaults to `" "`.
+`capitalize(string)`                                           | Returns a copy of `string` with the first character set to uppercase (assuming it's a cased character[<sup>b</sup>](#string-note-b)) and all subsequent character set to lowercase.
+`title(string)`                                                | Returns a copy of `string` with the first character of each word (separated by spaces) set to uppercase (assuming they're cased characters[<sup>b</sup>](#string-note-b)), and all subsequent characters of each word set to lowercase.
+`join(iterable[, delimiter])`                                  | Returns a string with each consecutive member of `iterable` converted to a string and joined with `delimiter` between them. If `delimiter` is not specified, it defaults to `" "`.
+`stripLeft(string, prefix)`                                    | Returns a copy of `string` with `prefix` removed from the beginning, multiple times if `string` still begins with `prefix`. If `string` doesn't begin with `prefix`, a copy of the original `string` is returned.
+`stripRight(string, suffix)`                                   | Returns a copy of `string` with `suffix` removed from the end, multiple times if `string` still ends with `suffix`. If `string` doesn't end with `suffix`, a copy of the original `string` is returned.
+`strip(string, chars)`                                         | Returns a copy of `string` with `chars` removed from both the beginning and end, as in `stripLeft` and `stripRight`.
+`isWrapped(string, chars)`                                     | Returns `1` if `string` both starts and ends with the substring `chars`, otherwise returns `0`.
+`toLower(string)`                                              | Returns a copy of `string` with every cased character[<sup>b</sup>](#string-note-b) set to lowercase.
+`toUpper(string)`                                              | Returns a copy of `string` with every cased character[<sup>b</sup>](#string-note-b) set to uppercase.
+`swapcase(string)`                                             | Returns a copy of `string` with every cased character[<sup>b</sup>](#string-note-b) set to the opposite of its original case.
+`leftpad(string, length[, char])`                              | Returns a copy of `string` padded on the left so that it's `length` characters long, using `char` for padding. If `char` is not specified, it defaults to `" "`. If `length` is shorter than `string`'s length, a copy of `string` is returned.
+`rightpad(string, length[, char])`                             | Returns a copy of `string` padded on the right so that it's `length` characters long, using `char` for padding. If `char` is not specified, it defaults to `" "`. If `length` is shorter than `string`'s length, a copy of `string` is returned.
+`isUpper(string)`                                              | Returns `1` if every cased character[<sup>b</sup>](#string-note-b) in `string` is uppercase, otherwise returns `0`.
+`isLower(string)`                                              | Returns `1` if every cased character[<sup>b</sup>](#string-note-b) in `string` is lowercase, otherwise returns `0`.
+`isTitle(string)`                                              | Returns `1` if `string` is in title case, i.e. matches the output of `title(string)` exactly.
+`isCapitalized(string)`                                        | Returns `1` if `string` is capitalized, i.e. matches the output of `capitalize(string)` exactly.
+`isInGroup(string, group)`                                     | Returns `1` if every character in `string` is in the specified `group` of type Array or String, otherwise returns `0`.
+`isAlphabetic(string)`                                         | Returns `1` if every character in `string` is an alphabetic character, i.e. is contained in the string `letters`, otherwise returns `0`.
+`isAlphanumeric(string)`                                       | Returns `1` if every character in `string` is an alphanumeric character, i.e. is contained in the strings `letters` or `numbers`, otherwise returns `0`.
+`isDecimal(string)`                                            | Returns `1` if every character in `string` is a decimal digit, i.e. is contained in the string `digits`, otherwise returns `0`.
+`isOctal(string)`                                              | Returns `1` if every character in `string` is an octal digit, i.e. is contained in the string `octdigits`, otherwise returns `0`.
+`isHexadecimal(string)`                                        | Returns `1` if every character in `string` is a hexadecimal digit, i.e. is contained in the string `hexdigits`, otherwise returns `0`.
+`wrap(string, wrapper)`                                        | Returns a copy of `string` with `wrapper` added to the start and end.
+`replace(string, replacement[, count])`                        | Returns a copy of `string`, with all instances of each key in the `replacement` table replaced with its corresponding value.[<sup>c</sup>](#string-note-c) If `count` is specified, only the first `count` instances of each key will be replaced, starting from the left.
+
+<sup id="string-note-a">a</sup> An argument in `[square brackets]` means that it has a default value, and so it isn't necessary to give it a value.
+
+<sup id="string-note-b">b</sup> Cased characters are alphabetic characters in either uppercase or lowercase; `letters` is a string of all cased characters.
+
+<sup id="string-note-c">c</sup> A bug exists in `string.replace` in Samarium v0.1.0, in that if a substring is to be replaced by another substring that contains itself, for example `{{"a" -> "aa"}}`, an infinite loop will be entered.
