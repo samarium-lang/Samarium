@@ -1,4 +1,5 @@
-[Back to Table of Contents](../README.md#table-of-contents)
+[Back](../README.md) | [Table of Contents](../README.md#table-of-contents) | [Next](01integers.md)
+---                  | ---                                                 | ---
 
 # Variables
 

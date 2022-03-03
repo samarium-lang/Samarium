@@ -1,4 +1,5 @@
-[Back to Table of Contents](../README.md#table-of-contents)
+[Back](04arrays.md) | [Table of Contents](../README.md#table-of-contents) | [Next](06slices.md)
+---                 | ---                                                 | ---
 
 # Tables
 

@@ -1,4 +1,5 @@
-[Back to Table of Contents](../README.md#table-of-contents)
+[Back](17stdrandom.md) | [Table of Contents](../README.md#table-of-contents) | [Next](19stdtypes.md)
+---                    | ---                                                 | ---
 
 # `string` module
 

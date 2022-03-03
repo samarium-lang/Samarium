@@ -1,4 +1,5 @@
-[Back to Table of Contents](../README.md#table-of-contents)
+[Back](16stdmath.md) | [Table of Contents](../README.md#table-of-contents) | [Next](18stdstring.md)
+---                  | ---                                                 | ---
 
 # `random` module
 

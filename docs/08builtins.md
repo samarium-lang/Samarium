@@ -1,4 +1,5 @@
-[Back to Table of Contents](../README.md#table-of-contents)
+[Back](07comments.md) | [Table of Contents](../README.md#table-of-contents) | [Next](09controlflow.md)
+---                   | ---                                                 | ---
 
 # Built-in Functions
 
@@ -104,7 +105,7 @@ The sleep function `,.,` pauses execution for the specified number of millisecon
 
 The assert function `#` is used as a debugging tool.
 If the input to this function is falsy (i.e. empty iterable, null, or just false), an `AssertionError` will be raised, otherwise, nothing will happen.
-A custom error message can be provided by putting it after a `->`.
+A custom error message can be provided by putting it after a `,`.
 
 <p align="left">
     <img src="images/20assert.png" style="transform: scale(0.6)">

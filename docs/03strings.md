@@ -1,4 +1,5 @@
-[Back to Table of Contents](../README.md#table-of-contents)
+[Back](02operators.md) | [Table of Contents](../README.md#table-of-contents) | [Next](04arrays.md)
+---                    | ---                                                 | ---
 
 # Strings
 

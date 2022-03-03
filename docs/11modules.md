@@ -1,4 +1,5 @@
-[Back to Table of Contents](../README.md#table-of-contents)
+[Back](10functions.md) | [Table of Contents](../README.md#table-of-contents) | [Next](12classes.md)
+---                    | ---                                                 | ---
 
 # Modules
 

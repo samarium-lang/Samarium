@@ -1,4 +1,5 @@
-[Back to Table of Contents](../README.md#table-of-contents)
+[Back](18stdstring.md) | [Table of Contents](../README.md#table-of-contents)
+---                    | ---
 
 # `types` module
 

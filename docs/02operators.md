@@ -1,4 +1,5 @@
-[Back to Table of Contents](../README.md#table-of-contents)
+[Back](01integers.md) | [Table of Contents](../README.md#table-of-contents) | [Next](03strings.md)
+---                   | ---                                                 | ---
 
 # Operators
 
