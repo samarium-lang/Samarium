@@ -68,7 +68,7 @@ dropWhile array function * {
         }
     }
     ... e ->? array<<i..array$>> {
-        o+: e;
+        o+: [e];
     }
     * o;
 }
