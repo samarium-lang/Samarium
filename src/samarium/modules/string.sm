@@ -59,11 +59,12 @@ split string delimiter:" " * {
 }
 
 capitalize string * {
+    ? string$ :: \ { * string; }
     * toUpper(string<<\>>) + toLower(string<</..>>);
 }
 
 title string * {
-    * join(capitalize(w) ... w ->? split(string));
+    * join([capitalize(w) ... w ->? split(string)]);
 }
 
 join iterable delimiter:" " * {
