@@ -48,7 +48,7 @@
     - [x] 6. Quick Actions
 - [ ] 16. Standard Library
     - [ ] 1. `collections` module
-    - [ ] 2. `iter` module
+    - [x] 2. `iter` module
     - [x] 3. `math` module
     - [x] 4. `random` module
     - [x] 5. `string` module

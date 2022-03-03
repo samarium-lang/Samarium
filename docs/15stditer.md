@@ -17,9 +17,10 @@ Function                       | Use
 `dropWhile(array, function)`   | Evaluates `function` on each item of `array`, and returns a copy of `array` starting from the first item (from the left) for which `function` returns a falsy value.[<sup>a</sup>](#note-a)
 `accumulate(array, function)`  | Returns an array of accumulated applications of `function` on consecutive elements of `array`. If for example `function` returned the sum of both of its arguments, then `accumulate([/, /\, //, /\\, /\/], function)` would return `[1, 3, 6, 10, 15]`.[<sup>b</sup>](#note-b)
 `reduce(array, function)`      | Applies `function` cumulatively to consecutive items of `array`, reducing it to a single value, then returns this value. Equivalent to `accumulate(array, function)<<-/>>`.[<sup>b</sup>](#note-b)
-`enumerate(array)`             | Returns a copy of `array` but with each item as a length 2 array containing the item's count/index paired with the original item.
+`enumerate(array)`             | Returns a copy of `array` but with each item as a length 2 array containing the item's index paired with the original item.
 `range(start, stop[, step])` | Generates an array of integers from `start` (inclusive) to `stop` (exclusive) separated by gaps of size `step`. If only one argument is provided, it will apply to `stop`, and `start` will default to `0`. If a value for `step` is not provided, it will default to `1`. Commonly used in [`foreach` loops](09controlflow.md#foreach-loop).
 `sort(array)`                  | Returns a sorted copy of `array`, using the comparison operators `<`, `>`, etc.
 
 <sup id="note-a">a</sup> Note that `function` must take only one argument (excluding default arguments).
+
 <sup id="note-b">b</sup> Note that `function` must take exactly two arguments (excluding default arguments).
