@@ -116,32 +116,32 @@ range start stop:_ step:/ * {
     * o;
 }
 
-sort arr * {
-    ? arr$ <: / { * arr; }
+sort array * {
+    ? array$ <: / { * array; }
     <-collections.Stack;
     l: \;
-    h: arr$ - /;
+    h: array$ - /;
     stack: Stack(h + /);
     stack.push(l);
     stack.push(h);
     .. stack {
         h: stack.pop();
         l: stack.pop();
-        x: arr<<h>>;
+        x: array<<h>>;
         i: l - /;
         j: l;
         .. j < h {
-            ? arr<<j>> <: x {
+            ? array<<j>> <: x {
                 i+: /;
-                t: arr<<j>>;
-                arr<<j>>: arr<<i>>;
-                arr<<i>>: t;
+                t: array<<j>>;
+                array<<j>>: array<<i>>;
+                array<<i>>: t;
             }
             j+: /;
         }
-        t: arr<<h>>;
-        arr<<h>>: arr<<i+/>>;
-        arr<<i+/>>: t;
+        t: array<<h>>;
+        array<<h>>: array<<i+/>>;
+        array<<i+/>>: t;
         p: i + /;
         ? p - / > l {
             stack.push(l);
@@ -152,5 +152,5 @@ sort arr * {
             stack.push(h);
         }
     }
-    * arr;
+    * array;
 }

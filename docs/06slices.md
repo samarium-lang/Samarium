@@ -3,7 +3,7 @@
 
 # Slices
 
-Slices are used to access a range of elements in an iterable (strings, arrays, tables).
+Slices are used to access a range of items in an iterable (strings, arrays, tables).
 They don't do anything by themselves.
 Slices are enclosed in double angle brackets.
 They have three parameters, `start`, `stop` and `step`, any of which may be omitted.
@@ -17,11 +17,11 @@ All valid slice parameters are as follows:
 Slice                   | Returns
 ---                     | ---
 `<<>>`                  | the whole iterable
-`<<index>>`             | the element at position `index`
-`<<..stop>>`            | all elements up to index `stop`
-`<<**step>>`            | all elements separated by gaps of size `step`
-`<<start..>>`           | all elements starting from index `start`
-`<<..stop**step>>`      | all elements up to index `stop` separated by gaps of size `step`
-`<<start**step>>`       | all elements starting from index `start` separated by gaps of size `step`
-`<<start..stop>>`       | all elements starting from index `start` up to index `stop`
-`<<start..stop**step>>` | all elements starting from index `start` up to index `stop` separated by gaps of size `step`
+`<<index>>`             | the item at position `index`
+`<<..stop>>`            | all items up to index `stop`
+`<<**step>>`            | all items separated by gaps of size `step`
+`<<start..>>`           | all items starting from index `start`
+`<<..stop**step>>`      | all items up to index `stop` separated by gaps of size `step`
+`<<start**step>>`       | all items starting from index `start` separated by gaps of size `step`
+`<<start..stop>>`       | all items starting from index `start` up to index `stop`
+`<<start..stop**step>>` | all items starting from index `start` up to index `stop` separated by gaps of size `step`

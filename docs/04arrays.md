@@ -3,7 +3,7 @@
 
 # Arrays
 
-Arrays are defined using square brackets, with elements separated by commas:
+Arrays are defined using square brackets, with items separated by commas:
 
 <p align="left">
     <img src="images/07array.png" style="transform: scale(0.6)">
@@ -13,14 +13,14 @@ Arrays can be concatenated with the `+` operator:
 
 `[/, /\] + [//]` is the same as `[/, /\, //]`
 
-Elements can also be removed (by index) from an array using the `-` operator:
+Items can also be removed (by index) from an array using the `-` operator:
 
 `[/, //\, /\, //] - /` gives `[/, /\, //]`
 
 ## Array Comprehension
 
 Array comprehensions are a way to create an array based on another iterable.
-Uses may include performing an operation on each element of the iterable, or creating a subsequence of those elements that satisfy a certain condition.
+Uses may include performing an operation on each item of the iterable, or creating a subsequence of those items that satisfy a certain condition.
 
 They are written similarly to [foreach loops](09controlflow.md#foreach-loop); they can come in two forms, as follows:
 
@@ -37,7 +37,7 @@ Here are two equivalent approaches:
 
 In both cases, `arr` is equal to `[1, 4, 9, 16, 25]`.
 
-Now suppose we want to filter this result to only the odd-numbered elements.
+Now suppose we want to filter this result to only the odd-numbered items.
 There are again two equivalent approaches:
 
 <p align="left">
