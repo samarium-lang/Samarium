@@ -128,12 +128,7 @@
         + ")";
     }
 
-    remove value * {
-        idx: 'find('items, value);
-        ? idx < \ { * _; }
-        popped: 'items - idx;
-        * popped;
-    }
+    remove value * { 'items-: [value]; }
 
     has value * { * 'find('items, value) >: \; }
 
@@ -166,7 +161,7 @@
             "expected Set, received " + other?!!!!;
         }
 
-        intersectionSet: Set(capacity: 'newSetSize(', other));
+        intersectionSet: Set([], 'newSetSize(', other));
 
         ... value ->? 'values() {
             ? other.has(value) {
@@ -182,7 +177,7 @@
             "expected Set, received " + other?!!!!;
         }
 
-        differenceSet: Set(capacity: 'newSetSize(', other));
+        differenceSet: Set([], 'newSetSize(', other));
 
         ... value ->? 'values() {
             ? ~~ other.has(value) {
