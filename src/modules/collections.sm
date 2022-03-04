@@ -10,7 +10,7 @@
         'stack+: [item];
     }
 
-    pushAll item * { ... element ->? item { 'push(element); } }
+    pushAll items * { ... element ->? items { 'push(element); } }
 
     special * { * 'stack$; }
 
@@ -36,7 +36,7 @@
         <-string.wrap;
         ?? { top: 'peek(); }
         !! { top: _; }
-        ? top?! :: "String" { top: wrap(top.toString(), "\""); }
+        ? top?! :: ""?! { top: wrap(top.toString(), "\""); }
         * "Stack(capacity:" + 'size.toString()
         + ", size:" + 'stack$.toString()
         + ", top:" + top.toString()
@@ -85,8 +85,8 @@
         } ,, ? '$ > /\/ {
             first: 'first().toString();
             last: 'last().toString();
-            ? first?! :: "String" { first: wrap(first, "\""); }
-            ? last?! :: "String" { last: wrap(last, "\""); }
+            ? 'first()?! :: ""?! { first: wrap(first, "\""); }
+            ? 'last()?! :: ""?! { last: wrap(last, "\""); }
             items: "[" + first.toString() + ", ..., " + last.toString() + "]";
         } ,, {
             items: "[]";
@@ -225,7 +225,7 @@
     put item * { 'throwFull(); 'deque+: [item]; }
 
     putFrontAll items * { ... item ->? items { 'putFront(item); } }
-    putAll items * { ... item ->? items { 'putBack(item); } }
+    putAll items * { ... item ->? items { 'put(item); } }
 
     front * { * 'deque<<\>>; }
     back * { * 'deque<<-/>>; }
@@ -251,11 +251,11 @@
         ? '$ <: /\/ {
             items: 'deque.toString();
         } ,, ? '$ > /\/ {
-            first: 'first().toString();
-            last: 'last().toString();
-            ? first?! :: "String" { first: wrap(first, "\""); }
-            ? last?! :: "String" { last: wrap(last, "\""); }
-            items: "[" + first.toString() + ", ..., " + last.toString() + "]";
+            front: 'front().toString();
+            back: 'back().toString();
+            ? 'front()?! :: ""?! { front: wrap(front, "\""); }
+            ? 'back()?! :: ""?! { back: wrap(back, "\""); }
+            items: "[" + front.toString() + ", ..., " + back.toString() + "]";
         } ,, {
             items: "[]";
         }
@@ -268,11 +268,11 @@
 @ StaticArray {
 
     create value type:_ * {
-        ? value?! :: "Integer" {
+        ? value?! :: \?! {
             'value: {{}};
             'size: value;
             'type: type;
-        } ,, ? value?! :: "Array" {
+        } ,, ? value?! :: []?! {
             'value: {{}};
             'size: value$;
             'type: type;
