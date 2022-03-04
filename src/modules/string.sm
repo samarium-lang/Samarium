@@ -217,7 +217,7 @@ replace string replacement count:-/ * {
         * [string, replaced];
     }
 
-    ? replacement?! :: "Array" {
+    ? replacement?! :: []?! {
         ? replacement$ ::: /\ {
             "Invalid replacement format"!!!;
         }
@@ -231,7 +231,7 @@ replace string replacement count:-/ * {
             ? ~~ replaced { <- }
             replacements+: /;
         }
-    } ,, ? replacement?! :: "Table" {
+    } ,, ? replacement?! :: {{}}?! {
         ... k ->? replacement {
             v: replacement<<k>>;
             replacements: \;

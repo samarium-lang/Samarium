@@ -1,7 +1,7 @@
 @ Boolean {
 
     create value * {
-        ? value?! :: "String" {
+        ? value?! :: ""?! {
             <-string.toLower;
             'value: {{"true" -> /, "false" -> \}}<<toLower(value)>>;
         } ,, {
