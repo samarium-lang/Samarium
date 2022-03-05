@@ -1,0 +1,22 @@
+add a b * { * a + b; }
+and a b * { * a & b; }
+cast a * { * a%; }
+divide a b * { * a -- b; }
+equals a b * { * a :: b; }
+greaterThanOrEqual a b * { * a >: b; }
+greaterThan a b * { * a > b; }
+has a b * { * b ->? a; }
+lessThanOrEqual a b * { * a <: b; }
+lessThan a b * { * a < b; }
+mod a b * { * a --- b; }
+multiply a b * { * a ++ b; }
+not a * { * ~a; }
+notEquals a b * { * a ::: b; }
+or a b * { * a | b; }
+power a b * { * a +++ b; }
+random a b * { * ^^a -> b^^; }
+special a * { * a$; }
+subtract a b * { * a - b; }
+toBit a * { * a.toBit(); }
+toString a * { * a.toString(); }
+xor a b * { * a ^ b; }

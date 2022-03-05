@@ -15,7 +15,15 @@ from .transpiler import Transpiler, CodeHandler
 from typing import Union
 
 Castable = Union[Integer, String]
-MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
+MODULE_NAMES = [
+    "collections",
+    "iter",
+    "math",
+    "operator",
+    "random",
+    "string",
+    "types"
+]
 
 
 class Runtime:
