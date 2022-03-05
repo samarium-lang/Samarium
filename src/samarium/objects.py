@@ -603,6 +603,15 @@ class Table(Class):
         self.value.update(other.value)
         return self
 
+    def _subtract_(self, other: String) -> Table:
+        c = self.value.copy()
+        del c[other]
+        return Table(c)
+
+    def _subtractAssign_(self, other: String) -> Table:
+        del self.value[other]
+        return self
+
 
 class Array(Class):
 
