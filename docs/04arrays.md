@@ -13,9 +13,11 @@ Arrays can be concatenated with the `+` operator:
 
 `[/, /\] + [//]` is the same as `[/, /\, //]`
 
-Items can also be removed (by index) from an array using the `-` operator:
+Items can also be removed from an array using the `-` operator, either by index or by value:
 
-`[/, //\, /\, //] - /` gives `[/, /\, //]`
+`["a", "b", "c"] - /` gives `["a", "c"]`
+
+`["a", "b", "c"] - ["c"]` gives `["a", "b"]`
 
 ## Array Comprehension
 

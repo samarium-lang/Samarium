@@ -26,6 +26,8 @@ If the key doesn't already exist in the table, it will be created.
 Tables can be merged together with the addition operator `+`.
 The values of the table to the right of the operator take priority when both tables share keys.
 
+Items can be removed from a table by key using the subtraction operator `-`.
+
 ## Table Comprehension
 
 Tables can be created using table comprehension, using a similar syntax to [array comprehensions](04arrays.md#array-comprehension):
