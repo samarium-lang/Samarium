@@ -158,3 +158,13 @@ sort arr * {
 pairwise iterable * {
     * [iterable<<i..i+/\>> ... i ->? range(iterable$ - /)];
 }
+
+zip iterables * {
+    <-math.min;
+    out: [];
+    shortest: min([i$ ... i ->? iterables]);
+    ... i ->? range(shortest) {
+        out+: [[it<<i>> ... it ->? iterables]];
+    }
+    * out;
+}
