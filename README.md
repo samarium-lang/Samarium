@@ -33,6 +33,8 @@ The `-c <command>` option can be used to execute Samarium code from the string `
 `command` can be one or more statements separated by semicolons as usual.
 Note that the last statement of `command` will be printed if it does not end in a semicolon.
 
+There is also a VSCode syntax highlighting extension for Samarium, which can be found [here](https://github.com/samarium-lang/vscode-samarium).
+
 
 # Credits
 
