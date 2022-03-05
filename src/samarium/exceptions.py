@@ -13,7 +13,7 @@ def handle_exception(exception: Exception):
             name = f"External{name}"
         else:
             name = name.removeprefix("Samarium")
-    sys.stderr.write(f"\033[31m[{name}] {exception}\033[0m\n")
+    sys.stderr.write(f"\033[31m[{name}] {exception}\033[0m\n".replace("_", ""))
     exit(1)
 
 
