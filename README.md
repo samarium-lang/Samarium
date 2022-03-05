@@ -9,6 +9,8 @@ Here's a `Hello, World!` program written in Samarium:
     <img src="docs/images/00helloworld.png" width="50%">
 </span>
 
+Note: Every statement in Samarium must end in a semicolon, and backticks will be ignored.
+
 Documentation on how to program in Samarium can be found [here](docs/tableofcontents.md).
 
 

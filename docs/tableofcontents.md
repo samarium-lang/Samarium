@@ -1,7 +1,5 @@
 # Table of Contents
 
-Note: Every statement in Samarium must end in a semicolon.
-
 The following guide assumes that you are familiar with the basics of programming.
 
 - [Variables](00variables.md)
