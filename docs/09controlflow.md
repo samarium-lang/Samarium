@@ -1,5 +1,5 @@
-[Back](08builtins.md) | [Table of Contents](../README.md#table-of-contents) | [Next](10functions.md)
----                   | ---                                                 | ---
+[Back](08builtins.md) | [Table of Contents](tableofcontents.md) | [Next](10functions.md)
+---                   | ---                                     | ---
 
 # Control Flow
 

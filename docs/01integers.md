@@ -1,5 +1,5 @@
-[Back](00variables.md) | [Table of Contents](../README.md#table-of-contents) | [Next](02operators.md)
----                    | ---                                                 | ---
+[Back](00variables.md) | [Table of Contents](tableofcontents.md) | [Next](02operators.md)
+---                    | ---                                     | ---
 
 # Integers
 

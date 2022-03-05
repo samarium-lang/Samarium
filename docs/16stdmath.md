@@ -1,5 +1,5 @@
-[Back](15stditer.md) | [Table of Contents](../README.md#table-of-contents) | [Next](17stdrandom.md)
----                  | ---                                                 | ---
+[Back](15stditer.md) | [Table of Contents](tableofcontents.md) | [Next](17stdrandom.md)
+---                  | ---                                     | ---
 
 # `math` module
 

@@ -1,5 +1,5 @@
-[Back](09controlflow.md) | [Table of Contents](../README.md#table-of-contents) | [Next](11modules.md)
----                      | ---                                                 | ---
+[Back](09controlflow.md) | [Table of Contents](tableofcontents.md) | [Next](11modules.md)
+---                      | ---                                     | ---
 
 # Functions
 

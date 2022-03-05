@@ -1,5 +1,5 @@
-[Back](12classes.md) | [Table of Contents](../README.md#table-of-contents) | [Next](14stdcollections.md)
----                  | ---                                                 | ---
+[Back](12classes.md) | [Table of Contents](tableofcontents.md) | [Next](14stdcollections.md)
+---                  | ---                                     | ---
 
 # File I/O
 

@@ -1,5 +1,5 @@
-[Back](07comments.md) | [Table of Contents](../README.md#table-of-contents) | [Next](09controlflow.md)
----                   | ---                                                 | ---
+[Back](07comments.md) | [Table of Contents](tableofcontents.md) | [Next](09controlflow.md)
+---                   | ---                                     | ---
 
 # Built-in Functions
 

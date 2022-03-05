@@ -1,5 +1,5 @@
-[Back](05tables.md) | [Table of Contents](../README.md#table-of-contents) | [Next](07comments.md)
----                 | ---                                                 | ---
+[Back](05tables.md) | [Table of Contents](tableofcontents.md) | [Next](07comments.md)
+---                 | ---                                     | ---
 
 # Slices
 

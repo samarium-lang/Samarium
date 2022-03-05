@@ -1,5 +1,5 @@
-[Back](04arrays.md) | [Table of Contents](../README.md#table-of-contents) | [Next](06slices.md)
----                 | ---                                                 | ---
+[Back](04arrays.md) | [Table of Contents](tableofcontents.md) | [Next](06slices.md)
+---                 | ---                                     | ---
 
 # Tables
 
