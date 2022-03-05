@@ -14,6 +14,13 @@ Operator | Meaning
 `+++`    | Exponentiation
 `---`    | Modulo
 
+## Unary
+
+Operator | Meaning
+---      | ---
+`+`      | Positive
+`-`      | Negative
+
 ## Comparison
 
 Operator | Meaning
