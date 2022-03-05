@@ -14,8 +14,17 @@ Documentation on how to program in Samarium can be found [here](docs/tableofcont
 
 # Installation
 
-Samarium can be installed from [pip](https://pypi.org/project/pip/), by running `pip install samarium`.
-You can then run Samarium programs with `samarium program.sm`.
+## [pip](https://pypi.org/project/pip/)
+
+`pip install samarium`
+
+## [AUR](https://aur.archlinux.org/)
+
+`yay -S samarium`
+
+## Using Samarium
+
+You can run Samarium programs with `samarium program.sm`.
 `samarium-debug` may be used instead, which will first print out the intermediary Python code that the Samarium program is transpiled into, before executing it.
 
 The `-c <command>` option can be used to execute Samarium code from the string `command`, directly in the terminal.
@@ -26,4 +35,6 @@ Note that the last statement of `command` will be printed if it does not end in 
 # Credits
 
 Samarium was inspired by several languages, including [brainfuck](https://esolangs.org/wiki/Brainfuck), [Rust](https://www.rust-lang.org/), [Java](https://www.java.com/) and [Python](https://www.python.org/).
-Thanks to [tetraxile](https://github.com/tetraxile) for helping with design choices and writing the docs, and [DarviL82](https://github.com/DarviL82) for fixing some issues.
+Thanks to [tetraxile](https://github.com/tetraxile) for helping with design choices and writing the docs, [MithicSpirit](https://github.com/MithicSpirit) for making Samarium an AUR package, and [DarviL82](https://github.com/DarviL82) for fixing some issues.
+
+If you have any questions, or would like to get in touch, join the [Discord server](https://discord.gg/6nWVj2GR)!
