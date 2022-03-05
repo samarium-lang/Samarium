@@ -1,7 +1,7 @@
 from contextlib import suppress
-from exceptions import handle_exception, SamariumSyntaxError
-from tokenizer import Tokenlike
-from tokens import FILE_IO_TOKENS, Token
+from .exceptions import handle_exception, SamariumSyntaxError
+from .tokenizer import Tokenlike
+from .tokens import FILE_IO_TOKENS, Token
 from typing import Any, Dict, List, Optional, Union
 
 Transpilable = Optional[Tokenlike]
@@ -57,24 +57,6 @@ class Transpiler:
             out += ["".join(array[:x - 1])]
             array = array[x - 1:]
         return out + ["".join(array)]
-
-    def safewrap(self, cmd: str):
-        unsafe = {
-            ")": "(",
-            "])": "Array([",
-            "})": "Table({"
-        }
-        i = 0
-        pair = unsafe.get(self.ch.line[~i])
-        if pair is None:
-            self.ch.line[-1] = f"{cmd}({self.ch.line[~i]})"
-            return
-        while self.ch.line[~i] != pair:
-            i += 1
-        if self.ch.line[~i - 1].isidentifier():
-            i += 1
-        self.ch.line[~i] = f"{cmd}({self.ch.line[~i]}"
-        self.ch.line += ")"
 
     def transpile(self):
         for index, token in enumerate(self.tokens):
@@ -141,7 +123,7 @@ class Transpiler:
             elif len(self.ch.line_tokens) > 1:
                 if self.ch.line_tokens[-2] == Token.INSTANCE:
                     self.ch.line += ["."]
-            self.ch.line += [f"{token}_"]
+            self.ch.line += [f"_{token}_"]
             return
 
         for func in [
@@ -165,42 +147,40 @@ class Transpiler:
         ]
         null = "Null()"
         slce = "Slice"
+        method = "_setItem_" if assign else "_getItem_"
         if all(
             token not in tokens
             for token in {Token.WHILE, Token.SLICE_STEP}
         ):
-            method = "setItem" if assign else "getItem"
             # <<index>>
             if tokens:
-                self.ch.line += [f".{method}_("]
+                self.ch.line += [f".{method}("]
                 for t in tokens:
                     self.transpile_token(t)
-                self.ch.line += [")" if method == "getItem" else ","]
+                self.ch.line += [")" if method == "_getItem_" else ","]
             # <<>>
             else:
-                method = "setSlice" if assign else "getSlice"
                 self.ch.line += [
-                    f".{method}_({slce}({null},{null},{null})"
+                    f".{method}({slce}({null},{null},{null})"
                     + "),"[assign]
                 ]
             self.slice_tokens = []
             self.slicing = False
             return assign
-        method = "setSlice" if assign else "getSlice"
         # <<**step>>
         if tokens[0] == Token.SLICE_STEP:
-            self.ch.line += [f".{method}_({slce}({null},{null},"]
+            self.ch.line += [f".{method}({slce}({null},{null},"]
             for t in tokens[1:]:
                 self.transpile_token(t)
             self.ch.line += [")" + "),"[assign]]
         # <<start..>>
         elif tokens[-1] == Token.WHILE:
-            self.ch.line += [f".{method}_({slce}("]
+            self.ch.line += [f".{method}({slce}("]
             for t in tokens[:-1]:
                 self.transpile_token(t)
             self.ch.line += [f",{null},{null})" + "),"[assign]]
         elif tokens[0] == Token.WHILE:
-            self.ch.line += [f".{method}_({slce}({null},"]
+            self.ch.line += [f".{method}({slce}({null},"]
             # <<..end**step>>
             if Token.SLICE_STEP in tokens:
                 step_index = tokens.index(Token.SLICE_STEP)
@@ -216,7 +196,7 @@ class Transpiler:
                     self.transpile_token(t)
                 self.ch.line += [f",{null})" + "),"[assign]]
         elif Token.WHILE in tokens or Token.SLICE_STEP in tokens:
-            self.ch.line += [f".{method}_({slce}("]
+            self.ch.line += [f".{method}({slce}("]
             with suppress(ValueError):
                 while_index = tokens.index(Token.WHILE)
                 step_index = tokens.index(Token.SLICE_STEP)
@@ -387,12 +367,11 @@ class Transpiler:
             Token.ATTRIBUTE: ".",
             Token.NULL: "Null()",
             Token.DTNOW: "dtnow()",
-            Token.DOLLAR: ".special_()",
-            Token.HASH: ".hash_()",
-            Token.SIZE: ".__sizeof__()",
+            Token.DOLLAR: "._special_()",
+            Token.HASH: "._hash_()",
             Token.TYPE: ".type",
             Token.PARENT: ".parent",
-            Token.CAST: ".cast_()",
+            Token.CAST: "._cast_()",
             Token.RANDOM: ")" if self.ch.switches["random"] else "random("
         }.get(token, 0)
         if token == Token.STDIN:
@@ -407,6 +386,15 @@ class Transpiler:
             if self.is_first_token():
                 self.ch.switches["const"] = True
         elif token == Token.ASSIGN:
+            if (
+                self.ch.line_tokens.count(token) > 1
+                and Token.FUNCTION in self.tokens[
+                    index:self.tokens[index:].index(Token.BRACE_OPEN)
+                ]
+            ):
+                handle_exception(
+                    SamariumSyntaxError("cannot use multiple assignment")
+                )
             if self.ch.switches["const"]:
                 self.ch.frozen = "".join(self.ch.line[self.ch.indent > 0:])
             return out
@@ -447,8 +435,8 @@ class Transpiler:
                 self.set_slice -= 1
             if self.ch.switches["exit"] or self.ch.switches["sleep"]:
                 if self.ch.line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
-                    self.ch.line += "Integer(0)"
-                self.ch.line += ").value)"
+                    self.ch.line += ["Integer(0)"]
+                self.ch.line += [").value)"]
                 if self.ch.switches["exit"]:
                     self.ch.switches["exit"] = False
                 else:
@@ -473,12 +461,19 @@ class Transpiler:
                         f";freeze({variable})"
                     ]
                     self.ch.switches["const"] = False
-            if self.ch.line[start:][0] == "assert ":
+            if (
+                self.ch.line[start:]
+                and self.ch.line[start:][0] == "assert "
+                and ":" in self.ch.line
+            ):
                 arr_idx = len(self.ch.line) - self.ch.line[::-1].index(":") - 1
                 self.ch.line[arr_idx] = ","
             self.transpile_token(None)
         elif token == Token.STDOUT:
-            x = bool(self.ch.indent)
+            try:
+                x = self.ch.line.index("=") + 1
+            except ValueError:
+                x = bool(self.ch.indent)
             self.ch.line = [
                 *self.ch.line[:x],
                 "print_safe(",
@@ -538,10 +533,8 @@ class Transpiler:
         if token == Token.THROW:
             x = bool(self.ch.indent)
             self.ch.line = [
-                *self.ch.line[:x],
-                "throw(",
-                *self.ch.line[x:],
-                ")"
+                *self.ch.line[:x], "throw(",
+                *self.ch.line[x:], ")"
             ]
             return 1
         return out
@@ -570,7 +563,7 @@ class Transpiler:
             self.ch.switches["class"] = True
             self.ch.switches["class_def"] = True
             self.ch.class_indent += [self.ch.indent]
-            return "class "
+            return f"@class_attributes\n{'    ' * self.ch.indent}class "
         elif token == Token.ASSERT:
             if self.ch.line[self.ch.indent > 0:]:
                 handle_exception(SamariumSyntaxError(

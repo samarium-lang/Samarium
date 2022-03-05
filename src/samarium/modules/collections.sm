@@ -143,8 +143,8 @@
     newSetSize a b * { * a$ ? a$ > b$ ,, b$; }
 
     union other * {
-        ? other?! ::: "Set" {
-            "expected Set, received " + other?!!!!;
+        ? other?! ::: Set()?! {
+            "expected Set, received " + other?!.toString()!!!;
         }
 
         unionSet: Set('values(), 'newSetSize(', other) ++ /\);
@@ -157,8 +157,8 @@
     }
 
     intersection other * {
-        ? other?! ::: "Set" {
-            "expected Set, received " + other?!!!!;
+        ? other?! ::: Set()?! {
+            "expected Set, received " + other?!.toString()!!!;
         }
 
         intersectionSet: Set([], 'newSetSize(', other));
@@ -173,8 +173,8 @@
     }
 
     difference other * {
-        ? other?! ::: "Set" {
-            "expected Set, received " + other?!!!!;
+        ? other?! ::: Set()?! {
+            "expected Set, received " + other?!.toString()!!!;
         }
 
         differenceSet: Set([], 'newSetSize(', other));
@@ -189,8 +189,8 @@
     }
 
     isSubset other * {
-        ? other?! ::: "Set" {
-            "expected Set, received " + other?!!!!;
+        ? other?! ::: Set()?! {
+            "expected Set, received " + other?!.toString()!!!;
         }
 
         ? '$ > other$ { * \; }
@@ -274,13 +274,13 @@
             i: \;
             ... e ->? value {
                 ? _ ::: type ::: e?! {
-                    "expected " + type + ", found " + e?!!!!;
+                    "expected " + type + ", found " + e?!.toString()!!!;
                 }
                 'value<<i>>: e;
                 i+: /;
             }
         } ,, {
-            "expected Integer or Array, found " + value?!!!!;
+            "expected Integer or Array, found " + value?!.toString()!!!;
         }
     }
 
@@ -296,8 +296,8 @@
     toBit * { * 'value.toBit(); }
 
     throwInvalidIndex arg * {
-        ? arg?! ::: "Integer" {
-            "expected Integer, received " + arg?!!!!;
+        ? arg?! ::: \?! {
+            "expected Integer, received " + arg?!.toString()!!!;
         }
         ? ~~ (\ <: arg < 'size) {
             "index " + arg.toString() + " is out of bounds (size " + 'size.toString() + ")"!!!;
@@ -320,9 +320,4 @@
         'throwInvalidType(value?!);
         'value<<index>>: value;
     }
-}
-
-=> * {
-    arr: StaticArray(/\, \?!);
-    arr<</>>: "woof";
 }

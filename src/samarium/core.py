@@ -1,17 +1,17 @@
-import exceptions
+from . import exceptions
 import os
 import sys
 from contextlib import contextmanager
 from datetime import datetime
-from objects import (
-    assert_smtype, smhash, verify_type,
-    Class, Type, Slice, Null, String, Integer,
+from .objects import (
+    assert_smtype, class_attributes, smhash, verify_type,
+    Class, Type, Slice, Null, String, Integer, Module,
     Table, Array, Mode, FileManager, File
 )
 from secrets import randbelow
 from time import sleep as _sleep
-from tokenizer import tokenize
-from transpiler import Transpiler, CodeHandler
+from .tokenizer import tokenize
+from .transpiler import Transpiler, CodeHandler
 from typing import Union
 
 Castable = Union[Integer, String]
@@ -19,7 +19,7 @@ MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
 
 
 class Runtime:
-    frozen = []
+    frozen: list[str] = []
     import_level = 0
 
 
@@ -35,10 +35,9 @@ def dtnow() -> Array:
 def freeze(obj: Class) -> Class:
     def throw_immutable(*_):
         raise exceptions.SamariumTypeError("object is immutable")
-    obj.setSlice_ = throw_immutable
-    obj.setItem_ = throw_immutable
+    obj._setSlice_ = throw_immutable
+    obj._setItem_ = throw_immutable
     return obj
-
 
 
 def import_module(data: str, ch: CodeHandler):
@@ -50,9 +49,15 @@ def import_module(data: str, ch: CodeHandler):
         yield
         sys.stdout = stdout
 
-    name, objects = data.split(".")
-    name = name[:-1]
-    objects = objects.split(",")
+    module_import = False
+    try:
+        name, object_string = data.split(".")
+        objects = object_string.split(",")
+    except ValueError:
+        name = data
+        objects = []
+        module_import = True
+    name = name.strip("_")
     path = sys.argv[1][:sys.argv[1].rfind("/") + 1] or "."
 
     if f"{name}.sm" not in os.listdir(path):
@@ -65,7 +70,14 @@ def import_module(data: str, ch: CodeHandler):
 
     with silence_stdout():
         imported = run(readfile(f"{path}/{name}.sm"), CodeHandler(globals()))
-    if objects == ["*"]:
+
+    if module_import:
+        ch.globals.update({f"_{name}_": Module(name, imported.globals)})
+    elif objects == ["*"]:
+        imported.globals = {
+            k: v for k, v in imported.globals.items()
+            if not k.startswith("__") and not k[0].isalnum()
+        }
         ch.globals.update(imported.globals)
     else:
         for obj in objects:
@@ -73,6 +85,12 @@ def import_module(data: str, ch: CodeHandler):
 
 
 def print_safe(*args):
+    args = [
+        assert_smtype(
+            lambda: Type(i) if isinstance(i, (type, type(lambda: 0))) else i
+        )()
+        for i in args
+    ]
     types = [type(i) for i in args]
     if any(i in (tuple, type(i for i in [])) for i in types):
         raise exceptions.SamariumSyntaxError(
@@ -81,6 +99,11 @@ def print_safe(*args):
             "invalid comprehension"
         )
     print(*args)
+    if len(args) > 1:
+        return Array([*args])
+    elif not args or types[0] is Null:
+        return Null()
+    return args[0]
 
 
 def random(start: Integer, end: Integer) -> Integer:
@@ -98,11 +121,9 @@ def readline(prompt: str = "") -> String:
     return String(input(prompt))
 
 
-def run(code: str, ch: CodeHandler) -> CodeHandler:
+def run(code: str, ch: CodeHandler, debug: bool = False) -> CodeHandler:
 
-    tokens = tokenize(code)
-    transpiler = Transpiler(tokens, ch)
-    ch = transpiler.transpile()
+    ch = Transpiler(tokenize(code), ch).transpile()
     prefix = [
         "import sys",
         "import os",
@@ -110,18 +131,20 @@ def run(code: str, ch: CodeHandler) -> CodeHandler:
         "sys.stdout = open(os.devnull, 'w')"
     ]
     suffix = [
-        "if __name__ == '__main__':",
+        "if __name__ == 'samarium':",
         "    sys.stdout = STDOUT",
+        "    argv = Array([String(i) for i in sys.argv[1:]])",
         "    try:",
-        "        entry(Array([String(i) for i in sys.argv[1:]]))",
+        "        ex = entry(argv)",
         "    except TypeError:",
-        "        entry()"
+        "        ex = entry()",
+        "    sys.exit(ex.value)"
     ]
     code = "\n".join(prefix + ch.code + suffix)
     try:
-        if "--debug" in sys.argv:
-            for i, line in enumerate(code.splitlines()):
-                print(f"{i+1:^4}" * ("--showlines" in sys.argv) + line)
+        if debug:
+            for line in code.splitlines():
+                print(line)
         Runtime.import_level += 1
         ch.globals = {**globals(), **ch.globals}
         exec(code, ch.globals)

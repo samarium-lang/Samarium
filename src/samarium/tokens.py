@@ -25,7 +25,7 @@ class Token(Enum):
     NOT = "~~"
     IN = "->?"
 
-    # Biwise
+    # Bitwise
     BINAND = "&"
     BINOR = "|"
     BINNOT = "~"
@@ -77,7 +77,6 @@ class Token(Enum):
     EXIT = "=>!"
     HASH = "##"
     PARENT = "!?"
-    SIZE = ":!:"
     TYPE = "?!"
     STDIN = "???"
     STDOUT = "!"

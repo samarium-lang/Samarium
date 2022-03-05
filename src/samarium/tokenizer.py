@@ -1,8 +1,8 @@
 from contextlib import suppress
-from exceptions import SamariumSyntaxError, handle_exception
-from tokens import Token
+from .exceptions import SamariumSyntaxError, handle_exception
+from .tokens import Token
 from typing import List, Tuple, Union
-import handlers
+from . import handlers
 import sys
 
 Tokenlike = Union[Token, str, int]
@@ -59,12 +59,12 @@ def tokenize(program: str) -> List[Tokenlike]:
             scroller.shift()
 
         # String content and name handling
-        elif scroller.pointer.isalpha() or string:
+        elif scroller.pointer.isalnum() or string:
             temp += scroller.pointer
             scroller.shift()
 
         # Namespace submitting
-        elif temp and not scroller.pointer.isalpha() and not string:
+        elif temp and not scroller.pointer.isalnum() and not string:
             tokens.append(temp)
             temp = ""
 

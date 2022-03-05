@@ -19,11 +19,12 @@ gcd a b * {
     .. b {
         a, b: b, a --- b;
     }
-    * a;
+    * abs(a);
 }
 
 lcm a b * {
-    * abs(a ++ b) -- gcd(a, b);
+    ?? { * abs(a ++ b) -- gcd(a, b); }
+    !! { * \; }
 }
 
 product array * {

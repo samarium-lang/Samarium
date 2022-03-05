@@ -68,7 +68,7 @@ dropWhile array function * {
         }
     }
     ... e ->? array<<i..array$>> {
-        o+: e;
+        o+: [e];
     }
     * o;
 }
@@ -116,32 +116,32 @@ range start stop:_ step:/ * {
     * o;
 }
 
-sort array * {
-    ? array$ <: / { * array; }
+sort arr * {
+    ? arr$ <: / { * arr; }
     <-collections.Stack;
     l: \;
-    h: array$ - /;
+    h: arr$ - /;
     stack: Stack(h + /);
     stack.push(l);
     stack.push(h);
     .. stack {
         h: stack.pop();
         l: stack.pop();
-        x: array<<h>>;
+        x: arr<<h>>;
         i: l - /;
         j: l;
         .. j < h {
-            ? array<<j>> <: x {
+            ? arr<<j>> <: x {
                 i+: /;
-                t: array<<j>>;
-                array<<j>>: array<<i>>;
-                array<<i>>: t;
+                t: arr<<j>>;
+                arr<<j>>: arr<<i>>;
+                arr<<i>>: t;
             }
             j+: /;
         }
-        t: array<<h>>;
-        array<<h>>: array<<i+/>>;
-        array<<i+/>>: t;
+        t: arr<<h>>;
+        arr<<h>>: arr<<i+/>>;
+        arr<<i+/>>: t;
         p: i + /;
         ? p - / > l {
             stack.push(l);
@@ -152,5 +152,5 @@ sort array * {
             stack.push(h);
         }
     }
-    * array;
+    * arr;
 }
