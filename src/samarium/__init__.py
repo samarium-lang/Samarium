@@ -10,7 +10,7 @@ def main(debug: bool = False):
     if sys.argv[1] == "-v":
         sys.exit(print("Samarium 0.1.0"))
     elif sys.argv[1] == "-c":
-        sys.exit(run(f"=> * {{{sys.argv[2]}!;}}", MAIN, debug))
+        sys.exit(run(f"=> argv * {{{sys.argv[2]}!;}}", MAIN, debug))
     try:
         file = readfile(sys.argv[1])
     except IOError:
