@@ -59,11 +59,12 @@ split string delimiter:" " * {
 }
 
 capitalize string * {
+    ? string$ :: \ { * string; }
     * toUpper(string<<\>>) + toLower(string<</..>>);
 }
 
 title string * {
-    * join(capitalize(w) ... w ->? split(string));
+    * join([capitalize(w) ... w ->? split(string)]);
 }
 
 join iterable delimiter:" " * {
@@ -100,8 +101,8 @@ isWrapped string chars * {
 
 toLower string * {
     <-iter.range;
-    ? string?! ::: "String" {
-        "Invalid type: " + string?!!!!;
+    ? string?! ::: ""?! {
+        "invalid type: " + string?!.toString()!!!;
     }
     out: "";
     ... char ->? string {
@@ -116,8 +117,8 @@ toLower string * {
 
 toUpper string * {
     <-iter.range;
-    ? string?! ::: "String" {
-        "Invalid type: " + string?!!!!;
+    ? string?! ::: ""?! {
+        "invalid type: " + string?!.toString()!!!;
     }
     out: "";
     ... char ->? string {
@@ -206,6 +207,7 @@ wrap string wrapper * {
 }
 
 replace string replacement count:-/ * {
+
     replaceOne string from to * {
         <-iter.find;
         replaced: \;
@@ -223,11 +225,7 @@ replace string replacement count:-/ * {
         }
         replacements: \;
         .. replacements ::: count {
-            string, replaced: replaceOne(
-                string,
-                replacement<<\>>,
-                replacement<</>>
-            );
+            string, replaced: replaceOne(string, k, v);
             ? ~~ replaced { <- }
             replacements+: /;
         }
@@ -244,5 +242,6 @@ replace string replacement count:-/ * {
     } ,, {
         "Invalid type: " + replacement?!!!!;
     }
+
     * string;
 }
