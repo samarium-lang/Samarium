@@ -39,4 +39,4 @@ Note that the last statement of `command` will be printed if it does not end in 
 Samarium was inspired by several languages, including [brainfuck](https://esolangs.org/wiki/Brainfuck), [Rust](https://www.rust-lang.org/), [Java](https://www.java.com/) and [Python](https://www.python.org/).
 Thanks to [tetraxile](https://github.com/tetraxile) for helping with design choices and writing the docs, [MithicSpirit](https://github.com/MithicSpirit) for making Samarium an AUR package, and [DarviL82](https://github.com/DarviL82) for fixing some issues.
 
-If you have any questions, or would like to get in touch, join the [Discord server](https://discord.gg/6nWVj2GR)!
+If you have any questions, or would like to get in touch, join the [Discord server](https://discord.gg/C8QE5tVQEq)!
