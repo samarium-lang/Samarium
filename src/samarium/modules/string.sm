@@ -219,28 +219,18 @@ replace string replacement count:-/ * {
         * [string, replaced];
     }
 
-    ? replacement?! :: []?! {
-        ? replacement$ ::: /\ {
-            "Invalid replacement format"!!!;
-        }
+    ? replacement?! ::: {{}}?! {
+        "invalid type: " + replacement?!.toString()!!!;
+    }
+
+    ... k ->? replacement {
+        v: replacement<<k>>;
         replacements: \;
         .. replacements ::: count {
             string, replaced: replaceOne(string, k, v);
             ? ~~ replaced { <- }
             replacements+: /;
         }
-    } ,, ? replacement?! :: {{}}?! {
-        ... k ->? replacement {
-            v: replacement<<k>>;
-            replacements: \;
-            .. replacements ::: count {
-                string, replaced: replaceOne(string, k, v);
-                ? ~~ replaced { <- }
-                replacements+: /;
-            }
-        }
-    } ,, {
-        "Invalid type: " + replacement?!!!!;
     }
 
     * string;
