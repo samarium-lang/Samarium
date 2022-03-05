@@ -168,3 +168,18 @@ zip iterables * {
     }
     * out;
 }
+
+zipLongest iterable fill:_ * {
+    <-math.max;
+    out: [];
+    longest: max([i$ ... i ->? iterables]);
+    ... i ->? range(longest) {
+        zip: [];
+        ... it ->? iterables {
+            ?? { zip+: [it<<i>>]; }
+            !! { zip+: [fill]; }
+        }
+        out+: [zip];
+    }
+    * out;
+}
