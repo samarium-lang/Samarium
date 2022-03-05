@@ -155,27 +155,27 @@ sort arr * {
     * arr;
 }
 
-pairwise iterable * {
-    * [iterable<<i..i+/\>> ... i ->? range(iterable$ - /)];
+pairwise array * {
+    * [array<<i..i+/\>> ... i ->? range(array$ - /)];
 }
 
-zip iterables * {
+zip arrays * {
     <-math.min;
     out: [];
-    shortest: min([i$ ... i ->? iterables]);
+    shortest: min([i$ ... i ->? arrays]);
     ... i ->? range(shortest) {
-        out+: [[it<<i>> ... it ->? iterables]];
+        out+: [[it<<i>> ... it ->? arrays]];
     }
     * out;
 }
 
-zipLongest iterable fill:_ * {
+zipLongest array fill:_ * {
     <-math.max;
     out: [];
-    longest: max([i$ ... i ->? iterables]);
+    longest: max([i$ ... i ->? arrays]);
     ... i ->? range(longest) {
         zip: [];
-        ... it ->? iterables {
+        ... it ->? arrays {
             ?? { zip+: [it<<i>>]; }
             !! { zip+: [fill]; }
         }
