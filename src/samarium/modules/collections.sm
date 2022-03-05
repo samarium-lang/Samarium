@@ -10,7 +10,7 @@
         'stack+: [item];
     }
 
-    pushAll item * { ... element ->? item { 'push(element); } }
+    pushAll items * { ... element ->? items { 'push(element); } }
 
     special * { * 'stack$; }
 
@@ -85,8 +85,8 @@
         } ,, ? '$ > /\/ {
             first: 'first().toString();
             last: 'last().toString();
-            ? first?! :: ""?! { first: wrap(first, "\""); }
-            ? last?! :: ""?! { last: wrap(last, "\""); }
+            ? 'first()?! :: ""?! { first: wrap(first, "\""); }
+            ? 'last()?! :: ""?! { last: wrap(last, "\""); }
             items: "[" + first.toString() + ", ..., " + last.toString() + "]";
         } ,, {
             items: "[]";
@@ -128,12 +128,7 @@
         + ")";
     }
 
-    remove value * {
-        idx: 'find('items, value);
-        ? idx < \ { * _; }
-        popped: 'items - idx;
-        * popped;
-    }
+    remove value * { 'items-: [value]; }
 
     has value * { * 'find('items, value) >: \; }
 
@@ -166,7 +161,7 @@
             "expected Set, received " + other?!.toString()!!!;
         }
 
-        intersectionSet: Set(capacity: 'newSetSize(', other));
+        intersectionSet: Set([], 'newSetSize(', other));
 
         ... value ->? 'values() {
             ? other.has(value) {
@@ -182,7 +177,7 @@
             "expected Set, received " + other?!.toString()!!!;
         }
 
-        differenceSet: Set(capacity: 'newSetSize(', other));
+        differenceSet: Set([], 'newSetSize(', other));
 
         ... value ->? 'values() {
             ? ~~ other.has(value) {
@@ -225,7 +220,7 @@
     put item * { 'throwFull(); 'deque+: [item]; }
 
     putFrontAll items * { ... item ->? items { 'putFront(item); } }
-    putAll items * { ... item ->? items { 'putBack(item); } }
+    putAll items * { ... item ->? items { 'put(item); } }
 
     front * { * 'deque<<\>>; }
     back * { * 'deque<<-/>>; }
@@ -251,11 +246,11 @@
         ? '$ <: /\/ {
             items: 'deque.toString();
         } ,, ? '$ > /\/ {
-            first: 'first().toString();
-            last: 'last().toString();
-            ? first?! :: ""?! { first: wrap(first, "\""); }
-            ? last?! :: ""?! { last: wrap(last, "\""); }
-            items: "[" + first.toString() + ", ..., " + last.toString() + "]";
+            front: 'front().toString();
+            back: 'back().toString();
+            ? 'front()?! :: ""?! { front: wrap(front, "\""); }
+            ? 'back()?! :: ""?! { back: wrap(back, "\""); }
+            items: "[" + front.toString() + ", ..., " + back.toString() + "]";
         } ,, {
             items: "[]";
         }
