@@ -116,3 +116,19 @@ FILE_IO_TOKENS = [
     token for name, token in Token.__members__.items()
     if name.startswith("FILE_")
 ]
+
+OPEN_TOKENS = [
+    Token.BRACKET_OPEN,
+    Token.BRACE_OPEN,
+    Token.PAREN_OPEN,
+    Token.TABLE_OPEN,
+    Token.SLICE_OPEN
+]
+
+CLOSE_TOKENS = [
+    Token.BRACKET_CLOSE,
+    Token.BRACE_CLOSE,
+    Token.PAREN_CLOSE,
+    Token.TABLE_CLOSE,
+    Token.SLICE_CLOSE
+]
