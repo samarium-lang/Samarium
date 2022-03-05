@@ -26,7 +26,9 @@ If the key doesn't already exist in the table, it will be created.
 Tables can be merged together with the addition operator `+`.
 The values of the table to the right of the operator take priority when both tables share keys.
 
-Items can be removed from a table by key using the subtraction operator `-`.
+Items can be removed from a table by key using the subtraction operator `-`:
+
+`{{"a" -> /, "b" -> /\, // -> /\//}} - "b"` gives `{{"a" -> /, // -> /\//}}`
 
 ## Table Comprehension
 
