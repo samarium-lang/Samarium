@@ -154,3 +154,7 @@ sort arr * {
     }
     * arr;
 }
+
+pairwise iterable * {
+    * [iterable<<i..i+/\>> ... i ->? range(iterable$ - /)];
+}
