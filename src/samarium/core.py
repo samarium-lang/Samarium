@@ -35,7 +35,6 @@ def dtnow() -> Array:
 def freeze(obj: Class) -> Class:
     def throw_immutable(*_):
         raise exceptions.SamariumTypeError("object is immutable")
-    obj._setSlice_ = throw_immutable
     obj._setItem_ = throw_immutable
     return obj
 
