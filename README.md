@@ -72,3 +72,9 @@ The following guide assumes that you are familiar with the basics of programming
   - [`random` module](docs/17stdrandom.md)
   - [`string` module](docs/18stdstring.md)
   - [`types` module](docs/19stdtypes.md)
+
+
+# Credits
+
+Samarium was inspired by several languages, including [brainfuck](https://esolangs.org/wiki/Brainfuck), [Rust](https://www.rust-lang.org/), [Java](https://www.java.com/) and [Python](https://www.python.org/).
+Thanks to [tetraxile](https://github.com/tetraxile) for helping with design choices and writing the docs, and [DarviL82](https://github.com/DarviL82) for fixing some issues.
