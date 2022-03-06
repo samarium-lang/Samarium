@@ -17,6 +17,7 @@ from typing import Union
 Castable = Union[Integer, String]
 MODULE_NAMES = [
     "collections",
+    "datetime",
     "iter",
     "math",
     "operator",
