@@ -183,3 +183,7 @@ zipLongest array fill:_ * {
     }
     * out;
 }
+
+findAll array target * {
+    * [i ... i, v ->? enumerate(array) ? v :: target];
+}
