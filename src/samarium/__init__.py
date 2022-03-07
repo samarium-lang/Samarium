@@ -5,18 +5,40 @@ from .core import run, readfile
 
 MAIN = CodeHandler(globals())
 
+OPTIONS = ["-v", "--version", "-c", "--command", "-h", "--help"]
+
+HELP = """samarium [option] [-c cmd | file]
+options and arguments:
+-c, --command cmd : reads program from string
+-h, --help        : shows this
+-v, --version     : prints Samarium version
+file              : reads program from script file"""
+
 
 def main(debug: bool = False):
-    if sys.argv[1] == "-v":
-        sys.exit(print("Samarium 0.1.0"))
-    elif sys.argv[1] == "-c":
-        sys.exit(run(f"=> argv * {{{sys.argv[2]}!;}}", MAIN, debug))
+
     try:
-        file = readfile(sys.argv[1])
+        arg = sys.argv[1]
+    except IndexError:
+        arg = "-v"
+
+    if arg in OPTIONS:
+        q = 0
+        if arg in OPTIONS[:2]:
+            print("Samarium 0.2.0-alpha")
+        elif arg in OPTIONS[2:4]:
+            q = run(f"=> argv * {{{sys.argv[2]}!;}}", MAIN, debug)
+        elif arg in OPTIONS[4:]:
+            print(HELP)
+        sys.exit(q)
+
+    try:
+        file = readfile(arg)
     except IOError:
-        print(f"file not found: {sys.argv[1]}")
+        print(f"file not found: {arg}")
     else:
         with suppress(Exception, KeyboardInterrupt):
+            file = "\n".join(file.splitlines()[file.startswith("#!"):])
             run(file, MAIN, debug)
 
 
