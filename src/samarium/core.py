@@ -131,24 +131,8 @@ def readline(prompt: str = "") -> String:
 
 def run(code: str, ch: CodeHandler, debug: bool = False) -> CodeHandler:
 
-    ch = Transpiler(tokenize(code), ch).transpile()
-    prefix = [
-        "import sys",
-        "import os",
-        "STDOUT = sys.stdout",
-        "sys.stdout = open(os.devnull, 'w')"
-    ]
-    suffix = [
-        "if __name__ == 'samarium':",
-        "    sys.stdout = STDOUT",
-        "    argv = Array([String(i) for i in sys.argv[1:]])",
-        "    try:",
-        "        ex = entry(argv)",
-        "    except TypeError:",
-        "        ex = entry()",
-        "    sys.exit(ex.value)"
-    ]
-    code = "\n".join(prefix + ch.code + suffix)
+    code = "\n".join(Transpiler(tokenize(code), ch).transpile().code)
+    code = readfile("template.py").replace("{{ CODE }}", code)
     try:
         if debug:
             print(code)
