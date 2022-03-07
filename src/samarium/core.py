@@ -151,8 +151,7 @@ def run(code: str, ch: CodeHandler, debug: bool = False) -> CodeHandler:
     code = "\n".join(prefix + ch.code + suffix)
     try:
         if debug:
-            for line in code.splitlines():
-                print(line)
+            print(code)
         Runtime.import_level += 1
         ch.globals = {**globals(), **ch.globals}
         exec(code, ch.globals)
