@@ -164,8 +164,8 @@ class Transpiler:
             break
 
     def transpile_slice(self):
-        assign = self.slice_tokens[-1] == Token.ASSIGN
 
+        assign = self.slice_tokens[-1] == Token.ASSIGN
         tokens = [
             i for i in self.slice_tokens if i not in
             {Token.SLICE_OPEN, Token.SLICE_CLOSE, Token.ASSIGN}
@@ -173,6 +173,7 @@ class Transpiler:
         null = "Null()"
         slce = "Slice"
         method = "_setItem_" if assign else "_getItem_"
+
         if all(
             token not in tokens
             for token in {Token.WHILE, Token.SLICE_STEP}
@@ -591,6 +592,10 @@ class Transpiler:
                 )), ")"
             ]
         elif token == Token.CLASS:
+            if self.is_first_token():
+                self.ch.line = ["@"] + self.ch.line
+                self.transpile_token(Token.END)
+                return 1
             self.ch.switches["class"] = True
             self.ch.switches["class_def"] = True
             self.ch.class_indent += [self.ch.indent]
