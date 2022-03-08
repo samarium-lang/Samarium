@@ -130,7 +130,9 @@ def readline(prompt: str = "") -> String:
 def run(code: str, ch: CodeHandler, debug: bool = False) -> CodeHandler:
 
     code = "\n".join(Transpiler(tokenize(code), ch).transpile().code)
-    code = readfile("template.py").replace("{{ CODE }}", code)
+    code = readfile(
+        f"{os.path.dirname(__file__)}/template.py"
+    ).replace("{{ CODE }}", code)
     try:
         if debug:
             print(code)
