@@ -12,9 +12,7 @@ from secrets import randbelow
 from time import sleep as _sleep
 from .tokenizer import tokenize
 from .transpiler import Transpiler, CodeHandler
-from typing import Union
 
-Castable = Union[Integer, String]
 MODULE_NAMES = [
     "collections",
     "datetime",
