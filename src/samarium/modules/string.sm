@@ -235,3 +235,33 @@ replace string replacement count:-/ * {
 
     * string;
 }
+
+format string substitutes * {
+    ? substitutes?! :: {{}}?! {
+        "invalid type: " + substitutes?!.toString()!!!;
+    }
+    ? ~~ substitutes { * string; }
+    newString: "";
+    index: \;
+    .. index < string$ {
+        char: string<<index>>;
+        ? char ::: "$" {
+            newString+: char;
+            index+: /;
+        } ,, ? string<<index + />> :: "$" {
+            newString+: "$";
+            index+: /\;
+        } ,, {
+            ... k ->? substitutes {
+                v: substitutes<<k>>.toString();
+                k: k.toString();
+                ? string<<index + /..index + k$ + />> :: k {
+                    newString+: v;
+                    index+: k$ + /;
+                    <-;
+                }
+            }
+        }
+    }
+    * newString;
+}
