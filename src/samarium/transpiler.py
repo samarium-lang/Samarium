@@ -1,8 +1,9 @@
+from __future__ import annotations
 from contextlib import suppress
 from .exceptions import handle_exception, SamariumSyntaxError
 from .tokenizer import Tokenlike
 from .tokens import FILE_IO_TOKENS, OPEN_TOKENS, CLOSE_TOKENS, Token
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional
 
 Transpilable = Optional[Tokenlike]
 
@@ -16,7 +17,7 @@ OPEN_TO_CLOSE = {
 
 
 class CodeHandler:
-    def __init__(self, globals: Dict[str, Any]):
+    def __init__(self, globals: dict[str, Any]):
         self.class_indent = []
         self.code = []
         self.frozen = ""
@@ -34,7 +35,7 @@ class CodeHandler:
 
 
 class Transpiler:
-    def __init__(self, tokens: List[Tokenlike], code_handler: CodeHandler):
+    def __init__(self, tokens: list[Tokenlike], code_handler: CodeHandler):
         self.tokens = tokens
         self.ch = code_handler
         self.set_slice = 0
@@ -47,8 +48,8 @@ class Transpiler:
             len(self.ch.line) == 1 and self.ch.line[0].isspace()
         )
 
-    def groupnames(self, array: List[str]) -> List[str]:
-        def find_2nd(array: List[str]) -> int:
+    def groupnames(self, array: list[str]) -> list[str]:
+        def find_2nd(array: list[str]) -> int:
             x = 0
             for i, c in enumerate(array):
                 x += c == "="
@@ -320,7 +321,7 @@ class Transpiler:
             )
         return ""
 
-    def transpile_operator(self, token: Transpilable, _) -> Union[str, int]:
+    def transpile_operator(self, token: Transpilable, _) -> str | int:
         return {
             # Arithmetic
             Token.ADD: "+",
@@ -347,7 +348,7 @@ class Transpiler:
             Token.XOR: "^"
         }.get(token, 0)
 
-    def transpile_bracket(self, token: Transpilable, _) -> Union[str, int]:
+    def transpile_bracket(self, token: Transpilable, _) -> str | int:
         out = {
             Token.BRACKET_OPEN: "Array([",
             Token.BRACKET_CLOSE: "])",
@@ -383,9 +384,7 @@ class Transpiler:
         self.transpile_token(None)
         return 1
 
-    def transpile_exec(
-        self, token: Transpilable, index: int
-    ) -> Union[str, int]:
+    def transpile_exec(self, token: Transpilable, index: int) -> str | int:
         out = {
             Token.INSTANCE: "self",
             Token.ASSIGN: "=",
@@ -517,8 +516,10 @@ class Transpiler:
         return 1
 
     def transpile_control_flow(
-        self, token: Transpilable, index: int
-    ) -> Union[str, int]:
+        self,
+        token: Transpilable,
+        index: int
+    ) -> str | int:
         out = {
             Token.WHILE: "while ",
             Token.FOR: "for ",
@@ -555,9 +556,7 @@ class Transpiler:
             return out
         return 1
 
-    def transpile_error_handling(
-        self, token: Transpilable, _
-    ) -> Union[str, int]:
+    def transpile_error_handling(self, token: Transpilable, _) -> str | int:
         out = {
             Token.TRY: "try",
             Token.CATCH: "except Exception"
@@ -571,7 +570,7 @@ class Transpiler:
             return 1
         return out
 
-    def transpile_misc(self, token: Transpilable, _) -> Union[str, int]:
+    def transpile_misc(self, token: Transpilable, _) -> str | int:
         if token == Token.FUNCTION:
             with suppress(IndexError):
                 if self.ch.line_tokens[0] == Token.FROM:

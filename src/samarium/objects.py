@@ -7,8 +7,7 @@ from .exceptions import (
 )
 from functools import wraps
 from typing import (
-    Any, Callable, Dict, Iterator,
-    IO, List, Optional, TypeVar, Tuple, Union
+    Any, Callable, Iterator, TypeVar, Tuple
 )
 
 T = TypeVar("T")
@@ -170,10 +169,10 @@ class Class:
     def __invert__(self) -> Class:
         return self._not_()
 
-    def __getitem__(self, index: Union[Integer, Slice]) -> Any:
+    def __getitem__(self, index: Integer | Slice) -> Any:
         return self._getItem_(index)
 
-    def __setitem__(self, index: Union[Integer, Slice], value: Any):
+    def __setitem__(self, index: Integer | Slice, value: Any):
         return self._setItem_(index, value)
 
     def __eq__(self, other: Class) -> Integer:
@@ -218,7 +217,7 @@ class Class:
         return Type(self.__class__)
 
     @property
-    def parent(self) -> Union[Array, Type]:
+    def parent(self) -> Array | Type:
         parents = [*self.__class__.__bases__]
         if len(parents) == 1:
             return Type(parents[0])
@@ -311,10 +310,10 @@ class Class:
     def _not_(self) -> Class:
         raise NotDefinedError(self, "not")
 
-    def _getItem_(self, index: Union[Integer, Slice]) -> Any:
+    def _getItem_(self, index: Integer | Slice) -> Any:
         raise NotDefinedError(self, "getItem")
 
-    def _setItem_(self, index: Union[Integer, Slice], value: Any):
+    def _setItem_(self, index: Integer | Slice, value: Any):
         raise NotDefinedError(self, "setItem")
 
     def _equals_(self, other: Class) -> Integer:
@@ -448,10 +447,10 @@ class String(Class):
     def _greaterThan_(self, other: String) -> Integer:
         return Integer(self.value > other.value)
 
-    def _getItem_(self, index: Union[Integer, Slice]) -> String:
+    def _getItem_(self, index: Integer | Slice) -> String:
         return String(self.value[index.value])
 
-    def _setItem_(self, index: Union[Integer, Slice], value: String):
+    def _setItem_(self, index: Integer | Slice, value: String):
         string = [*self.value]
         string[index.value] = value.value
         self.value = "".join(string)
@@ -561,7 +560,7 @@ class Integer(Class):
 
 class Table(Class):
 
-    def _create_(self, value: Dict[Any, Any]):
+    def _create_(self, value: dict[Any, Any]):
         self.value = {
             verify_type(k): verify_type(v)
             for k, v in value.items()
@@ -615,7 +614,7 @@ class Table(Class):
 
 class Array(Class):
 
-    def _create_(self, value: List[Any]):
+    def _create_(self, value: list[Any]):
         self.value = [verify_type(i) for i in value]
 
     def _special_(self) -> Integer:
@@ -642,12 +641,12 @@ class Array(Class):
     def _greaterThan_(self, other: Array) -> Integer:
         return Integer(self.value > other.value)
 
-    def _getItem_(self, index: Union[Integer, Slice]) -> Any:
+    def _getItem_(self, index: Integer | Slice) -> Any:
         if isinstance(index, Integer):
             return self.value[index.value]
         return Array(self.value[index.value])
 
-    def _setItem_(self, index: Union[Integer, Slice], value: Any):
+    def _setItem_(self, index: Integer | Slice, value: Any):
         self.value[index.value] = value
 
     def _add_(self, other: Array) -> Array:
@@ -657,7 +656,7 @@ class Array(Class):
         self.value += other.value
         return self
 
-    def _subtract_(self, other: Union[Array, Integer]) -> Array:
+    def _subtract_(self, other: Array | Integer) -> Array:
         new_array = self.value.copy()
         if isinstance(other, Array):
             for i in other:
@@ -668,7 +667,7 @@ class Array(Class):
             raise SamariumTypeError(type(other).__name__)
         return Array(new_array)
 
-    def _subtractAssign_(self, other: Union[Array, Integer]) -> Array:
+    def _subtractAssign_(self, other: Array | Integer) -> Array:
         if isinstance(other, Array):
             for i in other:
                 self.value.remove(i)
@@ -710,17 +709,17 @@ class FileManager:
         return File(f, mode.name, path.value, binary)
 
     @staticmethod
-    def open_binary(path: String, mode: Mode) -> Tuple[IO, bool]:
+    def open_binary(path: String, mode: Mode) -> tuple[IO, bool]:
         return FileManager.open(path, mode, binary=True)
 
     @staticmethod
     def quick(
-        path: Union[String, File],
+        path: String | File,
         mode: Mode,
         *,
-        data: Optional[String] = None,
+        data: String | None = None,
         binary: bool = False
-    ) -> Optional[Union[String, Array]]:
+    ) -> String | Array | None:
         if isinstance(path, String):
             with open(path.value, mode.value + "b" * binary) as f:
                 if mode == Mode.READ:
@@ -761,7 +760,7 @@ class File(Class):
         self.value.close()
         return Null()
 
-    def _getItem_(self, index: Union[Integer, Slice]) -> Union[Array, String, Integer]:
+    def _getItem_(self, index: Integer | Slice) -> Array | String | Integer:
         if isinstance(index, Slice):
             if index.is_empty():
                 return Integer(self.value.tell())
@@ -784,7 +783,7 @@ class File(Class):
             self.value.seek(index.value)
             return Null()
 
-    def load(self, bytes_: Optional[Integer] = None) -> Union[String, Array]:
+    def load(self, bytes_: Integer | None = None) -> String | Array:
         if bytes_ is None:
             bytes_ = Integer(-1)
         val = self.value.read(bytes_.value)
@@ -792,7 +791,7 @@ class File(Class):
             return Array([Integer(i) for i in val])
         return String(val)
 
-    def save(self, data: Union[String, Array]):
+    def save(self, data: String | Array):
         if (
             self.binary and isinstance(data, String)
             or not self.binary and isinstance(data, Array)

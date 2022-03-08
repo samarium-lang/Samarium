@@ -31,7 +31,7 @@ MULTISEMANTIC = {
 }
 
 
-def tokenize(program: str) -> List[Tokenlike]:
+def tokenize(program: str) -> list[Tokenlike]:
 
     comment = False
     scroller = handlers.Scroller(exclude_backticks(program))
@@ -95,7 +95,7 @@ def tokenize(program: str) -> List[Tokenlike]:
     return exclude_comments(tokens)
 
 
-def tokenize_number(scroller: handlers.Scroller) -> Tuple[int, int]:
+def tokenize_number(scroller: handlers.Scroller) -> tuple[int, int]:
     temp = ""
     for char in scroller.program:
         if char not in "/\\":
@@ -116,7 +116,7 @@ def exclude_backticks(program: str) -> str:
     return out
 
 
-def exclude_comments(tokens: List[Tokenlike]) -> List[Tokenlike]:
+def exclude_comments(tokens: list[Tokenlike]) -> list[Tokenlike]:
     out = []
     ignore = False
     for token in tokens:
@@ -127,9 +127,3 @@ def exclude_comments(tokens: List[Tokenlike]) -> List[Tokenlike]:
         else:
             out += [token] * (not ignore)
     return out
-
-
-if __name__ == "__main__":
-    with open(sys.argv[1]) as f:
-        for token in tokenize(f.read()):
-            print(token)
