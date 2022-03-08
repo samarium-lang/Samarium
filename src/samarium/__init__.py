@@ -20,7 +20,7 @@ def main(debug: bool = False):
     try:
         arg = sys.argv[1]
     except IndexError:
-        arg = "-v"
+        arg = "-h"
 
     if arg in OPTIONS:
         q = 0
