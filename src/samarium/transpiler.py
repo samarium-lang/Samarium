@@ -591,7 +591,7 @@ class Transpiler:
                 )), ")"
             ]
         elif token == Token.CLASS:
-            if self.is_first_token():
+            if not self.is_first_token():
                 self.ch.line = ["@"] + self.ch.line
                 self.transpile_token(Token.END)
                 return 1
