@@ -20,7 +20,6 @@ class CodeHandler:
     def __init__(self, globals: dict[str, Any]):
         self.class_indent = []
         self.code = []
-        self.frozen = ""
         self.line = []
         self.line_tokens = []
         self.indent = 0
@@ -426,8 +425,6 @@ class Transpiler:
                 handle_exception(
                     SamariumSyntaxError("cannot use multiple assignment")
                 )
-            if self.ch.switches["const"]:
-                self.ch.frozen = "".join(self.ch.line[self.ch.indent > 0:])
             return out
         elif (
             token == Token.MAIN and
