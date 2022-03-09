@@ -26,7 +26,7 @@ MODULE_NAMES = [
 
 
 class Runtime:
-    frozen: list[str] = []
+    frozen: set[str] = set()
     import_level = 0
 
 
@@ -43,6 +43,7 @@ def freeze(obj: Class) -> Class:
     def throw_immutable(*_):
         raise exceptions.SamariumTypeError("object is immutable")
     obj._setItem_ = throw_immutable
+    obj.frozen = True
     return obj
 
 
@@ -77,6 +78,7 @@ def import_module(data: str, ch: CodeHandler):
     with silence_stdout():
         imported = run(readfile(f"{path}/{name}.sm"), CodeHandler(globals()))
 
+    imported_constants = imported.globals["Runtime"].frozen
     if module_import:
         ch.globals.update({f"_{name}_": Module(name, imported.globals)})
     elif objects == ["*"]:
@@ -85,8 +87,11 @@ def import_module(data: str, ch: CodeHandler):
             if not k.startswith("__") and not k[0].isalnum()
         }
         ch.globals.update(imported.globals)
+        Runtime.frozen |= imported_constants
     else:
         for obj in objects:
+            if obj in imported_constants:
+                Runtime.frozen.add(obj)
             ch.globals[obj] = imported.globals[obj]
 
 
