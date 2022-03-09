@@ -479,23 +479,14 @@ class Transpiler:
                 )
                 variable = "".join(self.ch.line[start:stop])
                 self.ch.line += [
-                    ";verify_type({0});verify_mutable('{0}')".format(
-                        variable
-                    )
+                    f";verify_type({variable});verify_mutable({variable})"
                 ]
                 if self.ch.switches["const"]:
                     self.ch.line += [
-                        f";Runtime.frozen += ['{variable}']"
-                        f";freeze({variable})"
+                        f";Runtime.frozen.add('{variable}')"
+                        f";{variable} = freeze({variable})"
                     ]
                     self.ch.switches["const"] = False
-            if (
-                self.ch.line[start:]
-                and self.ch.line[start:][0] == "assert "
-                and ":" in self.ch.line
-            ):
-                arr_idx = len(self.ch.line) - self.ch.line[::-1].index(":") - 1
-                self.ch.line[arr_idx] = ","
             self.transpile_token(None)
         elif token == Token.STDOUT:
             try:
