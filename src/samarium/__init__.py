@@ -25,7 +25,7 @@ def main(debug: bool = False):
     if arg in OPTIONS:
         q = 0
         if arg in OPTIONS[:2]:
-            print("Samarium 0.2.0-alpha.1")
+            print("Samarium 0.2.0-alpha.2")
         elif arg in OPTIONS[2:4]:
             q = run(f"=> argv * {{{sys.argv[2]}!;}}", MAIN, debug)
         elif arg in OPTIONS[4:]:
