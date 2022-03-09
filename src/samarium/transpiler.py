@@ -406,7 +406,7 @@ class Transpiler:
                 ):
                     return f"readline({self.ch.line.pop()})"
             return "readline()"
-        elif token == Token.INSTANCE and self.ch.switches["class"]:
+        elif token == Token.INSTANCE and not self.ch.switches["class"]:
             handle_exception(
                 SamariumSyntaxError(
                     "instance operator cannot be used outside a class"
