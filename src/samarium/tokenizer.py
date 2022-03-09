@@ -1,9 +1,8 @@
 from contextlib import suppress
 from .exceptions import SamariumSyntaxError, handle_exception
 from .tokens import Token
-from typing import List, Tuple, Union
+from typing import Union
 from . import handlers
-import sys
 
 Tokenlike = Union[Token, str, int]
 
@@ -37,7 +36,7 @@ def tokenize(program: str) -> list[Tokenlike]:
     scroller = handlers.Scroller(exclude_backticks(program))
     string = False
     temp = ""
-    tokens: List[Tokenlike] = []
+    tokens: list[Tokenlike] = []
 
     while scroller.program:
 
