@@ -183,7 +183,7 @@ class Transpiler:
                 self.ch.line += [f".{method}("]
                 for t in tokens:
                     self.transpile_token(t)
-                self.ch.line += [")" if method == "_getItem_" else ","]
+                self.ch.line += [",)"[method == "_getItem_"]]
             # <<>>
             else:
                 self.ch.line += [
