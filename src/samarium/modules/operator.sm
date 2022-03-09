@@ -6,6 +6,7 @@ equals a b * { * a :: b; }
 greaterThanOrEqual a b * { * a >: b; }
 greaterThan a b * { * a > b; }
 has a b * { * b ->? a; }
+hash a * { * a##; }
 lessThanOrEqual a b * { * a <: b; }
 lessThan a b * { * a < b; }
 mod a b * { * a --- b; }
