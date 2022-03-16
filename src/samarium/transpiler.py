@@ -479,7 +479,7 @@ class Transpiler:
                 )
                 variable = "".join(self.ch.line[start:stop])
                 self.ch.line += [
-                    f";verify_type({variable});verify_mutable({variable})"
+                    f";verify_type({variable});verify_mutable('{variable}')"
                 ]
                 if self.ch.switches["const"]:
                     self.ch.line += [
