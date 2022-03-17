@@ -414,7 +414,7 @@ class Transpiler:
         ):
             return "entry "
         elif token == Token.EXIT:
-            self.ch.line += ["exit(("]
+            self.ch.line += ["sysexit(("]
             self.ch.switches["exit"] = True
         elif token == Token.SLEEP:
             self.ch.line += ["sleep(("]
