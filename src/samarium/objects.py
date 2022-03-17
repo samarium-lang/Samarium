@@ -14,7 +14,7 @@ def assert_smtype(function: Callable):
         for i in [*args, *kwargs.values()]:
             verify_type(i)
         result = function(*args, **kwargs)
-        if isinstance(result, (Class, Callable)):
+        if isinstance(result, (Class, Callable, Module)):
             return result
         elif isinstance(result, tuple):
             return Array([*result])
@@ -57,7 +57,7 @@ def smhash(obj) -> Integer:
     return Integer(hash(str(hash(obj))))
 
 
-def verify_type(obj: Any, *args):
+def verify_type(obj: Any, *args) -> Class | Callable:
     if args:
         for i in [obj, *args]:
             verify_type(i)
@@ -69,8 +69,7 @@ def verify_type(obj: Any, *args):
         raise SamariumSyntaxError("missing brackets")
     elif isinstance(obj, type(i for i in [])):
         raise SamariumSyntaxError("invalid comprehension")
-    else:
-        raise SamariumTypeError()
+    raise SamariumTypeError
 
 
 class Class:
