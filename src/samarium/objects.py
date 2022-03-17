@@ -53,7 +53,7 @@ def get_repr(obj: Class | Callable) -> str:
     elif callable(obj):
         return obj.__name__
     try:
-    return obj._toString_().value
+        return obj._toString_().value
     except AttributeError:
         return str(obj)
 
@@ -806,13 +806,13 @@ class File(Class):
         return Null()
 
 
-class Module(Class):
+class Module:
 
-    def _create_(self, name: str, objects: dict[str, Class]):
+    def __init__(self, name: str, objects: dict[str, Class]):
         self.name = name
         self.objects = objects
 
-    def _toString_(self) -> String:
+    def __str__(self) -> String:
         return String(f"module '{self.name}'")
 
     def __getattr__(self, key: str) -> Class:
