@@ -1,15 +1,16 @@
-from . import exceptions
 import os
 import sys
-from contextlib import contextmanager
+
 from datetime import datetime
+from secrets import randbelow
+from time import sleep as _sleep
+
+from . import exceptions
 from .objects import (
     assert_smtype, class_attributes, smhash, verify_type,
     Class, Type, Slice, Null, String, Integer, Module,
     Table, Array, Mode, FileManager, File
 )
-from secrets import randbelow
-from time import sleep as _sleep
 from .tokenizer import tokenize
 from .transpiler import Transpiler, CodeHandler
 from .utils import readfile, silence_stdout, sysexit

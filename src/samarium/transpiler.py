@@ -1,5 +1,7 @@
 from __future__ import annotations
 from contextlib import suppress
+from typing import Any, Optional
+
 from .exceptions import handle_exception, SamariumSyntaxError
 from .tokenizer import Tokenlike
 from .tokens import FILE_IO_TOKENS, Token

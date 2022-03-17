@@ -1,6 +1,11 @@
 from __future__ import annotations
-from contextlib import suppress
+
 from enum import Enum
+from functools import wraps
+from typing import (
+    Any, Callable, IO, Iterator, Tuple
+)
+
 from .exceptions import (
     NotDefinedError, SamariumSyntaxError,
     SamariumTypeError, SamariumValueError

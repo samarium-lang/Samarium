@@ -1,7 +1,9 @@
 import sys
+
 from contextlib import suppress
-from .transpiler import CodeHandler
+
 from .core import run, readfile
+from .transpiler import CodeHandler
 
 MAIN = CodeHandler(globals())
 
