@@ -5,12 +5,7 @@ from .exceptions import (
     NotDefinedError, SamariumSyntaxError,
     SamariumTypeError, SamariumValueError
 )
-from functools import wraps
-from typing import (
-    Any, Callable, Iterator, TypeVar, Tuple
-)
-
-T = TypeVar("T")
+from .utils import run_with_backup
 
 
 def assert_smtype(function: Callable):
@@ -47,20 +42,15 @@ def class_attributes(cls):
     return cls
 
 
-def get_repr(obj: Class) -> str:
-    if type(obj) is String:
+def get_repr(obj: Class | Callable) -> str:
+    if isinstance(obj, String):
         return f'"{obj._toString_()}"'
+    elif callable(obj):
+        return obj.__name__
+    try:
     return obj._toString_().value
-
-
-def run_with_backup(
-    main: Callable[..., T],
-    backup: Callable[..., T],
-    *args
-) -> T:
-    with suppress(NotDefinedError):
-        return main(*args)
-    return backup(*args)
+    except AttributeError:
+        return str(obj)
 
 
 def smhash(obj) -> Integer:

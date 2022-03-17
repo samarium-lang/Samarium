@@ -12,6 +12,7 @@ from secrets import randbelow
 from time import sleep as _sleep
 from .tokenizer import tokenize
 from .transpiler import Transpiler, CodeHandler
+from .utils import readfile, silence_stdout, sysexit
 
 MODULE_NAMES = [
     "collections",
@@ -48,13 +49,6 @@ def freeze(obj: Class) -> Class:
 
 
 def import_module(data: str, ch: CodeHandler):
-
-    @contextmanager
-    def silence_stdout():
-        stdout = sys.stdout
-        sys.stdout = open(os.devnull, "w")
-        yield
-        sys.stdout = stdout
 
     module_import = False
     try:
@@ -121,11 +115,6 @@ def random(start: Integer, end: Integer) -> Integer:
     return Integer(
         randbelow(int(end) - int(start) + 1) + int(start)
     )
-
-
-def readfile(path: str) -> str:
-    with open(path) as f:
-        return f.read()
 
 
 def readline(prompt: str = "") -> String:

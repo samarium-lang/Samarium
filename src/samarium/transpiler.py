@@ -2,18 +2,10 @@ from __future__ import annotations
 from contextlib import suppress
 from .exceptions import handle_exception, SamariumSyntaxError
 from .tokenizer import Tokenlike
-from .tokens import FILE_IO_TOKENS, OPEN_TOKENS, CLOSE_TOKENS, Token
-from typing import Any, Optional
+from .tokens import FILE_IO_TOKENS, Token
+from .utils import match_brackets
 
 Transpilable = Optional[Tokenlike]
-
-OPEN_TO_CLOSE = {
-    Token.BRACKET_OPEN: Token.BRACKET_CLOSE,
-    Token.BRACE_OPEN: Token.BRACE_CLOSE,
-    Token.PAREN_OPEN: Token.PAREN_CLOSE,
-    Token.TABLE_OPEN: Token.TABLE_CLOSE,
-    Token.SLICE_OPEN: Token.SLICE_CLOSE
-}
 
 
 class CodeHandler:
@@ -66,24 +58,15 @@ class Transpiler:
             array = array[x - 1:]
         return out + ["".join(array)]
 
-    def match_brackets(self):
-        stack = []
-        msg = None
-        for token in self.tokens:
-            if token in OPEN_TOKENS:
-                stack.append(token)
-            elif token in CLOSE_TOKENS:
-                if OPEN_TO_CLOSE[stack[-1]] == token:
-                    stack.pop(-1)
-                else:
-                    msg = f'missing opening bracket for "{token.value}"'
-        if stack:
-            msg = f'missing closing bracket for "{stack[-1].value}"'
-        if msg:
-            handle_exception(SamariumSyntaxError(msg))
-
     def transpile(self):
-        self.match_brackets()
+        error, data = match_brackets(self.tokens)
+        if error:
+            raise SamariumSyntaxError(
+                {
+                    -1: 'missing closing bracket for "{}"',
+                    +1: 'missing opening bracket for "{}"'
+                }[error].format(data)
+            )
         for index, token in enumerate(self.tokens):
             self.transpile_token(token, index)
         return self.ch
