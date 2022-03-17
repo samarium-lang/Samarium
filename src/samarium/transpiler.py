@@ -265,9 +265,6 @@ class Transpiler:
         self,
         tokens: list[str]
     ) -> str:
-        def remove_prefix(s: str, prefix: str) -> str:
-            return s[len(prefix):] if s.startswith(prefix) else s
-
         raw_tokens = [token for token in tokens if token in FILE_IO_TOKENS]
         if len(raw_tokens) > 2:
             handle_exception(SamariumSyntaxError(
@@ -300,15 +297,15 @@ class Transpiler:
             ))
         if not after_token:
             handle_exception(SamariumSyntaxError("missing file path"))
-        if remove_prefix(raw_token.name, "FILE_") in open_keywords:
+        if raw_token.name.removeprefix("FILE_") in open_keywords:
             return open_template.format(
                 "open",
-                remove_prefix(raw_token.name, "FILE_")
+                raw_token.name.removeprefix("FILE_")
             )
-        elif remove_prefix(raw_token.name, "FILE_BINARY_") in open_keywords:
+        elif raw_token.name.removeprefix("FILE_BINARY_") in open_keywords:
             return open_template.format(
                 "open_binary",
-                remove_prefix(raw_token.name, "FILE_BINARY_")
+                raw_token.name.removeprefix("FILE_BINARY_")
             )
         elif "QUICK" in raw_token.name:
             if "READ" in raw_token.name:

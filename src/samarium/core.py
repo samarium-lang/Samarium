@@ -142,7 +142,7 @@ def run(code: str, ch: CodeHandler, debug: bool = False) -> CodeHandler:
         if debug:
             print(code)
         Runtime.import_level += 1
-        ch.globals = {**globals(), **ch.globals}
+        ch.globals = globals() | ch.globals
         exec(code, ch.globals)
         Runtime.import_level -= 1
     except Exception as e:

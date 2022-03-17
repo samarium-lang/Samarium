@@ -602,7 +602,7 @@ class Table(Class):
         return Integer(self.value == other.value)
 
     def _add_(self, other: Table) -> Table:
-        return Table({**self.value, **other.value})
+        return Table(self.value | other.value)
 
     def _addAssign_(self, other: Table) -> Table:
         self.value.update(other.value)
