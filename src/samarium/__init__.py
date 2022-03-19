@@ -3,6 +3,7 @@ import sys
 from contextlib import suppress
 
 from .core import run, readfile
+from .shell import run_shell
 from .transpiler import CodeHandler
 
 MAIN = CodeHandler(globals())
@@ -22,7 +23,7 @@ def main(debug: bool = False):
     try:
         arg = sys.argv[1]
     except IndexError:
-        arg = "-h"
+        return run_shell(debug)
 
     if arg in OPTIONS:
         q = 0
