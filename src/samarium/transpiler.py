@@ -10,6 +10,10 @@ from .utils import match_brackets
 Transpilable = Optional[Tokenlike]
 
 
+def throw_syntax(message: str):
+    handle_exception(SamariumSyntaxError(message))
+
+
 class CodeHandler:
     def __init__(self, globals: dict[str, Any]):
         self.class_indent = []
@@ -241,7 +245,7 @@ class Transpiler:
                     self.transpile_token(i)
                 self.ch.line += [")" + "),"[assign]]
         else:
-            handle_exception(SamariumSyntaxError("invalid slice syntax"))
+            throw_syntax("invalid slice syntax")
         self.slice_tokens = []
         self.slicing = False
         return assign
@@ -252,9 +256,7 @@ class Transpiler:
     ) -> str:
         raw_tokens = [token for token in tokens if token in FILE_IO_TOKENS]
         if len(raw_tokens) > 2:
-            handle_exception(SamariumSyntaxError(
-                "can only perform one file operation at a time"
-            ))
+            throw_syntax("can only perform one file operation at a time")
         raw_token = raw_tokens[0]
         raw_token_index = tokens.index(raw_token)
         before_token = "".join(tokens[:raw_token_index])
@@ -272,16 +274,12 @@ class Transpiler:
 
         if raw_token == Token.FILE_CREATE:
             if before_token:
-                handle_exception(SamariumSyntaxError(
-                    "file create operator must start the line"
-                ))
+                throw_syntax("file create operator must start the line")
             return f"FileManager.create({after_token})"
         if not before_token:
-            handle_exception(SamariumSyntaxError(
-                "missing variable for file operation"
-            ))
+            throw_syntax("missing variable for file operation")
         if not after_token:
-            handle_exception(SamariumSyntaxError("missing file path"))
+            throw_syntax("missing file path")
         if raw_token.name.removeprefix("FILE_") in open_keywords:
             return open_template.format(
                 "open",
@@ -389,14 +387,7 @@ class Transpiler:
                     return f"readline({self.ch.line.pop()})"
             return "readline()"
         elif token == Token.INSTANCE and not self.ch.switches["class"]:
-            handle_exception(
-                SamariumSyntaxError(
-                    "instance operator cannot be used outside a class"
-                )
-            )
-        elif token == Token.CONST:
-            if self.is_first_token():
-                self.ch.switches["const"] = True
+            throw_syntax("instance operator cannot be used outside a class")
         elif token == Token.ASSIGN:
             if (
                 self.ch.line_tokens.count(token) > 1
@@ -404,9 +395,7 @@ class Transpiler:
                     index:self.tokens[index:].index(Token.BRACE_OPEN)
                 ]
             ):
-                handle_exception(
-                    SamariumSyntaxError("cannot use multiple assignment")
-                )
+                throw_syntax("cannot use multiple assignment")
             return out
         elif (
             token == Token.MAIN and
@@ -425,7 +414,7 @@ class Transpiler:
                 not self.ch.switches["random"]
                 and Token.TO not in self.random_tokens
             ):
-                handle_exception(SamariumSyntaxError("missing '->' in random"))
+                throw_syntax("missing '->' in random")
             return out
         elif token == Token.END:
             start = self.ch.indent > 0
@@ -571,9 +560,7 @@ class Transpiler:
             return f"@class_attributes\n{'    ' * self.ch.indent}class "
         elif token == Token.ASSERT:
             if self.ch.line[self.ch.indent > 0:]:
-                handle_exception(SamariumSyntaxError(
-                    "# can only start a statement"
-                ))
+                throw_syntax("# can only start a statement")
             else:
                 self.ch.line += ["assert "]
         else:
