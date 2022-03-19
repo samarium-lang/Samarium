@@ -147,8 +147,15 @@ def run(
     return ch
 
 
-def sleep(time: int):
-    _sleep(time / 1000)
+def sleep(*args: Integer):
+    if not args:
+        raise exc.SamariumTypeError("no argument provided for ,.,")
+    if len(args) > 1:
+        raise exc.SamariumTypeError(",., only takes one argument")
+    time, = args
+    if not isinstance(time.value, int):
+        raise exc.SamariumTypeError(",., only accepts integers")
+    _sleep(time.value / 1000)
 
 
 def throw(message: str = ""):
