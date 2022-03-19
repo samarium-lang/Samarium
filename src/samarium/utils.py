@@ -4,7 +4,7 @@ import sys
 from contextlib import contextmanager, suppress
 from typing import Any, Callable, TypeVar
 
-from .exceptions import NotDefinedError
+from .exceptions import NotDefinedError, SamariumTypeError
 from .tokenizer import Tokenlike
 from .tokens import Token, OPEN_TOKENS, CLOSE_TOKENS
 
@@ -59,10 +59,12 @@ def silence_stdout():
     sys.stdout = stdout
 
 
-def sysexit(code: Any = 0):
-    with suppress(AttributeError):
-        code = code.value
-    code = code or 0
-    if not isinstance(code, (bool, int, float)):
-        code = bool(code)
+def sysexit(*args: Any):
+    if len(args) > 1:
+        raise SamariumTypeError("=>! only takes one argument")
+    if not args:
+        code = 0
+    code, = args
+    if not isinstance(code.value, int):
+        raise SamariumTypeError("=>! only accepts integers")
     os._exit(int(code))
