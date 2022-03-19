@@ -29,7 +29,7 @@ def main(debug: bool = False):
         if arg in OPTIONS[:2]:
             print("Samarium 0.2.0-alpha.2")
         elif arg in OPTIONS[2:4]:
-            q = run(f"=> argv * {{{sys.argv[2]}!;}}", MAIN, debug)
+            q = run(f"=> argv * {{\n\t{sys.argv[2]}!;\n}}", MAIN, debug)
         elif arg in OPTIONS[4:]:
             print(HELP)
         sys.exit(q)
