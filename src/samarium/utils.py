@@ -62,5 +62,10 @@ def silence_stdout():
     sys.stdout = stdout
 
 
-def sysexit(code: int = 0):
-    os._exit(code)
+def sysexit(code: Any = 0):
+    with suppress(AttributeError):
+        code = code.value
+    code = code or 0
+    if not isinstance(code, (bool, int, float)):
+        code = bool(code)
+    os._exit(int(code))
