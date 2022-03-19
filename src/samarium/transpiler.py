@@ -46,23 +46,16 @@ class Transpiler:
         )
 
     def groupnames(self, array: list[str]) -> list[str]:
-        def find_2nd(array: list[str]) -> int:
-            x = 0
-            for i, c in enumerate(array):
-                x += c == "="
-                if x == 2:
-                    return i
-            return 0
-        try:
-            ind = array.index("=") - 1
-            out = array[:ind]
-            array = array[ind:]
-        except ValueError:
-            return array
-        while x := find_2nd(array):
-            out += ["".join(array[:x - 1])]
-            array = array[x - 1:]
-        return out + ["".join(array)]
+        out = []
+        for item in array:
+            if item == "for":
+                out.insert(-1, "*")
+            elif item == "if":
+                out += ["=MISSING"]
+            else:
+                out += [item]
+
+        return out
 
     def transpile(self):
         error, data = match_brackets(self.tokens)
