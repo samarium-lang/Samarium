@@ -74,7 +74,7 @@ def verify_type(obj: Any, *args) -> Class | Callable:
         raise SamariumSyntaxError("missing brackets")
     elif isinstance(obj, type(i for i in [])):
         raise SamariumSyntaxError("invalid comprehension")
-    raise SamariumTypeError
+    raise SamariumTypeError(f"unknown type: {type(obj).__name__}")
 
 
 class Class:
