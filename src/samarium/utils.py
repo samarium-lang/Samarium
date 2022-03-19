@@ -2,13 +2,9 @@ import os
 import sys
 
 from contextlib import contextmanager, suppress
-from typing import Callable, TypeVar
+from typing import Any, Callable, TypeVar
 
-from .exceptions import (
-    NotDefinedError,
-    # SamariumTypeError,
-    # SamariumSyntaxError
-)
+from .exceptions import NotDefinedError
 from .tokenizer import Tokenlike
 from .tokens import Token, OPEN_TOKENS, CLOSE_TOKENS
 
