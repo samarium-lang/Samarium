@@ -78,7 +78,6 @@ def verify_type(obj: Any, *args) -> Class | Callable:
 
 
 class Class:
-    frozen = False
 
     def __init__(self, *args: Any, **kwargs: Any):
         self._create_(*args, **kwargs)
@@ -206,11 +205,6 @@ class Class:
             lambda x: Integer(self._greaterThan_(x) or self._equals_(x)),
             other
         )
-
-    def __setattr__(self, key: str, value: Any):
-        if self.frozen:
-            raise SamariumTypeError("object is immutable")
-        super().__setattr__(key, value)
 
     @property
     def type(self) -> Type:

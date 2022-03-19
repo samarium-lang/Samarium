@@ -24,9 +24,9 @@ class CodeHandler:
         self.locals = {}
         self.globals = globals
         self.switches = {k: False for k in {
-            "class_def", "class", "const", "exit",
-            "function", "import", "multiline_comment",
-            "newline", "random", "sleep", "slice"
+            "class_def", "class", "exit", "function",
+            "import", "multiline_comment", "newline",
+            "random", "sleep", "slice"
         }}
         self.all_tokens = []
 
@@ -450,14 +450,8 @@ class Transpiler:
                 )
                 variable = "".join(self.ch.line[start:stop])
                 self.ch.line += [
-                    f";verify_type({variable});verify_mutable('{variable}')"
+                    f";verify_type({variable})"
                 ]
-                if self.ch.switches["const"]:
-                    self.ch.line += [
-                        f";Runtime.frozen.add('{variable}')"
-                        f";{variable} = freeze({variable})"
-                    ]
-                    self.ch.switches["const"] = False
             self.transpile_token(None)
         elif token == Token.STDOUT:
             try:

@@ -5,7 +5,7 @@ from datetime import datetime
 from secrets import randbelow
 from time import sleep as _sleep
 
-from . import exceptions
+from . import exceptions as exc
 from .objects import (
     assert_smtype, class_attributes, smhash, verify_type,
     Class, Type, Slice, Null, String, Integer, Module,
@@ -28,7 +28,6 @@ MODULE_NAMES = [
 
 
 class Runtime:
-    frozen: set[str] = set()
     import_level = 0
 
 
@@ -39,14 +38,6 @@ def dtnow() -> Array:
     tz = [now[3] - utcnow_tl[3], now[4] - utcnow_tl[4]]
     utcnow_tl = utcnow_tl[:-3] + [utcnow.microsecond // 1000] + tz
     return Array([Integer(i) for i in utcnow_tl])
-
-
-def freeze(obj: Class) -> Class:
-    def throw_immutable(*_):
-        raise exceptions.SamariumTypeError("object is immutable")
-    obj._setItem_ = throw_immutable
-    obj.frozen = True
-    return obj
 
 
 def import_module(data: str, ch: CodeHandler):
@@ -64,7 +55,7 @@ def import_module(data: str, ch: CodeHandler):
 
     if f"{name}.sm" not in os.listdir(path):
         if name not in MODULE_NAMES:
-            raise exceptions.SamariumImportError(name)
+            raise exc.SamariumImportError(name)
         path = os.path.join(
             os.path.dirname(__file__),
             "modules"
@@ -73,7 +64,6 @@ def import_module(data: str, ch: CodeHandler):
     with silence_stdout():
         imported = run(readfile(f"{path}/{name}.sm"), CodeHandler(globals()))
 
-    imported_constants = imported.globals["Runtime"].frozen
     if module_import:
         ch.globals.update({f"_{name}_": Module(name, imported.globals)})
     elif objects == ["*"]:
@@ -82,11 +72,8 @@ def import_module(data: str, ch: CodeHandler):
             if not k.startswith("__") and not k[0].isalnum()
         }
         ch.globals.update(imported.globals)
-        Runtime.frozen |= imported_constants
     else:
         for obj in objects:
-            if obj in imported_constants:
-                Runtime.frozen.add(obj)
             ch.globals[obj] = imported.globals[obj]
 
 
@@ -99,7 +86,7 @@ def print_safe(*args):
     ]
     types = [type(i) for i in args]
     if any(i in (tuple, type(i for i in [])) for i in types):
-        raise exceptions.SamariumSyntaxError(
+        raise exc.SamariumSyntaxError(
             "missing brackets"
             if tuple in types else
             "invalid comprehension"
@@ -143,7 +130,7 @@ def run(
         exec(code, ch.globals)
         Runtime.import_level -= 1
     except Exception as e:
-        exceptions.handle_exception(e)
+        exc.handle_exception(e)
     return ch
 
 
@@ -159,9 +146,4 @@ def sleep(*args: Integer):
 
 
 def throw(message: str = ""):
-    raise exceptions.SamariumError(message)
-
-
-def verify_mutable(string: str):
-    if string in Runtime.frozen:
-        raise exceptions.SamariumTypeError("object is immutable")
+    raise exc.SamariumError(message)
