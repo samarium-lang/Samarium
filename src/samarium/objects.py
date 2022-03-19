@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from functools import wraps
+from secrets import choice
 from typing import (
     Any, Callable, IO, Iterator, Tuple
 )
@@ -331,6 +332,9 @@ class Class:
     def _cast_(self):
         raise NotDefinedError(self, "cast")
 
+    def _random_(self):
+        raise NotDefinedError(self, "random")
+
 
 class Type(Class):
 
@@ -364,7 +368,12 @@ class Slice(Class):
         self.start = start
         self.stop = stop
         self.step = step
-        self.value = slice(start.value, stop.value, step.value)
+        tup = (start.value, stop.value, step.value)
+        self.value = slice(*tup)
+        self.range = range(*tup)
+
+    def _random_(self) -> Integer:
+        return Integer(choice(self.range))
 
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == Null()
@@ -403,7 +412,7 @@ class String(Class):
             )
         return Integer(ord(self.value))
 
-    def _create_(self, value: str):
+    def _create_(self, value: Any):
         self.value = str(value)
 
     def _has_(self, element: String) -> Integer:
@@ -411,6 +420,9 @@ class String(Class):
 
     def _iterate_(self) -> Array:
         return Array([String(char) for char in self.value])
+
+    def _random_(self) -> String:
+        return String(choice(self.value))
 
     def _special_(self) -> Integer:
         return Integer(len(self.value))
@@ -461,8 +473,17 @@ class Integer(Class):
     def _hash_(self) -> Integer:
         return smhash(self.value)
 
-    def _create_(self, value: int):
+    def _create_(self, value: Any):
         self.value = int(value)
+
+    def _random_(self) -> Integer:
+        if not self.value:
+            return self
+        elif self.value > 0:
+            range_ = range(self.value)
+        else:
+            range_ = range(self.value, 0)
+        return Integer(choice(range_))
 
     def _toBit_(self) -> Integer:
         return Integer(bool(self.value))
@@ -583,6 +604,11 @@ class Table(Class):
     def _iterate_(self) -> Array:
         return Array([*self.value.keys()])
 
+    def _random_(self) -> Any:
+        if not self.value:
+            raise SamariumValueError("table is empty")
+        return choice([*self.value.keys()])
+
     def _has_(self, element: Any) -> Integer:
         return Integer(element in self.value)
 
@@ -625,6 +651,11 @@ class Array(Class):
 
     def _iterate_(self) -> Array:
         return self
+
+    def _random_(self) -> Any:
+        if not self.value:
+            raise SamariumValueError("array is empty")
+        return choice(self.value)
 
     def _has_(self, element: Any) -> Integer:
         return Integer(element in self.value)

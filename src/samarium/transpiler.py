@@ -26,7 +26,7 @@ class CodeHandler:
         self.switches = {k: False for k in {
             "class_def", "class", "exit", "function",
             "import", "multiline_comment", "newline",
-            "random", "sleep", "slice"
+            "sleep", "slice"
         }}
         self.all_tokens = []
 
@@ -38,7 +38,6 @@ class Transpiler:
         self.set_slice = 0
         self.slicing = False
         self.slice_tokens = []
-        self.random_tokens = []
 
     def is_first_token(self) -> bool:
         return not self.ch.line or (
@@ -100,9 +99,6 @@ class Transpiler:
                 and self.tokens[index - 1] == Token.SLICE_CLOSE
             ):
                 return
-
-        if self.ch.switches["random"]:
-            self.random_tokens += [token]
 
         if self.ch.switches["newline"]:
             self.ch.code += ["".join(self.ch.line)]
@@ -368,8 +364,7 @@ class Transpiler:
             Token.HASH: "._hash_()",
             Token.TYPE: ".type",
             Token.PARENT: ".parent",
-            Token.CAST: "._cast_()",
-            Token.RANDOM: ")" if self.ch.switches["random"] else "random("
+            Token.CAST: "._cast_()"
         }.get(token, 0)
         if token == Token.STDIN:
             with suppress(IndexError):
@@ -404,14 +399,6 @@ class Transpiler:
         elif token == Token.SLEEP:
             self.ch.line += ["sleep("]
             self.ch.switches["sleep"] = True
-        elif token == Token.RANDOM:
-            self.ch.switches["random"] = not self.ch.switches["random"]
-            if (
-                not self.ch.switches["random"]
-                and Token.TO not in self.random_tokens
-            ):
-                throw_syntax("missing '->' in random")
-            return out
         elif token == Token.END:
             start = self.ch.indent > 0
             if any(token in FILE_IO_TOKENS for token in self.ch.line):
@@ -498,18 +485,16 @@ class Transpiler:
                 self.ch.line += ["continue"]
                 self.transpile_token(Token.END)
                 return 1
-            elif self.ch.switches["random"]:
-                return ","
             return ":"
         else:
             return out
         return 1
 
     def transpile_error_handling(self, token: Transpilable, _) -> str | int:
-        out = {
-            Token.TRY: "try",
-            Token.CATCH: "except Exception"
-        }.get(token, 0)
+        if token == Token.CATCH:
+            return "except Exception"
+        if token == Token.TRY:
+            return "try" if self.is_first_token() else "._random_()"
         if token == Token.THROW:
             x = bool(self.ch.indent)
             self.ch.line = [
@@ -517,7 +502,7 @@ class Transpiler:
                 *self.ch.line[x:], ")"
             ]
             return 1
-        return out
+        return 0
 
     def transpile_misc(self, token: Transpilable, _) -> str | int:
         if token == Token.FUNCTION:

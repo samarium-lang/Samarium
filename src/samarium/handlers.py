@@ -130,7 +130,7 @@ def tilde(scroller: Scroller) -> Token:
 
 
 def caret(scroller: Scroller) -> Token:
-    return (Token.XOR, Token.RANDOM)[scroller.next() == "^"]
+    return (Token.BINXOR, Token.XOR)[scroller.next() == "^"]
 
 
 def comma(scroller: Scroller) -> Token:

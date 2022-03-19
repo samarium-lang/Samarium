@@ -2,7 +2,6 @@ import os
 import sys
 
 from datetime import datetime
-from secrets import randbelow
 from time import sleep as _sleep
 
 from . import exceptions as exc
@@ -97,12 +96,6 @@ def print_safe(*args):
     elif not args or types[0] is Null:
         return Null()
     return args[0]
-
-
-def random(start: Integer, end: Integer) -> Integer:
-    return Integer(
-        randbelow(int(end) - int(start) + 1) + int(start)
-    )
 
 
 def readline(prompt: str = "") -> String:

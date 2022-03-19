@@ -24,12 +24,13 @@ class Token(Enum):
     IN = "->?"
     NOT = "~~"
     OR = "||"
+    XOR = "^^"  # TODO
 
     # Bitwise
     BINAND = "&"
     BINNOT = "~"
     BINOR = "|"
-    XOR = "^"
+    BINXOR = "^"
 
     # Parens, Brackets and Braces
     BRACKET_OPEN = "["
@@ -106,7 +107,6 @@ class Token(Enum):
     DTNOW = "@@"
     END = ";"
     NULL = "_"
-    RANDOM = "^^"
     SEP = ","
     SLEEP = ",.,"
     STRING = '"'
