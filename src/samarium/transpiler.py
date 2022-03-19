@@ -60,7 +60,7 @@ class Transpiler:
     def transpile(self):
         error, data = match_brackets(self.tokens)
         if error:
-            raise SamariumSyntaxError(
+            throw_syntax(
                 {
                     -1: 'missing closing bracket for "{}"',
                     +1: 'missing opening bracket for "{}"'
