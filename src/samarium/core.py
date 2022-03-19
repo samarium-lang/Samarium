@@ -132,9 +132,9 @@ def run(
 
     code = "\n".join(Transpiler(tokenize(code), ch).transpile().code)
     if load_template:
-    code = readfile(
-        f"{os.path.dirname(__file__)}/template.py"
-    ).replace("{{ CODE }}", code)
+        code = readfile(
+            f"{os.path.dirname(__file__)}/template.py"
+        ).replace("{{ CODE }}", code)
     try:
         if debug:
             print(code)
