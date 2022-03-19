@@ -381,6 +381,9 @@ class Transpiler:
             return "readline()"
         elif token == Token.INSTANCE and not self.ch.switches["class"]:
             throw_syntax("instance operator cannot be used outside a class")
+        elif token == Token.DEFAULT:
+            template = " = {} if {} is not MISSING else "
+            self.ch.line += [template.format("".join(self.ch.line).strip())]
         elif token == Token.ASSIGN:
             if (
                 self.ch.line_tokens.count(token) > 1
