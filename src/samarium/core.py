@@ -117,9 +117,16 @@ def readline(prompt: str = "") -> String:
     return String(input(prompt))
 
 
-def run(code: str, ch: CodeHandler, debug: bool = False) -> CodeHandler:
+def run(
+    code: str,
+    ch: CodeHandler,
+    debug: bool = False,
+    *,
+    load_template: bool = True
+) -> CodeHandler:
 
     code = "\n".join(Transpiler(tokenize(code), ch).transpile().code)
+    if load_template:
     code = readfile(
         f"{os.path.dirname(__file__)}/template.py"
     ).replace("{{ CODE }}", code)
