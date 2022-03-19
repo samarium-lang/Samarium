@@ -8,6 +8,7 @@ from .exceptions import NotDefinedError
 from .tokenizer import Tokenlike
 from .tokens import Token, OPEN_TOKENS, CLOSE_TOKENS
 
+__version__ = "0.2.0-alpha.3"
 
 T = TypeVar("T")
 

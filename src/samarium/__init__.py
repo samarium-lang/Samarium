@@ -5,6 +5,7 @@ from contextlib import suppress
 from .core import run, readfile
 from .shell import run_shell
 from .transpiler import CodeHandler
+from .utils import __version__
 
 MAIN = CodeHandler(globals())
 
@@ -28,7 +29,7 @@ def main(debug: bool = False):
     if arg in OPTIONS:
         q = 0
         if arg in OPTIONS[:2]:
-            print("Samarium 0.2.0-alpha.2")
+            print(f"Samarium {__version__}")
         elif arg in OPTIONS[2:4]:
             q = run(f"=> argv * {{\n\t{sys.argv[2]}!;\n}}", MAIN, debug)
         elif arg in OPTIONS[4:]:

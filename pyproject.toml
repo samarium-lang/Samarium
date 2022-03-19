@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "samarium"
-version = "0.2.0-alpha.2"
+version = "0.2.0-alpha.3"
 description = "A dynamic, interpreted language transpiled to Python"
 authors = ["trag1c <trag1cdev@yahoo.com>"]
 license = "MIT"
