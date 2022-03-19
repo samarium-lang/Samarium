@@ -446,7 +446,7 @@ class Transpiler:
             if self.ch.switches["exit"] or self.ch.switches["sleep"]:
                 if self.ch.line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
                     self.ch.line += ["Integer(0)"]
-                self.ch.line += [").value)"]
+                self.ch.line += ["))"]
                 if self.ch.switches["exit"]:
                     self.ch.switches["exit"] = False
                 else:
