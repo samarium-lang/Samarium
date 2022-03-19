@@ -403,10 +403,10 @@ class Transpiler:
         ):
             return "entry "
         elif token == Token.EXIT:
-            self.ch.line += ["sysexit(("]
+            self.ch.line += ["sysexit("]
             self.ch.switches["exit"] = True
         elif token == Token.SLEEP:
-            self.ch.line += ["sleep(("]
+            self.ch.line += ["sleep("]
             self.ch.switches["sleep"] = True
         elif token == Token.RANDOM:
             self.ch.switches["random"] = not self.ch.switches["random"]
@@ -435,7 +435,7 @@ class Transpiler:
             if self.ch.switches["exit"] or self.ch.switches["sleep"]:
                 if self.ch.line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
                     self.ch.line += ["Integer(0)"]
-                self.ch.line += ["))"]
+                self.ch.line += ")"
                 if self.ch.switches["exit"]:
                     self.ch.switches["exit"] = False
                 else:
