@@ -93,10 +93,10 @@ sqrt n * {
     s: n$$ - (/ ? n$$ --- /\ ,, /\);
     .. s >: \ {
         bits: shr(n,s) & //;
-        rmdr: shl(rmdr,/\) | bits;
-        cand: shl(root,/\) | /;
+        rmdr: shl(rmdr, /\) | bits;
+        cand: shl(root, /\) | /;
         bitnext: rmdr >: cand;
-        root: shl(root,/) | bitnext;
+        root: shl(root, /) | bitnext;
         rmdr-: cand ++ bitnext;
         s-: /\;
     }
@@ -109,4 +109,20 @@ shl a b * {
 
 shr a b * {
     * a -- /\ +++ b;
+}
+
+toHex n * {
+    <-string.hexdigits;
+    div: n -- /\\\\;
+    mod: n --- /\\\\;
+    ? ~~ div { * hexdigits<<mod>>; }
+    * toHex(div) + hexdigits<<mod>>;
+}
+
+toOct n * {
+    <-string.octdigits;
+    div: n -- /\\\;
+    mod: n --- /\\\;
+    ? ~~ div { * octdigits<<mod>>; }
+    * toOct(div) + octdigits<<mod>>;
 }
