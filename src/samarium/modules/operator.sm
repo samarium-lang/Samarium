@@ -15,7 +15,12 @@ not a * { * ~a; }
 notEquals a b * { * a ::: b; }
 or a b * { * a | b; }
 power a b * { * a +++ b; }
-random a b * { * ^^a -> b^^; }
+random a b? * {
+    b <> _;
+    ? b :: _ { * a??; }
+    <-iter.range;
+    * range(a, b)??;
+}
 special a * { * a$; }
 subtract a b * { * a - b; }
 toBit a * { * a.toBit(); }

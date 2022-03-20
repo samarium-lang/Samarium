@@ -11,7 +11,8 @@ whitespace: " \t\n\r\f\v";
 
 printable: letters + digits + punctuation + whitespace;
 
-center string length char:" " * {
+center string length char? * {
+    char <> " ";
     ? char$ > / {
         "char has to be of length 1"!!!;
     }
@@ -40,7 +41,8 @@ endsWith string suffix * {
     * string<<-suffix$..>> :: suffix;
 }
 
-split string delimiter:" " * {
+split string delimiter? * {
+    delimiter <> " ";
     ? delimiter ~~ ->? string {
         * [string];
     }
@@ -67,7 +69,8 @@ title string * {
     * join([capitalize(w) ... w ->? split(string)]);
 }
 
-join iterable delimiter:" " * {
+join iterable delimiter? * {
+    delimiter <> "";
     o: "";
     ... e ->? iterable {
         o+: e.toString();
@@ -143,7 +146,8 @@ swapcase string * {
     * out;
 }
 
-pad string length char:" " * {
+pad string length char? * {
+    char <> " ";
     ? char$ > / {
         "char has to be of length 1"!!!;
     }
@@ -151,11 +155,13 @@ pad string length char:" " * {
     * char ++ (length - string$);
 }
 
-leftpad string length char:" " * {
+leftpad string length char? * {
+    char <> " ";
     * pad(string, length, char) + string;
 }
 
-rightpad string length char:" " * {
+rightpad string length char? * {
+    char <> " ";
     * string + pad(string, length, char);
 }
 
@@ -206,7 +212,9 @@ wrap string wrapper * {
     * wrapper + string + wrapper;
 }
 
-replace string replacement count:-/ * {
+replace string replacement count? * {
+
+    count <> -/;
 
     replaceOne string from to * {
         <-iter.find;

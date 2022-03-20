@@ -1,6 +1,7 @@
 @ Stack {
 
-    create size:-/ * {
+    create size? * {
+        size <> -/;
         'stack: [];
         'size: size;
     }
@@ -46,7 +47,8 @@
 
 @ Queue {
 
-    create size:-/ * {
+    create size? * {
+        size <> -/;
         'queue: [];
         'size: size;
     }
@@ -99,7 +101,9 @@
 
 @ Set {
 
-    create items:[] capacity:-/ * {
+    create items? capacity? * {
+        items <> [];
+        capacity <> -/;
         <-iter.find;
         'find: find;
         'items: [i ... i ->? items] ? items ,, [];
@@ -204,7 +208,8 @@
 
 @ Deque {
 
-    create size:-/ * {
+    create size? * {
+        size <> -/;
         'deque: [];
         'size: size;
     }
@@ -262,7 +267,8 @@
 
 @ StaticArray {
 
-    create value type:_ * {
+    create value type? * {
+        type <> _;
         ? value?! :: \?! {
             'value: {{}};
             'size: value;

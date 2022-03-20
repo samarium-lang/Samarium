@@ -97,7 +97,9 @@ enumerate array * {
     * o;
 }
 
-range start stop:_ step:/ * {
+range start stop? step? * {
+    stop <> _;
+    step <> /;
     ? step :: \ {
         "step cannot be zero"!!!;
     }
@@ -169,7 +171,8 @@ zip arrays * {
     * out;
 }
 
-zipLongest array fill:_ * {
+zipLongest array fill? * {
+    fill <> _;
     <-math.max;
     out: [];
     longest: max([i$ ... i ->? arrays]);
