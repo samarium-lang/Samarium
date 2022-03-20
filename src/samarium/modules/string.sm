@@ -109,8 +109,8 @@ toLower string * {
     }
     out: "";
     ... char ->? string {
-        ? char% ->? range(/\\\\\/, /\//\/\) {
-            out+: (char% + /\\\\\)%;
+        ? char% ->? range(/\\`\\\/, /\/`/\/\) {
+            out+: (char% + /\`\\\\)%;
         } ,, {
             out+: char;
         }
@@ -125,8 +125,8 @@ toUpper string * {
     }
     out: "";
     ... char ->? string {
-        ? char% ->? range(//\\\\/, ////\/\) {
-            out+: (char% - /\\\\\)%;
+        ? char% ->? range(//\`\\\/, ///`/\/\) {
+            out+: (char% - /\`\\\\)%;
         } ,, {
             out+: char;
         }
