@@ -51,7 +51,7 @@ def class_attributes(cls):
 def get_repr(obj: Class | Callable) -> str:
     if isinstance(obj, String):
         return f'"{obj._toString_()}"'
-    elif callable(obj):
+    elif hasattr(obj, "__name__"):
         return obj.__name__
     try:
         return obj._toString_().value
