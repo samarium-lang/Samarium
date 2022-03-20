@@ -202,9 +202,10 @@ class Transpiler:
                 self.ch.line += [f",{null})" + "),"[assign]]
         elif Token.WHILE in tokens or Token.SLICE_STEP in tokens:
             self.ch.line += [f".{method}({slce}("]
-            with suppress(ValueError):
-                while_index = tokens.index(Token.WHILE)
-                step_index = tokens.index(Token.SLICE_STEP)
+            def index(lst: list[Tokenlike | str], target: Token) -> int:
+                return lst.index(target) if target in lst else -1
+            while_index = index(tokens, Token.WHILE)
+            step_index = index(tokens, Token.SLICE_STEP)
             # <<start..end**step>>
             if Token.WHILE in tokens and Token.SLICE_STEP in tokens:
                 slices = [
