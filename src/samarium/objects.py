@@ -18,19 +18,12 @@ def assert_smtype(function: Callable):
     @wraps(function)
     def wrapper(*args, **kwargs):
         args = [verify_type(arg) for arg in [*args, *kwargs.values()]]
-        result = function(args)
+        result = function(*args)
         if isinstance(result, (Class, Callable, Module)):
             return result
-        elif isinstance(result, tuple):
-            return Array([*result])
-        elif isinstance(result, type(None)):
-            return Null()
-        elif isinstance(result, bool):
-            return Integer(int(result))
-        else:
-            raise SamariumTypeError(
-                f"invalid return type: {type(result).__name__}"
-            )
+        raise SamariumTypeError(
+            f"invalid return type: {type(result).__name__}"
+        )
     wrapper.type = Type(type(lambda: 0))
     wrapper.parent = Type(Class)
     return wrapper
@@ -71,7 +64,11 @@ def verify_type(obj: Any, *args) -> Class | Callable:
     elif isinstance(obj, (Class, Callable)):
         return obj
     elif isinstance(obj, tuple):
-        raise SamariumSyntaxError("missing brackets")
+        return Array([*obj])
+    elif isinstance(obj, type(None)):
+        return Null()
+    elif isinstance(obj, bool):
+        return Integer(obj)
     elif isinstance(obj, type(i for i in [])):
         raise SamariumSyntaxError("invalid comprehension")
     raise SamariumTypeError(f"unknown type: {type(obj).__name__}")
