@@ -47,12 +47,12 @@ class Transpiler:
     def groupnames(self, array: list[str]) -> list[str]:
         out = []
         for item in array:
-            if item == "for":
+            if item == "for ":
                 out.insert(-1, "*")
-            elif item == "if":
+            elif item == "if ":
                 out += ["=MISSING"]
-            else:
-                out += [item]
+                continue
+            out += [item]
 
         return out
 
@@ -377,7 +377,7 @@ class Transpiler:
         elif token == Token.INSTANCE and not self.ch.switches["class"]:
             throw_syntax("instance operator cannot be used outside a class")
         elif token == Token.DEFAULT:
-            template = " = {} if {} is not MISSING else "
+            template = " = {} if {} is not Runtime.MISSING else "
             self.ch.line += [template.format("".join(self.ch.line).strip())]
         elif token == Token.ASSIGN:
             if (

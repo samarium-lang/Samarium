@@ -28,6 +28,7 @@ MODULE_NAMES = [
 
 class Runtime:
     import_level = 0
+    MISSING = object()
 
 
 def dtnow() -> Array:
