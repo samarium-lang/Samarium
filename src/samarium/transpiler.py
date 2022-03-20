@@ -52,7 +52,7 @@ class Transpiler:
             if item == "for ":
                 out[-1] = f"*{out[-1]}"
             elif item == "if ":
-                out[-1] = f"{out[-1]}=Runtime.MISSING"
+                out[-1] = f"{out[-1]}=MISSING()"
             else:
                 out += [item]
         return out
@@ -378,7 +378,7 @@ class Transpiler:
         elif token == Token.INSTANCE and not self.ch.switches["class"]:
             throw_syntax("instance operator cannot be used outside a class")
         elif token == Token.DEFAULT:
-            template = " = {0} if {0} is not Runtime.MISSING else "
+            template = " = {0} if {0} is not MISSING() else "
             self.ch.line += [template.format("".join(self.ch.line).strip())]
         elif token == Token.ASSIGN:
             if (

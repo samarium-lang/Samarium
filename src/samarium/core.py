@@ -28,7 +28,12 @@ MODULE_NAMES = [
 
 class Runtime:
     import_level = 0
-    MISSING = object()
+
+
+class MISSING:
+
+    def __getattr__(self, _):
+        raise exc.SamariumValueError("cannot use the MISSING object")
 
 
 def dtnow() -> Array:
