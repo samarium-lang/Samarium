@@ -311,11 +311,12 @@ class Transpiler:
             Token.AND: " and ",
             Token.OR: " or ",
             Token.NOT: " not ",
+            Token.XOR: "",  # TODO
             # Bitwise
             Token.BINAND: "&",
             Token.BINOR: "|",
             Token.BINNOT: "~",
-            Token.XOR: "^"
+            Token.BINXOR: "^"
         }.get(token, 0)
 
     def transpile_bracket(self, token: Transpilable, _) -> str | int:
