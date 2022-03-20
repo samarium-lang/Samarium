@@ -18,7 +18,7 @@ def assert_smtype(function: Callable):
     @wraps(function)
     def wrapper(*args, **kwargs):
         args = [verify_type(arg) for arg in [*args, *kwargs.values()]]
-        result = function(*args)
+        result = verify_type(function(*args))
         if isinstance(result, (Class, Callable, Module)):
             return result
         raise SamariumTypeError(
