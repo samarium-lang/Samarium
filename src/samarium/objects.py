@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from functools import wraps
-from secrets import choice
+from secrets import choice, randbelow
 from typing import (
     Any, Callable, IO, Iterator, Tuple
 )
@@ -378,7 +378,7 @@ class Slice(Class):
 class Null(Class):
 
     def _create_(self):
-        self.value = None
+        self.value = "null"
 
     def _toString_(self) -> String:
         return String("null")
@@ -473,13 +473,15 @@ class Integer(Class):
         self.value = int(value)
 
     def _random_(self) -> Integer:
-        if not self.value:
+        v = self.value
+        if not v:
             return self
-        elif self.value > 0:
-            range_ = range(self.value)
+        elif v > 0:
+            return Integer(randbelow(v))
         else:
-            range_ = range(self.value, 0)
-        return Integer(choice(range_))
+            while not (x := randbelow(-v + 1)):
+                pass  # preventing from returning 0
+            return Integer(-x)
 
     def _toBit_(self) -> Integer:
         return Integer(bool(self.value))
