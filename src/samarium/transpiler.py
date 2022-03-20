@@ -47,13 +47,15 @@ class Transpiler:
     def groupnames(self, array: list[str]) -> list[str]:
         out = []
         for item in array:
+            if not item or item.isspace():
+                continue
             if item == "for ":
                 out[-1] = f"*{out[-1]}"
             elif item == "if ":
-                out[-1] = [f"{out[-1]}=Runtime.MISSING"]
+                out[-1] = f"{out[-1]}=Runtime.MISSING"
             else:
                 out += [item]
-        return [i for i in out if i and not i.isspace()]
+        return out
 
     def transpile(self):
         error, data = match_brackets(self.tokens)
