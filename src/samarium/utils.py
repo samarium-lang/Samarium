@@ -62,9 +62,7 @@ def silence_stdout():
 def sysexit(*args: Any):
     if len(args) > 1:
         raise SamariumTypeError("=>! only takes one argument")
-    if not args:
-        code = 0
-    code, = args
-    if not isinstance(code.value, int):
+    code = args[0].value if args else 0
+    if not isinstance(code, int):
         raise SamariumTypeError("=>! only accepts integers")
-    os._exit(int(code))
+    os._exit(code)
