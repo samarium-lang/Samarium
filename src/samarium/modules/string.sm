@@ -76,7 +76,9 @@ join iterable delimiter? * {
         o+: e.toString();
         o+: delimiter;
     }
-    o: o<<..-delimiter$>>;
+    ? delimiter {
+        o: o<<..-delimiter$>>;
+    }
     * o;
 }
 
