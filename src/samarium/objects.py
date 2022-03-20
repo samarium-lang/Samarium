@@ -17,9 +17,8 @@ from .utils import run_with_backup
 def assert_smtype(function: Callable):
     @wraps(function)
     def wrapper(*args, **kwargs):
-        for i in [*args, *kwargs.values()]:
-            verify_type(i)
-        result = function(*args, **kwargs)
+        args = [verify_type(arg) for arg in [*args, *kwargs.values()]]
+        result = function(args)
         if isinstance(result, (Class, Callable, Module)):
             return result
         elif isinstance(result, tuple):
