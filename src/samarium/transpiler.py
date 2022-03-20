@@ -48,13 +48,12 @@ class Transpiler:
         out = []
         for item in array:
             if item == "for ":
-                out.insert(-1, "*")
+                out[-1] = f"*{out[-1]}"
             elif item == "if ":
-                out += ["=MISSING"]
-                continue
-            out += [item]
-
-        return out
+                out[-1] = [f"{out[-1]}=Runtime.MISSING"]
+            else:
+                out += [item]
+        return [i for i in out if i and not i.isspace()]
 
     def transpile(self):
         error, data = match_brackets(self.tokens)
