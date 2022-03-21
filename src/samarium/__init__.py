@@ -42,7 +42,7 @@ def main(debug: bool = False):
         print(f"file not found: {arg}")
     else:
         with suppress(Exception, KeyboardInterrupt):
-            file = "\n".join(file.splitlines()[file.startswith("#!"):])
+            file = "\n".join(file.splitlines()[file.startswith("#!") :])
             run(file, MAIN, debug)
 
 

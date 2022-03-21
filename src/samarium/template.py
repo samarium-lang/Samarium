@@ -14,8 +14,6 @@ if __name__ == "samarium":
         ex = entry(argv)
     else:
         handle_exception(
-            SamariumSyntaxError(
-                "main function should take 0 or 1 arguments"
-            )
+            SamariumSyntaxError("main function should take 0 or 1 arguments")
         )
     sys.exit(ex.value)

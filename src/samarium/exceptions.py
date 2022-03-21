@@ -5,8 +5,7 @@ def handle_exception(exception: Exception):
     name = exception.__class__.__name__
     if name == "SyntaxError":
         exception = SamariumSyntaxError(
-            "invalid syntax at "
-            + hex(int(str(exception).split()[-1][:-1]))
+            f"invalid syntax at {hex(int(str(exception).split()[-1][:-1]))}"
         )
     if name not in {"SyntaxError", "NotDefinedError", "AssertionError"}:
         name = name.removeprefix("Samarium")
@@ -27,10 +26,7 @@ class SamariumError(Exception):
     prefix = ""
 
     def __init__(self, message: str = ""):
-        super().__init__(
-            f"{self.prefix}{message}"
-            if message else self.blank
-        )
+        super().__init__(f"{self.prefix}{message}" if message else self.blank)
 
 
 class SamariumImportError(SamariumError):

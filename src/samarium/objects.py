@@ -3,13 +3,13 @@ from __future__ import annotations
 from enum import Enum
 from functools import wraps
 from secrets import choice, randbelow
-from typing import (
-    Any, Callable, IO, Iterator, Tuple
-)
+from typing import Any, Callable, IO, Iterator, Tuple
 
 from .exceptions import (
-    NotDefinedError, SamariumSyntaxError,
-    SamariumTypeError, SamariumValueError
+    NotDefinedError,
+    SamariumSyntaxError,
+    SamariumTypeError,
+    SamariumValueError,
 )
 from .utils import run_with_backup
 
@@ -21,9 +21,8 @@ def assert_smtype(function: Callable):
         result = verify_type(function(*args))
         if isinstance(result, (Class, Callable, Module)):
             return result
-        raise SamariumTypeError(
-            f"invalid return type: {type(result).__name__}"
-        )
+        raise SamariumTypeError(f"invalid return type: {type(result).__name__}")
+
     wrapper.type = Type(type(lambda: 0))
     wrapper.parent = Type(Class)
     return wrapper
@@ -33,9 +32,7 @@ def class_attributes(cls):
     cls.type = Type(Type)
     parents = [*cls.__bases__]
     cls.parent = (
-        Type(parents[0])
-        if len(parents) == 1
-        else Array([Type(p) for p in parents])
+        Type(parents[0]) if len(parents) == 1 else Array([Type(p) for p in parents])
     )
     return cls
 
@@ -75,7 +72,6 @@ def verify_type(obj: Any, *args) -> Class | Callable:
 
 
 class Class:
-
     def __init__(self, *args: Any, **kwargs: Any):
         self._create_(*args, **kwargs)
 
@@ -171,26 +167,19 @@ class Class:
 
     def __ne__(self, other: Class) -> Integer:
         return run_with_backup(
-            self._notEquals_,
-            lambda x: Integer(not self._equals_(x)),
-            other
+            self._notEquals_, lambda x: Integer(not self._equals_(x)), other
         )
 
     def __lt__(self, other: Class) -> Integer:
         return run_with_backup(
             self._lessThan_,
-            lambda x: Integer(
-                not self._greaterThan_(x)
-                and not self._equals_(x)
-            ),
-            other
+            lambda x: Integer(not self._greaterThan_(x) and not self._equals_(x)),
+            other,
         )
 
     def __le__(self, other: Class) -> Integer:
         return run_with_backup(
-            self._lessThanOrEqual_,
-            lambda x: Integer(not self._greaterThan_(x)),
-            other
+            self._lessThanOrEqual_, lambda x: Integer(not self._greaterThan_(x)), other
         )
 
     def __gt__(self, other: Class) -> Integer:
@@ -200,7 +189,7 @@ class Class:
         return run_with_backup(
             self._greaterThanOrEqual_,
             lambda x: Integer(self._greaterThan_(x) or self._equals_(x)),
-            other
+            other,
         )
 
     @property
@@ -333,7 +322,6 @@ class Class:
 
 
 class Type(Class):
-
     def _create_(self, type_: type):
         self.value = type_
 
@@ -341,13 +329,7 @@ class Type(Class):
         return Integer(self.value == other.value)
 
     def _toString_(self) -> String:
-        return String(
-            self
-            .value
-            .__name__
-            .strip("_")
-            .capitalize()
-        )
+        return String(self.value.__name__.strip("_").capitalize())
 
     def _toBit_(self) -> Integer:
         return Integer(1)
@@ -359,7 +341,6 @@ class Type(Class):
 
 
 class Slice(Class):
-
     def _create_(self, start: Any, stop: Any, step: Any):
         self.start = start
         self.stop = stop
@@ -369,14 +350,13 @@ class Slice(Class):
         # self.range = range(*tup)  TODO
 
     # def _random_(self) -> Integer:
-        # return Integer(choice(self.range))
+    # return Integer(choice(self.range))
 
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == Null()
 
 
 class Null(Class):
-
     def _create_(self):
         self.value = None
 
@@ -394,7 +374,6 @@ class Null(Class):
 
 
 class String(Class):
-
     def __str__(self) -> str:
         return self.value
 
@@ -403,9 +382,7 @@ class String(Class):
 
     def _cast_(self) -> Integer:
         if len(self.value) != 1:
-            raise SamariumTypeError(
-                f"cannot cast a string of length {len(self.value)}"
-            )
+            raise SamariumTypeError(f"cannot cast a string of length {len(self.value)}")
         return Integer(ord(self.value))
 
     def _create_(self, value: Any):
@@ -459,7 +436,6 @@ class String(Class):
 
 
 class Integer(Class):
-
     def __int__(self) -> int:
         return self.value
 
@@ -572,22 +548,19 @@ class Integer(Class):
 
 
 class Table(Class):
-
     def _create_(self, value: dict[Any, Any]):
-        self.value = {
-            verify_type(k): verify_type(v)
-            for k, v in value.items()
-        }
+        self.value = {verify_type(k): verify_type(v) for k, v in value.items()}
 
     def _special_(self) -> Array:
         return Array([*self.value.values()])
 
     def _toString_(self) -> String:
         return String(
-            "{{" + ", ".join(
-                f"{get_repr(k)} -> {get_repr(v)}"
-                for k, v in self.value.items()
-            ) + "}}"
+            "{{"
+            + ", ".join(
+                f"{get_repr(k)} -> {get_repr(v)}" for k, v in self.value.items()
+            )
+            + "}}"
         )
 
     def _toBit_(self) -> Integer:
@@ -631,7 +604,6 @@ class Table(Class):
 
 
 class Array(Class):
-
     def _create_(self, value: list[Any]):
         self.value = [verify_type(i) for i in value]
 
@@ -716,18 +688,13 @@ class Mode(Enum):
 
 
 class FileManager:
-
     @staticmethod
     def create(path: String):
         with open(path.value, "x") as _:
             return Null()
 
     @staticmethod
-    def open(
-        path: String,
-        mode: Mode,
-        *, binary: bool = False
-    ) -> Tuple[IO, bool]:
+    def open(path: String, mode: Mode, *, binary: bool = False) -> Tuple[IO, bool]:
         f = open(path.value, mode.value + "b" * binary)
         return File(f, mode.name, path.value, binary)
 
@@ -741,7 +708,7 @@ class FileManager:
         mode: Mode,
         *,
         data: String | None = None,
-        binary: bool = False
+        binary: bool = False,
     ) -> String | Array | None:
         if isinstance(path, String):
             with open(path.value, mode.value + "b" * binary) as f:
@@ -752,9 +719,7 @@ class FileManager:
                 if data is None:
                     raise SamariumValueError("missing data")
                 if isinstance(data, Array):
-                    f.write(b"".join([
-                        int(x).to_bytes(1, "big") for x in data.value
-                    ]))
+                    f.write(b"".join([int(x).to_bytes(1, "big") for x in data.value]))
                 else:
                     f.write(data.value)
         else:
@@ -769,7 +734,6 @@ class FileManager:
 
 
 class File(Class):
-
     def _create_(self, file: IO, mode: str, path: str, binary: bool):
         self.binary = binary
         self.mode = mode
@@ -816,21 +780,20 @@ class File(Class):
 
     def save(self, data: String | Array):
         if (
-            self.binary and isinstance(data, String)
-            or not self.binary and isinstance(data, Array)
+            self.binary
+            and isinstance(data, String)
+            or not self.binary
+            and isinstance(data, Array)
         ):
             raise SamariumTypeError(type(data).__name__)
         if isinstance(data, Array):
-            self.value.write(b"".join([
-                int(x).to_bytes(1, "big") for x in data.value
-            ]))
+            self.value.write(b"".join([int(x).to_bytes(1, "big") for x in data.value]))
         else:
             self.value.write(data.value)
         return Null()
 
 
 class Module:
-
     def __init__(self, name: str, objects: dict[str, Class]):
         self.name = name
         self.objects = objects

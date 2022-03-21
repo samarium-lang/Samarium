@@ -17,7 +17,7 @@ OPEN_TO_CLOSE = {
     Token.BRACE_OPEN: Token.BRACE_CLOSE,
     Token.PAREN_OPEN: Token.PAREN_CLOSE,
     Token.TABLE_OPEN: Token.TABLE_CLOSE,
-    Token.SLICE_OPEN: Token.SLICE_CLOSE
+    Token.SLICE_OPEN: Token.SLICE_CLOSE,
 }
 
 
@@ -41,11 +41,7 @@ def readfile(path: str) -> str:
         return f.read()
 
 
-def run_with_backup(
-    main: Callable[..., T],
-    backup: Callable[..., T],
-    *args
-) -> T:
+def run_with_backup(main: Callable[..., T], backup: Callable[..., T], *args) -> T:
     with suppress(NotDefinedError):
         return main(*args)
     return backup(*args)

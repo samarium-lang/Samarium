@@ -2,7 +2,6 @@ from .tokens import Token
 
 
 class Scroller:
-
     def __init__(self, program: str):
         self.program = program
         self.prev = ""
@@ -28,7 +27,7 @@ def plus(scroller: Scroller) -> Token:
 def minus(scroller: Scroller) -> Token:
     tokens = {
         ">": (Token.TO, Token.IN)[scroller.next(2) == "?"],
-        "-": (Token.DIV, Token.MOD)[scroller.next(2) == "-"]
+        "-": (Token.DIV, Token.MOD)[scroller.next(2) == "-"],
     }
     return tokens.get(scroller.next(), Token.SUB)
 
@@ -56,7 +55,7 @@ def less(scroller: Scroller) -> Token:
         "<": Token.SLICE_OPEN,
         ":": Token.LE,
         "%": Token.FILE_QUICK_BINARY_READ,
-        "~": Token.FILE_QUICK_READ
+        "~": Token.FILE_QUICK_READ,
     }
     return tokens.get(scroller.next(), Token.LT)
 
@@ -64,10 +63,7 @@ def less(scroller: Scroller) -> Token:
 def greater(scroller: Scroller) -> Token:
     if scroller.program[:3] == ">==":
         return Token.COMMENT_CLOSE
-    tokens = {
-        ">": Token.SLICE_CLOSE,
-        ":": Token.GE
-    }
+    tokens = {">": Token.SLICE_CLOSE, ":": Token.GE}
     return tokens.get(scroller.next(), Token.GT)
 
 
@@ -122,10 +118,7 @@ def ampersand(scroller: Scroller) -> Token:
 def tilde(scroller: Scroller) -> Token:
     if scroller.next() == "~" and scroller.next(2) == ">":
         return Token.FILE_WRITE
-    tokens = {
-        ">": Token.FILE_QUICK_WRITE,
-        "~": Token.NOT
-    }
+    tokens = {">": Token.FILE_QUICK_WRITE, "~": Token.NOT}
     return tokens.get(scroller.next(), Token.BINNOT)
 
 

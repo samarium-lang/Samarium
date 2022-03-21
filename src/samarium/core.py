@@ -6,9 +6,22 @@ from time import sleep as _sleep
 
 from . import exceptions as exc
 from .objects import (
-    assert_smtype, class_attributes, smhash, verify_type,
-    Class, Type, Slice, Null, String, Integer, Module,
-    Table, Array, Mode, FileManager, File
+    assert_smtype,
+    class_attributes,
+    smhash,
+    verify_type,
+    Class,
+    Type,
+    Slice,
+    Null,
+    String,
+    Integer,
+    Module,
+    Table,
+    Array,
+    Mode,
+    FileManager,
+    File,
 )
 from .tokenizer import tokenize
 from .transpiler import Transpiler, CodeHandler
@@ -22,7 +35,7 @@ MODULE_NAMES = [
     "operator",
     "random",
     "string",
-    "types"
+    "types",
 ]
 
 
@@ -31,7 +44,6 @@ class Runtime:
 
 
 class MISSING:
-
     def __getattr__(self, _):
         raise exc.SamariumValueError("cannot use the MISSING object")
 
@@ -56,15 +68,12 @@ def import_module(data: str, ch: CodeHandler):
         objects = []
         module_import = True
     name = name.strip("_")
-    path = sys.argv[1][:sys.argv[1].rfind("/") + 1] or "."
+    path = sys.argv[1][: sys.argv[1].rfind("/") + 1] or "."
 
     if f"{name}.sm" not in os.listdir(path):
         if name not in MODULE_NAMES:
             raise exc.SamariumImportError(name)
-        path = os.path.join(
-            os.path.dirname(__file__),
-            "modules"
-        )
+        path = os.path.join(os.path.dirname(__file__), "modules")
 
     with silence_stdout():
         imported = run(readfile(f"{path}/{name}.sm"), CodeHandler(globals()))
@@ -73,7 +82,8 @@ def import_module(data: str, ch: CodeHandler):
         ch.globals.update({f"_{name}_": Module(name, imported.globals)})
     elif objects == ["*"]:
         imported.globals = {
-            k: v for k, v in imported.globals.items()
+            k: v
+            for k, v in imported.globals.items()
             if not k.startswith("__") and not k[0].isalnum()
         }
         ch.globals.update(imported.globals)
@@ -92,9 +102,7 @@ def print_safe(*args):
     types = [type(i) for i in args]
     if any(i in (tuple, type(i for i in [])) for i in types):
         raise exc.SamariumSyntaxError(
-            "missing brackets"
-            if tuple in types else
-            "invalid comprehension"
+            "missing brackets" if tuple in types else "invalid comprehension"
         )
     print(*args)
     if len(args) > 1:
@@ -109,18 +117,14 @@ def readline(prompt: str = "") -> String:
 
 
 def run(
-    code: str,
-    ch: CodeHandler,
-    debug: bool = False,
-    *,
-    load_template: bool = True
+    code: str, ch: CodeHandler, debug: bool = False, *, load_template: bool = True
 ) -> CodeHandler:
 
     code = "\n".join(Transpiler(tokenize(code), ch).transpile().code)
     if load_template:
-        code = readfile(
-            f"{os.path.dirname(__file__)}/template.py"
-        ).replace("{{ CODE }}", code)
+        code = readfile(f"{os.path.dirname(__file__)}/template.py").replace(
+            "{{ CODE }}", code
+        )
     try:
         if debug:
             print(code)
@@ -138,7 +142,7 @@ def sleep(*args: Integer):
         raise exc.SamariumTypeError("no argument provided for ,.,")
     if len(args) > 1:
         raise exc.SamariumTypeError(",., only takes one argument")
-    time, = args
+    (time,) = args
     if not isinstance(time.value, int):
         raise exc.SamariumTypeError(",., only accepts integers")
     _sleep(time.value / 1000)

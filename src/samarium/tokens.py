@@ -113,8 +113,7 @@ class Token(Enum):
 
 
 FILE_IO_TOKENS = [
-    token for name, token in Token.__members__.items()
-    if name.startswith("FILE_")
+    token for name, token in Token.__members__.items() if name.startswith("FILE_")
 ]
 
 OPEN_TOKENS = [
@@ -122,7 +121,7 @@ OPEN_TOKENS = [
     Token.BRACE_OPEN,
     Token.PAREN_OPEN,
     Token.TABLE_OPEN,
-    Token.SLICE_OPEN
+    Token.SLICE_OPEN,
 ]
 
 CLOSE_TOKENS = [
@@ -130,5 +129,5 @@ CLOSE_TOKENS = [
     Token.BRACE_CLOSE,
     Token.PAREN_CLOSE,
     Token.TABLE_CLOSE,
-    Token.SLICE_CLOSE
+    Token.SLICE_CLOSE,
 ]
