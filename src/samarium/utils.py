@@ -2,9 +2,10 @@ import os
 import sys
 
 from contextlib import contextmanager, suppress
+from string import digits, hexdigits, octdigits
 from typing import Any, Callable, TypeVar
 
-from .exceptions import NotDefinedError, SamariumTypeError
+from .exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
 from .tokenizer import Tokenlike
 from .tokens import Token, OPEN_TOKENS, CLOSE_TOKENS
 
@@ -62,3 +63,31 @@ def sysexit(*args: Any):
     if not isinstance(code, int):
         raise SamariumTypeError("=>! only accepts integers")
     os._exit(code)
+
+
+def parse_integer(string: str) -> int:
+    orig = string
+    neg = len(string)
+    b = "d"
+    if ":" in string:
+        b, string = string.split(":")
+        if b not in "box":
+            raise SamariumValueError(f"{b} is not a valid base")
+    base = {
+        "b": 2,
+        "o": 8,
+        "x": 16,
+        "d": 10,
+    }[b]
+    string = string.lstrip("-")
+    digitset = {
+        2: "01",
+        8: octdigits,
+        10: digits,
+        16: hexdigits,
+    }[base]
+    neg -= len(string)
+    neg %= 2
+    if all(i in digitset for i in string.lower()):
+        return int("-" * neg + string, base)
+    raise SamariumValueError(f'invalid string for Integer with base {base}: "{orig}"')
