@@ -11,7 +11,7 @@ from .exceptions import (
     SamariumTypeError,
     SamariumValueError,
 )
-from .utils import run_with_backup
+from .utils import parse_integer, run_with_backup
 
 
 def assert_smtype(function: Callable):
@@ -337,7 +337,7 @@ class Type(Class):
     def _call_(self, *args) -> Class:
         if isinstance(lambda: 0, self.value):
             raise SamariumTypeError("cannot instantiate a function")
-        return self.value(*(i.value for i in args))
+        return self.value(*args)
 
 
 class Slice(Class):
@@ -385,8 +385,8 @@ class String(Class):
             raise SamariumTypeError(f"cannot cast a string of length {len(self.value)}")
         return Integer(ord(self.value))
 
-    def _create_(self, value: Any):
-        self.value = str(value if value is not None else "null")
+    def _create_(self, value: Any = ""):
+        self.value = str(value)
 
     def _has_(self, element: String) -> Integer:
         return Integer(element.value in self.value)
@@ -445,8 +445,17 @@ class Integer(Class):
     def _hash_(self) -> Integer:
         return smhash(self.value)
 
-    def _create_(self, value: Any):
-        self.value = int(value)
+    def _create_(self, value: Any = None):
+        if isinstance(value, int):
+            self.value = value
+        elif value is None:
+            self.value = 0
+        elif isinstance(value.value, (int, bool, float)):
+            self.value = int(value.value)
+        elif isinstance(value.value, str):
+            self.value = parse_integer(value.value)
+        else:
+            raise SamariumTypeError(f"cannot cast {type(value).__name__} to Integer")
 
     def _random_(self) -> Integer:
         v = self.value
@@ -548,8 +557,28 @@ class Integer(Class):
 
 
 class Table(Class):
-    def _create_(self, value: dict[Any, Any]):
-        self.value = {verify_type(k): verify_type(v) for k, v in value.items()}
+    def _create_(self, value: Any):
+        if isinstance(value, Table):
+            self.value = value.value.copy()
+        elif isinstance(value, dict):
+            self.value = {verify_type(k): verify_type(v) for k, v in value.items()}
+        elif isinstance(value, Array):
+            arr = value.value
+            if (
+                all(isinstance(i, (String, Array)) for i in arr)
+                and all(len(i.value) == 2 for i in arr)
+            ):
+                table = {}
+                for e in arr:
+                    if isinstance(e, String):
+                        k, v = e.value
+                        table[String(k)] = String(v)
+                    else:
+                        k, v = e
+                        table[k] = v
+                self.value = Table(table).value
+        else:
+            raise SamariumTypeError(f"cannot cast {type(value).__name__} to Table")
 
     def _special_(self) -> Array:
         return Array([*self.value.values()])
@@ -604,8 +633,19 @@ class Table(Class):
 
 
 class Array(Class):
-    def _create_(self, value: list[Any]):
-        self.value = [verify_type(i) for i in value]
+    def _create_(self, value: Any = None):
+        if value is None:
+            self.value = []
+        elif isinstance(value, Array):
+            self.value = value.value.copy()
+        elif isinstance(value, list):
+            self.value = [verify_type(i) for i in value]
+        elif isinstance(value, String):
+            self.value = Array([*map(String, value.value)]).value
+        elif isinstance(value, Table):
+            self.value = Array([Array([*i]) for i in value.value.items()]).value
+        else:
+            raise SamariumTypeError(f"cannot cast {type(value).__name__} to Array")
 
     def _special_(self) -> Integer:
         return Integer(len(self.value))
