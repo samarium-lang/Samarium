@@ -36,3 +36,9 @@
     or other * { * Boolean('value | other.value); }
     not * { * Boolean(\ ? 'value ,, /); }
 }
+
+Array: []?!;
+Integer: \?!;
+Null: _?!;
+String: ""?!;
+Table: {{}}?!;
