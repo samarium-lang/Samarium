@@ -366,10 +366,10 @@ class Slice(Class):
         self.step = step
         tup = (start.value, stop.value, step.value)
         self.value = slice(*tup)
-        self.range = range(*tup)
+        # self.range = range(*tup)  TODO
 
-    def _random_(self) -> Integer:
-        return Integer(choice(self.range))
+    # def _random_(self) -> Integer:
+        # return Integer(choice(self.range))
 
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == Null()
@@ -378,7 +378,7 @@ class Slice(Class):
 class Null(Class):
 
     def _create_(self):
-        self.value = "null"
+        self.value = None
 
     def _toString_(self) -> String:
         return String("null")
@@ -409,7 +409,7 @@ class String(Class):
         return Integer(ord(self.value))
 
     def _create_(self, value: Any):
-        self.value = str(value)
+        self.value = str(value if value is not None else "null")
 
     def _has_(self, element: String) -> Integer:
         return Integer(element.value in self.value)
