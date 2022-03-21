@@ -1,3 +1,7 @@
+randint start end * {
+    * (end - start + 1)?? + start;
+}
+
 shuffle array * {
     shuffledArray: [];
     oldArray: array<<>>;
