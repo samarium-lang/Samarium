@@ -247,7 +247,7 @@ replace string replacement count? * {
 }
 
 format string substitutes * {
-    ? substitutes?! :: {{}}?! {
+    ? substitutes?! ::: {{}}?! {
         "invalid type: " + substitutes?!.toString()!!!;
     }
     ? ~~ substitutes { * string; }
