@@ -501,7 +501,8 @@ class Transpiler:
             ]
         elif token == Token.CLASS:
             if not self.is_first_token():
-                self.ch.line = ["@"] + self.ch.line
+                x = bool(self.ch.indent)
+                self.ch.line = [*self.ch.line[:x], "@", *self.ch.line[x:]]
                 self.transpile_token(Token.END)
                 return 1
             self.ch.switches["class"] = True
