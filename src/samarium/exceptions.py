@@ -1,5 +1,7 @@
 import sys
 
+from .runtime import Runtime
+
 
 def handle_exception(exception: Exception):
     name = exception.__class__.__name__
@@ -13,7 +15,8 @@ def handle_exception(exception: Exception):
         else:
             name = f"External{name}"
     sys.stderr.write(f"\033[31m[{name}] {exception}\033[0m\n".replace("_", ""))
-    exit(1)
+    if Runtime.quit_on_error:
+        exit(1)
 
 
 class NotDefinedError(Exception):

@@ -117,9 +117,15 @@ def readline(prompt: str = "") -> String:
 
 
 def run(
-    code: str, ch: CodeHandler, debug: bool = False, *, load_template: bool = True
+    code: str,
+    ch: CodeHandler,
+    debug: bool = False,
+    *,
+    load_template: bool = True,
+    quit_on_error: bool = True,
 ) -> CodeHandler:
 
+    Runtime.quit_on_error = quit_on_error
     code = "\n".join(Transpiler(tokenize(code), ch).transpile().code)
     if load_template:
         code = readfile(f"{os.path.dirname(__file__)}/template.py").replace(

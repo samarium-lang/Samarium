@@ -26,5 +26,5 @@ def run_shell(debug: bool):
     print(colored(f"Samarium {__version__}", "magenta"))
     MAIN = CodeHandler(globals())
     while True:
-        run(read_statement(), MAIN, debug, load_template=False)
+        run(read_statement(), MAIN, debug, load_template=False, quit_on_error=False)
         MAIN.code *= 0
