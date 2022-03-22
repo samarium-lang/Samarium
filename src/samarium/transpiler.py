@@ -514,6 +514,17 @@ class Transpiler:
                 throw_syntax("# can only start a statement")
             else:
                 self.ch.line += ["assert "]
+        elif token == Token.SLICE_STEP:
+            try:
+                previous = self.ch.line_tokens[-2]
+            except IndexError:
+                previous = None
+            if previous in {Token.PAREN_OPEN, Token.SEP}:
+                self.ch.line += "*"
+            else:
+                throw_syntax(
+                    "** can only be used to unpack arguments (or when slicing)"
+                )
         else:
             return 0
         return 1
