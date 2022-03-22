@@ -14,7 +14,7 @@ def read_statement():
     while True:
         statement += input(prompt)
         if statement:
-            statement += ";"
+            statement += " ;"
             error, _ = match_brackets(tokenize(statement))
             if not error:
                 return statement
