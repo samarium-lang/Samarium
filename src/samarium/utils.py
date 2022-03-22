@@ -91,3 +91,7 @@ def parse_integer(string: str) -> int:
     if all(i in digitset for i in string.lower()):
         return int("-" * neg + string, base)
     raise SamariumValueError(f'invalid string for Integer with base {base}: "{orig}"')
+
+
+def get_function_name(function: Callable) -> str:
+    return function.__name__.strip("_")
