@@ -8,8 +8,9 @@ def handle_exception(exception: Exception):
             f"invalid syntax at {hex(int(str(exception).split()[-1][:-1]))}"
         )
     if name not in {"SyntaxError", "NotDefinedError", "AssertionError"}:
-        name = name.removeprefix("Samarium")
-        if not name.startswith("Samarium"):
+        if name.startswith("Samarium"):
+            name = name.removeprefix("Samarium")
+        else:
             name = f"External{name}"
     sys.stderr.write(f"\033[31m[{name}] {exception}\033[0m\n".replace("_", ""))
     exit(1)
