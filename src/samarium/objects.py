@@ -4,6 +4,7 @@ import os
 
 from enum import Enum
 from functools import wraps
+from inspect import signature
 from secrets import choice, randbelow
 from typing import Any, Callable, IO, Iterator, Tuple
 
@@ -29,6 +30,10 @@ def assert_smtype(function: Callable):
     def _toString_() -> String:
         return String(get_function_name(function))
 
+    def _special_() -> Integer:
+        return Integer(len(signature(function).parameters))
+
+    wrapper._special_ = _special_
     wrapper._toString_ = _toString_
     wrapper.__str__ = lambda: str(_toString_())
     wrapper.type = Type(type(lambda: 0))
