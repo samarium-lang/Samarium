@@ -65,7 +65,10 @@ def import_module(data: str, ch: CodeHandler):
         objects = []
         module_import = True
     name = name.strip("_")
-    path = sys.argv[1][: sys.argv[1].rfind("/") + 1] or "."
+    try:
+        path = sys.argv[1][: sys.argv[1].rfind("/") + 1] or "."
+    except IndexError:  # Shell
+        path = os.getcwd() + "/"
 
     if f"{name}.sm" not in os.listdir(path):
         if name not in MODULE_NAMES:
