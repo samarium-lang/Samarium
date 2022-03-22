@@ -1,5 +1,5 @@
 randint start end * {
-    * (end - start + 1)?? + start;
+    * (end - start + /)?? + start;
 }
 
 shuffle array * {
