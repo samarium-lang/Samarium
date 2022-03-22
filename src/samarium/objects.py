@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from enum import Enum
 from functools import wraps
 from secrets import choice, randbelow
@@ -574,9 +576,8 @@ class Table(Class):
             self.value = {verify_type(k): verify_type(v) for k, v in value.items()}
         elif isinstance(value, Array):
             arr = value.value
-            if (
-                all(isinstance(i, (String, Array)) for i in arr)
-                and all(len(i.value) == 2 for i in arr)
+            if all(isinstance(i, (String, Array)) for i in arr) and all(
+                len(i.value) == 2 for i in arr
             ):
                 table = {}
                 for e in arr:
@@ -744,7 +745,13 @@ class FileManager:
             return Null()
 
     @staticmethod
-    def open(path: String, mode: Mode, *, binary: bool = False) -> Tuple[IO, bool]:
+    def open(
+        path: String | Integer, mode: Mode, *, binary: bool = False
+    ) -> Tuple[IO, bool]:
+        if isinstance(path, Integer) and mode == Mode.READ_WRITE:
+            raise SamariumIOError(
+                "cannot open a file descriptor in a read & write mode"
+            )
         f = open(path.value, mode.value + "b" * binary)
         return File(f, mode.name, path.value, binary)
 
@@ -757,7 +764,7 @@ class FileManager:
         path: String | File,
         mode: Mode,
         *,
-        data: String | None = None,
+        data: Class | None = None,
         binary: bool = False,
     ) -> String | Array | None:
         if isinstance(path, String):
@@ -772,6 +779,15 @@ class FileManager:
                     f.write(b"".join([int(x).to_bytes(1, "big") for x in data.value]))
                 else:
                     f.write(data.value)
+        elif isinstance(path, Integer):
+            if mode in {Mode.APPEND, Mode.WRITE}:
+                fd = path.value
+                os.write(fd, str(data).encode())
+            else:
+                raise SamariumIOError(
+                    "reading from file descriptors is "
+                    "not supported for quick operations"
+                )
         else:
             file = path
             if mode == Mode.READ:
