@@ -23,6 +23,7 @@ from .objects import (
     FileManager,
     File,
 )
+from .runtime import Runtime
 from .tokenizer import tokenize
 from .transpiler import Transpiler, CodeHandler
 from .utils import readfile, silence_stdout, sysexit
@@ -37,10 +38,6 @@ MODULE_NAMES = [
     "string",
     "types",
 ]
-
-
-class Runtime:
-    import_level = 0
 
 
 class MISSING:
