@@ -44,3 +44,7 @@ class SamariumTypeError(SamariumError):
 
 class SamariumValueError(SamariumError):
     blank = "invalid value"
+
+
+class SamariumIOError(SamariumError):
+    pass

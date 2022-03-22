@@ -7,6 +7,7 @@ from typing import Any, Callable, IO, Iterator, Tuple
 
 from .exceptions import (
     NotDefinedError,
+    SamariumIOError,
     SamariumSyntaxError,
     SamariumTypeError,
     SamariumValueError,
@@ -757,7 +758,7 @@ class FileManager:
                         return Array([Integer(i) for i in f.read()])
                     return String(f.read())
                 if data is None:
-                    raise SamariumValueError("missing data")
+                    raise SamariumIOError("missing data")
                 if isinstance(data, Array):
                     f.write(b"".join([int(x).to_bytes(1, "big") for x in data.value]))
                 else:
@@ -769,7 +770,7 @@ class FileManager:
             if data is not None:
                 file.save(data)
             else:
-                raise SamariumValueError("missing data")
+                raise SamariumIOError("missing data")
         return Null()
 
 
@@ -792,7 +793,7 @@ class File(Class):
             if index.is_empty():
                 return Integer(self.value.tell())
             if isinstance(index.step, Integer):
-                raise SamariumValueError("cannot use step")
+                raise SamariumIOError("cannot use step")
             if isinstance(index.start, Integer):
                 if not isinstance(index.stop, Integer):
                     return self.load(index.start)
