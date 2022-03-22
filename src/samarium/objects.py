@@ -12,7 +12,7 @@ from .exceptions import (
     SamariumTypeError,
     SamariumValueError,
 )
-from .utils import parse_integer, run_with_backup
+from .utils import get_function_name, parse_integer, run_with_backup
 
 
 def assert_smtype(function: Callable):
@@ -24,6 +24,11 @@ def assert_smtype(function: Callable):
             return result
         raise SamariumTypeError(f"invalid return type: {type(result).__name__}")
 
+    def _toString_() -> String:
+        return String(get_function_name(function))
+
+    wrapper._toString_ = _toString_
+    wrapper.__str__ = lambda: str(_toString_())
     wrapper.type = Type(type(lambda: 0))
     wrapper.parent = Type(Class)
     return wrapper
@@ -330,7 +335,7 @@ class Type(Class):
         return Integer(self.value == other.value)
 
     def _toString_(self) -> String:
-        return String(self.value.__name__.strip("_").capitalize())
+        return String(get_function_name(self.value))
 
     def _toBit_(self) -> Integer:
         return Integer(1)
@@ -387,7 +392,11 @@ class String(Class):
         return Integer(ord(self.value))
 
     def _create_(self, value: Any = ""):
-        self.value = str(value)
+        self.value = (
+            get_function_name(value)
+            if isinstance(value, type(lambda: 0))
+            else str(value)
+        )
 
     def _has_(self, element: String) -> Integer:
         return Integer(element.value in self.value)
