@@ -93,12 +93,7 @@ def import_module(data: str, ch: CodeHandler):
 
 
 def print_safe(*args):
-    args = [
-        assert_smtype(
-            lambda: Type(i) if isinstance(i, (type, type(lambda: 0))) else i
-        )()
-        for i in args
-    ]
+    args = [i._toString_() for i in map(verify_type, args)]
     types = [type(i) for i in args]
     if any(i in (tuple, type(i for i in [])) for i in types):
         raise exc.SamariumSyntaxError(
