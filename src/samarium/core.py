@@ -37,6 +37,7 @@ MODULE_NAMES = [
     "random",
     "string",
     "types",
+    "utils",
 ]
 
 

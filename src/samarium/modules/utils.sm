@@ -1,0 +1,32 @@
+@ static {
+    create func * {
+        'func: func;
+    }
+
+    call args... * {
+        * 'func(_, **args);
+    }
+
+    toString * {
+        * 'func.toString();
+    }
+}
+
+@ curry {
+    create func args... * {
+        'func: func;
+        'args: args;
+    }
+
+    call args... * {
+        args: 'args + args;
+        ? args$ < 'func$ {
+            * curry('func, **args);
+        }
+        * 'func(**args);
+    }
+
+    toString * {
+        * 'func.toString();
+    }
+}
