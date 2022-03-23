@@ -6,6 +6,7 @@ from enum import Enum
 from functools import wraps
 from inspect import signature
 from secrets import choice, randbelow
+from types import CodeType
 from typing import Any, Callable, IO, Iterator, Tuple
 
 from .exceptions import (
@@ -19,10 +20,22 @@ from .utils import get_function_name, parse_integer, run_with_backup
 
 
 def assert_smtype(function: Callable):
+    def modfunc(func: Callable, co_flags: int, co_argcount: int) -> CodeType:
+        return func.__code__.replace(co_flags=co_flags, co_argcount=co_argcount)
+
     @wraps(function)
-    def wrapper(*args, **kwargs):
-        args = [verify_type(arg) for arg in [*args, *kwargs.values()]]
+    def wrapper(*args):
+        args = [*map(verify_type, args)]
+
+        modify = function.__code__.co_flags == 71
+        if modify:
+            argc: int = len(signature(function).parameters)
+            args = [*args[: argc - 1], Array([*args[argc - 1 :]])]
+            function.__code__ = modfunc(function, 67, argc)
+            args *= argc > 0
         result = verify_type(function(*args))
+        if modify:
+            function.__code__ = modfunc(function, 71, argc - 1)
         if isinstance(result, (Class, Callable, Module)):
             return result
         raise SamariumTypeError(f"invalid return type: {type(result).__name__}")
@@ -33,9 +46,12 @@ def assert_smtype(function: Callable):
     def _special_() -> Integer:
         return Integer(len(signature(function).parameters))
 
+    def __str__() -> str:
+        return str(_toString_())
+
     wrapper._special_ = _special_
     wrapper._toString_ = _toString_
-    wrapper.__str__ = lambda: str(_toString_())
+    wrapper.__str__ = __str__
     wrapper.type = Type(type(lambda: 0))
     wrapper.parent = Type(Class)
     return wrapper
@@ -584,7 +600,7 @@ class Table(Class):
             if all(isinstance(i, (String, Array)) for i in arr) and all(
                 len(i.value) == 2 for i in arr
             ):
-                table = {}
+                table: dict[Class, Class] = {}
                 for e in arr:
                     if isinstance(e, String):
                         k, v = e.value
