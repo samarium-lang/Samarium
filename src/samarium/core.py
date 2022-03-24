@@ -94,18 +94,20 @@ def import_module(data: str, ch: CodeHandler):
 
 
 def print_safe(*args):
-    args = [i._toString_() for i in map(verify_type, args)]
+    args = [*map(verify_type, args)]
+    return_args = args[:]
+    args = [i._toString_() for i in args]
     types = [type(i) for i in args]
     if any(i in (tuple, type(i for i in [])) for i in types):
         raise exc.SamariumSyntaxError(
             "missing brackets" if tuple in types else "invalid comprehension"
         )
     print(*args)
-    if len(args) > 1:
-        return Array([*args])
-    elif not args or types[0] is Null:
+    if len(return_args) > 1:
+        return Array([*return_args])
+    elif not return_args or types[0] is Null:
         return Null()
-    return args[0]
+    return return_args[0]
 
 
 def readline(prompt: str = "") -> String:
