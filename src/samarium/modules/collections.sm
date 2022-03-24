@@ -356,7 +356,24 @@
     subtract other * { * 'applyOp(operator.subtract, other); }
     xor other * { * 'applyOp(operator.xor, other); }
 
-    getItem item * { * 'array<<item>>; }
+    andAssign other * { 'array: 'and(other).array; * '; }
+    addAssign other * { 'array: 'add(other).array; * '; }
+    divideAssign other * { 'array: 'divide(other).array; * '; }
+    modAssign other * { 'array: 'mod(other).array; * '; }
+    multiplyAssign other * { 'array: 'multiply(other).array; * '; }
+    orAssign other * { 'array: 'or(other).array; * '; }
+    powerAssign other * { 'array: 'power(other).array; * '; }
+    subtractAssign other * { 'array: 'subtract(other).array; * '; }
+    xorAssign other * { 'array: 'xor(other).array; * '; }
+
+    getItem item * {
+        <-types.Array;
+        out: 'array<<item>>;
+        ? out?! :: Array {
+            * ArithmeticArray(out);
+        }
+        * out;
+    }
     setItem item value * { 'array<<item>>: value; }
 
     special * { * 'array$; }
