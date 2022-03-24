@@ -68,27 +68,6 @@ min array * {
     * o;
 }
 
-fromDecimal string * {
-    neg: \;
-    o: \;
-    i: \;
-    errorMsg: "invalid decimal literal for fromDecimal";
-    .. i < string$ {
-        digit: string<<i>>;
-        ? digit :: "-" {
-            ? i ::: \ { errorMsg!!!; }
-            neg: /;
-        }
-        ,,? digit ~~->? "0123456789" { errorMsg!!!; }
-        ,, {
-            o++: /\/\;
-            o+: digit% - "0"%;
-        }
-        i+: /;
-    }
-    * -o ? neg ,, o;
-}
-
 sqrt n * {
     ? n < \ {
         "sqrt is defined only for non-negative numbers"!!!;
@@ -126,21 +105,6 @@ toHex n * {
     * toHex(div) + hexdigits<<mod>>;
 }
 
-fromHex hex * {
-    <-iter.enumerate, find;
-    <-string.hexdigits;
-    mul: /;
-    ? hex<<\>> :: "-" {
-        mul: -/;
-        hex: hex<</..>>;
-    }
-    s: \;
-    ... i, v ->? enumerate(hex<<**-/>>) {
-        s+: find(hexdigits, v) ++ /\\\\ +++ i;
-    }
-    * s ++ mul;
-}
-
 toOct n * {
     <-string.octdigits;
     div: n -- /\\\;
@@ -149,21 +113,6 @@ toOct n * {
         * octdigits<<mod>>;
     }
     * toOct(div) + octdigits<<mod>>;
-}
-
-fromOct oct * {
-    <-iter.enumerate, find;
-    <-string.octdigits;
-    mul: /;
-    ? oct<<\>> :: "-" {
-        mul: -/;
-        oct: oct<</..>>;
-    }
-    s: \;
-    ... i, v ->? enumerate(oct<<**-/>>) {
-        s+: find(octdigits, v) ++ /\\\\ +++ i;
-    }
-    * s ++ mul;
 }
 
 isPrime n * {
