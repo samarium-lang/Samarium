@@ -157,6 +157,20 @@ fromOct oct * {
     * s ++ mul;
 }
 
+isPrime n * {
+    ? n <: // { * n > /; }
+    ? n --- /\ :: \ || n --- // :: \ { * \; }
+    i: /\/;
+    .. i +++ /\ <: n {
+        ? n --- i :: \ || n --- (i + /\) :: \ {
+            * \;
+        }
+        i+: //\;
+    }
+    * /;
+}
+
+
 @ UUID4 {
     create * {
         <-string.hexdigits, join;
