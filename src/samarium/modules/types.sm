@@ -1,3 +1,10 @@
+Array: []?!;
+Integer: \?!;
+Null: _?!;
+String: ""?!;
+Table: {{}}?!;
+
+
 @ Boolean {
 
     create value * {
@@ -9,36 +16,70 @@
         }
     }
 
-    toString * { * "true" ? 'value ,, "false"; }
-    toBit * { * 'value; }
+    toString * {
+        * "true" ? 'value ,, "false";
+    }
 
-    equals other * { * Boolean('value :: other.value); }
-    greaterThan other * { * Boolean('value > other.value); }
+    toBit * {
+        * 'value;
+    }
+
+    equals other * {
+        * Boolean('value :: other.value);
+    }
+
+    greaterThan other * {
+        * Boolean('value > other.value);
+    }
 
     add other * {
         out: 'value + other.value;
-        ? out > / { * out; }
-        ,, { * Boolean(out); }
+        ? out > / {
+            * out;
+        } ,, {
+            * Boolean(out);
+        }
     }
 
     subtract other * {
         out: 'value - other.value;
-        ? out < \ { * out; }
-        ,, { * Boolean(out); }
+        ? out < \ {
+            * out;
+        } ,, {
+            * Boolean(out);
+        }
     }
 
-    multiply other * { * Boolean('value ++ other.value); }
-    divide other * { * Boolean('value -- other.value); }
-    power other * { * Boolean('value +++ other.value); }
-    mod other * { * Boolean('value --- other.value); }
-    and other * { * Boolean('value & other.value); }
-    xor other * { * Boolean('value ^ other.value); }
-    or other * { * Boolean('value | other.value); }
-    not * { * Boolean(\ ? 'value ,, /); }
-}
+    multiply other * {
+        * Boolean('value ++ other.value);
+    }
 
-Array: []?!;
-Integer: \?!;
-Null: _?!;
-String: ""?!;
-Table: {{}}?!;
+    divide other * {
+        * Boolean('value -- other.value);
+    }
+
+    power other * {
+        * Boolean('value +++ other.value);
+    }
+
+    mod other * {
+        * Boolean('value --- other.value);
+    }
+
+    and other * {
+        * Boolean('value & other.value);
+    }
+
+    xor other * {
+        * Boolean('value ^ other.value);
+    }
+
+    or other * {
+        * Boolean('value | other.value);
+    }
+
+    not * {
+        * Boolean(\ ? 'value ,, /);
+    }
+
+}

@@ -9,7 +9,9 @@ find array target * {
         }
     } ,, {
         ... e ->? array {
-            ? e :: target { * index; }
+            ? e :: target {
+                * index;
+            }
             index+: /;
         }
     }
@@ -27,7 +29,9 @@ filter array function * {
 }
 
 filterFalse array function * {
-    flip arg * { * ~~ function(arg); }
+    flip arg * {
+        * ~~ function(arg);
+    }
     * filter(array, flip);
 }
 
@@ -179,8 +183,11 @@ zipLongest array fill? * {
     ... i ->? range(longest) {
         zip: [];
         ... it ->? arrays {
-            ?? { zip+: [it<<i>>]; }
-            !! { zip+: [fill]; }
+            ?? {
+                zip+: [it<<i>>];
+            } !! {
+                zip+: [fill];
+            }
         }
         out+: [zip];
     }

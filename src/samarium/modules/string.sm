@@ -11,6 +11,7 @@ whitespace: " \t\n\r\f\v";
 
 printable: letters + digits + punctuation + whitespace;
 
+
 center string length char? * {
     char <> " ";
     ? char$ > / {
@@ -30,14 +31,22 @@ center string length char? * {
 }
 
 startsWith string prefix * {
-    ? prefix$ > string$ { * \; }
-    ? prefix :: string { * /; }
+    ? prefix$ > string$ {
+        * \;
+    }
+    ? prefix :: string {
+        * /;
+    }
     * string<<..prefix$>> :: prefix;
 }
 
 endsWith string suffix * {
-    ? suffix$ > string$ { * \; }
-    ? suffix :: string { * /; }
+    ? suffix$ > string$ {
+        * \;
+    }
+    ? suffix :: string {
+        * /;
+    }
     * string<<-suffix$..>> :: suffix;
 }
 
@@ -61,7 +70,9 @@ split string delimiter? * {
 }
 
 capitalize string * {
-    ? string$ :: \ { * string; }
+    ? string$ :: \ {
+        * string;
+    }
     * toUpper(string<<\>>) + toLower(string<</..>>);
 }
 
@@ -153,7 +164,9 @@ pad string length char? * {
     ? char$ > / {
         "char has to be of length 1"!!!;
     }
-    ? length < string$ { * string; }
+    ? length < string$ {
+        * string;
+    }
     * char ++ (length - string$);
 }
 
@@ -250,7 +263,9 @@ format string substitutes * {
     ? substitutes?! ::: {{}}?! {
         "invalid type: " + substitutes?!.toString()!!!;
     }
-    ? ~~ substitutes { * string; }
+    ? ~~ substitutes {
+        * string;
+    }
     newString: "";
     index: \;
     .. index < string$ {

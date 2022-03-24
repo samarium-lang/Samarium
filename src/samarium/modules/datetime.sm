@@ -12,9 +12,13 @@ weekdayName: Table(enumerate(
 )) - \;
 
 
-sleepSeconds s * { ,., s ++ //`///\`/\\\; }
+sleepSeconds s * {
+    ,., s ++ //`///\`/\\\;
+}
 
-sleepMinutes m * { sleepSeconds(m ++ //`//\\); }
+sleepMinutes m * {
+    sleepSeconds(m ++ //`//\\);
+}
 
 isLeapYear year * {
     4: /\\;
@@ -25,9 +29,15 @@ isLeapYear year * {
 }
 
 daysInMonth year month * {
-    ? month ->? [/, //, /\/, ///, /\\\, /\/\, //\\] { * /////; }
-    ? month ->? [/\, //\, /\\/, /\//] { * ////\; }
-    ? isLeapYear(year) { * ///\/; }
+    ? month ->? [/, //, /\/, ///, /\\\, /\/\, //\\] {
+        * /////;
+    }
+    ? month ->? [/\, //\, /\\/, /\//] {
+        * ////\;
+    }
+    ? isLeapYear(year) {
+        * ///\/;
+    }
     * ///\\;
 }
 
@@ -38,6 +48,7 @@ addZeros n c * {
 
 
 @ DateTime {
+    
     create Y? M? D? h? m? s? ms? tz? * {
         Y <> _;
         ? _ :: Y {
@@ -125,10 +136,14 @@ addZeros n c * {
             }}
         );
     }
+
 }
 
 @ DTDiff {
-    create data * { 'data: data; }
+
+    create data * {
+        'data: data;
+    }
 
     toString * {
         <-string.stripLeft;
@@ -146,4 +161,5 @@ addZeros n c * {
         ? ms { out+: "." + addZeros(ms, //); }
         * stripLeft(out, "0");
     }
+
 }

@@ -1,6 +1,8 @@
 <-utils.static;
 
+
 @ Cursor {
+
     static @ move line column * {
         <-string.format;
         format(
@@ -20,16 +22,32 @@
         * "\033[" + n.toString();
     }
 
-    static @ up n * { Cursor.getMovement(n) + "A" ~> /; }
-    static @ down n * { Cursor.getMovement(n) + "B" ~> /; }
-    static @ right n * { Cursor.getMovement(n) + "C" ~> /; }
-    static @ left n * { Cursor.getMovement(n) + "D" ~> /; }
+    static @ up n * {
+        Cursor.getMovement(n) + "A" ~> /;
+    }
+    static @ down n * {
+        Cursor.getMovement(n) + "B" ~> /;
+    }
+    static @ right n * {
+        Cursor.getMovement(n) + "C" ~> /;
+    }
+    static @ left n * {
+        Cursor.getMovement(n) + "D" ~> /;
+    }
     == FIXME
+
 }
 
 @ Erase {
-    static @ screen * { "\033[2J" ~> /; }
-    static @ line * { "\033[2K" ~> /; }
+
+    static @ screen * {
+        "\033[2J" ~> /;
+    }
+
+    static @ line * {
+        "\033[2K" ~> /;
+    }
+
 }
 
 @ Style {
@@ -45,6 +63,7 @@
 }
 
 @ Color {
+
     static @ get color ground? bright? * {
         ground <> "fg";
         bright <> \;
@@ -102,4 +121,5 @@
     static @ white ground? bright? * {
         * Color.get(///, ground, bright);
     }
+
 }

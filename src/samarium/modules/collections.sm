@@ -10,42 +10,66 @@
     }
 
     push item * {
-        ? 'isFull() { "stack is full (size " + 'size.toString() + ")"!!!; }
+        ? 'isFull() {
+            "stack is full (size " + 'size.toString() + ")"!!!;
+        }
         'stack+: [item];
     }
 
-    pushAll items * { ... element ->? items { 'push(element); } }
+    pushAll items * {
+        ... element ->? items {
+            'push(element);
+        }
+    }
 
-    special * { * 'stack$; }
+    special * {
+        * 'stack$;
+    }
 
     pop * {
-        ? 'isEmpty() { "stack is empty"!!!; }
+        ? 'isEmpty() {
+            "stack is empty"!!!;
+        }
         out: 'stack<<-/>>;
         'stack-: 'stack$ - /;
         * out;
     }
 
     peek * {
-        ? 'isEmpty() { "stack is empty"!!!; }
+        ? 'isEmpty() {
+            "stack is empty"!!!;
+        }
         * 'stack<<-/>>;
     }
 
-    toBit * { * 'stack$ > \; }
+    toBit * {
+        * 'stack$ > \;
+    }
 
-    isFull * { * 'size :: 'stack$; }
+    isFull * {
+        * 'size :: 'stack$;
+    }
 
-    isEmpty * { * 'stack$ :: \; }
+    isEmpty * {
+        * 'stack$ :: \;
+    }
 
     toString * {
         <-string.wrap;
-        ?? { top: 'peek(); }
-        !! { top: _; }
-        ? top?! :: ""?! { top: wrap(top.toString(), "\""); }
+        ?? {
+            top: 'peek();
+        } !! {
+            top: _;
+        }
+        ? top?! :: ""?! {
+            top: wrap(top.toString(), "\"");
+        }
         * "Stack(capacity:" + 'size.toString()
         + ", size:" + 'stack$.toString()
         + ", top:" + top.toString()
         + ")";
     }
+
 }
 
 @ Queue {
@@ -56,19 +80,35 @@
         'size: size;
     }
 
-    special * { * 'queue$; }
-    isEmpty * { * ~~ '$; }
-    isFull * { * '$ :: 'size; }
+    special * {
+        * 'queue$;
+    }
 
-    throwEmpty * { ? 'isEmpty() { "queue is empty"!!!; } }
+    isEmpty * {
+        * ~~ '$;
+    }
+
+    isFull * {
+        * '$ :: 'size;
+    }
+
+    throwEmpty * {
+        ? 'isEmpty() {
+            "queue is empty"!!!;
+        }
+    }
 
     put item * {
-        ? 'isFull() { "queue is full (size " + 'size.toString() + ")"!!!; }
+        ? 'isFull() {
+            "queue is full (size " + 'size.toString() + ")"!!!;
+        }
         'queue+: [item];
     }
 
     putAll items * {
-        ... item ->? items { 'put(item); }
+        ... item ->? items {
+            'put(item);
+        }
     }
 
     get * {
@@ -78,10 +118,16 @@
         * out;
     }
 
-    first * { 'throwEmpty(); * 'queue<<\>>; }
-    last * { 'throwEmpty(); * 'queue<<-/>>; }
+    first * {
+        'throwEmpty(); * 'queue<<\>>;
+    }
+    last * {
+        'throwEmpty(); * 'queue<<-/>>;
+    }
 
-    toBit * { * '$ > \;}
+    toBit * {
+        * '$ > \;
+    }
 
     toString * {
         <-string.wrap;
@@ -90,8 +136,12 @@
         } ,, ? '$ > /\/ {
             first: 'first().toString();
             last: 'last().toString();
-            ? 'first()?! :: ""?! { first: wrap(first, "\""); }
-            ? 'last()?! :: ""?! { last: wrap(last, "\""); }
+            ? 'first()?! :: ""?! {
+                first: wrap(first, "\"");
+            }
+            ? 'last()?! :: ""?! {
+                last: wrap(last, "\"");
+            }
             items: "[" + first.toString() + ", ..., " + last.toString() + "]";
         } ,, {
             items: "[]";
@@ -100,6 +150,7 @@
         + ", size:" + 'queue$.toString()
         + ", items:" + items + ")";
     }
+
 }
 
 @ Set {
@@ -113,7 +164,9 @@
         'capacity: capacity;
     }
 
-    special * { * 'items$; }
+    special * {
+        * 'items$;
+    }
 
     add value * {
         ? ~~ 'has(value) {
@@ -126,7 +179,9 @@
         * \;
     }
 
-    toBit * { * ~~ 'isEmpty(); }
+    toBit * {
+        * ~~ 'isEmpty();
+    }
 
     toString * {
         * "Set(capacity:" + 'capacity.toString()
@@ -135,19 +190,33 @@
         + ")";
     }
 
-    remove value * { 'items-: [value]; }
+    remove value * {
+        'items-: [value];
+    }
 
-    has value * { * 'find('items, value) >: \; }
+    has value * {
+        * 'find('items, value) >: \;
+    }
 
-    values * { * 'items; }
+    values * {
+        * 'items;
+    }
 
-    clear * { 'items: []; }
+    clear * {
+        'items: [];
+    }
 
-    isEmpty * { * '$ :: \; }
+    isEmpty * {
+        * '$ :: \;
+    }
 
-    isFull * { * '$ :: 'capacity; }
+    isFull * {
+        * '$ :: 'capacity;
+    }
 
-    newSetSize a b * { * a$ ? a$ > b$ ,, b$; }
+    newSetSize a b * {
+        * a$ ? a$ > b$ ,, b$;
+    }
 
     union other * {
         ? other?! ::: Set()?! {
@@ -207,6 +276,7 @@
         }
         * /;
     }
+
 }
 
 @ Deque {
@@ -217,23 +287,61 @@
         'size: size;
     }
 
-    special * { * 'deque$; }
-    isEmpty * { * ~~ '$; }
-    isFull * { * '$ :: 'size; }
+    special * {
+        * 'deque$;
+    }
 
-    throwEmpty * { ? 'isEmpty() { "deque is empty"!!!; } }
-    throwFull * { ? 'isFull() { "deque is full (size " + 'size.toString() + ")"!!!; } }
+    isEmpty * {
+        * ~~ '$;
+    }
 
-    putFront item * { 'throwFull(); 'deque: [item] + 'deque; }
-    put item * { 'throwFull(); 'deque+: [item]; }
+    isFull * {
+        * '$ :: 'size;
+    }
 
-    putFrontAll items * { ... item ->? items { 'putFront(item); } }
-    putAll items * { ... item ->? items { 'put(item); } }
+    throwEmpty * {
+        ? 'isEmpty() {
+            "deque is empty"!!!;
+        }
+    }
 
-    front * { * 'deque<<\>>; }
-    back * { * 'deque<<-/>>; }
+    throwFull * {
+        ? 'isFull() {
+            "deque is full (size " + 'size.toString() + ")"!!!;
+        }
+    }
 
-    toBit * { * '$ > \; }
+    putFront item * {
+        'throwFull(); 'deque: [item] + 'deque;
+    }
+
+    put item * {
+        'throwFull(); 'deque+: [item];
+    }
+
+    putFrontAll items * {
+        ... item ->? items {
+            'putFront(item);
+        }
+    }
+
+    putAll items * {
+        ... item ->? items {
+            'put(item);
+        }
+    }
+
+    front * {
+        * 'deque<<\>>;
+    }
+
+    back * {
+        * 'deque<<-/>>;
+    }
+
+    toBit * {
+        * '$ > \;
+    }
 
     getFront * {
         'throwEmpty();
@@ -256,8 +364,12 @@
         } ,, ? '$ > /\/ {
             front: 'front().toString();
             back: 'back().toString();
-            ? 'front()?! :: ""?! { front: wrap(front, "\""); }
-            ? 'back()?! :: ""?! { back: wrap(back, "\""); }
+            ? 'front()?! :: ""?! {
+                front: wrap(front, "\"");
+            }
+            ? 'back()?! :: ""?! {
+                back: wrap(back, "\"");
+            }
             items: "[" + front.toString() + ", ..., " + back.toString() + "]";
         } ,, {
             items: "[]";
@@ -266,6 +378,7 @@
         + ", size:" + 'deque$.toString()
         + ", items:" + items + ")";
     }
+
 }
 
 @ StaticArray {
@@ -283,7 +396,7 @@
             i: \;
             ... e ->? value {
                 ? _ ::: type ::: e?! {
-                    "expected " + type + ", found " + e?!.toString()!!!;
+                    "expected " + type.toString() + ", found " + e?!.toString()!!!;
                 }
                 'value<<i>>: e;
                 i+: /;
@@ -293,7 +406,9 @@
         }
     }
 
-    special * { * 'value$; }
+    special * {
+        * 'value$;
+    }
 
     toString * {
         * "StaticArray(size:" + 'size.toString()
@@ -302,7 +417,9 @@
         + ")";
     }
 
-    toBit * { * 'value.toBit(); }
+    toBit * {
+        * 'value.toBit();
+    }
 
     throwInvalidIndex arg * {
         ? arg?! ::: \?! {
@@ -315,7 +432,7 @@
 
     throwInvalidType type * {
         ? _ ::: 'type ::: type {
-            "expected " + 'type + ", received " + type!!!;
+            "expected " + 'type.toString() + ", received " + type.toString()!!!;
         }
     }
 
@@ -329,9 +446,11 @@
         'throwInvalidType(value?!);
         'value<<index>>: value;
     }
+
 }
 
 @ ArithmeticArray {
+
     create array * {
         'array: array;
     }
@@ -340,31 +459,101 @@
         * ArithmeticArray([op(i, other) ... i ->? 'array]);
     }
 
-    and other * { * 'applyOp(operator.and, other); }
-    add other * { * 'applyOp(operator.add, other); }
-    divide other * { * 'applyOp(operator.divide, other); }
-    equals other * { * 'applyOp(operator.equals, other); }
-    greaterThanOrEqual other * { * 'applyOp(operator.greaterThanOrEqual, other); }
-    greaterThan other * { * 'applyOp(operator.greaterThan, other); }
-    lessThanOrEqual other * { * 'applyOp(operator.lessThanOrEqual, other); }
-    lessThan other * { * 'applyOp(operator.lessThan, other); }
-    mod other * { * 'applyOp(operator.mod, other); }
-    multiply other * { * 'applyOp(operator.multiply, other); }
-    notEquals other * { * 'applyOp(operator.notEquals, other); }
-    or other * { * 'applyOp(operator.or, other); }
-    power other * { * 'applyOp(operator.power, other); }
-    subtract other * { * 'applyOp(operator.subtract, other); }
-    xor other * { * 'applyOp(operator.xor, other); }
+    and other * {
+        * 'applyOp(operator.and, other);
+    }
 
-    andAssign other * { 'array: 'and(other).array; * '; }
-    addAssign other * { 'array: 'add(other).array; * '; }
-    divideAssign other * { 'array: 'divide(other).array; * '; }
-    modAssign other * { 'array: 'mod(other).array; * '; }
-    multiplyAssign other * { 'array: 'multiply(other).array; * '; }
-    orAssign other * { 'array: 'or(other).array; * '; }
-    powerAssign other * { 'array: 'power(other).array; * '; }
-    subtractAssign other * { 'array: 'subtract(other).array; * '; }
-    xorAssign other * { 'array: 'xor(other).array; * '; }
+    add other * {
+        * 'applyOp(operator.add, other);
+    }
+
+    divide other * {
+        * 'applyOp(operator.divide, other);
+    }
+
+    equals other * {
+        * 'applyOp(operator.equals, other);
+    }
+
+    greaterThanOrEqual other * {
+        * 'applyOp(operator.greaterThanOrEqual, other);
+    }
+
+    greaterThan other * {
+        * 'applyOp(operator.greaterThan, other);
+    }
+
+    lessThanOrEqual other * {
+        * 'applyOp(operator.lessThanOrEqual, other);
+    }
+
+    lessThan other * {
+        * 'applyOp(operator.lessThan, other);
+    }
+
+    mod other * {
+        * 'applyOp(operator.mod, other);
+    }
+
+    multiply other * {
+        * 'applyOp(operator.multiply, other);
+    }
+
+    notEquals other * {
+        * 'applyOp(operator.notEquals, other);
+    }
+
+    or other * {
+        * 'applyOp(operator.or, other);
+    }
+
+    power other * {
+        * 'applyOp(operator.power, other);
+    }
+
+    subtract other * {
+        * 'applyOp(operator.subtract, other);
+    }
+
+    xor other * {
+        * 'applyOp(operator.xor, other);
+    }
+
+    andAssign other * {
+        'array: 'and(other).array; * ';
+    }
+
+    addAssign other * {
+        'array: 'add(other).array; * ';
+    }
+
+    divideAssign other * {
+        'array: 'divide(other).array; * ';
+    }
+
+    modAssign other * {
+        'array: 'mod(other).array; * ';
+    }
+
+    multiplyAssign other * {
+        'array: 'multiply(other).array; * ';
+    }
+
+    orAssign other * {
+        'array: 'or(other).array; * ';
+    }
+
+    powerAssign other * {
+        'array: 'power(other).array; * ';
+    }
+
+    subtractAssign other * {
+        'array: 'subtract(other).array; * ';
+    }
+
+    xorAssign other * {
+        'array: 'xor(other).array; * ';
+    }
 
     getItem item * {
         <-types.Array;
@@ -374,10 +563,21 @@
         }
         * out;
     }
-    setItem item value * { 'array<<item>>: value; }
 
-    special * { * 'array$; }
+    setItem item value * {
+        'array<<item>>: value;
+    }
 
-    toBit * { * 'array.toBit(); }
-    toString * { * 'array.toString(); }
+    special * {
+        * 'array$;
+    }
+
+    toBit * {
+        * 'array.toBit();
+    }
+
+    toString * {
+        * 'array.toString();
+    }
+
 }
