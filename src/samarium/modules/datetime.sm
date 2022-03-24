@@ -1,2 +1,149 @@
+<-iter.enumerate;
+<-types.Table;
+
+
+monthName: Table(enumerate(
+    [_, "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"]
+)) - \;
+
+weekdayName: Table(enumerate(
+    [_, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+)) - \;
+
+
 sleepSeconds s * { ,., s ++ //`///\`/\\\; }
+
 sleepMinutes m * { sleepSeconds(m ++ //`//\\); }
+
+isLeapYear year * {
+    4: /\\;
+    100: /\/\ +++ /\;
+    ? year --- (4 ++ 100) :: \ { * /; }
+    ? year --- 100 :: \ { * \; }
+    * year --- 4 :: \;
+}
+
+daysInMonth year month * {
+    ? month ->? [/, //, /\/, ///, /\\\, /\/\, //\\] { * /////; }
+    ? month ->? [/\, //\, /\\/, /\//] { * ////\; }
+    ? isLeapYear(year) { * ///\/; }
+    * ///\\;
+}
+
+addZeros n c * {
+    <-string.leftpad;
+    * leftpad(String(n), c, "0");
+}
+
+
+@ DateTime {
+    create Y? M? D? h? m? s? ms? tz? * {
+        Y <> _;
+        ? _ :: Y {
+            'array: @@;
+            'year: 'array<<\>>;
+            'month: 'array<</>>;
+            'day: 'array<</\>>;
+            'hour: 'array<<//>>;
+            'minute: 'array<</\\>>;
+            'second: 'array<</\/>>;
+            'millisecond: 'array<<//\>>;
+            'timezone: 'array<<///..>>;
+        } ,, {
+            M <> /; D <> /;
+            h <> \; m <> \; s <> \; ms <> \;
+            tz <> [\, \];
+            'year: Y;
+            'month: M;
+            'day: D;
+            'hour: h;
+            'minute: m;
+            'second: s;
+            'millisecond: ms;
+            'timezone: tz;
+            'array: [Y, M, D, h, m, s, ms, tz<<\>>, tz<</>>];
+        }
+        ? 'timezone ::: [\, \] {
+            'utc: DateTime('year, 'month, 'day, 'hour, 'minute, 'second, 'millisecond);
+        } ,, {
+            'utc: ';
+        }
+    }
+
+    inMilliseconds dt * {
+        <-collections.ArithmeticArray;
+        <-iter.range;
+
+        1000: /\/\ +++ //;
+        60: //`//\\;
+
+        array: ArithmeticArray(dt.array<<..-/\>><<**-/>>);
+        total: \;
+
+        monthDays: daysInMonth(dt.year, dt.month);
+        yearDays: /`\//\`//\/ + isLeapYear(dt.year);
+
+        ... i ->? [/, 1000, 60, 60, //\\\, monthDays, yearDays] {
+            array++: i;
+            total+: array<<\>>;
+            array: array<</..>>;
+        }
+
+        total-: dt.timezone<<\>> ++ 1000 ++ 60 ++ 60;
+        total-: dt.timezone<</>> ++ 1000 ++ 60;
+
+        * total;
+    }
+
+    subtract other * {
+        diff: 'inMilliseconds(') - 'inMilliseconds(other);
+        1000: /\/\ +++ //;
+        60: //`//\\;
+        24: //\\\;
+        ms: diff --- 1000; diff--: 1000;
+        s: diff --- 60; diff--: 60;
+        m: diff --- 60; diff--: 60;
+        h: diff --- 24; diff--: 24;
+        == `diff` is days
+        * DTDiff([diff, h, m, s, ms]);
+    }
+
+    toString * {
+        <-string.format, leftpad;
+        <-types.String;
+        * format(
+            "$Y-$M-$D $h:$m:$s.$z",
+            {{
+                "Y" -> 'year,
+                "M" -> addZeros('month, /\),
+                "D" -> addZeros('day, /\),
+                "h" -> addZeros('hour + 'timezone<<\>>, /\),
+                "m" -> addZeros('minute + 'timezone<</>>, /\),
+                "s" -> addZeros('second, /\),
+                "z" -> addZeros('millisecond, //)
+            }}
+        );
+    }
+}
+
+@ DTDiff {
+    create data * { 'data: data; }
+
+    toString * {
+        <-string.stripLeft;
+        D: 'data<<\>>;
+        h: 'data<</>>;
+        m: 'data<</\>>;
+        s: 'data<<//>>;
+        ms: 'data<</\\>>;
+        out: "";
+        ? D { out+: D.toString() + " days"; }
+        ? D && ~~ (h || m || s || ms) { out+: ", "; }
+        ? h { out+: addZeros(h, /\) + ":"; }
+        ? h || m { out+: addZeros(m, /\) + ":"; }
+        ? h || m || s { out+: addZeros(s, /\); }
+        ? ms { out+: "." + addZeros(ms, //); }
+        * stripLeft(out, "0");
+    }
+}
