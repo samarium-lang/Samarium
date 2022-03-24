@@ -1,3 +1,6 @@
+<-operator;
+
+
 @ Stack {
 
     create size? * {
@@ -326,4 +329,38 @@
         'throwInvalidType(value?!);
         'value<<index>>: value;
     }
+}
+
+@ ArithmeticArray {
+    create array * {
+        'array: array;
+    }
+
+    applyOp op other * {
+        * ArithmeticArray([op(i, other) ... i ->? 'array]);
+    }
+
+    and other * { * 'applyOp(operator.and, other); }
+    add other * { * 'applyOp(operator.add, other); }
+    divide other * { * 'applyOp(operator.divide, other); }
+    equals other * { * 'applyOp(operator.equals, other); }
+    greaterThanOrEqual other * { * 'applyOp(operator.greaterThanOrEqual, other); }
+    greaterThan other * { * 'applyOp(operator.greaterThan, other); }
+    lessThanOrEqual other * { * 'applyOp(operator.lessThanOrEqual, other); }
+    lessThan other * { * 'applyOp(operator.lessThan, other); }
+    mod other * { * 'applyOp(operator.mod, other); }
+    multiply other * { * 'applyOp(operator.multiply, other); }
+    notEquals other * { * 'applyOp(operator.notEquals, other); }
+    or other * { * 'applyOp(operator.or, other); }
+    power other * { * 'applyOp(operator.power, other); }
+    subtract other * { * 'applyOp(operator.subtract, other); }
+    xor other * { * 'applyOp(operator.xor, other); }
+
+    getItem item * { * 'array<<item>>; }
+    setItem item value * { 'array<<item>>: value; }
+
+    special * { * 'array$; }
+
+    toBit * { * 'array.toBit(); }
+    toString * { * 'array.toString(); }
 }
