@@ -153,7 +153,7 @@ pad string length char? * {
     ? char$ > / {
         "char has to be of length 1"!!!;
     }
-    ? length <: string$ { * string; }
+    ? length < string$ { * string; }
     * char ++ (length - string$);
 }
 
