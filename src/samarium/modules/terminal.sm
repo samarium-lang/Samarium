@@ -9,27 +9,27 @@
                 "l" -> line,
                 "c" -> column
             }}
-        )!;
+        ) ~> /;
     }
 
     static @ home * {
-        "\033[H"!;
+        "\033[H" ~> /;
     }
 
     static @ getMovement n * {
         * "\033[" + n.toString();
     }
 
-    static @ up n * { Cursor.getMovement(n) + "A"!; }
-    static @ down n * { Cursor.getMovement(n) + "B"!; }
-    static @ right n * { Cursor.getMovement(n) + "C"!; }
-    static @ left n * { Cursor.getMovement(n) + "D"!; }
+    static @ up n * { Cursor.getMovement(n) + "A" ~> /; }
+    static @ down n * { Cursor.getMovement(n) + "B" ~> /; }
+    static @ right n * { Cursor.getMovement(n) + "C" ~> /; }
+    static @ left n * { Cursor.getMovement(n) + "D" ~> /; }
     == FIXME
 }
 
 @ Erase {
-    static @ screen * { "\033[2J"!; }
-    static @ line * { "\033[2K"!; }
+    static @ screen * { "\033[2J" ~> /; }
+    static @ line * { "\033[2K" ~> /; }
 }
 
 @ Style {
