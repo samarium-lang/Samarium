@@ -628,7 +628,10 @@ class Table(Class):
         return Integer(bool(self.value))
 
     def _getItem_(self, key: Any) -> Any:
-        return self.value[key]
+        try:
+            return self.value[key]
+        except KeyError:
+            raise SamariumValueError(f"key not found: {key}")
 
     def _setItem_(self, key: Any, value: Any):
         self.value[key] = value
@@ -656,11 +659,17 @@ class Table(Class):
 
     def _subtract_(self, other: Class) -> Table:
         c = self.value.copy()
-        del c[other]
+        try:
+            del c[other]
+        except KeyError:
+            raise SamariumValueError(f"key not found: {other}")
         return Table(c)
 
     def _subtractAssign_(self, other: Class) -> Table:
-        del self.value[other]
+        try:
+            del self.value[other]
+        except KeyError:
+            raise SamariumValueError(f"key not found: {other}")
         return self
 
 
