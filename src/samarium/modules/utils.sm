@@ -1,4 +1,5 @@
 @ static {
+
     create func * {
         'func: func;
     }
@@ -10,9 +11,11 @@
     toString * {
         * 'func.toString();
     }
+
 }
 
 @ curry {
+
     create func args... * {
         'func: func;
         'args: args;
@@ -29,4 +32,5 @@
     toString * {
         * 'func.toString();
     }
+
 }

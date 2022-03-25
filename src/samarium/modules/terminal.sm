@@ -25,12 +25,15 @@
     static @ up n * {
         Cursor.getMovement(n) + "A" ~> /;
     }
+
     static @ down n * {
         Cursor.getMovement(n) + "B" ~> /;
     }
+
     static @ right n * {
         Cursor.getMovement(n) + "C" ~> /;
     }
+
     static @ left n * {
         Cursor.getMovement(n) + "D" ~> /;
     }
