@@ -56,12 +56,13 @@
 
     toString * {
         <-string.wrap;
+        <-types.String;
         ?? {
             top: 'peek();
         } !! {
             top: _;
         }
-        ? top?! :: ""?! {
+        ? top?! :: String {
             top: wrap(top.toString(), "\"");
         }
         * "Stack(capacity:" + 'size.toString()
@@ -131,15 +132,16 @@
 
     toString * {
         <-string.wrap;
+        <-types.String;
         ? '$ <: /\/ {
             items: 'queue.toString();
         } ,, ? '$ > /\/ {
             first: 'first().toString();
             last: 'last().toString();
-            ? 'first()?! :: ""?! {
+            ? 'first()?! :: String {
                 first: wrap(first, "\"");
             }
-            ? 'last()?! :: ""?! {
+            ? 'last()?! :: String {
                 last: wrap(last, "\"");
             }
             items: "[" + first.toString() + ", ..., " + last.toString() + "]";
@@ -359,15 +361,16 @@
 
     toString * {
         <-string.wrap;
+        <-types.String;
         ? '$ <: /\/ {
             items: 'deque.toString();
         } ,, ? '$ > /\/ {
             front: 'front().toString();
             back: 'back().toString();
-            ? 'front()?! :: ""?! {
+            ? 'front()?! :: String {
                 front: wrap(front, "\"");
             }
-            ? 'back()?! :: ""?! {
+            ? 'back()?! :: String {
                 back: wrap(back, "\"");
             }
             items: "[" + front.toString() + ", ..., " + back.toString() + "]";
@@ -385,11 +388,12 @@
 
     create value type? * {
         type <> _;
-        ? value?! :: \?! {
+        <-types.Array, Integer;
+        ? value?! :: Integer {
             'value: {{}};
             'size: value;
             'type: type;
-        } ,, ? value?! :: []?! {
+        } ,, ? value?! :: Array {
             'value: {{}};
             'size: value$;
             'type: type;
@@ -422,7 +426,8 @@
     }
 
     throwInvalidIndex arg * {
-        ? arg?! ::: \?! {
+        <-types.Integer;
+        ? arg?! ::: Integer {
             "expected Integer, received " + arg?!.toString()!!!;
         }
         ? ~~ (\ <: arg < 'size) {

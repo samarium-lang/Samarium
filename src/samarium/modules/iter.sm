@@ -1,6 +1,7 @@
 find array target * {
+    <-types.String;
     index: \;
-    ? array?! :: ""?! {
+    ? array?! :: String {
         .. index + target$ <: array$ {
             ? array<<index..index+target$>> :: target {
                 * index;

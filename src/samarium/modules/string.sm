@@ -117,7 +117,8 @@ isWrapped string chars * {
 
 toLower string * {
     <-iter.range;
-    ? string?! ::: ""?! {
+    <-types.String;
+    ? string?! ::: String {
         "invalid type: " + string?!.toString()!!!;
     }
     out: "";
@@ -133,7 +134,8 @@ toLower string * {
 
 toUpper string * {
     <-iter.range;
-    ? string?! ::: ""?! {
+    <-types.String;
+    ? string?! ::: String {
         "invalid type: " + string?!.toString()!!!;
     }
     out: "";
@@ -229,6 +231,8 @@ wrap string wrapper * {
 
 replace string replacement count? * {
 
+    <-types.Table;
+
     count <> -/;
 
     replaceOne string from to * {
@@ -242,7 +246,7 @@ replace string replacement count? * {
         * [string, replaced];
     }
 
-    ? replacement?! ::: {{}}?! {
+    ? replacement?! ::: Table {
         "invalid type: " + replacement?!.toString()!!!;
     }
 
@@ -260,7 +264,8 @@ replace string replacement count? * {
 }
 
 format string substitutes * {
-    ? substitutes?! ::: {{}}?! {
+    <-types.Table;
+    ? substitutes?! ::: Table {
         "invalid type: " + substitutes?!.toString()!!!;
     }
     ? ~~ substitutes {
