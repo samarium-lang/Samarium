@@ -326,6 +326,8 @@ class Transpiler:
             Token.BRACE_OPEN: ":",
         }.get(token, 0)
         if token == Token.BRACE_OPEN:
+            if self.ch.line_tokens[-2] == Token.WHILE:
+                self.ch.line += ["True"]
             if self.ch.switches["class_def"]:
                 self.ch.switches["class_def"] = False
                 if not isinstance(self.ch.line_tokens[-3], str):
