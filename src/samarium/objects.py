@@ -479,8 +479,8 @@ class Integer(Class):
         return smhash(self.value)
 
     def _create_(self, value: Any = None):
-        if isinstance(value, int):
-            self.value = value
+        if isinstance(value, (int, bool, float)):
+            self.value = int(value)
         elif value is None:
             self.value = 0
         elif isinstance(value.value, (int, bool, float)):
