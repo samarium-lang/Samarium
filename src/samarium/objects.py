@@ -374,12 +374,17 @@ class Slice(Class):
         self.start = start
         self.stop = stop
         self.step = step
-        tup = (start.value, stop.value, step.value)
-        self.value = slice(*tup)
-        # self.range = range(*tup)  TODO
+        self.tup = start.value, stop.value, step.value
+        self.value = slice(*self.tup)
 
-    # def _random_(self) -> Integer:
-    # return Integer(choice(self.range))
+    def _random_(self) -> Integer:
+        if self.stop is None:
+            raise SamariumValueError(
+                "cannot generate a random value for slice with null stop"
+            )
+        tup = self.tup[0] or 0, self.tup[1], self.tup[2] or 1
+        range_ = range(*tup)
+        return Integer(choice(range_))
 
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == Null()
