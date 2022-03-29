@@ -1,91 +1,91 @@
-add a b * {
-    * a + b;
+add x y * {
+    * x + y;
 }
 
-and a b * {
-    * a & b;
+and x y * {
+    * x & y;
 }
 
-cast a * {
-    * a%;
+cast x * {
+    * x%;
 }
 
-divide a b * {
-    * a -- b;
+divide x y * {
+    * x -- y;
 }
 
-equals a b * {
-    * a :: b;
+equals x y * {
+    * x :: y;
 }
 
-greaterThanOrEqual a b * {
-    * a >: b;
+greaterThanOrEqual x y * {
+    * x >: y;
 }
 
-greaterThan a b * {
-    * a > b;
+greaterThan x y * {
+    * x > y;
 }
 
-has a b * {
-    * b ->? a;
+has x y * {
+    * y ->? x;
 }
 
-hash a * {
-    * a##;
+hash x * {
+    * x##;
 }
 
-lessThanOrEqual a b * {
-    * a <: b;
+lessThanOrEqual x y * {
+    * x <: y;
 }
 
-lessThan a b * {
-    * a < b;
+lessThan x y * {
+    * x < y;
 }
 
-mod a b * {
-    * a --- b;
+mod x y * {
+    * x --- y;
 }
 
-multiply a b * {
-    * a ++ b;
+multiply x y * {
+    * x ++ y;
 }
 
-not a * {
-    * ~a;
+not x * {
+    * ~x;
 }
 
-notEquals a b * {
-    * a ::: b;
+notEquals x y * {
+    * x ::: y;
 }
 
-or a b * {
-    * a | b;
+or x y * {
+    * x | y;
 }
 
-power a b * {
-    * a +++ b;
+power x y * {
+    * x +++ y;
 }
 
-random a * {
-    * a??;
+random x * {
+    * x??;
 }
 
-special a * {
-    * a$;
+special x * {
+    * x$;
 }
 
-subtract a b * {
-    * a - b;
+subtract x y * {
+    * x - y;
 }
 
-toBit a * {
-    * a.toBit();
+toBit x * {
+    * x.toBit();
 }
 
-toString a * {
-    * a.toString();
+toString x * {
+    * x.toString();
 }
 
-xor a b * {
-    * a ^ b;
+xor x y * {
+    * x ^ y;
 }
