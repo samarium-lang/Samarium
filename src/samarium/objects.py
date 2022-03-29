@@ -484,16 +484,17 @@ class Integer(Class):
         return smhash(self.value)
 
     def _create_(self, value: Any = None):
-        if isinstance(value, (int, bool, float)):
+        t = type(value)
+        if hasattr(value, "value"):
+            value = value.value
+        if isinstance(value, int | bool | float):
             self.value = int(value)
         elif value is None:
             self.value = 0
-        elif isinstance(value.value, (int, bool, float)):
-            self.value = int(value.value)
-        elif isinstance(value.value, str):
-            self.value = parse_integer(value.value)
+        elif isinstance(value, str):
+            self.value = parse_integer(value)
         else:
-            raise SamariumTypeError(f"cannot cast {type(value).__name__} to Integer")
+            raise SamariumTypeError(f"cannot cast {t.__name__} to Integer")
 
     def _random_(self) -> Integer:
         v = self.value
