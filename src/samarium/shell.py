@@ -7,8 +7,8 @@ from .utils import match_brackets, __version__
 
 
 def read_statement():
-    IN = colored("::> ", "magenta")
-    INDENT = colored("  : ", "magenta")
+    IN = colored("==> ", "cyan")
+    INDENT = colored("  > ", "cyan")
     statement = ""
     prompt = IN
     while True:
@@ -23,7 +23,7 @@ def read_statement():
 
 
 def run_shell(debug: bool):
-    print(colored(f"Samarium {__version__}", "magenta"))
+    print(colored(f"Samarium {__version__}", "cyan"))
     MAIN = CodeHandler(globals())
     while True:
         run(read_statement(), MAIN, debug, load_template=False, quit_on_error=False)
