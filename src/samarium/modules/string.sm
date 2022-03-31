@@ -229,40 +229,6 @@ wrap string wrapper * {
     * wrapper + string + wrapper;
 }
 
-replace string replacement count? * {
-
-    <-types.Table;
-
-    count <> -/;
-
-    replaceOne string from to * {
-        <-iter.find;
-        replaced: \;
-        i: find(string, from);
-        ? i >: \ {
-            replaced: /;
-            string: string<<..i>> + to + string<<i + from$..>>;
-        }
-        * [string, replaced];
-    }
-
-    ? replacement?! ::: Table {
-        "invalid type: " + replacement?!.toString()!!!;
-    }
-
-    ... k ->? replacement {
-        v: replacement<<k>>;
-        replacements: \;
-        .. replacements ::: count {
-            string, replaced: replaceOne(string, k, v);
-            ? ~~ replaced { <- }
-            replacements+: /;
-        }
-    }
-
-    * string;
-}
-
 format string substitutes * {
     <-types.Table;
     ? substitutes?! ::: Table {
@@ -294,4 +260,97 @@ format string substitutes * {
         }
     }
     * newString;
+}
+
+replace string replacements count? * {
+    count <> -/;
+    <-iter.all, find, zip;
+    <-types.String, Table;
+
+    replace string from to count * {
+        empty * {
+            ? ~~ from { * to; }
+            * string;
+        }
+
+        interleave count * {
+            out: to;
+            count-: /;
+            ... i ->? string {
+                out+: i;
+                ? count {
+                    out+: to;
+                    count-: /;
+                }
+            }
+            * out;
+        }
+
+        delChar count * {
+            out: "";
+            ... i ->? string {
+                ? count && i :: from {
+                    count-: /;
+                } ,, {
+                    out+: i;
+                }
+            }
+            * out;
+        }
+
+        replaceSubstring count * {
+            stringCopy: string;
+            out: "";
+            .. count && from ->? stringCopy {
+                i: find(stringCopy, from);
+                out+: stringCopy<<..i>>;
+                out+: to;
+                stringCopy: stringCopy<<i + from$..>>;
+                count-: /;
+            }
+            * out + stringCopy;
+        }
+
+        replaceChar count * {
+            out: "";
+            ... i ->? string {
+                ? i :: from && count {
+                    out+: to;
+                    count-: /;
+                } ,, {
+                    out+: i;
+                }
+            }
+            * out;
+        }
+
+        ? ~~ string {
+            * empty();
+        } ,, ? ~~ from {
+            * interleave(count);
+        } ,, ? from$ :: / {
+            ? ~~ to {
+                * delChar(count);
+            }
+            * replaceChar(count);
+        } ,, {
+            * replaceSubstring(count);
+        }
+    }
+
+    ? replacements?! ::: Table {
+        "invalid type for replacements: " + String(replacements?!)!!!;
+    }
+    replacements: {{k -> v ... k, v ->? zip([replacements.iterate(), replacements$])}};
+    ? ~~ all([count, replacements]) {
+        * string;
+    }
+    ... f, t ->? zip([replacements.iterate(), replacements$]) {
+        string: replace(string, f, t, count);
+    }
+    * string;
+}
+
+=> * {
+    replace("abc", {{"a" -> "aa"}})!;
 }
