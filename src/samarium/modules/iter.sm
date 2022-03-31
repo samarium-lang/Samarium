@@ -209,7 +209,7 @@ all array * {
 }
 
 any array * {
-    ... ->? array {
+    ... i ->? array {
         ? i {
             * /;
         }
