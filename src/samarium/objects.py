@@ -89,7 +89,7 @@ def verify_type(obj: Any, *args) -> Class | Callable:
             return Null()
     elif isinstance(obj, type):
         return Type(obj)
-    elif isinstance(obj, (Class, Callable)):
+    elif isinstance(obj, (Class, Callable, Module)):
         return obj
     elif isinstance(obj, tuple):
         return Array([*obj])
@@ -372,6 +372,8 @@ class Type(Class):
     def _call_(self, *args) -> Class:
         if isinstance(lambda: 0, self.value):
             raise SamariumTypeError("cannot instantiate a function")
+        if self.value is Module:
+            raise SamariumTypeError("cannot instantiate a module")
         return self.value(*args)
 
 
@@ -964,12 +966,17 @@ class File(Class):
 
 
 class Module:
+
     def __init__(self, name: str, objects: dict[str, Class]):
         self.name = name
         self.objects = objects
 
-    def __str__(self) -> String:
-        return String(f"module '{self.name}'")
+    def __str__(self) -> str:
+        return f"module '{self.name}'"
 
     def __getattr__(self, key: str) -> Class:
         return self.objects[key]
+
+    @property
+    def type(self) -> Type:
+        return Type(self.__class__)
