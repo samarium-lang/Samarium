@@ -1,4 +1,5 @@
 from termcolor import colored
+from contextlib import suppress
 
 from .core import run
 from .tokenizer import tokenize
@@ -26,5 +27,10 @@ def run_shell(debug: bool):
     print(colored(f"Samarium {__version__}", "cyan"))
     MAIN = CodeHandler(globals())
     while True:
-        run(read_statement(), MAIN, debug, load_template=False, quit_on_error=False)
-        MAIN.code *= 0
+        try:
+            run(read_statement(), MAIN, debug, load_template=False, quit_on_error=False)
+            MAIN.code *= 0
+        except KeyboardInterrupt:
+            print()
+        except EOFError:
+            break
