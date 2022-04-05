@@ -518,7 +518,7 @@ class Transpiler:
                 if self.ch.line_tokens[0] == Token.FROM:
                     return "*"
             x = bool(self.ch.indent)
-            self.ch.switches["function"] = bool(self.ch.line[x:])
+            self.ch.switches["function"] = not self.is_first_token()
             self.ch.line = [i for i in self.ch.line if i]
             if self.ch.switches["function"]:
                 self.ch.scope += "function"
