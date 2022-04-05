@@ -966,7 +966,6 @@ class File(Class):
 
 
 class Module:
-
     def __init__(self, name: str, objects: dict[str, Class]):
         self.name = name
         self.objects = objects
