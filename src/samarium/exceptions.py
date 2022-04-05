@@ -1,4 +1,5 @@
 import sys
+from re import findall
 
 from .runtime import Runtime
 
@@ -9,7 +10,13 @@ def handle_exception(exception: Exception):
         exception = SamariumSyntaxError(
             f"invalid syntax at {hex(int(str(exception).split()[-1][:-1]))}"
         )
-    if name not in {"SyntaxError", "NotDefinedError", "AssertionError"}:
+    elif name in {"AttributeError", "NameError"}:
+        names = findall(r"'(\w+)'", str(exception))
+        if names == ["entry"]:
+            names = ["no main function defined"]
+        exception = NotDefinedError(".".join(names))
+        name = "NotDefinedError"
+    elif name not in {"AssertionError", "NotDefinedError"}:
         if name.startswith("Samarium"):
             name = name.removeprefix("Samarium")
         else:
@@ -19,35 +26,37 @@ def handle_exception(exception: Exception):
         exit(1)
 
 
-class NotDefinedError(Exception):
-    def __init__(self, class_, message: str):
-        self.class_ = class_.__class__.__name__
-        super().__init__(f"{self.class_}.{message}")
-
-
 class SamariumError(Exception):
-    blank = ""
     prefix = ""
 
     def __init__(self, message: str = ""):
-        super().__init__(f"{self.prefix}{message}" if message else self.blank)
+        super().__init__(f"{self.prefix}{message}")
+
+
+class NotDefinedError(SamariumError):
+    def __init__(self, inp: object, message: str = ""):
+        if isinstance(inp, str):
+            message = inp
+            inp = ""
+        else:
+            inp = inp.__class__.__name__
+        super().__init__(f"{inp}." * bool(inp) + f"{message}")
 
 
 class SamariumImportError(SamariumError):
-    blank = "import error"
     prefix = "invalid module: "
 
 
 class SamariumSyntaxError(SamariumError):
-    blank = "invalid syntax"
+    pass
 
 
 class SamariumTypeError(SamariumError):
-    blank = "invalid type"
+    pass
 
 
 class SamariumValueError(SamariumError):
-    blank = "invalid value"
+    pass
 
 
 class SamariumIOError(SamariumError):
