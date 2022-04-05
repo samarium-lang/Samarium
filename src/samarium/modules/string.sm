@@ -350,7 +350,3 @@ replace string replacements count? * {
     }
     * string;
 }
-
-=> * {
-    replace("abc", {{"a" -> "aa"}})!;
-}
