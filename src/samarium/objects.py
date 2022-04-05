@@ -360,6 +360,9 @@ class Type(Class):
     def _equals_(self, other: Type) -> Integer:
         return Integer(self.value == other.value)
 
+    def _notEquals_(self, other: Type) -> Integer:
+        return Integer(self.value != other.value)
+
     def _toString_(self) -> String:
         return String(get_function_name(self.value))
 
@@ -408,6 +411,9 @@ class Null(Class):
 
     def _equals_(self, other: Null) -> Integer:
         return Integer(type(other) is Null)
+
+    def _notEquals_(self, other: Null) -> Integer:
+        return Integer(type(other) is not Null)
 
 
 class String(Class):
@@ -464,8 +470,20 @@ class String(Class):
     def _equals_(self, other: String) -> Integer:
         return Integer(self.value == other.value)
 
+    def _notEquals_(self, other: String) -> Integer:
+        return Integer(self.value != other.value)
+
     def _greaterThan_(self, other: String) -> Integer:
         return Integer(self.value > other.value)
+
+    def _lessThan_(self, other: String) -> Integer:
+        return Integer(self.value < other.value)
+
+    def _greaterThanOrEqual_(self, other: String) -> Integer:
+        return Integer(self.value >= other.value)
+
+    def _lessThanOrEqual_(self, other: String) -> Integer:
+        return Integer(self.value <= other.value)
 
     def _getItem_(self, index: Integer | Slice) -> String:
         return String(self.value[index.value])
@@ -591,8 +609,20 @@ class Integer(Class):
     def _equals_(self, other: Integer) -> Integer:
         return Integer(self.value == other.value)
 
+    def _notEquals_(self, other: Integer) -> Integer:
+        return Integer(self.value != other.value)
+
     def _greaterThan_(self, other: Integer) -> Integer:
         return Integer(self.value > other.value)
+
+    def _lessThan_(self, other: Integer) -> Integer:
+        return Integer(self.value < other.value)
+
+    def _greaterThanOrEqual_(self, other: Integer) -> Integer:
+        return Integer(self.value >= other.value)
+
+    def _lessThanOrEqual_(self, other: Integer) -> Integer:
+        return Integer(self.value <= other.value)
 
     def _special_(self) -> String:
         return String(f"{self.value:b}")
@@ -659,6 +689,9 @@ class Table(Class):
     def _equals_(self, other: Table) -> Integer:
         return Integer(self.value == other.value)
 
+    def _notEquals_(self, other: Table) -> Integer:
+        return Integer(self.value == other.value)
+
     def _add_(self, other: Table) -> Table:
         return Table(self.value | other.value)
 
@@ -723,8 +756,20 @@ class Array(Class):
     def _equals_(self, other: Array) -> Integer:
         return Integer(self.value == other.value)
 
+    def _notEquals_(self, other: Array) -> Integer:
+        return Integer(self.value != other.value)
+
     def _greaterThan_(self, other: Array) -> Integer:
         return Integer(self.value > other.value)
+
+    def _lessThan_(self, other: Array) -> Integer:
+        return Integer(self.value < other.value)
+
+    def _greaterThanOrEqual_(self, other: Array) -> Integer:
+        return Integer(self.value >= other.value)
+
+    def _lessThanOrEqual_(self, other: Array) -> Integer:
+        return Integer(self.value <= other.value)
 
     def _getItem_(self, index: Integer | Slice) -> Any:
         if isinstance(index, Integer):
