@@ -326,6 +326,11 @@ class Transpiler:
             Token.BRACE_OPEN: ":",
         }.get(token, 0)
         if token == Token.BRACE_OPEN:
+            if self.ch.scope[-1] == "enum":
+                self.ch.line_tokens.pop()
+                name = self.ch.line[-1]
+                self.ch.line += [f"=Enum('{name}', '"]
+                return 1
             if self.ch.line_tokens[-2] == Token.WHILE:
                 self.ch.line += ["True"]
             if self.ch.switches["class_def"]:
@@ -336,6 +341,11 @@ class Transpiler:
             self.ch.indent += 1
             self.ch.line += [out]
         elif token == Token.BRACE_CLOSE:
+            if self.ch.scope[-1] == "enum":
+                self.ch.line += ["')"]
+                self.ch.scope.pop()
+                self.transpile_token(Token.END)
+                return 1
             self.ch.switches["newline"] = True
             self.ch.indent -= 1
             if self.ch.switches["function"]:
@@ -372,6 +382,8 @@ class Transpiler:
                 ):
                     return f"readline({self.ch.line.pop()})"
             return "readline()"
+        elif token == Token.SEP and self.ch.scope and self.ch.scope[-1] == "enum":
+            self.ch.line += "', '"
         elif token == Token.INSTANCE and not self.ch.switches["class"]:
             throw_syntax("instance operator cannot be used outside a class")
         elif token == Token.DEFAULT:
@@ -517,6 +529,9 @@ class Transpiler:
             else:
                 self.ch.line += ["assert "]
         elif token == Token.SLICE_STEP:
+            if self.is_first_token():
+                self.ch.scope += "enum"
+                return 1
             try:
                 previous = self.ch.line_tokens[-2]
             except IndexError:

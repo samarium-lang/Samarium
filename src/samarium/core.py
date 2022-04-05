@@ -19,6 +19,7 @@ from .objects import (
     Module,
     Table,
     Array,
+    Enum,
     Mode,
     FileManager,
     File,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 
-from enum import Enum
+from enum import Enum as Enum_
 from functools import wraps
 from inspect import signature
 from secrets import choice, randbelow
@@ -770,7 +770,27 @@ class Array(Class):
         return self
 
 
-class Mode(Enum):
+class Enum(Array):
+    def _create_(self, *values: str):
+        if any(isinstance(i, Class) for i in values):
+            raise SamariumTypeError("enums cannot be constructed from Type")
+        value = [*values[1:]]
+        value = [*dict.fromkeys(value)]
+        if not all(i.isidentifier() for i in value):
+            raise SamariumValueError("enum members must be identifiers")
+        super()._create_(Array([*map(String, value)]))
+        self.name = values[0].strip("_")
+
+    def _toString_(self) -> String:
+        return String(f"Enum({self.name})")
+
+    def __getattr__(self, name: str) -> String:
+        if String(name) in self.value:
+            return String(f"{self.name}.{name.strip('_')}")
+        raise AttributeError(f"'{self.name}' object has no attribute '{name}'")
+
+
+class Mode(Enum_):
     READ = "r"
     WRITE = "w"
     READ_WRITE = "r+"
