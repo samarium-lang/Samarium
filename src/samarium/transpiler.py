@@ -14,6 +14,28 @@ def throw_syntax(message: str):
     handle_exception(SamariumSyntaxError(message))
 
 
+class Scope:
+    def __init__(self):
+        self.scope = []
+
+    def __iadd__(self, other: str):
+        self.scope.append(other)
+        return self
+
+    def pop(self):
+        with suppress(IndexError):
+            self.scope.pop()
+
+    def __getitem__(self, key: int) -> str:
+        try:
+            return self.scope[key]
+        except IndexError:
+            return ""
+
+    def __str__(self) -> str:
+        return "/".join(self.scope)
+
+
 class CodeHandler:
     def __init__(self, globals: dict[str, Any]):
         self.class_indent = []
@@ -23,6 +45,7 @@ class CodeHandler:
         self.indent = 0
         self.locals = {}
         self.globals = globals
+        self.scope = Scope()
         self.switches = {
             k: False
             for k in {
@@ -355,6 +378,7 @@ class Transpiler:
                 self.ch.class_indent.pop()
             if self.ch.all_tokens[-1] == Token.BRACE_OPEN:
                 self.ch.line += ["pass"]
+            self.ch.scope.pop()
         else:
             return out
         self.transpile_token(None)
@@ -496,7 +520,9 @@ class Transpiler:
             x = bool(self.ch.indent)
             self.ch.switches["function"] = bool(self.ch.line[x:])
             self.ch.line = [i for i in self.ch.line if i]
-            if not self.ch.switches["function"]:
+            if self.ch.switches["function"]:
+                self.ch.scope += "function"
+            else:
                 self.ch.line.insert(x, "return ")
                 return 1
             self.ch.line = [
@@ -508,7 +534,14 @@ class Transpiler:
                 "(",
                 ",".join(
                     self.groupnames(
-                        (["self"] * self.ch.switches["class"]) + self.ch.line[x + 1 :]
+                        (
+                            ["self"]
+                            * (
+                                self.ch.switches["class"]
+                                and self.ch.scope[-2] == "class"
+                            )
+                        )
+                        + self.ch.line[x + 1 :]
                     )
                 ),
                 ")",
@@ -521,6 +554,7 @@ class Transpiler:
                 return 1
             self.ch.switches["class"] = True
             self.ch.switches["class_def"] = True
+            self.ch.scope += "class"
             self.ch.class_indent += [self.ch.indent]
             return f"@class_attributes\n{'    ' * self.ch.indent}class "
         elif token == Token.ASSERT:
