@@ -8,6 +8,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.9"
+pyttest = "^1.0.1"
+pytest = "^7.1.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
