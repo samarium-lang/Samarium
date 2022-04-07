@@ -2,14 +2,15 @@
 .idea
 .vscode
 
-# mypy
-.mypy_cache
-
 # Environment
 *.py[cod]
 __pycache__
 dist/
 venv
+
+# Python tools
+.coverage
+.mypy_cache
 
 # Folder icon
 .directory
