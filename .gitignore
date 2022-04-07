@@ -8,8 +8,11 @@ __pycache__
 dist/
 venv
 
-# Python tools
+# Coverage
 .coverage
+coverage.xml
+
+# Mypy
 .mypy_cache
 
 # Folder icon
