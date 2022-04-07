@@ -145,6 +145,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "termcolor"
+version = "1.1.0"
+description = "ANSII Color formatting for output in terminal."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -155,7 +163,7 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9"
-content-hash = "cb9904529607f85f3b58d6225d063d3bd09ea24efc7527c795f0a52d2a45b0fb"
+content-hash = "1205da7b26d62ea8e432b9f4acd42fa9b43f8d0e45696cce686ede28f45c87ab"
 
 [metadata.files]
 atomicwrites = [
@@ -212,6 +220,9 @@ pytest = [
 ]
 pyttest = [
     {file = "pyttest-1.0.1.tar.gz", hash = "sha256:7a59a9a9e011c24fe104bf3f8589e5ad6f0f740980494b0df57d45141324c25b"},
+]
+termcolor = [
+    {file = "termcolor-1.1.0.tar.gz", hash = "sha256:1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"},
 ]
 tomli = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
