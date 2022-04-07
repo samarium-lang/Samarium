@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "samarium"
-version = "0.2.0-beta.1"
+version = "0.2.0-beta"
 description = "A dynamic, interpreted language transpiled to Python"
 authors = ["trag1c <trag1cdev@yahoo.com>"]
 license = "MIT"
@@ -8,7 +8,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.9"
-termcolor = "^1.1.0"
+pyttest = "^1.0.1"
+pytest = "^7.1.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
