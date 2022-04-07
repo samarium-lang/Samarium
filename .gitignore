@@ -1,5 +1,19 @@
+# IDE Config
+.idea
 .vscode
+
+# mypy
 .mypy_cache
+
+# Environment
+*.py[cod]
 __pycache__
-test
 dist/
+venv
+
+# Folder icon
+.directory
+.samarium.png
+
+# Other
+test
