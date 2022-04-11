@@ -84,7 +84,7 @@ class Transpiler:
             if item == "for ":
                 out[-1] = f"*{out[-1]}"
             elif item == "if ":
-                out[-1] = f"{out[-1]}=MISSING()"
+                out[-1] += "=MISSING()"
             else:
                 out += [item]
         return out
