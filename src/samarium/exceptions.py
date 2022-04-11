@@ -1,5 +1,6 @@
 import sys
 from re import findall
+from termcolor import colored
 
 from .runtime import Runtime
 
@@ -21,7 +22,7 @@ def handle_exception(exception: Exception):
             name = name.removeprefix("Samarium")
         else:
             name = f"External{name}"
-    sys.stderr.write(f"\033[31m[{name}] {exception}\033[0m\n".replace("_", ""))
+    sys.stderr.write(colored(f"[{name}] {exception}\n", "red").replace("_", ""))
     if Runtime.quit_on_error:
         exit(1)
 

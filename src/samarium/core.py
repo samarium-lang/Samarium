@@ -2,6 +2,7 @@ import os
 import sys
 
 from datetime import datetime
+from termcolor import colored
 from time import sleep as _sleep
 
 from . import exceptions as exc
@@ -68,6 +69,9 @@ def import_module(data: str, ch: CodeHandler):
         objects = []
         module_import = True
     name = name.strip("_")
+    if name == "samarium":
+        sys.stderr.write(colored("[RecursionError]\n"))
+        return
     try:
         path = sys.argv[1][: sys.argv[1].rfind("/") + 1] or "."
     except IndexError:  # Shell
