@@ -311,7 +311,7 @@ class Transpiler:
         return ""
 
     def transpile_operator(self, token: Transpilable, _) -> str | int:
-        return {
+        tokens: dict[Transpilable, str] = {
             # Arithmetic
             Token.ADD: "+",
             Token.SUB: "-",
@@ -336,10 +336,11 @@ class Transpiler:
             Token.BINOR: "|",
             Token.BINNOT: "~",
             Token.BINXOR: "^",
-        }.get(token, 0)
+        }
+        return tokens.get(token, 0)
 
     def transpile_bracket(self, token: Transpilable, _) -> str | int:
-        out = {
+        tokens: dict[Transpilable, str] = {
             Token.BRACKET_OPEN: "Array([",
             Token.BRACKET_CLOSE: "])",
             Token.PAREN_OPEN: "(",
@@ -347,7 +348,8 @@ class Transpiler:
             Token.TABLE_OPEN: "Table({",
             Token.TABLE_CLOSE: "})",
             Token.BRACE_OPEN: ":",
-        }.get(token, 0)
+        }
+        out = tokens.get(token, 0)
         if token == Token.BRACE_OPEN:
             if self.ch.scope[-1] == "enum":
                 self.ch.line_tokens.pop()
@@ -385,7 +387,7 @@ class Transpiler:
         return 1
 
     def transpile_exec(self, token: Transpilable, index: int) -> str | int:
-        out = {
+        tokens: dict[Transpilable, str] = {
             Token.INSTANCE: "self",
             Token.ASSIGN: "=",
             Token.SEP: ",",
@@ -397,7 +399,8 @@ class Transpiler:
             Token.TYPE: ".type",
             Token.PARENT: ".parent",
             Token.CAST: "._cast_()",
-        }.get(token, 0)
+        }
+        out = tokens.get(token, 0)
         if token == Token.STDIN:
             with suppress(IndexError):
                 if (
@@ -470,12 +473,13 @@ class Transpiler:
         return 1
 
     def transpile_control_flow(self, token: Transpilable, index: int) -> str | int:
-        out = {
+        tokens: dict[Transpilable, str] = {
             Token.WHILE: "while ",
             Token.FOR: "for ",
             Token.ELSE: "else ",
             Token.IN: " in ",
-        }.get(token, 0)
+        }
+        out = tokens.get(token, 0)
         if token in {Token.IF, Token.FOR, Token.ELSE} and not self.is_first_token():
             self.ch.line += [" "]
         if token == Token.IF:
