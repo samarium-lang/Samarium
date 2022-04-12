@@ -4,7 +4,7 @@ from typing import Any, Optional
 
 from .exceptions import handle_exception, SamariumSyntaxError
 from .tokenizer import Tokenlike
-from .tokens import FILE_IO_TOKENS, Token
+from .tokens import FILE_IO_TOKENS, Token, OPEN_TOKENS
 from .utils import match_brackets
 
 Transpilable = Optional[Tokenlike]
@@ -69,6 +69,7 @@ class Transpiler:
         self.ch = code_handler
         self.set_slice = 0
         self.slicing = False
+        self.slice_object = False
         self.slice_tokens = []
 
     def is_first_token(self) -> bool:
@@ -113,6 +114,11 @@ class Transpiler:
             return
 
         if token == Token.SLICE_OPEN:
+            prev_token = self.ch.line_tokens[-2]
+            self.slice_object = (
+                not isinstance(prev_token, str)
+                or prev_token in {Token.ASSIGN, Token.SEP, Token.TO, *OPEN_TOKENS}
+            )
             self.slicing = True
             self.slice_tokens.append(token)
             return
@@ -177,6 +183,7 @@ class Transpiler:
     def transpile_slice(self):
 
         assign = self.slice_tokens[-1] == Token.ASSIGN
+        obj = not self.slice_object
         tokens = [
             i
             for i in self.slice_tokens
@@ -184,37 +191,38 @@ class Transpiler:
         ]
         null = "Null()"
         slce = "Slice"
-        method = "_setItem_" if assign else "_getItem_"
+        method = "._setItem_" if assign else "._getItem_"
 
+        self.ch.line += [f"{method}("] * obj
         if all(token not in tokens for token in {Token.WHILE, Token.SLICE_STEP}):
             # <<index>>
             if tokens:
-                self.ch.line += [f".{method}("]
                 for t in tokens:
                     self.transpile_token(t)
-                self.ch.line += [",)"[method == "_getItem_"]]
+                self.ch.line += ",)"[method == "._getItem_"] * obj
             # <<>>
             else:
                 self.ch.line += [
-                    f".{method}({slce}({null},{null},{null})" + "),"[assign]
+                    f"{slce}({null},{null},{null})"
+                    + "),"[assign] * obj
                 ]
             self.slice_tokens = []
             self.slicing = False
             return assign
         # <<**step>>
         if tokens[0] == Token.SLICE_STEP:
-            self.ch.line += [f".{method}({slce}({null},{null},"]
+            self.ch.line += [f"{slce}({null},{null},"]
             for t in tokens[1:]:
                 self.transpile_token(t)
-            self.ch.line += [")" + "),"[assign]]
+            self.ch.line += [")" + "),"[assign] * obj]
         # <<start..>>
         elif tokens[-1] == Token.WHILE:
-            self.ch.line += [f".{method}({slce}("]
+            self.ch.line += [f"{slce}("]
             for t in tokens[:-1]:
                 self.transpile_token(t)
-            self.ch.line += [f",{null},{null})" + "),"[assign]]
+            self.ch.line += [f",{null},{null})" + "),"[assign] * obj]
         elif tokens[0] == Token.WHILE:
-            self.ch.line += [f".{method}({slce}({null},"]
+            self.ch.line += [f"{slce}({null},"]
             # <<..end**step>>
             if Token.SLICE_STEP in tokens:
                 step_index = tokens.index(Token.SLICE_STEP)
@@ -223,14 +231,14 @@ class Transpiler:
                 self.ch.line += ","
                 for t in tokens[step_index + 1 :]:
                     self.transpile_token(t)
-                self.ch.line += [")" + "),"[assign]]
+                self.ch.line += [")" + "),"[assign] * obj]
             # <<..end>>
             else:
                 for t in tokens[1:]:
                     self.transpile_token(t)
-                self.ch.line += [f",{null})" + "),"[assign]]
+                self.ch.line += [f",{null})" + "),"[assign] * obj]
         elif Token.WHILE in tokens or Token.SLICE_STEP in tokens:
-            self.ch.line += [f".{method}({slce}("]
+            self.ch.line += [f"{slce}("]
 
             def index(lst: list[Tokenlike | str], target: Token) -> int:
                 return lst.index(target) if target in lst else -1
@@ -249,7 +257,7 @@ class Transpiler:
                         self.transpile_token(t)
                     if i < 2:
                         self.ch.line += ","
-                self.ch.line += [")" + "),"[assign]]
+                self.ch.line += [")" + "),"[assign] * obj]
             # <<start..end>>
             elif Token.WHILE in tokens:
                 for i in tokens[:while_index]:
@@ -257,7 +265,7 @@ class Transpiler:
                 self.ch.line += ","
                 for i in tokens[while_index + 1 :]:
                     self.transpile_token(i)
-                self.ch.line += [f",{null})" + "),"[assign]]
+                self.ch.line += [f",{null})" + "),"[assign] * obj]
             # <<start**step>>
             else:
                 for i in tokens[:step_index]:
@@ -265,7 +273,7 @@ class Transpiler:
                 self.ch.line += [f",{null},"]
                 for i in tokens[step_index + 1 :]:
                     self.transpile_token(i)
-                self.ch.line += [")" + "),"[assign]]
+                self.ch.line += [")" + "),"[assign] * obj]
         else:
             throw_syntax("invalid slice syntax")
         self.slice_tokens = []

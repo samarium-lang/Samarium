@@ -397,6 +397,27 @@ class Slice(Class):
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == Null()
 
+    def _toString_(self) -> String:
+        start, stop, step = self.tup
+        if start is stop is step is None:
+            return String("<<>>")
+        string = ""
+        if start is not None:
+            string += str(start)
+            if stop is step is None:
+                string += ".."
+        if stop is not None:
+            string += f"..{stop}"
+        if step is not None:
+            string += f"**{step}"
+        return String(f"<<{string}>>")
+
+    def _equals_(self, other: Slice) -> Integer:
+        return Integer(self.tup == other.tup)
+
+    def _notEquals_(self, other: Slice) -> Integer:
+        return Integer(self.tup != other.tup)
+
 
 class Null(Class):
     def _create_(self):
