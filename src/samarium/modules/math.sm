@@ -136,13 +136,14 @@ isPrime n * {
 @ UUID4 {
 
     create * {
-        <-string.hexdigits, join;
         <-random.choices;
+        <-string.hexdigits, join;
+        <-types.Integer;
         hex: join(choices(hexdigits, /\`\\\\));
         hex<<//\\>>: "4";
         hex<</\\\\>>: "89ab"??;
         'hex: hex;
-        'dec: fromHex(hex);
+        'dec: Integer("x:" + hex);
     }
 
     toString * {
