@@ -1,5 +1,6 @@
 <-iter.enumerate;
-<-types.Table;
+<-types.String, Table;
+<-utils.static;
 
 
 monthName: Table(enumerate(
@@ -46,7 +47,6 @@ addZeros n c * {
     * leftpad(String(n), c, "0");
 }
 
-
 @ DateTime {
     
     create Y? M? D? h? m? s? ms? tz? * {
@@ -82,33 +82,8 @@ addZeros n c * {
         }
     }
 
-    inMilliseconds dt * {
-        <-collections.ArithmeticArray;
-        <-iter.range;
-
-        1000: /\/\ +++ //;
-        60: //`//\\;
-
-        array: ArithmeticArray(dt.array<<..-/\>><<**-/>>);
-        total: \;
-
-        monthDays: daysInMonth(dt.year, dt.month);
-        yearDays: /`\//\`//\/ + isLeapYear(dt.year);
-
-        ... i ->? [/, 1000, 60, 60, //\\\, monthDays, yearDays] {
-            array++: i;
-            total+: array<<\>>;
-            array: array<</..>>;
-        }
-
-        total-: dt.timezone<<\>> ++ 1000 ++ 60 ++ 60;
-        total-: dt.timezone<</>> ++ 1000 ++ 60;
-
-        * total;
-    }
-
     subtract other * {
-        diff: 'inMilliseconds(') - 'inMilliseconds(other);
+        diff: 'inMs() - other.inMs();
         1000: /\/\ +++ //;
         60: //`//\\;
         24: //\\\;
@@ -122,7 +97,6 @@ addZeros n c * {
 
     toString * {
         <-string.format, leftpad;
-        <-types.String;
         * format(
             "$Y-$M-$D $h:$m:$s.$z",
             {{
@@ -135,6 +109,32 @@ addZeros n c * {
                 "z" -> addZeros('millisecond, //)
             }}
         );
+    }
+
+    inMs * {
+        <-collections.ArithmeticArray;
+        <-iter.range;
+
+        1000: /\/\ +++ //;
+        60: //`//\\;
+
+        modArray: 'array<<..-/\>>;
+        array: ArithmeticArray(modArray<<**-/>>);
+        total: \;
+
+        monthDays: daysInMonth('year, 'month);
+        yearDays: /`\//\`//\/ + isLeapYear('year);
+
+        ... i ->? [/, 1000, 60, 60, //\\\, monthDays, yearDays] {
+            array++: i;
+            total+: array<<\>>;
+            array: array<</..>>;
+        }
+
+        total-: 'timezone<<\>> ++ 1000 ++ 60 ++ 60;
+        total-: 'timezone<</>> ++ 1000 ++ 60;
+
+        * total;
     }
 
 }
@@ -162,4 +162,10 @@ addZeros n c * {
         * stripLeft(out, "0");
     }
 
+}
+
+EPOCH: DateTime(////\//\\/\, /, /, \, \, \, \, [\, \]);
+
+timestamp * {
+    * DateTime().inMs() - EPOCH.inMs();
 }
