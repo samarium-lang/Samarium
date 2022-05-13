@@ -16,7 +16,7 @@ def throw_syntax(message: str):
 
 class Scope:
     def __init__(self):
-        self.scope = []
+        self.scope: list[str] = []
 
     def __iadd__(self, other: str):
         self.scope.append(other)
@@ -32,8 +32,11 @@ class Scope:
         except IndexError:
             return ""
 
+    def __eq__(self, other: str) -> bool:
+        return self[-1] == other
+
     def __str__(self) -> str:
-        return "/".join(self.scope)
+        return "\033[32m" + ("/".join(self.scope) or "null") + "\033[0m"
 
 
 class CodeHandler:
@@ -69,7 +72,7 @@ class Transpiler:
         self.ch = code_handler
         self.set_slice = 0
         self.slicing = False
-        self.slice_object = False
+        self.slice = False
         self.slice_tokens = []
 
     def is_first_token(self) -> bool:
@@ -115,9 +118,15 @@ class Transpiler:
 
         if token == Token.SLICE_OPEN:
             prev_token = self.ch.line_tokens[-2]
-            self.slice_object = (
-                not isinstance(prev_token, str)
-                or prev_token in {Token.ASSIGN, Token.SEP, Token.TO, *OPEN_TOKENS}
+            self.slice = (
+                prev_token
+                not in {
+                    Token.ASSIGN,
+                    Token.SEP,
+                    Token.TO,
+                    *OPEN_TOKENS,
+                }
+                or isinstance(prev_token, str)
             )
             self.slicing = True
             self.slice_tokens.append(token)
@@ -183,7 +192,7 @@ class Transpiler:
     def transpile_slice(self):
 
         assign = self.slice_tokens[-1] == Token.ASSIGN
-        obj = not self.slice_object
+        obj = self.slice
         tokens = [
             i
             for i in self.slice_tokens
@@ -202,10 +211,7 @@ class Transpiler:
                 self.ch.line += ",)"[method == "._getItem_"] * obj
             # <<>>
             else:
-                self.ch.line += [
-                    f"{slce}({null},{null},{null})"
-                    + "),"[assign] * obj
-                ]
+                self.ch.line += [f"{slce}({null},{null},{null})" + "),"[assign] * obj]
             self.slice_tokens = []
             self.slicing = False
             return assign
@@ -359,7 +365,16 @@ class Transpiler:
         }
         out = tokens.get(token, 0)
         if token == Token.BRACE_OPEN:
-            if self.ch.scope[-1] == "enum":
+            if self.ch.line_tokens[0] in {
+                Token.IF,
+                Token.FOR,
+                Token.WHILE,
+                Token.TRY,
+                Token.CATCH,
+                Token.ELSE,
+            }:
+                self.ch.scope += "control_flow"
+            if self.ch.scope == "enum":
                 self.ch.line_tokens.pop()
                 name = self.ch.line[-1]
                 self.ch.line += [f"=Enum('{name}', '"]
@@ -374,9 +389,9 @@ class Transpiler:
             self.ch.indent += 1
             self.ch.line += [out]
         elif token == Token.BRACE_CLOSE:
-            if self.ch.scope[-1] == "enum":
+            self.ch.scope.pop()
+            if self.ch.scope == "enum":
                 self.ch.line += ["')"]
-                self.ch.scope.pop()
                 self.transpile_token(Token.END)
                 return 1
             self.ch.switches["newline"] = True
@@ -387,8 +402,10 @@ class Transpiler:
                 self.ch.switches["class"] = False
                 self.ch.class_indent.pop()
             if self.ch.all_tokens[-1] == Token.BRACE_OPEN:
-                self.ch.line += ["pass"]
-            self.ch.scope.pop()
+                if self.ch.line_tokens == [token]:
+                    self.ch.line += ["pass"]
+                else:
+                    throw_syntax("missing semicolon")
         else:
             return out
         self.transpile_token(None)
@@ -417,7 +434,7 @@ class Transpiler:
                 ):
                     return f"readline({self.ch.line.pop()})"
             return "readline()"
-        elif token == Token.SEP and self.ch.scope and self.ch.scope[-1] == "enum":
+        elif token == Token.SEP and self.ch.scope and self.ch.scope == "enum":
             self.ch.line += "', '"
         elif token == Token.INSTANCE and not self.ch.switches["class"]:
             throw_syntax("instance operator cannot be used outside a class")
@@ -488,8 +505,9 @@ class Transpiler:
             Token.IN: " in ",
         }
         out = tokens.get(token, 0)
-        if token in {Token.IF, Token.FOR, Token.ELSE} and not self.is_first_token():
-            self.ch.line += [" "]
+        if token in {Token.IF, Token.FOR, Token.ELSE, Token.WHILE}:
+            if not self.is_first_token():
+                self.ch.line += [" "]
         if token == Token.IF:
             with suppress(IndexError):
                 if self.ch.line_tokens[-2] == Token.ELSE:
@@ -530,13 +548,12 @@ class Transpiler:
                 if self.ch.line_tokens[0] == Token.FROM:
                     return "*"
             x = bool(self.ch.indent)
-            self.ch.switches["function"] = not self.is_first_token()
-            self.ch.line = [i for i in self.ch.line if i]
-            if self.ch.switches["function"]:
-                self.ch.scope += "function"
-            else:
+            self.ch.line = [*filter(None, self.ch.line)]
+            if self.is_first_token():
                 self.ch.line.insert(x, "return ")
                 return 1
+            else:
+                self.ch.scope += "function"
             self.ch.line = [
                 *self.ch.line[:x],
                 "@assert_smtype\n",
