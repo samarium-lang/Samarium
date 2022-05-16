@@ -83,3 +83,30 @@ Table: {{}}?!;
     }
 
 }
+
+@ UUID4 {
+
+    create * {
+        <-random.choices;
+        <-string.hexdigits, join;
+        hex: join(choices(hexdigits, /\`\\\\));
+        hex<<//\\>>: "4";
+        hex<</\\\\>>: "89ab"??;
+        'hex: hex;
+        'dec: Integer("x:" + hex);
+    }
+
+    toString * {
+        <-string.join;
+        * join(
+            [
+                'hex<<../\\\>>,
+                'hex<</\\\..//\\>>,
+                'hex<<//\\../\\\\>>,
+                'hex<</\\\\../\/\\>>,
+                'hex<</\/\\..>>
+            ], "-"
+        );
+    }
+
+}

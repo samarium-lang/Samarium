@@ -131,32 +131,3 @@ isPrime n * {
     }
     * /;
 }
-
-
-@ UUID4 {
-
-    create * {
-        <-random.choices;
-        <-string.hexdigits, join;
-        <-types.Integer;
-        hex: join(choices(hexdigits, /\`\\\\));
-        hex<<//\\>>: "4";
-        hex<</\\\\>>: "89ab"??;
-        'hex: hex;
-        'dec: Integer("x:" + hex);
-    }
-
-    toString * {
-        <-string.join;
-        * join(
-            [
-                'hex<<../\\\>>,
-                'hex<</\\\..//\\>>,
-                'hex<<//\\../\\\\>>,
-                'hex<</\\\\../\/\\>>,
-                'hex<</\/\\..>>
-            ], "-"
-        );
-    }
-
-}
