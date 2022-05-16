@@ -26,6 +26,7 @@ Each of these loops must be paired with a `->?` operator, indicating the object 
 
 `while` loops are written with `..`, and enclosed in curly brackets.
 The loop condition follows the `..`.
+An infinite loop is created when no condition is given.
 
 <p align="left">
     <img src="images/23while.png" style="transform: scale(0.6)">

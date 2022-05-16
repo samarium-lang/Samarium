@@ -31,11 +31,40 @@ Command line arguments can be gotten as an array with an optional parameter in t
     <img src="images/29mainfunction.png" style="transform: scale(0.6)">
 </p>
 
-## Default Arguments
+## Optional Parameters
 
-Default arguments may be given by using the assignment operator in the function definition.
-Default arguments must come after any other arguments.
+Parameters can be made optional by adding a `?` character after the parameter's name. Optional parameters are required to have a default value defined in the function's body using the `param <> default` syntax.
+
 
 <p align="left">
     <img src="images/30defaultarguments.png" style="transform: scale(0.6)">
 </p>
+
+## Varargs
+
+A function can accept multiple arguments by adding `...` after the last parameter's name. Packed arguments will be passed into the function as an array.
+
+<p align="left">
+    <img src="images/30defaultarguments.png" style="transform: scale(0.6)">
+</p>
+
+## Argument Unpacking
+
+<!-- TODO -->
+
+Arguments can be spread into a function by using the `**` unary operator:
+
+```
+pow a b * {
+    * a +++ b;
+}
+
+arguments = [/\, //];
+
+pow(**arguments)!;
+== equivalent to pow(/\, //)!;
+```
+
+## Decorators
+
+<!-- TODO -->

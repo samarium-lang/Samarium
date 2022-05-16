@@ -29,9 +29,12 @@ Documentation on how to program in Samarium can be found [here](docs/tableofcont
 You can run Samarium programs with `samarium program.sm`.
 `samarium-debug` may be used instead, which will first print out the intermediary Python code that the Samarium program is transpiled into, before executing it.
 
-The `-c <command>` option can be used to execute Samarium code from the string `command`, directly in the terminal.
-`command` can be one or more statements separated by semicolons as usual.
-Note that the last statement of `command` will be printed if it does not end in a semicolon.
+Short | Long | Description
+:---: | :---: | :---
+`-c <cmd>` | `--command <cmd>` | Can be used to execute Samarium code from the string `cmd`, directly in the terminal. `cmd` can be one or more statements separated by semicolons as usual. Note that the last statement of `cmd` will be printed if it does not end in a semicolon.
+`-h` | `--help` | Shows the help message
+`-v` | `--version` | Prints Samarium version
+
 
 There is also a VSCode syntax highlighting extension for Samarium, which can be found here [here](https://marketplace.visualstudio.com/items?itemName=Samarium.samarium-language). The source code can be found [here](https://github.com/samarium-lang/vscode-samarium).
 

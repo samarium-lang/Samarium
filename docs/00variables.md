@@ -15,14 +15,3 @@ Only letters and/or numbers can be used for variable names (case sensitive), thu
 
 The character `_` represents a null value, such as for default arguments in a function.
 Assignments to `_` are not allowed.
-
-## Constants
-
-Variables can be made constant by prefixing them with `<>`.
-Any attempt to assign a new value to a constant variable will raise a `TypeError`.
-
-<p align="left">
-    <img src="images/02constvariables.png" style="transform: scale(0.6)">
-</p>
-
-This example raises `[TypeError] object is immutable`.
