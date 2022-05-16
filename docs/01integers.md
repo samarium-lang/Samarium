@@ -31,11 +31,3 @@ Or in base 10:
 ```py
 99999999999999999999999999999999999999999999999999999999999999999999999999999999
 ```
-
-## Random Numbers
-
-A random integer in a particular range can be generated using `^^`, like so:
-
-`^^/ -> /\/\^^` generates a random integer from 1 to 10 inclusive.
-
-More random number generation-related functions can be found in the [`random` module](17stdrandom.md)
