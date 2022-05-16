@@ -74,14 +74,15 @@ The cast function `%` can convert between a Unicode character (a string) and its
 
 ## SPECIAL
 
-The special function `$` has different uses depending on the type of object it's used on.
+The special method `$` has different uses depending on the type of object it's used on.
 
-Object  | Function
----     | ---
-Integer | Returns the binary representation of the integer as a string
-String  | Returns the length of the string
-Array   | Returns the length of the array
-Table   | Returns an array of the table's values
+Object   | Use
+---      | ---
+Function | Returns the number of parameters the function has
+Integer  | Returns the binary representation of the integer as a string
+String   | Returns the length of the string
+Array    | Returns the length of the array
+Table    | Returns an array of the table's values
 
 For example:
 
