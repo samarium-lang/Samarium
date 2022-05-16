@@ -176,7 +176,7 @@ zip arrays * {
     * out;
 }
 
-zipLongest array fill? * {
+zipLongest arrays fill? * {
     fill <> _;
     <-math.max;
     out: [];
