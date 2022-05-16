@@ -1,4 +1,4 @@
-[Back](16stdmath.md) | [Table of Contents](tableofcontents.md) | [Next](18stdstring.md)
+[Back](19stdoperator.md) | [Table of Contents](tableofcontents.md) | [Next](21stdstring.md)
 ---                  | ---                                     | ---
 
 # `random` module

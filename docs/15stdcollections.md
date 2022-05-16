@@ -1,4 +1,4 @@
-[Back](13fileio.md) | [Table of Contents](tableofcontents.md) | [Next](15stditer.md)
+[Back](14fileio.md) | [Table of Contents](tableofcontents.md) | [Next](.md)
 ---                 | ---                                     | ---
 
 # `collections` module

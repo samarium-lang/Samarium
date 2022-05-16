@@ -1,4 +1,4 @@
-[Back](17stdrandom.md) | [Table of Contents](tableofcontents.md) | [Next](19stdtypes.md)
+[Back](20stdrandom.md) | [Table of Contents](tableofcontents.md) | [Next](22stdterminal.md)
 ---                    | ---                                     | ---
 
 # `string` module

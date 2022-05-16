@@ -1,4 +1,4 @@
-[Back](15stditer.md) | [Table of Contents](tableofcontents.md) | [Next](17stdrandom.md)
+[Back](17stditer.md) | [Table of Contents](tableofcontents.md) | [Next](19stdoperator.md)
 ---                  | ---                                     | ---
 
 # `math` module

@@ -1,4 +1,4 @@
-[Back](10functions.md) | [Table of Contents](tableofcontents.md) | [Next](12classes.md)
+[Back](11functions.md) | [Table of Contents](tableofcontents.md) | [Next](13classes.md)
 ---                    | ---                                     | ---
 
 # Modules

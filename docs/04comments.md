@@ -1,4 +1,4 @@
-[Back](06slices.md) | [Table of Contents](tableofcontents.md) | [Next](08builtins.md)
+[Back](03strings.md) | [Table of Contents](tableofcontents.md) | [Next](05arrays.md)
 ---                 | ---                                     | ---
 
 # Comments

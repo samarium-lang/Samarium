@@ -1,4 +1,4 @@
-[Back](04arrays.md) | [Table of Contents](tableofcontents.md) | [Next](06slices.md)
+[Back](07enums.md) | [Table of Contents](tableofcontents.md) | [Next](09builtins.md)
 ---                 | ---                                     | ---
 
 # Tables

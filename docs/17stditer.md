@@ -1,4 +1,4 @@
-[Back](14stdcollections.md) | [Table of Contents](tableofcontents.md) | [Next](16stdmath.md)
+[Back](16stddatetime.md) | [Table of Contents](tableofcontents.md) | [Next](18stdmath.md)
 ---                         | ---                                     | ---
 
 # `iter` module

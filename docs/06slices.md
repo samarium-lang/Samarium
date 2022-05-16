@@ -1,4 +1,4 @@
-[Back](05tables.md) | [Table of Contents](tableofcontents.md) | [Next](07comments.md)
+[Back](05arrays.md) | [Table of Contents](tableofcontents.md) | [Next](07enums.md)
 ---                 | ---                                     | ---
 
 # Slices
