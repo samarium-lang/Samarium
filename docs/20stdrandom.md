@@ -3,7 +3,7 @@
 
 # `random` module
 
-The `random` module implements functions that make use of the [random number generator `^^`](01integers.md#random-numbers).
+The `random` module implements functions that make use of the [random method `??`](09builtins.md#RANDOM).
 
 Function           | Use
 ---                | ---
