@@ -120,3 +120,15 @@ If a class only has one parent, it will be return directly.
 If a class has multiple parents, they will be returned in an array, in the same order as in the class definition.
 
 Note that this will only go one layer deep, i.e. if class `A` has parent `B` and class `B` has parent `C`, `A!?` will only return `B`, and `A!?!?` will return `C`.
+
+## RANDOM
+
+The special method `??` has different uses depending on the type of object it's used on.
+
+Object  | Use
+---     | ---
+Array   | Returns a random element
+Integer | Returns a random integer from<br>an interval based on its value<br>`n = 0` → `0`<br>`n > 0` → `[0, n)`<br>`n < 0` → `[n, 0)`
+Slice   | Returns a random number that fits the slice's conditions
+String  | Returns a random character
+Table   | Returns a random key
