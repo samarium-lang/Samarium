@@ -1,6 +1,7 @@
 Array: []?!;
 Integer: \?!;
 Null: _?!;
+Slice: <<>>?!;
 String: ""?!;
 Table: {{}}?!;
 
