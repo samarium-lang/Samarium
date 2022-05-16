@@ -58,11 +58,13 @@ The typeof function `?!` returns the type of an object, as an instance of the `T
 
 `/?!?!` returns `Type`.
 
-These instances are callable and can be used to convert variables into that type, like so (currently only works for integers):
+These instances are callable and can be used to convert values into that type, like so:
 
 <p align="left">
     <img src="images/17typeof.png" style="transform: scale(0.6)">
 </p>
+
+> Related library: [`types`](23stdtypes.md)
 
 ## CAST
 
@@ -78,10 +80,10 @@ The special method `$` has different uses depending on the type of object it's u
 
 Object   | Use
 ---      | ---
+Array    | Returns the length of the array
 Function | Returns the number of parameters the function has
 Integer  | Returns the binary representation of the integer as a string
 String   | Returns the length of the string
-Array    | Returns the length of the array
 Table    | Returns an array of the table's values
 
 For example:
@@ -94,6 +96,8 @@ For example:
 
 The dtnow function `@@` gets the system's current date and time as an array of integers, in the format `[year, month, day, hour, minute, second, millisecond, utc_hour_offset, utc_minute_offset]`.
 
+> Related library: [`datetime`](16stddatetime.md)
+
 ## SLEEP
 
 The sleep function `,.,` pauses execution for the specified number of milliseconds.
@@ -101,6 +105,8 @@ The sleep function `,.,` pauses execution for the specified number of millisecon
 <p align="left">
     <img src="images/19sleep.png" style="transform: scale(0.6)">
 </p>
+
+> Related library: [`datetime`](16stddatetime.md)
 
 ## ASSERT
 
@@ -133,3 +139,5 @@ Integer | Returns a random integer from<br>an interval based on its value<br>`n 
 Slice   | Returns a random number that fits the slice's conditions
 String  | Returns a random character
 Table   | Returns a random key
+
+> Related library: [`random`](20stdrandom.md)
