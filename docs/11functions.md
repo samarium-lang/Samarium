@@ -42,7 +42,7 @@ Parameters can be made optional by adding a `?` character after the parameter's 
 
 ## Varargs
 
-A function can accept multiple arguments by adding `...` after the last parameter's name. Packed arguments will be passed into the function as an array.
+A function can accept a variable number of arguments by adding `...` after the last parameter's name. Packed arguments will be passed into the function as an array.
 
 <p align="left">
     <img src="images/30defaultarguments.png" style="transform: scale(0.6)">
