@@ -166,7 +166,7 @@ pairwise array * {
     * [array<<i..i+/\>> ... i ->? range(array$ - /)];
 }
 
-zip arrays * {
+zip arrays... * {
     <-math.min;
     out: [];
     shortest: min([i$ ... i ->? arrays]);
@@ -176,8 +176,7 @@ zip arrays * {
     * out;
 }
 
-zipLongest arrays fill? * {
-    fill <> _;
+zipLongest fill arrays... * {
     <-math.max;
     out: [];
     longest: max([i$ ... i ->? arrays]);
