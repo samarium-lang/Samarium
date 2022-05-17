@@ -159,7 +159,7 @@ addZeros n c * {
         ? h || m { out+: addZeros(m, /\) + ":"; }
         ? h || m || s { out+: addZeros(s, /\); }
         ? ms { out+: "." + addZeros(ms, //); }
-        * stripLeft(out, "0");
+        * stripLeft(out, "0") || "0";
     }
 
 }
