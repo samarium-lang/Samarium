@@ -655,8 +655,10 @@ class Integer(Class):
 
 
 class Table(Class):
-    def _create_(self, value: Any):
-        if isinstance(value, Table):
+    def _create_(self, value: Any = None):
+        if value is None:
+            self.value = {}
+        elif isinstance(value, Table):
             self.value = value.value.copy()
         elif isinstance(value, dict):
             self.value = {verify_type(k): verify_type(v) for k, v in value.items()}
