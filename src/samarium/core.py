@@ -8,6 +8,7 @@ from time import sleep as _sleep
 from . import exceptions as exc
 from .objects import (
     null,
+    Int,
     assert_smtype,
     class_attributes,
     smhash,

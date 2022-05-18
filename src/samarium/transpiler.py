@@ -156,7 +156,7 @@ class Transpiler:
 
         # Integer handling
         if isinstance(token, int):
-            self.ch.line += [f"Integer({token})"]
+            self.ch.line += [f"Int[{token}]"]
             return
 
         if isinstance(token, str):
@@ -471,7 +471,7 @@ class Transpiler:
                 self.set_slice -= 1
             if self.ch.switches["exit"] or self.ch.switches["sleep"]:
                 if self.ch.line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
-                    self.ch.line += ["Integer(0)"]
+                    self.ch.line += ["Int[0]"]
                 self.ch.line += ")"
                 if self.ch.switches["exit"]:
                     self.ch.switches["exit"] = False
