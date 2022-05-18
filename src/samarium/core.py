@@ -18,6 +18,7 @@ from .objects import (
     String,
     Integer,
     Module,
+    Null,
     Table,
     Array,
     Enum,
