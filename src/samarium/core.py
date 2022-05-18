@@ -7,6 +7,7 @@ from time import sleep as _sleep
 
 from . import exceptions as exc
 from .objects import (
+    null,
     assert_smtype,
     class_attributes,
     smhash,
@@ -14,7 +15,6 @@ from .objects import (
     Class,
     Type,
     Slice,
-    Null,
     String,
     Integer,
     Module,
@@ -112,7 +112,7 @@ def print_safe(*args):
     if len(return_args) > 1:
         return Array([*return_args])
     elif not return_args or types[0] is Null:
-        return Null()
+        return null
     return return_args[0]
 
 

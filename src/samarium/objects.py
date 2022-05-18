@@ -86,7 +86,7 @@ def verify_type(obj: Any, *args) -> Class | Callable:
         for i in [obj, *args]:
             verify_type(i)
         else:
-            return Null()
+            return null
     elif isinstance(obj, type):
         return Type(obj)
     elif isinstance(obj, (Class, Callable, Module)):
@@ -94,7 +94,7 @@ def verify_type(obj: Any, *args) -> Class | Callable:
     elif isinstance(obj, tuple):
         return Array([*obj])
     elif isinstance(obj, type(None)):
-        return Null()
+        return null
     elif isinstance(obj, bool):
         return Integer(obj)
     elif isinstance(obj, type(i for i in [])):
@@ -395,7 +395,7 @@ class Slice(Class):
         return Integer(choice(range_))
 
     def is_empty(self) -> bool:
-        return self.start == self.stop == self.step == Null()
+        return self.start == self.stop == self.step == null
 
     def _toString_(self) -> String:
         start, stop, step = self.tup
@@ -437,6 +437,9 @@ class Null(Class):
 
     def _notEquals_(self, other: Null) -> Integer:
         return Integer(type(other) is not Null)
+
+
+null = Null()
 
 
 class String(Class):
@@ -869,7 +872,7 @@ class FileManager:
     @staticmethod
     def create(path: String):
         with open(path.value, "x") as _:
-            return Null()
+            return null
 
     @staticmethod
     def open(
@@ -893,7 +896,7 @@ class FileManager:
         *,
         data: Class | None = None,
         binary: bool = False,
-    ) -> String | Array | None:
+    ) -> String | Array | Null:
         if isinstance(path, String):
             with open(path.value, mode.value + "b" * binary) as f:
                 if mode == Mode.READ:
@@ -923,7 +926,7 @@ class FileManager:
                 file.save(data)
             else:
                 raise SamariumIOError("missing data")
-        return Null()
+        return null
 
 
 class File(Class):
@@ -938,7 +941,7 @@ class File(Class):
 
     def _not_(self):
         self.value.close()
-        return Null()
+        return null
 
     def _getItem_(self, index: Integer | Slice) -> Array | String | Integer:
         if isinstance(index, Slice):
@@ -961,7 +964,7 @@ class File(Class):
             return self._getItem_(Slice(Integer(0), slice.stop, slice.step))
         else:
             self.value.seek(index.value)
-            return Null()
+            return null
 
     def load(self, bytes_: Integer | None = None) -> String | Array:
         if bytes_ is None:
@@ -983,7 +986,7 @@ class File(Class):
             self.value.write(b"".join([int(x).to_bytes(1, "big") for x in data.value]))
         else:
             self.value.write(data.value)
-        return Null()
+        return null
 
 
 class Module:
