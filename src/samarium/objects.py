@@ -534,7 +534,7 @@ class Integer(Class):
         t = type(value)
         if hasattr(value, "value"):
             value = value.value
-        if isinstance(value, int | bool | float):
+        if isinstance(value, (int, bool, float)):
             self.value = int(value)
         elif value is None:
             self.value = 0
