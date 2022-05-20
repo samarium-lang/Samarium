@@ -10,7 +10,7 @@ Blocks are enclosed in curly brackets.
 `else if` can be written using `,, ?`.
 
 <p align="left">
-    <img src="images/21ifelse.png" style="transform: scale(0.6)">
+    <img src="/images/21ifelse.png" style="transform: scale(0.6)">
 </p>
 
 ## `foreach` loop
@@ -19,7 +19,7 @@ Blocks are enclosed in curly brackets.
 Each of these loops must be paired with a `->?` operator, indicating the object to iterate over.
 
 <p align="left">
-    <img src="images/22foreach.png" style="transform: scale(0.6)">
+    <img src="/images/22foreach.png" style="transform: scale(0.6)">
 </p>
 
 ## `while` loop
@@ -28,7 +28,7 @@ Each of these loops must be paired with a `->?` operator, indicating the object 
 The loop condition follows the `..`.
 
 <p align="left">
-    <img src="images/23while.png" style="transform: scale(0.6)">
+    <img src="/images/23while.png" style="transform: scale(0.6)">
 </p>
 
 ## `break`/`continue`
@@ -37,7 +37,7 @@ The loop condition follows the `..`.
 They can be used in both `for` and `while` loops.
 
 <p align="left">
-    <img src="images/24break.png" style="transform: scale(0.6)">
+    <img src="/images/24break.png" style="transform: scale(0.6)">
 </p>
 
 This program will print 1, 2, and then terminate the `while` loop on the third iteration, before printing 3.
@@ -46,7 +46,7 @@ This program will print 1, 2, and then terminate the `while` loop on the third i
 These can also be used in both `for` and `while` loops.
 
 <p align="left">
-    <img src="images/25continue.png" style="transform: scale(0.6)">
+    <img src="/images/25continue.png" style="transform: scale(0.6)">
 </p>
 
 This program will print 1, 2, skip the third iteration of the `while` loop, then print 4, 5, and end the loop normally.
@@ -59,5 +59,5 @@ If, during execution of the contents of the `try` clause, an error is thrown, th
 `catch` clauses are written with `!!`, and are also enclosed in curly brackets.
 
 <p align="left">
-    <img src="images/26trycatch.png" style="transform: scale(0.6)">
+    <img src="/images/26trycatch.png" style="transform: scale(0.6)">
 </p>

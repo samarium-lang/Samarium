@@ -8,7 +8,7 @@ File I/O objects have a cursor, which is updated whenever data is written to/rea
 The current cursor position can be gotten like so:
 
 <p align="left">
-    <img src="images/36fileio.png" style="transform: scale(0.6)">
+    <img src="/images/36fileio.png" style="transform: scale(0.6)">
 </p>
 
 ## Creating
@@ -23,13 +23,13 @@ Note: files will also be created if they are opened in write or append mode.
 Files can be opened for reading in two ways:
 
 <p align="left">
-    <img src="images/37fileio.png" style="transform: scale(0.6)">
+    <img src="/images/37fileio.png" style="transform: scale(0.6)">
 </p>
 
 These file I/O objects can be read into a variable (a string for text mode, and an array of integers for binary mode) for use in the program.
 
 <p align="left">
-    <img src="images/38fileio.png" style="transform: scale(0.6)">
+    <img src="/images/38fileio.png" style="transform: scale(0.6)">
 </p>
 
 ## Writing
@@ -37,13 +37,13 @@ These file I/O objects can be read into a variable (a string for text mode, and 
 Files can be opened for writing in two ways:
 
 <p align="left">
-    <img src="images/39fileio.png" style="transform: scale(0.6)">
+    <img src="/images/39fileio.png" style="transform: scale(0.6)">
 </p>
 
 These file I/O objects can be written to from a variable (a string for text mode, and an array of integers for binary mode).
 
 <p align="left">
-    <img src="images/40fileio.png" style="transform: scale(0.6)">
+    <img src="/images/40fileio.png" style="transform: scale(0.6)">
 </p>
 
 ## Appending
@@ -51,13 +51,13 @@ These file I/O objects can be written to from a variable (a string for text mode
 Files can be opened for appending in two ways:
 
 <p align="left">
-    <img src="images/41fileio.png" style="transform: scale(0.6)">
+    <img src="/images/41fileio.png" style="transform: scale(0.6)">
 </p>
 
 The contents of these file I/O objects can be added to from a variable (a string for text mode, and an array of integers for binary mode).
 
 <p align="left">
-    <img src="images/42fileio.png" style="transform: scale(0.6)">
+    <img src="/images/42fileio.png" style="transform: scale(0.6)">
 </p>
 
 ## Closing
@@ -67,7 +67,7 @@ If files are not closed manually by the user, they will be automatically closed 
 Note that the file I/O object will not be released from memory, but it still cannot be used.
 
 <p align="left">
-    <img src="images/43fileio.png" style="transform: scale(0.6)">
+    <img src="/images/43fileio.png" style="transform: scale(0.6)">
 </p>
 
 ## Quick Operations
@@ -87,5 +87,5 @@ Binary append | `&%>`
 For example:
 
 <p align="left">
-    <img src="images/44fileio.png" style="transform: scale(0.6)">
+    <img src="/images/44fileio.png" style="transform: scale(0.6)">
 </p>

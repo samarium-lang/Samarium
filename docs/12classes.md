@@ -15,13 +15,13 @@ In this case, class methods will implicitly be given a reference to the instance
 Class variables and methods can also be accessed in the same way directly from the class itself, though note that in this case methods will not implicitly have an instance as the first argument, so it must be provided.
 
 <p align="left">
-    <img src="images/34classes.png" style="transform: scale(0.6)">
+    <img src="/images/34classes.png" style="transform: scale(0.6)">
 </p>
 
 Parent classes are inherited from right to left, i.e. the first class in the inheritance takes priority and will overwrite any functions/variables defined by the following classes:
 
 <p align="left">
-    <img src="images/35classes.png" style="transform: scale(0.6)">
+    <img src="/images/35classes.png" style="transform: scale(0.6)">
 </p>
 
 There are a number of special methods that the user can implement to override certain functionality of a class, such as how it's initialized (with the `create` method), or how it interacts with different operators.

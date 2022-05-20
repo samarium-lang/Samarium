@@ -57,11 +57,11 @@ All arithmetic and bitwise operators (except `~`) can be used together with the 
 For example:
 
 <p align="left">
-    <img src="images/03operators.png" style="transform: scale(0.6)">
+    <img src="/images/03operators.png" style="transform: scale(0.6)">
 </p>
 
 is equivalent to:
 
 <p align="left">
-    <img src="images/04assignoperators.png" style="transform: scale(0.6)">
+    <img src="/images/04assignoperators.png" style="transform: scale(0.6)">
 </p>

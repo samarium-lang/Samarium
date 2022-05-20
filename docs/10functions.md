@@ -10,13 +10,13 @@ The function's return value is preceded by a `*` character as well.
 (Functions may also have multiple return statements, or none at all.)
 
 <p align="left">
-    <img src="images/27function.png" style="transform: scale(0.6)">
+    <img src="/images/27function.png" style="transform: scale(0.6)">
 </p>
 
 Calling a function is done as in C-like languages, with the function name, followed by its arguments in parentheses, separated by commas.
 
 <p align="left">
-    <img src="images/28function.png" style="transform: scale(0.6)">
+    <img src="/images/28function.png" style="transform: scale(0.6)">
 </p>
 
 ## Main Function
@@ -28,7 +28,7 @@ Attempts to write to stdout outside the scope of this or any other function will
 Command line arguments can be gotten as an array with an optional parameter in this function.
 
 <p align="left">
-    <img src="images/29mainfunction.png" style="transform: scale(0.6)">
+    <img src="/images/29mainfunction.png" style="transform: scale(0.6)">
 </p>
 
 ## Default Arguments
@@ -37,5 +37,5 @@ Default arguments may be given by using the assignment operator in the function 
 Default arguments must come after any other arguments.
 
 <p align="left">
-    <img src="images/30defaultarguments.png" style="transform: scale(0.6)">
+    <img src="/images/30defaultarguments.png" style="transform: scale(0.6)">
 </p>
