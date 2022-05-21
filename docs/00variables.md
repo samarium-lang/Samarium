@@ -10,6 +10,9 @@ Variables can have many types, such as integers, strings, arrays, tables, and nu
 Functions and classes may also be treated as first-class variables.
 Only letters and/or numbers can be used for variable names (case sensitive), thus camelCase is recommended for names consisting of multiple words.
 
+!!! note
+    Statements in Samarium must end in a semicolon. Also, backticks are ignored.
+
 ## Null
 
 The character `_` represents a null value, such as for default arguments in a function.
