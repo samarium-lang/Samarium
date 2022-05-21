@@ -148,6 +148,9 @@ x: \;
 
 This program will print 1, 2, skip the third iteration of the `while` loop, then print 4, 5, and end the loop normally.
 
+!!! note
+    Both `<-` and `->` do not need a semicolon at the end of the statement – it's optional.
+
 ## `try`/`catch`
 
 `try`-`catch` statements are used for error handling.
