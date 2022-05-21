@@ -29,6 +29,76 @@ arr: [];
 == arr :: ["s", "t", "r", "i", "n", "g"]
 ```
 
+### Comprehensions
+
+#### **Array Comprehensions**
+
+Array comprehensions are a way to create an array based on another iterable.
+Uses may include performing an operation on each item of the iterable, or creating a subsequence of those items that satisfy a certain condition.
+
+They are written similarly to foreach loops; they can come in two forms, as follows:
+
+```sm
+[expression ... member ->? iterable]
+[expression ... member ->? iterable ? condition]
+```
+
+For example, say we want to create an array of square numbers.
+Here are two equivalent approaches:
+
+```sm
+input: [/, /\, //, /\\, /\/];
+
+arr: [];
+... n ->? input {
+    arr+: [n ++ n];
+}
+
+arr: [n ++ n ... n ->? input];
+```
+
+In both cases, `arr` is equal to `[1, 4, 9, 16, 25]`.
+
+Now suppose we want to filter this result to only the odd-numbered items.
+There are again two equivalent approaches:
+
+```sm
+arr: [/, /\\, /\\/, /\\\\, //\\/];
+
+filtered: [];
+... n ->? arr {
+    ? n --- /\ :: / {
+        filtered+: [n];
+    }
+}
+
+filtered: [n ... n ->? arr ? n --- /\ :: /];
+```
+
+In both cases, `filtered` is equal to `[1, 9, 25]`.
+
+#### **Table Comprehensions**
+
+Table comprehensions have a similar syntax to array comprehensions:
+
+```sm
+{{key -> value ... member ->? iterable}}
+{{key -> value ... member ->? iterable ? condition}}
+```
+
+For example, both of the following approaches are equivalent:
+
+```sm
+tab: {{}};
+... x ->? [/\, /\\, //\] {
+    tab<<x>>: x ++ x;
+}
+
+tab: {{x -> x ++ x ... x ->? [/\, /\\, //\]}};
+```
+
+In both cases, `tab` is equal to `{{2 -> 4, 4 -> 16, 6 -> 36}}`.
+
 ## `while` loop
 
 `while` loops are written with `..`, and enclosed in curly brackets.

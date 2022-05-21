@@ -26,19 +26,3 @@ The values of the table to the right of the operator take priority when both tab
 Items can be removed from a table by key using the subtraction operator `-`:
 
 `{{"a" -> /, "b" -> /\, // -> /\//}} - "b"` gives `{{"a" -> /, // -> /\//}}`
-
-## Table Comprehension
-
-Tables can be created using table comprehension, using a similar syntax to [array comprehensions](04arrays.md#array-comprehension):
-
-<p align="left">
-    <img src="images/12tablecomprehension.png" style="transform: scale(0.6)">
-</p>
-
-For example, both of the following approaches are equivalent:
-
-<p align="left">
-    <img src="images/13tablecomprehension.png" style="transform: scale(0.6)">
-</p>
-
-In both cases, `tab` is equal to `{{2 -> 4, 4 -> 16, 6 -> 36}}`
