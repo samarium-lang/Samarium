@@ -1,6 +1,3 @@
-[Back](04comments.md) | [Table of Contents](tableofcontents.md) | [Next](06slices.md)
----                  | ---                                     | ---
-
 # Arrays
 
 Arrays are defined using square brackets, with items separated by commas:

@@ -1,6 +1,3 @@
-[Back](05arrays.md) | [Table of Contents](tableofcontents.md) | [Next](07enums.md)
----                 | ---                                     | ---
-
 # Slices
 
 Slices are used to access a range of items in an iterable (strings, arrays, tables).

@@ -1,6 +1,3 @@
-[Back](01integers.md) | [Table of Contents](tableofcontents.md) | [Next](03strings.md)
----                   | ---                                     | ---
-
 # Operators
 
 ## Arithmetic

@@ -1,6 +1,3 @@
-[Back](08tables.md) | [Table of Contents](tableofcontents.md) | [Next](10controlflow.md)
----                   | ---                                     | ---
-
 # Built-in Functions
 
 ## STDIN

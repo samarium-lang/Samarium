@@ -1,6 +1,3 @@
-[Back](14fileio.md) | [Table of Contents](tableofcontents.md) | [Next](.md)
----                 | ---                                     | ---
-
 # `collections` module
 
 The `collections` module implements a few different data structure classes: [Stack](#stack), [Queue](#queue), [Set](#set), [Deque](#deque) and [StaticArray](#staticarray).

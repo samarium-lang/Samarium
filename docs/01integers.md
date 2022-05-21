@@ -1,6 +1,3 @@
-[Back](00variables.md) | [Table of Contents](tableofcontents.md) | [Next](02operators.md)
----                    | ---                                     | ---
-
 # Integers
 
 Integers are represented in base 2, using slashes and backslashes to represent 1 and 0 respectively.

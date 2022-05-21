@@ -1,6 +1,3 @@
-[Back](13classes.md) | [Table of Contents](tableofcontents.md) | [Next](15stdcollections.md)
----                  | ---                                     | ---
-
 # File I/O
 
 Files are handled through file I/O objects, which can be in one of several modes: read, write, read & write, append, and as either text or binary for each of these.

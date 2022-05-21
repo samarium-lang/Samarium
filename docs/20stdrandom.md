@@ -1,6 +1,3 @@
-[Back](19stdoperator.md) | [Table of Contents](tableofcontents.md) | [Next](21stdstring.md)
----                  | ---                                     | ---
-
 # `random` module
 
 The `random` module implements functions that make use of the [random method `??`](09builtins.md#RANDOM).

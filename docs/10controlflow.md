@@ -1,6 +1,3 @@
-[Back](09builtins.md) | [Table of Contents](tableofcontents.md) | [Next](11functions.md)
----                   | ---                                     | ---
-
 # Control Flow
 
 ## `if`/`else`

@@ -1,6 +1,3 @@
-[Back](11functions.md) | [Table of Contents](tableofcontents.md) | [Next](13classes.md)
----                    | ---                                     | ---
-
 # Modules
 
 Modules can contain functions and variables that a user may wish to import.

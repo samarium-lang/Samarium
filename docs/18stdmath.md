@@ -1,6 +1,3 @@
-[Back](17stditer.md) | [Table of Contents](tableofcontents.md) | [Next](19stdoperator.md)
----                  | ---                                     | ---
-
 # `math` module
 
 The `math` module provides access to a set of commonly used mathematical functions.

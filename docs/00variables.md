@@ -1,6 +1,3 @@
-[Back](../README.md) | [Table of Contents](tableofcontents.md) | [Next](01integers.md)
----                  | ---                                     | ---
-
 # Variables
 
 Variables are defined using the assignment operator `:`, like so:

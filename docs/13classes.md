@@ -1,6 +1,3 @@
-[Back](12modules.md) | [Table of Contents](tableofcontents.md) | [Next](14fileio.md)
----                  | ---                                     | ---
-
 # Classes
 
 Classes are defined with the `@` character.

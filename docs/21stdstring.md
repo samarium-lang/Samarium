@@ -1,6 +1,3 @@
-[Back](20stdrandom.md) | [Table of Contents](tableofcontents.md) | [Next](22stdterminal.md)
----                    | ---                                     | ---
-
 # `string` module
 
 The `string` module contains several useful functions for string manipulation, as well as some variables containing groups of similar characters.

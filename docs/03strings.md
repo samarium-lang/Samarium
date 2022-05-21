@@ -1,6 +1,3 @@
-[Back](02operators.md) | [Table of Contents](tableofcontents.md) | [Next](04arrays.md)
----                    | ---                                     | ---
-
 # Strings
 
 Strings are defined using double quotation marks:

@@ -1,6 +1,3 @@
-[Back](10controlflow.md) | [Table of Contents](tableofcontents.md) | [Next](12modules.md)
----                      | ---                                     | ---
-
 # Functions
 
 Functions are defined using the `*` character.
