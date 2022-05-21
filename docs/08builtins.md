@@ -1,6 +1,3 @@
-[Back](07comments.md) | [Table of Contents](tableofcontents.md) | [Next](09controlflow.md)
----                   | ---                                     | ---
-
 # Built-in Functions
 
 ## STDIN
@@ -23,9 +20,10 @@ Note that they won't be written exactly as they would appear in Samarium.
 
 This function will return what it writes to stdout (though not necessarily as a string), and can thus be used in an assignment statement for example.
 
-<p align="left">
-    <img src="images/16stdout.png" style="transform: scale(0.6)">
-</p>
+```sm
+x: //\!;
+== the string "6" is written to the stout, and `x` now has the value 6 (integer)
+```
 
 ## STDERR
 
@@ -60,9 +58,10 @@ The typeof function `?!` returns the type of an object, as an instance of the `T
 
 These instances are callable and can be used to convert variables into that type, like so (currently only works for integers):
 
-<p align="left">
-    <img src="images/17typeof.png" style="transform: scale(0.6)">
-</p>
+```sm
+/?!("123")!;
+== writes `123` (as an integer) to stdout
+```
 
 ## CAST
 
@@ -85,9 +84,10 @@ Table   | Returns an array of the table's values
 
 For example:
 
-<p align="left">
-    <img src="images/18special.png" style="transform: scale(0.6)">
-</p>
+```sm
+"string"$!;
+== writes `6` to stout
+```
 
 ## DTNOW
 
@@ -97,9 +97,10 @@ The dtnow function `@@` gets the system's current date and time as an array of i
 
 The sleep function `,.,` pauses execution for the specified number of milliseconds.
 
-<p align="left">
-    <img src="images/19sleep.png" style="transform: scale(0.6)">
-</p>
+```sm
+,., /////\/\\\;
+== sleep for 1000 milliseconds (1 second) 
+```
 
 ## ASSERT
 
@@ -107,9 +108,9 @@ The assert function `#` is used as a debugging tool.
 If the input to this function is falsy (i.e. empty iterable, null, or just false), an `AssertionError` will be raised, otherwise, nothing will happen.
 A custom error message can be provided by putting it after a `,`.
 
-<p align="left">
-    <img src="images/20assert.png" style="transform: scale(0.6)">
-</p>
+```sm
+# / > /\, "error message";
+```
 
 will raise `[AssertionError] error message`.
 
