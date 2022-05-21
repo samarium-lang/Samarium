@@ -1,6 +1,3 @@
-[Back](16stdmath.md) | [Table of Contents](tableofcontents.md) | [Next](18stdstring.md)
----                  | ---                                     | ---
-
 # `random` module
 
 The `random` module implements functions that make use of the [random number generator `^^`](01integers.md#random-numbers).

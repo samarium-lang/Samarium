@@ -1,6 +1,3 @@
-[Back](18stdstring.md) | [Table of Contents](tableofcontents.md)
----                    | ---
-
 # `types` module
 
 The `types` module implements data types not built-in to the language itself.

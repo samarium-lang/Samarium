@@ -1,6 +1,3 @@
-[Back](14stdcollections.md) | [Table of Contents](tableofcontents.md) | [Next](16stdmath.md)
----                         | ---                                     | ---
-
 # `iter` module
 
 The `iter` module contains several functions that interact with iterable objects, like strings or arrays.

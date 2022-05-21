@@ -1,14 +1,11 @@
-[Back](04arrays.md) | [Table of Contents](tableofcontents.md) | [Next](06slices.md)
----                 | ---                                     | ---
-
 # Tables
 
 Tables map hashable values to arbitrary objects.
 They are defined using double curly brackets, with `->` mapping each key to each value:
 
-<p align="left">
-    <img src="/images/11table.png" style="transform: scale(0.6)">
-</p>
+```sm
+tab: {{"key" -> "value", / -> [/\, "a"]}};
+```
 
 A table may be indexed by its keys, which will return their corresponding values, for example, from the previous table:
 
@@ -34,14 +31,20 @@ Items can be removed from a table by key using the subtraction operator `-`:
 
 Tables can be created using table comprehension, using a similar syntax to [array comprehensions](04arrays.md#array-comprehension):
 
-<p align="left">
-    <img src="/images/12tablecomprehension.png" style="transform: scale(0.6)">
-</p>
+```sm
+{{key -> value ... member ->? iterable}}
+{{key -> value ... member ->? iterable ? condition}}
+```
 
 For example, both of the following approaches are equivalent:
 
-<p align="left">
-    <img src="/images/13tablecomprehension.png" style="transform: scale(0.6)">
-</p>
+```sm
+tab: {{}};
+... x ->? [/\, /\\, //\] {
+    tab<<x>>: x ++ x;
+}
+
+tab: {{x -> x ++ x ... x ->? [/\, /\\, //\]}};
+```
 
 In both cases, `tab` is equal to `{{2 -> 4, 4 -> 16, 6 -> 36}}`
