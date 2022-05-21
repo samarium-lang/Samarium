@@ -6,9 +6,12 @@ Slices are enclosed in double angle brackets.
 They have three parameters, `start`, `stop` and `step`, any of which may be omitted.
 `..` is used to indicate `stop`, and `**` is used to indicate `step`.
 
-<p align="left">
-    <img src="images/14slice.png" style="transform: scale(0.6)">
-</p>
+```sm
+str: "abcdefgh";
+str<<\>> :: "a";
+str<<//..//\>> :: "def";
+str<</..//\**/\>> :: "bdf";
+```
 
 All valid slice parameters are as follows:
 Slice                   | Returns

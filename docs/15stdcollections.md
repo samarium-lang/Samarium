@@ -102,7 +102,7 @@ Method                   | Use
 
 An arithmetic array is an array which can be used with different binary operators.
 
-```
+```sm
 <-collections.ArithmeticArray;
 
 aa: ArithmeticArray([/\, //, /\/]);
@@ -126,7 +126,8 @@ Binary operators supported by ArithmeticArray:
 ArithmeticArray allows item assignment and inherits behavior for `$`, `toBit`, and `toString` from the `Array` class.
 
 You can also use your own custom operators in the form of functions by using the `apply(op, other)` method:
-```
+
+```sm
 <-collections.ArithmeticArray;
 <-math.shl;
 

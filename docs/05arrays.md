@@ -2,9 +2,9 @@
 
 Arrays are defined using square brackets, with items separated by commas:
 
-<p align="left">
-    <img src="images/07array.png" style="transform: scale(0.6)">
-</p>
+```sm
+[\, /\, //]
+```
 
 Arrays can be concatenated with the `+` operator:
 

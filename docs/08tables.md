@@ -1,14 +1,11 @@
-[Back](07enums.md) | [Table of Contents](tableofcontents.md) | [Next](09builtins.md)
----                 | ---                                     | ---
-
 # Tables
 
 Tables map hashable values to arbitrary objects.
 They are defined using double curly brackets, with `->` mapping each key to each value:
 
-<p align="left">
-    <img src="images/11table.png" style="transform: scale(0.6)">
-</p>
+```sm
+tab: {{"key" -> "value", / -> [/\, "a"]}};
+```
 
 A table may be indexed by its keys, which will return their corresponding values, for example, from the previous table:
 

@@ -14,7 +14,8 @@ Booleans support several operations: all comparison operations, all arithmetic o
 ### UUID4
 
 Generates a random UUID, version 4. Returns a UUID object with attributes `hex` and `dec`:
-```
+
+```sm
 <-types.UUID4;
 
 uuid: UUID4();
@@ -37,7 +38,8 @@ The `Array` type alias is defined to be equal to `[]?!`.
 Caling `Array()` with no arguments will return an empty array.
 
 A copy of an array `a` can be made by using `Array(a)`.
-```
+
+```sm
 a: [/, /\, //];
 b: a;
 c: Array(a);

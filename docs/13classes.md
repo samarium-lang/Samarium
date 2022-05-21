@@ -11,15 +11,51 @@ Class variables, instance variables and methods can be accessed with the `.` ope
 In this case, class methods will implicitly be given a reference to the instance as the first argument of the method; `x.method(arg1, arg2, ...)` is equivalent to `x?!.method(x, arg1, arg2, ...)`.
 Class variables and methods can also be accessed in the same way directly from the class itself, though note that in this case methods will not implicitly have an instance as the first argument, so it must be provided.
 
-<p align="left">
-    <img src="images/34classes.png" style="transform: scale(0.6)">
-</p>
+```sm
+@ A {
+    shared: [];         == class variable
+
+    create var * {
+        'var: var;
+    }
+
+    method arg * {      == method definition
+        'var: /;        == instance variable
+        * 'var;         == return value
+    }
+}
+
+=> * {
+    a: A(/\\);          == calls `A.create(4)`; `a` is now an instance of `A`
+    a.method(/\/);      == calls `A.method` on the instance `a` with `arg` 5
+    a.var!;             == prints 5
+
+    b: A(/\);
+    a.shared+: ["str"]; == modifying a class variable for all instances
+    b.shared!;          == prints ["str"]
+}
+```
 
 Parent classes are inherited from right to left, i.e. the first class in the inheritance takes priority and will overwrite any functions/variables defined by the following classes:
 
-<p align="left">
-    <img src="images/35classes.png" style="transform: scale(0.6)">
-</p>
+```sm
+@ A {
+    method * { "A"!; }
+}
+
+@ B {
+    method * { "B"!; }
+}
+
+@ C(A, B) {
+    create * {}
+}
+
+=> * {
+    c: C();
+    c.method();     == prints "A", as class A was inherited last
+}
+```
 
 There are a number of special methods that the user can implement to override certain functionality of a class, such as how it's initialized (with the `create` method), or how it interacts with different operators.
 These methods are as follows (where `func(...)` indicates a variable number of arguments):
