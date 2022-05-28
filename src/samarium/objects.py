@@ -477,7 +477,7 @@ class String(Class):
         return Int[len(self.value)]
 
     def _toBit_(self) -> Integer:
-        return Int[bool(self.value)]
+        return Int[self.value != ""]
 
     def _toString_(self) -> String:
         return self
@@ -558,7 +558,7 @@ class Integer(Class):
             return Int[-x]
 
     def _toBit_(self) -> Integer:
-        return Int[bool(self.value)]
+        return Int[self.value != 0]
 
     def _toString_(self) -> String:
         return String(str(self.value))
@@ -698,7 +698,7 @@ class Table(Class):
         )
 
     def _toBit_(self) -> Integer:
-        return Int[bool(self.value)]
+        return Int[self.value != {}]
 
     def _getItem_(self, key: Any) -> Any:
         try:
@@ -771,7 +771,7 @@ class Array(Class):
         return String(f"[{', '.join(map(get_repr, self.value))}]")
 
     def _toBit_(self) -> Integer:
-        return Int[bool(self.value)]
+        return Int[self.value != []]
 
     def __iter__(self) -> Iterator:
         yield from self.value
