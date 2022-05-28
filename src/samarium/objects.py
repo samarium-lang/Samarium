@@ -29,8 +29,7 @@ def assert_smtype(function: Callable):
 
         modify = function.__code__.co_flags == 71
         if modify:
-            argc: int = len(signature(function).parameters)
-            args = [*args[: argc - 1], Array([*args[argc - 1 :]])]
+            args = [*args[: argc - 1], Array(args[argc - 1 :])]
             function.__code__ = modfunc(function, 67, argc)
             args *= argc > 0
         result = verify_type(function(*args))
@@ -59,9 +58,9 @@ def assert_smtype(function: Callable):
 
 def class_attributes(cls):
     cls.type = Type(Type)
-    parents = [*cls.__bases__]
+    parents = cls.__bases__
     cls.parent = (
-        Type(parents[0]) if len(parents) == 1 else Array([Type(p) for p in parents])
+        Type(parents[0]) if len(parents) == 1 else Array(map(Type, parents))
     )
     return cls
 
@@ -92,7 +91,7 @@ def verify_type(obj: Any, *args) -> Class | Callable:
     elif isinstance(obj, (Class, Callable, Module)):
         return obj
     elif isinstance(obj, tuple):
-        return Array([*obj])
+        return Array(obj)
     elif isinstance(obj, type(None)):
         return null
     elif isinstance(obj, bool):
@@ -230,10 +229,10 @@ class Class:
 
     @property
     def parent(self) -> Array | Type:
-        parents = [*self.__class__.__bases__]
+        parents = type(self).__bases__
         if len(parents) == 1:
             return Type(parents[0])
-        return Array([Type(p) for p in parents])
+        return Array(map(Type, parents))
 
     def _create_(self, *args: Any, **kwargs: Any):
         raise NotDefinedError(self, "create")
@@ -465,7 +464,7 @@ class String(Class):
         return Int[element.value in self.value]
 
     def _iterate_(self) -> Array:
-        return Array([String(char) for char in self.value])
+        return Array(map(String, self.value))
 
     def _random_(self) -> String:
         return String(choice(self.value))
@@ -683,7 +682,7 @@ class Table(Class):
             raise SamariumTypeError(f"cannot cast {type(value).__name__} to Table")
 
     def _special_(self) -> Array:
-        return Array([*self.value.values()])
+        return Array(self.value.values())
 
     def _toString_(self) -> String:
         return String(
@@ -707,7 +706,7 @@ class Table(Class):
         self.value[key] = value
 
     def _iterate_(self) -> Array:
-        return Array([*self.value.keys()])
+        return Array(self.value.keys())
 
     def _random_(self) -> Any:
         if not self.value:
@@ -752,12 +751,12 @@ class Array(Class):
             self.value = []
         elif isinstance(value, Array):
             self.value = value.value.copy()
-        elif isinstance(value, list):
-            self.value = [verify_type(i) for i in value]
         elif isinstance(value, String):
-            self.value = Array([*map(String, value.value)]).value
+            self.value = Array(map(String, value.value)).value
         elif isinstance(value, Table):
-            self.value = Array([Array([*i]) for i in value.value.items()]).value
+            self.value = Array(map(Array, value.value.items())).value
+        elif isinstance(value, Iterable):
+            self.value = [*map(verify_type, value)]
         else:
             raise SamariumTypeError(f"cannot cast {type(value).__name__} to Array")
 
@@ -765,7 +764,7 @@ class Array(Class):
         return Int[len(self.value)]
 
     def _toString_(self) -> String:
-        return String(f"[{', '.join(get_repr(i) for i in self.value)}]")
+        return String(f"[{', '.join(map(get_repr, self.value))}]")
 
     def _toBit_(self) -> Integer:
         return Int[bool(self.value)]
@@ -854,7 +853,7 @@ class Enum(Array):
         value = [*dict.fromkeys(value)]
         if not all(i.isidentifier() for i in value):
             raise SamariumValueError("enum members must be identifiers")
-        super()._create_(Array([*map(String, value)]))
+        super()._create_(Array(map(String, value)))
         self.name = values[0].strip("_")
 
     def _toString_(self) -> String:
@@ -906,12 +905,12 @@ class FileManager:
             with open(path.value, mode.value + "b" * binary) as f:
                 if mode == Mode.READ:
                     if binary:
-                        return Array([Int[i] for i in f.read()])
+                        return Array(Int[i] for i in f.read())
                     return String(f.read())
                 if data is None:
                     raise SamariumIOError("missing data")
                 if isinstance(data, Array):
-                    f.write(b"".join([int(x).to_bytes(1, "big") for x in data.value]))
+                    f.write(b"".join(int(x).to_bytes(1, "big") for x in data.value))
                 else:
                     f.write(data.value)
         elif isinstance(path, Integer):
@@ -964,7 +963,7 @@ class File(Class):
                 if self.binary:
                     if isinstance(data, bytes):
                         data = [*data]
-                    return Array([Int[i] for i in data])
+                    return Array(Int[i] for i in data)
                 return String(data)
             return self._getItem_(Slice(Int[0], slice.stop, slice.step))
         else:
@@ -976,7 +975,7 @@ class File(Class):
             bytes_ = Int[-1]
         val = self.value.read(bytes_.value)
         if self.binary:
-            return Array([Int[i] for i in val])
+            return Array(Int[i] for i in val)
         return String(val)
 
     def save(self, data: String | Array):
@@ -988,7 +987,7 @@ class File(Class):
         ):
             raise SamariumTypeError(type(data).__name__)
         if isinstance(data, Array):
-            self.value.write(b"".join([int(x).to_bytes(1, "big") for x in data.value]))
+            self.value.write(b"".join(int(x).to_bytes(1, "big") for x in data.value))
         else:
             self.value.write(data.value)
         return null

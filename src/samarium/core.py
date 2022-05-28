@@ -4,6 +4,7 @@ import sys
 from datetime import datetime
 from termcolor import colored
 from time import sleep as _sleep
+from types import GeneratorType
 
 from . import exceptions as exc
 from .objects import (
@@ -53,11 +54,11 @@ class MISSING:
 
 def dtnow() -> Array:
     utcnow = datetime.utcnow()
-    now = [*datetime.now().timetuple()]
-    utcnow_tl = [*datetime.utcnow().timetuple()]
-    tz = [now[3] - utcnow_tl[3], now[4] - utcnow_tl[4]]
-    utcnow_tl = utcnow_tl[:-3] + [utcnow.microsecond // 1000] + tz
-    return Array([Integer(i) for i in utcnow_tl])
+    now = datetime.now().timetuple()
+    utcnow_tl = utcnow.timetuple()
+    tz = now[3] - utcnow_tl[3], now[4] - utcnow_tl[4]
+    utcnow_tl = utcnow_tl[:-3] + (utcnow.microsecond // 1000,) + tz
+    return Array(Int[i] for i in utcnow_tl)
 
 
 def import_module(data: str, ch: CodeHandler):
@@ -104,15 +105,15 @@ def import_module(data: str, ch: CodeHandler):
 def print_safe(*args):
     args = [*map(verify_type, args)]
     return_args = args[:]
-    args = [*map(str, args)]
-    types = [type(i) for i in args]
+    args = map(str, args)
+    types = [*map(type, args)]
     if any(i in (tuple, type(i for i in [])) for i in types):
         raise exc.SamariumSyntaxError(
             "missing brackets" if tuple in types else "invalid comprehension"
         )
     print(*args)
     if len(return_args) > 1:
-        return Array([*return_args])
+        return Array(return_args)
     elif not return_args or types[0] is Null:
         return null
     return return_args[0]
