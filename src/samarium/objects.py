@@ -44,11 +44,12 @@ def assert_smtype(function: Callable):
         return String(get_function_name(function))
 
     def _special_() -> Integer:
-        return Int[len(signature(function).parameters)]
+        return Int[argc]
 
     def __str__() -> str:
         return str(_toString_())
 
+    argc = len(signature(function).parameters)
     wrapper._special_ = _special_
     wrapper._toString_ = _toString_
     wrapper.__str__ = __str__
