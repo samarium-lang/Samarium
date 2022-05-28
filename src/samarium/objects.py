@@ -206,7 +206,7 @@ class Class:
     def __lt__(self, other: Class) -> Integer:
         return run_with_backup(
             self._lessThan_,
-            lambda x: Int[not self._greaterThan_(x) and not self._equals_(x)],
+            lambda x: Int[not (self._greaterThan_(x) or self._equals_(x))],
             other,
         )
 
