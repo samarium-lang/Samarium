@@ -886,7 +886,7 @@ class FileManager:
     def open(
         path: String | Integer, mode: Mode, *, binary: bool = False
     ) -> Tuple[IO, bool]:
-        if isinstance(path, Integer) and mode == Mode.READ_WRITE:
+        if isinstance(path, Integer) and mode is Mode.READ_WRITE:
             raise SamariumIOError(
                 "cannot open a file descriptor in a read & write mode"
             )
@@ -907,7 +907,7 @@ class FileManager:
     ) -> String | Array | Null:
         if isinstance(path, String):
             with open(path.value, mode.value + "b" * binary) as f:
-                if mode == Mode.READ:
+                if mode is Mode.READ:
                     if binary:
                         return Array(Int[i] for i in f.read())
                     return String(f.read())
@@ -928,7 +928,7 @@ class FileManager:
                 )
         else:
             file = path
-            if mode == Mode.READ:
+            if mode is Mode.READ:
                 return file.load()
             if data is not None:
                 file.save(data)
