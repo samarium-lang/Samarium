@@ -227,7 +227,7 @@ class Class:
 
     @property
     def type(self) -> Type:
-        return Type(self.__class__)
+        return Type(type(self))
 
     @property
     def parent(self) -> Array | Type:
@@ -1014,4 +1014,4 @@ class Module:
 
     @property
     def type(self) -> Type:
-        return Type(self.__class__)
+        return Type(type(self))
