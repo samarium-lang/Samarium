@@ -72,7 +72,7 @@ def import_module(data: str, ch: CodeHandler):
         module_import = True
     name = name.strip("_")
     if name == "samarium":
-        sys.stderr.write(colored("[RecursionError]\n"))
+        sys.stderr.write(colored("[RecursionError]\n", "red"))
         return
     try:
         path = sys.argv[1][: sys.argv[1].rfind("/") + 1] or "."
