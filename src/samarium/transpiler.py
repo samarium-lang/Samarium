@@ -170,7 +170,7 @@ class Transpiler:
             # Python's builtins cannot be overwritten
             elif len(self.ch.line_tokens) > 1:
                 if self.ch.line_tokens[-2] == Token.INSTANCE:
-                    self.ch.line += ["."]
+                    self.ch.line += "."
             self.ch.line += [f"_{token}_"]
             return
 
@@ -507,7 +507,7 @@ class Transpiler:
         out = tokens.get(token, 0)
         if token in {Token.IF, Token.FOR, Token.ELSE, Token.WHILE}:
             if not self.is_first_token():
-                self.ch.line += [" "]
+                self.ch.line += " "
         if token == Token.IF:
             with suppress(IndexError):
                 if self.ch.line_tokens[-2] == Token.ELSE:
