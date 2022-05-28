@@ -482,7 +482,7 @@ class Transpiler:
                 assign_idx = self.ch.line.index("=")
                 stop = assign_idx - (
                     self.ch.line[assign_idx - 1]
-                    in {"+", "-", "*", "%", "**", "//", "&", "|", "^"}
+                    in {*"+-*%&|^", "**", "//"}
                 )
                 variable = "".join(self.ch.line[start:stop])
                 self.ch.line += [f";verify_type({variable})"]
