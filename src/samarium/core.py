@@ -107,7 +107,7 @@ def print_safe(*args):
     return_args = args[:]
     args = map(str, args)
     types = [*map(type, args)]
-    if any(i in (tuple, type(i for i in [])) for i in types):
+    if tuple in types or GeneratorType in types:
         raise exc.SamariumSyntaxError(
             "missing brackets" if tuple in types else "invalid comprehension"
         )

@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import os
 
+from collections.abc import Iterable
 from enum import Enum as Enum_
 from functools import wraps
 from inspect import signature
 from secrets import choice, randbelow
-from types import CodeType
-from typing import Any, Callable, IO, Iterator, Tuple
+from types import CodeType, FunctionType, GeneratorType, NoneType
+from typing import Any, Callable, IO, Iterator, Tuple, cast
 
 from .exceptions import (
     NotDefinedError,
@@ -51,7 +52,7 @@ def assert_smtype(function: Callable):
     wrapper._special_ = _special_
     wrapper._toString_ = _toString_
     wrapper.__str__ = __str__
-    wrapper.type = Type(type(lambda: 0))
+    wrapper.type = Type(FunctionType)
     wrapper.parent = Type(Class)
     return wrapper
 
@@ -67,13 +68,11 @@ def class_attributes(cls):
 
 def get_repr(obj: Class | Callable) -> str:
     if isinstance(obj, String):
-        return f'"{obj._toString_()}"'
-    elif hasattr(obj, "__name__"):
+        return f'"{obj}"'
+    if isinstance(obj, Callable):
+        obj = cast(Callable, obj)
         return obj.__name__
-    try:
-        return obj._toString_().value
-    except AttributeError:
-        return str(obj)
+    return str(obj)
 
 
 def smhash(obj) -> Integer:
@@ -92,11 +91,11 @@ def verify_type(obj: Any, *args) -> Class | Callable:
         return obj
     elif isinstance(obj, tuple):
         return Array(obj)
-    elif isinstance(obj, type(None)):
+    elif isinstance(obj, NoneType):
         return null
     elif isinstance(obj, bool):
         return Int[obj]
-    elif isinstance(obj, type(i for i in [])):
+    elif isinstance(obj, GeneratorType):
         raise SamariumSyntaxError("invalid comprehension")
     else:
         raise SamariumTypeError(f"unknown type: {type(obj).__name__}")
@@ -369,7 +368,7 @@ class Type(Class):
         return Int[1]
 
     def _call_(self, *args) -> Class:
-        if isinstance(lambda: 0, self.value):
+        if isinstance(FunctionType, self.value):
             raise SamariumTypeError("cannot instantiate a function")
         if self.value is Module:
             raise SamariumTypeError("cannot instantiate a module")
@@ -456,7 +455,7 @@ class String(Class):
     def _create_(self, value: Any = ""):
         self.value = (
             get_function_name(value)
-            if isinstance(value, type(lambda: 0))
+            if isinstance(value, FunctionType)
             else str(value)
         )
 
@@ -875,8 +874,8 @@ class Mode(Enum_):
 class FileManager:
     @staticmethod
     def create(path: String):
-        with open(path.value, "x") as _:
-            return null
+        open(path.value, "x").close()
+        return null
 
     @staticmethod
     def open(
@@ -965,7 +964,7 @@ class File(Class):
                         data = [*data]
                     return Array(Int[i] for i in data)
                 return String(data)
-            return self._getItem_(Slice(Int[0], slice.stop, slice.step))
+            return self[Slice(Int[0], slice.stop, slice.step)]
         else:
             self.value.seek(index.value)
             return null

@@ -9,7 +9,7 @@ def handle_exception(exception: Exception):
     name = exception.__class__.__name__
     if name == "SyntaxError":
         exception = SamariumSyntaxError(
-            f"invalid syntax at {hex(int(str(exception).split()[-1][:-1]))}"
+            f"invalid syntax at {int(str(exception).split()[-1][:-1])}"
         )
     elif name in {"AttributeError", "NameError"}:
         names = findall(r"'(\w+)'", str(exception))
@@ -18,10 +18,9 @@ def handle_exception(exception: Exception):
         exception = NotDefinedError(".".join(names))
         name = "NotDefinedError"
     elif name not in {"AssertionError", "NotDefinedError"}:
-        if name.startswith("Samarium"):
-            name = name.removeprefix("Samarium")
-        else:
+        if not name.startswith("Samarium"):
             name = f"External{name}"
+        name = name.removeprefix("Samarium")
     sys.stderr.write(colored(f"[{name}] {exception}\n", "red").replace("_", ""))
     if Runtime.quit_on_error:
         exit(1)
