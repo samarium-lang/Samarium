@@ -66,7 +66,7 @@ def class_attributes(cls):
     return cls
 
 
-def get_repr(obj: Class | Callable) -> str:
+def get_repr(obj: Class | Callable | Module) -> str:
     if isinstance(obj, String):
         return f'"{obj}"'
     if isinstance(obj, Callable):
@@ -79,7 +79,7 @@ def smhash(obj) -> Integer:
     return Int[hash(str(hash(obj)))]
 
 
-def verify_type(obj: Any, *args) -> Class | Callable:
+def verify_type(obj: Any, *args) -> Class | Callable | Module:
     if args:
         for i in [obj, *args]:
             verify_type(i)
@@ -678,7 +678,7 @@ class Table(Class):
                         k, v = e.value
                         table[String(k)] = String(v)
                     else:
-                        k, v = e
+                        k, v = cast(Array, e)
                         table[k] = v
                 self.value = Table(table).value
         else:
@@ -918,7 +918,7 @@ class FileManager:
                     f.write(data.value)
         elif isinstance(path, Integer):
             if mode in {Mode.APPEND, Mode.WRITE}:
-                fd = path.value
+                fd = cast(int, path.value)
                 os.write(fd, str(data).encode())
             else:
                 raise SamariumIOError(
@@ -937,6 +937,8 @@ class FileManager:
 
 
 class File(Class):
+    __slots__ = ("binary", "mode", "path", "value")
+
     def _create_(self, file: IO, mode: str, path: str, binary: bool):
         self.binary = binary
         self.mode = mode
@@ -950,7 +952,7 @@ class File(Class):
         self.value.close()
         return null
 
-    def _getItem_(self, index: Integer | Slice) -> Array | String | Integer:
+    def _getItem_(self, index: Integer | Slice) -> Array | String | Integer | Null:
         if isinstance(index, Slice):
             if index.is_empty():
                 return Int[self.value.tell()]
@@ -976,7 +978,7 @@ class File(Class):
     def load(self, bytes_: Integer | None = None) -> String | Array:
         if bytes_ is None:
             bytes_ = Int[-1]
-        val = self.value.read(bytes_.value)
+        val = self.value.read(cast(Integer, bytes_).value)
         if self.binary:
             return Array(Int[i] for i in val)
         return String(val)
