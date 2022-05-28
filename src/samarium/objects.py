@@ -102,6 +102,8 @@ def verify_type(obj: Any, *args) -> Class | Callable:
 
 
 class Class:
+    __slots__ = ("value",)
+
     def __init__(self, *args: Any, **kwargs: Any):
         self._create_(*args, **kwargs)
 
@@ -376,6 +378,8 @@ class Type(Class):
 
 
 class Slice(Class):
+    __slots__ = ("start", "stop", "step", "tup", "value")
+
     def _create_(self, start: Any, stop: Any, step: Any):
         self.start = start
         self.stop = stop
@@ -993,6 +997,8 @@ class File(Class):
 
 
 class Module:
+    __slots__ = ("name", "objects")
+
     def __init__(self, name: str, objects: dict[str, Class]):
         self.name = name
         self.objects = objects
