@@ -105,7 +105,7 @@ def import_module(data: str, ch: CodeHandler):
 def print_safe(*args):
     args = [*map(verify_type, args)]
     return_args = args[:]
-    args = map(str, args)
+    args = [*map(str, args)]
     types = [*map(type, args)]
     if tuple in types or GeneratorType in types:
         raise exc.SamariumSyntaxError(
