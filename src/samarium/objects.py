@@ -553,9 +553,7 @@ class Integer(Class):
         elif v > 0:
             return Int(randbelow(v))
         else:
-            while not (x := randbelow(-v + 1)):
-                pass  # preventing from returning 0
-            return Int(-x)
+            return Int(-randbelow(v) - 1)
 
     def _toBit_(self) -> Integer:
         return Int(self.value != 0)
