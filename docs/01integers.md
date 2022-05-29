@@ -28,3 +28,8 @@ Or in base 10:
 ```py
 99999999999999999999999999999999999999999999999999999999999999999999999999999999
 ```
+
+## Null
+
+The character `_` represents a null value, such as for default arguments in a function.
+Assignments to `_` are not allowed.
