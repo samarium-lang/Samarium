@@ -4,7 +4,7 @@ import os
 
 from collections.abc import Iterable
 from enum import Enum as Enum_
-from functools import wraps
+from functools import lru_cache, wraps
 from inspect import signature
 from secrets import choice, randbelow
 from types import CodeType, FunctionType, GeneratorType, NoneType
@@ -17,7 +17,7 @@ from .exceptions import (
     SamariumTypeError,
     SamariumValueError,
 )
-from .utils import get_function_name, parse_integer, run_with_backup, Cache
+from .utils import get_function_name, parse_integer, run_with_backup
 
 
 def assert_smtype(function: Callable):
@@ -44,7 +44,7 @@ def assert_smtype(function: Callable):
         return String(get_function_name(function))
 
     def _special_() -> Integer:
-        return Int[argc]
+        return Int(argc)
 
     def __str__() -> str:
         return str(_toString_())
@@ -77,7 +77,7 @@ def get_repr(obj: Class | Callable | Module) -> str:
 
 
 def smhash(obj) -> Integer:
-    return Int[hash(str(hash(obj)))]
+    return Int(hash(str(hash(obj))))
 
 
 def verify_type(obj: Any, *args) -> Class | Callable | Module:
@@ -95,7 +95,7 @@ def verify_type(obj: Any, *args) -> Class | Callable | Module:
     elif isinstance(obj, NoneType):
         return null
     elif isinstance(obj, bool):
-        return Int[obj]
+        return Int(obj)
     elif isinstance(obj, GeneratorType):
         raise SamariumSyntaxError("invalid comprehension")
     else:
@@ -200,19 +200,19 @@ class Class:
 
     def __ne__(self, other: Class) -> Integer:
         return run_with_backup(
-            self._notEquals_, lambda x: Int[not self._equals_(x)], other
+            self._notEquals_, lambda x: Int(not self._equals_(x)), other
         )
 
     def __lt__(self, other: Class) -> Integer:
         return run_with_backup(
             self._lessThan_,
-            lambda x: Int[not (self._greaterThan_(x) or self._equals_(x))],
+            lambda x: Int(not (self._greaterThan_(x) or self._equals_(x))),
             other,
         )
 
     def __le__(self, other: Class) -> Integer:
         return run_with_backup(
-            self._lessThanOrEqual_, lambda x: Int[not self._greaterThan_(x)], other
+            self._lessThanOrEqual_, lambda x: Int(not self._greaterThan_(x)), other
         )
 
     def __gt__(self, other: Class) -> Integer:
@@ -221,7 +221,7 @@ class Class:
     def __ge__(self, other: Class) -> Integer:
         return run_with_backup(
             self._greaterThanOrEqual_,
-            lambda x: Int[self._greaterThan_(x) or self._equals_(x)],
+            lambda x: Int(self._greaterThan_(x) or self._equals_(x)),
             other,
         )
 
@@ -359,16 +359,16 @@ class Type(Class):
         self.value = type_
 
     def _equals_(self, other: Type) -> Integer:
-        return Int[self.value == other.value]
+        return Int(self.value == other.value)
 
     def _notEquals_(self, other: Type) -> Integer:
-        return Int[self.value != other.value]
+        return Int(self.value != other.value)
 
     def _toString_(self) -> String:
         return String(get_function_name(self.value))
 
     def _toBit_(self) -> Integer:
-        return Int[1]
+        return Int(1)
 
     def _call_(self, *args) -> Class:
         if isinstance(FunctionType, self.value):
@@ -395,7 +395,7 @@ class Slice(Class):
             )
         tup = self.tup[0] or 0, self.tup[1], self.tup[2] or 1
         range_ = range(*tup)
-        return Int[choice(range_)]
+        return Int(choice(range_))
 
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == null
@@ -416,10 +416,10 @@ class Slice(Class):
         return String(f"<<{string}>>")
 
     def _equals_(self, other: Slice) -> Integer:
-        return Int[self.tup == other.tup]
+        return Int(self.tup == other.tup)
 
     def _notEquals_(self, other: Slice) -> Integer:
-        return Int[self.tup != other.tup]
+        return Int(self.tup != other.tup)
 
 
 class Null(Class):
@@ -433,13 +433,13 @@ class Null(Class):
         return smhash(self.value)
 
     def _toBit_(self) -> Integer:
-        return Int[0]
+        return Int(0)
 
     def _equals_(self, other: Null) -> Integer:
-        return Int[type(other) is Null]
+        return Int(type(other) is Null)
 
     def _notEquals_(self, other: Null) -> Integer:
-        return Int[type(other) is not Null]
+        return Int(type(other) is not Null)
 
 
 null = Null()
@@ -455,7 +455,7 @@ class String(Class):
     def _cast_(self) -> Integer:
         if len(self.value) != 1:
             raise SamariumTypeError(f"cannot cast a string of length {len(self.value)}")
-        return Int[ord(self.value)]
+        return Int(ord(self.value))
 
     def _create_(self, value: Any = ""):
         self.value = (
@@ -465,7 +465,7 @@ class String(Class):
         )
 
     def _has_(self, element: String) -> Integer:
-        return Int[element.value in self.value]
+        return Int(element.value in self.value)
 
     def _iterate_(self) -> Array:
         return Array(map(String, self.value))
@@ -474,10 +474,10 @@ class String(Class):
         return String(choice(self.value))
 
     def _special_(self) -> Integer:
-        return Int[len(self.value)]
+        return Int(len(self.value))
 
     def _toBit_(self) -> Integer:
-        return Int[self.value != ""]
+        return Int(self.value != "")
 
     def _toString_(self) -> String:
         return self
@@ -497,22 +497,22 @@ class String(Class):
         return self
 
     def _equals_(self, other: String) -> Integer:
-        return Int[self.value == other.value]
+        return Int(self.value == other.value)
 
     def _notEquals_(self, other: String) -> Integer:
-        return Int[self.value != other.value]
+        return Int(self.value != other.value)
 
     def _greaterThan_(self, other: String) -> Integer:
-        return Int[self.value > other.value]
+        return Int(self.value > other.value)
 
     def _lessThan_(self, other: String) -> Integer:
-        return Int[self.value < other.value]
+        return Int(self.value < other.value)
 
     def _greaterThanOrEqual_(self, other: String) -> Integer:
-        return Int[self.value >= other.value]
+        return Int(self.value >= other.value)
 
     def _lessThanOrEqual_(self, other: String) -> Integer:
-        return Int[self.value <= other.value]
+        return Int(self.value <= other.value)
 
     def _getItem_(self, index: Integer | Slice) -> String:
         return String(self.value[index.value])
@@ -551,113 +551,114 @@ class Integer(Class):
         if not v:
             return self
         elif v > 0:
-            return Int[randbelow(v)]
+            return Int(randbelow(v))
         else:
             while not (x := randbelow(-v + 1)):
                 pass  # preventing from returning 0
-            return Int[-x]
+            return Int(-x)
 
     def _toBit_(self) -> Integer:
-        return Int[self.value != 0]
+        return Int(self.value != 0)
 
     def _toString_(self) -> String:
         return String(str(self.value))
 
     def _add_(self, other: Integer) -> Integer:
-        return Int[self.value + other.value]
+        return Int(self.value + other.value)
 
     def _addAssign_(self, other: Integer) -> Integer:
         self = self._add_(other)
         return self
 
     def _subtract_(self, other: Integer) -> Integer:
-        return Int[self.value - other.value]
+        return Int(self.value - other.value)
 
     def _subtractAssign_(self, other: Integer) -> Integer:
         self = self._subtract_(other)
         return self
 
     def _multiply_(self, other: Integer) -> Integer:
-        return Int[self.value * other.value]
+        return Int(self.value * other.value)
 
     def _multiplyAssign_(self, other: Integer) -> Integer:
         self = self._multiply_(other)
         return self
 
     def _divide_(self, other: Integer) -> Integer:
-        return Int[self.value // other.value]
+        return Int(self.value // other.value)
 
     def _divideAssign_(self, other: Integer) -> Integer:
         self = self._divide_(other)
         return self
 
     def _mod_(self, other: Integer) -> Integer:
-        return Int[self.value % other.value]
+        return Int(self.value % other.value)
 
     def _modAssign_(self, other: Integer) -> Integer:
         self = self._mod_(other)
         return self
 
     def _power_(self, other: Integer) -> Integer:
-        return Int[self.value ** other.value]
+        return Int(self.value ** other.value)
 
     def _powerAssign_(self, other: Integer) -> Integer:
         self = self._power_(other)
         return self
 
     def _and_(self, other: Integer) -> Integer:
-        return Int[self.value & other.value]
+        return Int(self.value & other.value)
 
     def _andAssign_(self, other: Integer) -> Integer:
         self = self._and_(other)
         return self
 
     def _or_(self, other: Integer) -> Integer:
-        return Int[self.value | other.value]
+        return Int(self.value | other.value)
 
     def _orAssign_(self, other: Integer) -> Integer:
         self = self._or_(other)
         return self
 
     def _xor_(self, other: Integer) -> Integer:
-        return Int[self.value ^ other.value]
+        return Int(self.value ^ other.value)
 
     def _xorAssign_(self, other: Integer) -> Integer:
         self = self._xor_(other)
         return self
 
     def _not_(self) -> Integer:
-        return Int[~self.value]
+        return Int(~self.value)
 
     def _negative_(self) -> Integer:
-        return Int[-self.value]
+        return Int(-self.value)
 
     def _positive_(self) -> Integer:
-        return Int[+self.value]
+        return Int(+self.value)
 
     def _equals_(self, other: Integer) -> Integer:
-        return Int[self.value == other.value]
+        return Int(self.value == other.value)
 
     def _notEquals_(self, other: Integer) -> Integer:
-        return Int[self.value != other.value]
+        return Int(self.value != other.value)
 
     def _greaterThan_(self, other: Integer) -> Integer:
-        return Int[self.value > other.value]
+        return Int(self.value > other.value)
 
     def _lessThan_(self, other: Integer) -> Integer:
-        return Int[self.value < other.value]
+        return Int(self.value < other.value)
 
     def _greaterThanOrEqual_(self, other: Integer) -> Integer:
-        return Int[self.value >= other.value]
+        return Int(self.value >= other.value)
 
     def _lessThanOrEqual_(self, other: Integer) -> Integer:
-        return Int[self.value <= other.value]
+        return Int(self.value <= other.value)
 
     def _special_(self) -> String:
         return String(f"{self.value:b}")
 
 
-Int = Cache(Integer, *range(-5, 256), size=256)
+Int = lru_cache(256)(Integer)
+# Int = Integer
 
 
 class Table(Class):
@@ -698,7 +699,7 @@ class Table(Class):
         )
 
     def _toBit_(self) -> Integer:
-        return Int[self.value != {}]
+        return Int(self.value != {})
 
     def _getItem_(self, key: Any) -> Any:
         try:
@@ -718,13 +719,13 @@ class Table(Class):
         return choice([*self.value.keys()])
 
     def _has_(self, element: Any) -> Integer:
-        return Int[element in self.value]
+        return Int(element in self.value)
 
     def _equals_(self, other: Table) -> Integer:
-        return Int[self.value == other.value]
+        return Int(self.value == other.value)
 
     def _notEquals_(self, other: Table) -> Integer:
-        return Int[self.value == other.value]
+        return Int(self.value == other.value)
 
     def _add_(self, other: Table) -> Table:
         return Table(self.value | other.value)
@@ -765,13 +766,13 @@ class Array(Class):
             raise SamariumTypeError(f"cannot cast {type(value).__name__} to Array")
 
     def _special_(self) -> Integer:
-        return Int[len(self.value)]
+        return Int(len(self.value))
 
     def _toString_(self) -> String:
         return String(f"[{', '.join(map(get_repr, self.value))}]")
 
     def _toBit_(self) -> Integer:
-        return Int[self.value != []]
+        return Int(self.value != [])
 
     def __iter__(self) -> Iterator:
         yield from self.value
@@ -785,25 +786,25 @@ class Array(Class):
         return choice(self.value)
 
     def _has_(self, element: Any) -> Integer:
-        return Int[element in self.value]
+        return Int(element in self.value)
 
     def _equals_(self, other: Array) -> Integer:
-        return Int[self.value == other.value]
+        return Int(self.value == other.value)
 
     def _notEquals_(self, other: Array) -> Integer:
-        return Int[self.value != other.value]
+        return Int(self.value != other.value)
 
     def _greaterThan_(self, other: Array) -> Integer:
-        return Int[self.value > other.value]
+        return Int(self.value > other.value)
 
     def _lessThan_(self, other: Array) -> Integer:
-        return Int[self.value < other.value]
+        return Int(self.value < other.value)
 
     def _greaterThanOrEqual_(self, other: Array) -> Integer:
-        return Int[self.value >= other.value]
+        return Int(self.value >= other.value)
 
     def _lessThanOrEqual_(self, other: Array) -> Integer:
-        return Int[self.value <= other.value]
+        return Int(self.value <= other.value)
 
     def _getItem_(self, index: Integer | Slice) -> Any:
         if isinstance(index, Integer):
@@ -909,7 +910,7 @@ class FileManager:
             with open(path.value, mode.value + "b" * binary) as f:
                 if mode is Mode.READ:
                     if binary:
-                        return Array(Int[i] for i in f.read())
+                        return Array(Int(i) for i in f.read())
                     return String(f.read())
                 if data is None:
                     raise SamariumIOError("missing data")
@@ -956,7 +957,7 @@ class File(Class):
     def _getItem_(self, index: Integer | Slice) -> Array | String | Integer | Null:
         if isinstance(index, Slice):
             if index.is_empty():
-                return Int[self.value.tell()]
+                return Int(self.value.tell())
             if isinstance(index.step, Integer):
                 raise SamariumIOError("cannot use step")
             if isinstance(index.start, Integer):
@@ -969,19 +970,19 @@ class File(Class):
                 if self.binary:
                     if isinstance(data, bytes):
                         data = [*data]
-                    return Array(Int[i] for i in data)
+                    return Array(Int(i) for i in data)
                 return String(data)
-            return self[Slice(Int[0], slice.stop, slice.step)]
+            return self[Slice(Int(0), slice.stop, slice.step)]
         else:
             self.value.seek(index.value)
             return null
 
     def load(self, bytes_: Integer | None = None) -> String | Array:
         if bytes_ is None:
-            bytes_ = Int[-1]
+            bytes_ = Int(-1)
         val = self.value.read(cast(Integer, bytes_).value)
         if self.binary:
-            return Array(Int[i] for i in val)
+            return Array(Int(i) for i in val)
         return String(val)
 
     def save(self, data: String | Array):

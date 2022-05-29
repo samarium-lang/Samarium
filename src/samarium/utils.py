@@ -22,24 +22,6 @@ OPEN_TO_CLOSE = {
 }
 
 
-class Cache:
-    def __init__(self, cls, *values, size):
-        self._cls = cls
-        self._cache = {v: cls(v) for v in values}
-        self._queue = []
-        self._maxsize = len(self._cache) + size
-
-    def __getitem__(self, key):
-        if key in self._cache:
-            return self._cache[key]
-        out = self._cls(key)
-        self._queue.append(key)
-        self._cache[key] = out
-        if len(self._cache) > self._maxsize:
-            self._cache.pop(self._queue.pop(0))
-        return out
-
-
 def match_brackets(tokens: list[Tokenlike]) -> tuple[int, Tokenlike]:
     stack = []
     for token in tokens:

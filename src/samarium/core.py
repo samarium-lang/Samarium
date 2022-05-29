@@ -58,7 +58,7 @@ def dtnow() -> Array:
     utcnow_tl = utcnow.timetuple()
     tz = now[3] - utcnow_tl[3], now[4] - utcnow_tl[4]
     utcnow_tl = utcnow_tl[:-3] + (utcnow.microsecond // 1000,) + tz
-    return Array(Int[i] for i in utcnow_tl)
+    return Array(Int(i) for i in utcnow_tl)
 
 
 def import_module(data: str, ch: CodeHandler):
