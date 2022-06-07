@@ -1,5 +1,4 @@
 from termcolor import colored
-from contextlib import suppress
 
 from .core import run
 from .tokenizer import tokenize
