@@ -21,12 +21,10 @@ file              : reads program from script file"""
 
 def main(debug: bool = False):
 
-    try:
-        arg = sys.argv[1]
-    except IndexError:
+    if len(sys.argv) == 1:
         return run_shell(debug)
 
-    if arg in OPTIONS:
+    if (arg := sys.argv[1]) in OPTIONS:
         q = 0
         if arg in OPTIONS[:2]:
             print(f"Samarium {__version__}")
