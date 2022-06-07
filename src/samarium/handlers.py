@@ -8,10 +8,10 @@ class Scroller:
 
     @property
     def pointer(self) -> str:
-        return self.program[0]
+        return self.program[:1]
 
     def next(self, offset: int = 1) -> str:
-        return self.program[offset]
+        return self.program[offset:offset + 1]
 
     def shift(self, units: int = 1):
         self.prev = self.program[:units][-1]
@@ -69,10 +69,7 @@ def greater(scroller: Scroller) -> Token:
 
 def equal(scroller: Scroller) -> Token:
     if scroller.next() == "=":
-        try:
-            return (Token.COMMENT, Token.COMMENT_OPEN)[scroller.next(2) == "<"]
-        except IndexError:
-            return Token.COMMENT
+        return Token.COMMENT_OPEN if scroller.next(2) == "<" else Token.COMMENT
     if scroller.next() == ">":
         return Token.EXIT if scroller.next(2) == "!" else Token.MAIN
     raise ValueError("invalid token")
@@ -137,10 +134,7 @@ def open_brace(scroller: Scroller) -> Token:
 
 
 def close_brace(scroller: Scroller) -> Token:
-    try:
-        return (Token.BRACE_CLOSE, Token.TABLE_CLOSE)[scroller.next() == "}"]
-    except IndexError:
-        return Token.BRACE_CLOSE
+    return Token.TABLE_CLOSE if scroller.next() == "}" else Token.BRACE_CLOSE
 
 
 def hash_(scroller: Scroller) -> Token:
