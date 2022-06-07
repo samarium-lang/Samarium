@@ -22,6 +22,7 @@ OPEN_TO_CLOSE = {
 }
 
 
+# FIXME: doesn't return proper token names when throwing an error
 def match_brackets(tokens: list[Tokenlike]) -> tuple[int, Tokenlike]:
     stack = []
     for token in tokens:

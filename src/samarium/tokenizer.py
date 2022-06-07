@@ -44,10 +44,9 @@ def tokenize(program: str) -> list[Tokenlike]:
         if comment:
             if scroller.pointer == "\n":
                 comment = False
-            scroller.shift()
 
         # String submitting
-        elif scroller.pointer == '"' and scroller.prev != "\\":
+        elif scroller.pointer == '"' and scroller.prev != "\\":  # FIXME
             if not string and temp:
                 tokens.append(temp)
                 temp = ""
@@ -109,7 +108,7 @@ def exclude_backticks(program: str) -> str:
     out = ""
     skip = False
     for i, c in enumerate(program):
-        if c == '"' and program[i - 1] != "\\":
+        if c == '"' and program[i - 1] != "\\":  # FIXME
             skip = not skip
         if c == "`" and skip or c != "`":
             out += c

@@ -325,6 +325,7 @@ class Transpiler:
             else:
                 quick_template.insert(2, f"data={before_token},")
             return "".join(quick_template).format(raw_token.name.split("_")[-1])
+            # NOTE: ^ this line causes a syntax error in terminal.sm for some reason
         return ""
 
     def transpile_operator(self, token: Transpilable, _) -> str | int:
@@ -347,7 +348,7 @@ class Transpiler:
             Token.AND: " and ",
             Token.OR: " or ",
             Token.NOT: " not ",
-            Token.XOR: "",  # TODO
+            Token.XOR: "",  # TODO before 2025
             # Bitwise
             Token.BINAND: "&",
             Token.BINOR: "|",
@@ -399,7 +400,7 @@ class Transpiler:
                 return 1
             self.ch.switches["newline"] = True
             self.ch.indent -= 1
-                self.ch.switches["function"] = False
+            self.ch.switches["function"] = False
             if self.ch.switches["class"] and self.ch.indent == self.ch.class_indent[-1]:
                 self.ch.switches["class"] = False
                 self.ch.class_indent.pop()
