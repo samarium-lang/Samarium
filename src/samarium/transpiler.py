@@ -90,7 +90,7 @@ class Transpiler:
             elif item == "if ":
                 out[-1] += "=MISSING()"
             else:
-                out += [item]
+                out.append(item)
         return out
 
     def transpile(self):
@@ -110,10 +110,10 @@ class Transpiler:
 
         # For when `transpile_token(None)` is called recursively
         if token is not None:
-            self.ch.line_tokens += [token]
+            self.ch.line_tokens.append(token)
 
         if token in FILE_IO_TOKENS:
-            self.ch.line += [token]
+            self.ch.line.append(token)
             return
 
         if token == Token.SLICE_OPEN:
@@ -146,32 +146,33 @@ class Transpiler:
                 return
 
         if self.ch.switches["newline"]:
-            self.ch.code += ["".join(self.ch.line)]
+            self.ch.code.append("".join(self.ch.line))
             self.ch.all_tokens.extend(self.ch.line_tokens)
 
             self.ch.line_tokens = []
-            self.ch.line = ["    " * self.ch.indent] * bool(self.ch.indent)
+            if self.ch.indent:
+                self.ch.line = ["    " * self.ch.indent]
 
             self.ch.switches["newline"] = False
 
         # Integer handling
         if isinstance(token, int):
-            self.ch.line += [f"Int({token})"]
+            self.ch.line.append(f"Int({token})")
             return
 
         if isinstance(token, str):
             # String handling
             if token[0] == token[-1] == '"':
                 token = token.replace("\n", "\\n")
-                self.ch.line += [f"String({token})"]
+                self.ch.line.append(f"String({token})")
                 return
 
             # Name handling, `_` added so
             # Python's builtins cannot be overwritten
             elif len(self.ch.line_tokens) > 1:
                 if self.ch.line_tokens[-2] == Token.INSTANCE:
-                    self.ch.line += "."
-            self.ch.line += [f"_{token}_"]
+                    self.ch.line.append(".")
+            self.ch.line.append(f"_{token}_")
             return
 
         for func in [
@@ -186,7 +187,7 @@ class Transpiler:
             if not out:
                 continue
             if isinstance(out, str):
-                self.ch.line += [out]
+                self.ch.line.append(out)
             break
 
     def transpile_slice(self):
@@ -200,51 +201,53 @@ class Transpiler:
         ]
         slce = "Slice"
         method = "._setItem_" if assign else "._getItem_"
-        close = "),"[assign]
+        close = "," if assign else ")"
 
-        self.ch.line += [f"{method}("] * obj
+        if obj:
+            self.ch.line.append(f"{method}(")
         if all(token not in tokens for token in {Token.WHILE, Token.SLICE_STEP}):
             # <<index>>
             if tokens:
                 for t in tokens:
                     self.transpile_token(t)
-                self.ch.line += close * obj
+                if obj:
+                    self.ch.line.append(close)
             # <<>>
             else:
-                self.ch.line += [f"{slce}(null,null,null)" + close * obj]
+                self.ch.line.append(f"{slce}(null,null,null)" + close * obj)
             self.slice_tokens = []
             self.slicing = False
             return assign
         # <<**step>>
         if tokens[0] == Token.SLICE_STEP:
-            self.ch.line += [f"{slce}(null,null,"]
+            self.ch.line.append(f"{slce}(null,null,")
             for t in tokens[1:]:
                 self.transpile_token(t)
-            self.ch.line += [")" + close * obj]
+            self.ch.line.append(")" + close * obj)
         # <<start..>>
         elif tokens[-1] == Token.WHILE:
-            self.ch.line += [f"{slce}("]
+            self.ch.line.append(f"{slce}(")
             for t in tokens[:-1]:
                 self.transpile_token(t)
-            self.ch.line += [",null,null)" + close * obj]
+            self.ch.line.append(",null,null)" + close * obj)
         elif tokens[0] == Token.WHILE:
-            self.ch.line += [f"{slce}(null,"]
+            self.ch.line.append(f"{slce}(null,")
             # <<..end**step>>
             if Token.SLICE_STEP in tokens:
                 step_index = tokens.index(Token.SLICE_STEP)
                 for t in tokens[1:step_index]:
                     self.transpile_token(t)
-                self.ch.line += ","
+                self.ch.line.append(",")
                 for t in tokens[step_index + 1 :]:
                     self.transpile_token(t)
-                self.ch.line += [")" + close * obj]
+                self.ch.line.append(")" + close * obj)
             # <<..end>>
             else:
                 for t in tokens[1:]:
                     self.transpile_token(t)
-                self.ch.line += [",null)" + close * obj]
+                self.ch.line.append(",null)" + close * obj)
         elif Token.WHILE in tokens or Token.SLICE_STEP in tokens:
-            self.ch.line += [f"{slce}("]
+            self.ch.line.append(f"{slce}(")
 
             def index(lst: list[Tokenlike | str], target: Token) -> int:
                 return lst.index(target) if target in lst else -1
@@ -262,24 +265,24 @@ class Transpiler:
                     for t in tokens[s]:
                         self.transpile_token(t)
                     if i < 2:
-                        self.ch.line += ","
-                self.ch.line += [")" + close * obj]
+                        self.ch.line.append(",")
+                self.ch.line.append(")" + close * obj)
             # <<start..end>>
             elif Token.WHILE in tokens:
                 for i in tokens[:while_index]:
                     self.transpile_token(i)
-                self.ch.line += ","
+                self.ch.line.append(",")
                 for i in tokens[while_index + 1 :]:
                     self.transpile_token(i)
-                self.ch.line += [",null)" + close * obj]
+                self.ch.line.append(",null)" + close * obj)
             # <<start**step>>
             else:
                 for i in tokens[:step_index]:
                     self.transpile_token(i)
-                self.ch.line += [",null,"]
+                self.ch.line.append(",null,")
                 for i in tokens[step_index + 1 :]:
                     self.transpile_token(i)
-                self.ch.line += [")" + close * obj]
+                self.ch.line.append(")" + close * obj)
         else:
             throw_syntax("invalid slice syntax")
         self.slice_tokens = []
@@ -377,33 +380,32 @@ class Transpiler:
             if self.ch.scope == "enum":
                 self.ch.line_tokens.pop()
                 name = self.ch.line[-1]
-                self.ch.line += [f"=Enum('{name}', '"]
+                self.ch.line.append(f"=Enum('{name}', '")
                 return 1
             if self.ch.line_tokens[-2] == Token.WHILE:
-                self.ch.line += ["True"]
+                self.ch.line.append("True")
             if self.ch.switches["class_def"]:
                 self.ch.switches["class_def"] = False
                 if not isinstance(self.ch.line_tokens[-3], str):
-                    self.ch.line += ["(Class)"]
+                    self.ch.line.append("(Class)")
             self.ch.switches["newline"] = True
             self.ch.indent += 1
-            self.ch.line += [out]
+            self.ch.line.append(out)
         elif token == Token.BRACE_CLOSE:
             self.ch.scope.pop()
             if self.ch.scope == "enum":
-                self.ch.line += ["')"]
+                self.ch.line.append("')")
                 self.transpile_token(Token.END)
                 return 1
             self.ch.switches["newline"] = True
             self.ch.indent -= 1
-            if self.ch.switches["function"]:
                 self.ch.switches["function"] = False
             if self.ch.switches["class"] and self.ch.indent == self.ch.class_indent[-1]:
                 self.ch.switches["class"] = False
                 self.ch.class_indent.pop()
             if self.ch.all_tokens[-1] == Token.BRACE_OPEN:
                 if self.ch.line_tokens == [token]:
-                    self.ch.line += ["pass"]
+                    self.ch.line.append("pass")
                 else:
                     throw_syntax("missing semicolon")
         else:
@@ -435,12 +437,12 @@ class Transpiler:
                     return f"readline({self.ch.line.pop()})"
             return "readline()"
         elif token == Token.SEP and self.ch.scope and self.ch.scope == "enum":
-            self.ch.line += "', '"
+            self.ch.line.append("', '")
         elif token == Token.INSTANCE and not self.ch.switches["class"]:
             throw_syntax("instance operator cannot be used outside a class")
         elif token == Token.DEFAULT:
             template = " = {0} if not isinstance({0}, MISSING) else "
-            self.ch.line += [template.format("".join(self.ch.line).strip())]
+            self.ch.line.append(template.format("".join(self.ch.line).strip()))
         elif token == Token.ASSIGN:
             if (
                 self.ch.line_tokens.count(token) > 1
@@ -452,10 +454,10 @@ class Transpiler:
         elif token == Token.MAIN and not isinstance(self.tokens[index - 1], str):
             return "entry "
         elif token == Token.EXIT:
-            self.ch.line += ["sysexit("]
+            self.ch.line.append("sysexit(")
             self.ch.switches["exit"] = True
         elif token == Token.SLEEP:
-            self.ch.line += ["sleep("]
+            self.ch.line.append("sleep(")
             self.ch.switches["sleep"] = True
         elif token == Token.END:
             start = self.ch.indent > 0
@@ -463,21 +465,20 @@ class Transpiler:
                 self.ch.line[start:] = [self.transpile_fileio(self.ch.line[start:])]
             if self.ch.switches["import"]:
                 self.ch.switches["import"] = False
-                self.ch.line += [
+                self.ch.line.append(
                     "', CodeHandler(globals()) " "if Runtime.import_level else MAIN)"
-                ]
+                )
             self.ch.switches["newline"] = True
             if self.set_slice:
-                self.ch.line += ")"
+                self.ch.line.append(")")
                 self.set_slice -= 1
             if self.ch.switches["exit"] or self.ch.switches["sleep"]:
                 if self.ch.line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
-                    self.ch.line += ["Int(0)"]
-                self.ch.line += ")"
-                if self.ch.switches["exit"]:
-                    self.ch.switches["exit"] = False
-                else:
+                    self.ch.line.append("Int(0)")
+                self.ch.line.append(")")
+                if not self.ch.switches["exit"]:
                     self.ch.switches["sleep"] = False
+                self.ch.switches["exit"] = False
             if "=" in self.ch.line:
                 assign_idx = self.ch.line.index("=")
                 stop = assign_idx - (
@@ -485,7 +486,7 @@ class Transpiler:
                     in {*"+-*%&|^", "**", "//"}
                 )
                 variable = "".join(self.ch.line[start:stop])
-                self.ch.line += [f";verify_type({variable})"]
+                self.ch.line.append(f";verify_type({variable})")
             self.transpile_token(None)
         elif token == Token.STDOUT:
             try:
@@ -507,7 +508,7 @@ class Transpiler:
         out = tokens.get(token, 0)
         if token in {Token.IF, Token.FOR, Token.ELSE, Token.WHILE}:
             if not self.is_first_token():
-                self.ch.line += " "
+                self.ch.line.append(" ")
         if token == Token.IF:
             with suppress(IndexError):
                 if self.ch.line_tokens[-2] == Token.ELSE:
@@ -517,13 +518,13 @@ class Transpiler:
         elif token == Token.FROM:
             if isinstance(self.tokens[index + 1], str):
                 self.ch.switches["import"] = True
-                self.ch.line += ["import_module('"]
+                self.ch.line.append("import_module('")
             else:
-                self.ch.line += ["break"]
+                self.ch.line.append("break")
                 self.transpile_token(Token.END)
         elif token == Token.TO:
             if self.is_first_token():
-                self.ch.line += ["continue"]
+                self.ch.line.append("continue")
                 self.transpile_token(Token.END)
                 return 1
             return ":"
@@ -547,19 +548,19 @@ class Transpiler:
             with suppress(IndexError):
                 if self.ch.line_tokens[0] == Token.FROM:
                     return "*"
-            x = bool(self.ch.indent)
+            indent = bool(self.ch.indent)
             self.ch.line = [*filter(None, self.ch.line)]
             if self.is_first_token():
-                self.ch.line.insert(x, "return ")
+                self.ch.line.insert(indent, "return ")
                 return 1
             else:
                 self.ch.scope += "function"
             self.ch.line = [
-                *self.ch.line[:x],
+                *self.ch.line[:indent],
                 "@assert_smtype\n",
-                *self.ch.line[:x],
+                *self.ch.line[:indent],
                 "def ",
-                self.ch.line[x],
+                self.ch.line[indent],
                 "(",
                 ",".join(
                     self.groupnames(
@@ -570,27 +571,27 @@ class Transpiler:
                                 and self.ch.scope[-2] == "class"
                             )
                         )
-                        + self.ch.line[x + 1 :]
+                        + self.ch.line[indent + 1 :]
                     )
                 ),
                 ")",
             ]
         elif token == Token.CLASS:
             if not self.is_first_token():
-                x = bool(self.ch.indent)
-                self.ch.line = [*self.ch.line[:x], "@", *self.ch.line[x:]]
+                indent = bool(self.ch.indent)
+                self.ch.line = [*self.ch.line[:indent], "@", *self.ch.line[indent:]]
                 self.transpile_token(Token.END)
                 return 1
             self.ch.switches["class"] = True
             self.ch.switches["class_def"] = True
             self.ch.scope += "class"
-            self.ch.class_indent += [self.ch.indent]
+            self.ch.class_indent.append(self.ch.indent)
             return f"@class_attributes\n{'    ' * self.ch.indent}class "
         elif token == Token.ASSERT:
             if self.ch.line[self.ch.indent > 0 :]:
                 throw_syntax("# can only start a statement")
             else:
-                self.ch.line += ["assert "]
+                self.ch.line.append("assert ")
         elif token == Token.SLICE_STEP:
             if self.is_first_token():
                 self.ch.scope += "enum"
@@ -600,7 +601,7 @@ class Transpiler:
             except IndexError:
                 previous = None
             if previous in {Token.PAREN_OPEN, Token.SEP}:
-                self.ch.line += "*"
+                self.ch.line.append("*")
             else:
                 throw_syntax(
                     "** can only be used to unpack arguments (or when slicing)"

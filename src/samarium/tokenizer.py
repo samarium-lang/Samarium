@@ -124,6 +124,6 @@ def exclude_comments(tokens: list[Tokenlike]) -> list[Tokenlike]:
             ignore = True
         elif token == Token.COMMENT_CLOSE:
             ignore = False
-        else:
-            out += [token] * (not ignore)
+        elif not ignore:
+            out.append(token)
     return out

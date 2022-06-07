@@ -64,9 +64,7 @@ def assert_smtype(function: Callable):
 def class_attributes(cls):
     cls.type = Type(Type)
     parents = cls.__bases__
-    cls.parent = (
-        Type(parents[0]) if len(parents) == 1 else Array(map(Type, parents))
-    )
+    cls.parent = Type(parents[0]) if len(parents) == 1 else Array(map(Type, parents))
     return cls
 
 
@@ -462,9 +460,7 @@ class String(Class):
 
     def _create_(self, value: Any = ""):
         self.value = (
-            get_function_name(value)
-            if isinstance(value, FunctionType)
-            else str(value)
+            get_function_name(value) if isinstance(value, FunctionType) else str(value)
         )
 
     def _has_(self, element: String) -> Integer:
@@ -659,7 +655,6 @@ class Integer(Class):
 
 
 Int = lru_cache(256)(Integer)
-# Int = Integer
 
 
 class Table(Class):
@@ -672,9 +667,7 @@ class Table(Class):
             self.value = {verify_type(k): verify_type(v) for k, v in value.items()}
         elif isinstance(value, Array):
             arr = value.value
-            if all(isinstance(i, (String, Array)) for i in arr) and all(
-                len(i.value) == 2 for i in arr
-            ):
+            if all(isinstance(i, (String, Array)) and len(i.value) == 2 for i in arr):
                 table: dict[Class, Class] = {}
                 for e in arr:
                     if isinstance(e, String):
@@ -951,7 +944,7 @@ class File(Class):
                 if self.binary:
                     if isinstance(data, bytes):
                         data = [*data]
-                    return Array(Int(i) for i in data)
+                    return Array(map(Int, data))
                 return String(data)
             return self[Slice(Int(0), slice.stop, slice.step)]
         else:
@@ -963,15 +956,13 @@ class File(Class):
             bytes_ = Int(-1)
         val = self.value.read(cast(Integer, bytes_).value)
         if self.binary:
-            return Array(Int(i) for i in val)
+            return Array(map(Int, val))
         return String(val)
 
     def save(self, data: String | Array):
         if (
-            self.binary
-            and isinstance(data, String)
-            or not self.binary
-            and isinstance(data, Array)
+            (self.binary and isinstance(data, String))
+            or (not self.binary and isinstance(data, Array))
         ):
             raise SamariumTypeError(type(data).__name__)
         if isinstance(data, Array):

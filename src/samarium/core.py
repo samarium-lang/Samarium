@@ -77,7 +77,7 @@ def import_module(data: str, ch: CodeHandler):
         return
     try:
         path = sys.argv[1][: sys.argv[1].rfind("/") + 1] or "."
-    except IndexError:  # Shell
+    except IndexError:  # REPL
         path = os.getcwd() + "/"
 
     if f"{name}.sm" not in os.listdir(path):
@@ -107,10 +107,10 @@ def print_safe(*args):
     return_args = args[:]
     args = [*map(str, args)]
     types = [*map(type, args)]
-    if tuple in types or GeneratorType in types:
-        raise exc.SamariumSyntaxError(
-            "missing brackets" if tuple in types else "invalid comprehension"
-        )
+    if tuple in types:
+        raise exc.SamariumSyntaxError("missing brackets")
+    if GeneratorType in types:
+        raise exc.SamariumSyntaxError("invalid comprehension")
     print(*args)
     if len(return_args) > 1:
         return Array(return_args)

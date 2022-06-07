@@ -6,21 +6,24 @@ from .runtime import Runtime
 
 
 def handle_exception(exception: Exception):
-    name = exception.__class__.__name__
-    if name == "SyntaxError":
+    exc_type = type(exception)
+    name = exc_type.__name__
+    if exc_type is SyntaxError:
         exception = SamariumSyntaxError(
             f"invalid syntax at {int(str(exception).split()[-1][:-1])}"
         )
-    elif name in {"AttributeError", "NameError"}:
+    elif exc_type in {AttributeError, NameError}:
         names = findall(r"'(\w+)'", str(exception))
         if names == ["entry"]:
             names = ["no main function defined"]
         exception = NotDefinedError(".".join(names))
         name = "NotDefinedError"
-    elif name not in {"AssertionError", "NotDefinedError"}:
-        if not name.startswith("Samarium"):
+    elif exc_type not in {AssertionError, NotDefinedError}:
+        name = exc_type.__name__
+        if name.startswith("Samarium"):
+            name = name.removeprefix("Samarium")
+        else:
             name = f"External{name}"
-        name = name.removeprefix("Samarium")
     sys.stderr.write(colored(f"[{name}] {exception}\n", "red").replace("_", ""))
     if Runtime.quit_on_error:
         exit(1)
@@ -39,8 +42,8 @@ class NotDefinedError(SamariumError):
             message = inp
             inp = ""
         else:
-            inp = inp.__class__.__name__
-        super().__init__(f"{inp}." * bool(inp) + f"{message}")
+            inp = type(inp).__name__
+        super().__init__(f"{inp}.{message}" if inp else message)
 
 
 class SamariumImportError(SamariumError):
