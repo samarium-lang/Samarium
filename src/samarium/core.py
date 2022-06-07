@@ -58,7 +58,7 @@ def dtnow() -> Array:
     utcnow_tl = utcnow.timetuple()
     tz = now[3] - utcnow_tl[3], now[4] - utcnow_tl[4]
     utcnow_tl = utcnow_tl[:-3] + (utcnow.microsecond // 1000,) + tz
-    return Array(Int(i) for i in utcnow_tl)
+    return Array(map(Int, utcnow_tl))
 
 
 def import_module(data: str, ch: CodeHandler):
@@ -94,7 +94,7 @@ def import_module(data: str, ch: CodeHandler):
         imported.globals = {
             k: v
             for k, v in imported.globals.items()
-            if not k.startswith("__") and not k[0].isalnum()
+            if not (k.startswith("__") or k[0].isalnum())
         }
         ch.globals.update(imported.globals)
     else:
