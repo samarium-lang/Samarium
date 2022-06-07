@@ -7,7 +7,7 @@ from enum import Enum
 from functools import lru_cache, wraps
 from inspect import signature
 from secrets import choice, randbelow
-from types import CodeType, FunctionType, GeneratorType, NoneType
+from types import CodeType, FunctionType, GeneratorType
 from typing import Any, Callable, IO, Iterator, Tuple, cast
 
 from .exceptions import (
@@ -18,6 +18,9 @@ from .exceptions import (
     SamariumValueError,
 )
 from .utils import get_function_name, parse_integer, run_with_backup
+
+
+NoneType = type(None)
 
 
 def assert_smtype(function: Callable):
