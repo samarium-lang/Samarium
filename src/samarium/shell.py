@@ -6,9 +6,11 @@ from .transpiler import CodeHandler
 from .utils import match_brackets, __version__
 
 
+IN = colored("==> ", "cyan")
+INDENT = colored("  > ", "cyan")
+
+
 def read_statement():
-    IN = colored("==> ", "cyan")
-    INDENT = colored("  > ", "cyan")
     statement = ""
     prompt = IN
     while True:
