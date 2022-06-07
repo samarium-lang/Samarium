@@ -407,13 +407,13 @@ class Slice(Class):
             return String("<<>>")
         string = ""
         if start is not None:
-            string += str(start)
+            string += get_repr(start)
             if stop is step is None:
                 string += ".."
         if stop is not None:
-            string += f"..{stop}"
+            string += f"..{get_repr(stop)}"
         if step is not None:
-            string += f"**{step}"
+            string += f"**{get_repr(step)}"
         return String(f"<<{string}>>")
 
     def _equals_(self, other: Slice) -> Integer:
