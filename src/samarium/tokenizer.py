@@ -44,6 +44,7 @@ def tokenize(program: str) -> list[Tokenlike]:
         if comment:
             if scroller.pointer == "\n":
                 comment = False
+            continue
 
         # String submitting
         elif scroller.pointer == '"' and scroller.prev != "\\":  # FIXME
@@ -55,17 +56,16 @@ def tokenize(program: str) -> list[Tokenlike]:
             if not string:
                 tokens.append(temp)
                 temp = ""
-            scroller.shift()
 
         # String content and name handling
         elif scroller.pointer.isalnum() or string:
             temp += scroller.pointer
-            scroller.shift()
 
         # Namespace submitting
         elif temp and not scroller.pointer.isalnum() and not string:
             tokens.append(temp)
             temp = ""
+            continue
 
         # Multisemantic token handling
         elif scroller.pointer in MULTISEMANTIC:
@@ -79,17 +79,20 @@ def tokenize(program: str) -> list[Tokenlike]:
                 continue
             tokens.append(out)
             scroller.shift(len(out.value))
+            continue
 
         # Number handling
         elif scroller.pointer in "/\\":
             number, length = tokenize_number(scroller)
             tokens.append(number)
             scroller.shift(length)
+            continue
 
         else:
             with suppress(ValueError):
                 tokens.append(Token(scroller.pointer))
-            scroller.shift()
+
+        scroller.shift()
 
     return exclude_comments(tokens)
 
