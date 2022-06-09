@@ -27,10 +27,9 @@ class Scope:
             self.scope.pop()
 
     def __getitem__(self, key: int) -> str:
-        try:
+        with suppress(IndexError):
             return self.scope[key]
-        except IndexError:
-            return ""
+        return ""
 
     def __eq__(self, other: str) -> bool:
         return self[-1] == other
