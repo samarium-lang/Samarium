@@ -149,8 +149,7 @@ class Transpiler:
             self.ch.all_tokens.extend(self.ch.line_tokens)
 
             self.ch.line_tokens = []
-            if self.ch.indent:
-                self.ch.line = ["    " * self.ch.indent]
+            self.ch.line = ["    " * self.ch.indent] * bool(self.ch.indent)
 
             self.ch.switches["newline"] = False
 
