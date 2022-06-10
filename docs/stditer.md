@@ -21,7 +21,7 @@ Function                       | Use
 `any(array)`                   | Returns `1` if any of the elements of `array` is truthy, `0` otherwise. Returns `0` for empty arrays.
 `findAll(array, target)`       | Finds all instances of `target` in `array`, and returns an array of their indices.
 `pairwise(array)`              | Returns successive overlapping pairs taken from `array`.
-`zip(arrays)`                  | 
+`zip(arrays)`                  | Iterate over several iterables in parallel, producing arrays with an item from each one.
 `zipLongest(arrays, fill)`     | 
 
 <sup id="note-a">a</sup> Note that `function` must take only one argument (excluding default arguments).
