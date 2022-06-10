@@ -229,12 +229,12 @@ wrap string wrapper * {
     * wrapper + string + wrapper;
 }
 
-format string substitutes * {
+format string fields * {
     <-types.Table;
-    ? substitutes?! ::: Table {
-        "invalid type: " + substitutes?!.toString()!!!;
+    ? fields?! ::: Table {
+        "invalid type: " + fields?!.toString()!!!;
     }
-    ? ~~ substitutes {
+    ? ~~ fields {
         * string;
     }
     newString: "";
@@ -248,8 +248,8 @@ format string substitutes * {
             newString+: "$";
             index+: /\;
         } ,, {
-            ... k ->? substitutes {
-                v: substitutes<<k>>.toString();
+            ... k ->? fields {
+                v: fields<<k>>.toString();
                 k: k.toString();
                 ? string<<index + /..index + k$ + />> :: k {
                     newString+: v;
