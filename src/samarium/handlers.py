@@ -83,7 +83,7 @@ def dot(scroller: Scroller) -> Token:
 
 def question(scroller: Scroller) -> Token:
     if scroller.next() == "?":
-        return Token.STDIN if scroller.next() == "?" else Token.TRY
+        return Token.STDIN if scroller.next(2) == "?" else Token.TRY
     elif scroller.next() == "~":
         if scroller.next(2) == ">":
             return Token.FILE_CREATE
