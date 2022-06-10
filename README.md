@@ -31,7 +31,7 @@ You can run Samarium programs with `samarium program.sm`.
 
 Short | Long | Description
 :---: | :---: | :---
-`-c <cmd>` | `--command <cmd>` | Can be used to execute Samarium code from the string `cmd`, directly in the terminal. `cmd` can be one or more statements separated by semicolons as usual. Note that the last statement of `cmd` will be printed if it does not end in a semicolon.
+`-c <cmd>` | `--command <cmd>` | Can be used to execute Samarium code from the string `cmd`,<br>directly in the terminal. `cmd` can be one or more statements<br>separated by semicolons as usual. Note that the last statement<br> of `cmd` will be printed if it does not end in a semicolon.
 `-h` | `--help` | Shows the help message
 `-v` | `--version` | Prints Samarium version
 
