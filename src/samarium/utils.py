@@ -77,9 +77,9 @@ def parse_integer(string: str) -> int:
         b, string = string.split(":")
         if b not in "box":
             raise SamariumValueError(f"{b} is not a valid base")
-    base = {"b": 2, "o": 8, "x": 16, "d": 10,}[b]
+    base = {"b": 2, "o": 8, "x": 16, "d": 10}[b]
     string = string.lstrip("-")
-    digitset = {2: "01", 8: octdigits, 10: digits, 16: hexdigits,}[base]
+    digitset = {2: "01", 8: octdigits, 10: digits, 16: hexdigits}[base]
     neg -= len(string)
     neg %= 2
     if all(i in digitset for i in string.lower()):
@@ -87,5 +87,5 @@ def parse_integer(string: str) -> int:
     raise SamariumValueError(f'invalid string for Integer with base {base}: "{orig}"')
 
 
-def get_function_name(function: Callable) -> str:
+def get_callable_name(function: Callable) -> str:
     return function.__name__.strip("_")

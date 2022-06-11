@@ -3,13 +3,13 @@ from __future__ import annotations
 import os
 
 from collections.abc import Iterable
-from contextlib import suppress
+from contextlib import contextmanager, suppress
 from enum import Enum
 from functools import lru_cache, wraps
 from inspect import signature
 from secrets import choice, randbelow
-from types import CodeType, FunctionType, GeneratorType
-from typing import Any, Callable, IO, Iterator, Tuple, cast
+from types import GeneratorType
+from typing import Any, Callable, IO, Iterator, cast
 
 from .exceptions import (
     NotDefinedError,
@@ -18,48 +18,7 @@ from .exceptions import (
     SamariumTypeError,
     SamariumValueError,
 )
-from .utils import get_function_name, parse_integer, run_with_backup
-
-
-NoneType = type(None)
-
-
-def assert_smtype(function: Callable):
-    def modfunc(func: Callable, co_flags: int, co_argcount: int) -> CodeType:
-        return func.__code__.replace(co_flags=co_flags, co_argcount=co_argcount)
-
-    @wraps(function)
-    def wrapper(*args):
-        args = [*map(verify_type, args)]
-
-        modify = function.__code__.co_flags == 71
-        if modify:
-            args = [*args[: argc - 1], Array(args[argc - 1 :])]
-            function.__code__ = modfunc(function, 67, argc)
-            args *= argc > 0
-        result = verify_type(function(*args))
-        if modify:
-            function.__code__ = modfunc(function, 71, argc - 1)
-        if isinstance(result, (Class, Callable, Module)):
-            return result
-        raise SamariumTypeError(f"invalid return type: {type(result).__name__}")
-
-    def _toString_() -> String:
-        return String(get_function_name(function))
-
-    def _special_() -> Integer:
-        return Int(argc)
-
-    def __str__() -> str:
-        return str(_toString_())
-
-    argc = len(signature(function).parameters)
-    wrapper._special_ = _special_
-    wrapper._toString_ = _toString_
-    wrapper.__str__ = __str__
-    wrapper.type = Type(FunctionType)
-    wrapper.parent = Type(Class)
-    return wrapper
+from .utils import get_callable_name, parse_integer, run_with_backup
 
 
 def class_attributes(cls):
@@ -69,12 +28,9 @@ def class_attributes(cls):
     return cls
 
 
-def get_repr(obj: Class | Callable | Module) -> str:
+def get_repr(obj: Class | Module) -> str:
     if isinstance(obj, String):
         return f'"{obj}"'
-    if isinstance(obj, Callable):
-        obj = cast(Callable, obj)
-        return obj.__name__
     return str(obj)
 
 
@@ -82,15 +38,14 @@ def smhash(obj) -> Integer:
     return Int(hash(str(hash(obj))))
 
 
-def verify_type(obj: Any, *args) -> Class | Callable | Module:
+def verify_type(obj: Any, *args) -> Class | Module:
     if args:
         for i in [obj, *args]:
             verify_type(i)
-        else:
-            return null
+        return null
     elif isinstance(obj, type):
         return Type(obj)
-    elif isinstance(obj, (Class, Callable, Module)):
+    elif isinstance(obj, (Class, Module)):
         return obj
     elif isinstance(obj, tuple):
         return Array(obj)
@@ -357,6 +312,45 @@ class Class:
         raise NotDefinedError(self, "random")
 
 
+class Function(Class):
+    def __init__(self, func: Callable):
+        self.argc = len(signature(func).parameters)
+        self.modifiable = func.__code__.co_flags == 71
+        self.name = get_callable_name(func)
+        self.func = func
+
+    def mod(self, co_flags: int, co_argcount: int) -> Callable:
+        new_func = self.func
+        new_func.__code__ = new_func.__code__.replace(
+            co_flags=co_flags, co_argcount=co_argcount
+        )
+        return new_func
+
+    @contextmanager
+    def modify(self, args: list[Any]):
+        if not self.modifiable:
+            yield self.func, args
+            return
+        argc = self.argc
+        args = [*args[: argc - 1], Array(args[argc - 1 :])]
+        yield self.mod(67, argc), args
+
+    def __call__(self, *args_: Any) -> Any:
+        args = [*map(verify_type, args_)]
+
+        with self.modify(args) as (f, args):
+            result = verify_type(f(*args))
+        if isinstance(result, (Class, Module)):
+            return result
+        raise SamariumTypeError(f"invalid return type: {type(result).__name__}")
+
+    def _toString_(self) -> String:
+        return String(self.name)
+
+    def _special_(self) -> Integer:
+        return Int(self.argc)
+
+
 class Type(Class):
     def _create_(self, type_: type):
         self.value = type_
@@ -368,13 +362,13 @@ class Type(Class):
         return Int(self.value != other.value)
 
     def _toString_(self) -> String:
-        return String(get_function_name(self.value))
+        return String(get_callable_name(self.value))
 
     def _toBit_(self) -> Integer:
         return Int(1)
 
     def _call_(self, *args) -> Class:
-        if isinstance(FunctionType, self.value):
+        if self.value is Function:
             raise SamariumTypeError("cannot instantiate a function")
         if self.value is Module:
             raise SamariumTypeError("cannot instantiate a module")
@@ -461,9 +455,7 @@ class String(Class):
         return Int(ord(self.value))
 
     def _create_(self, value: Any = ""):
-        self.value = (
-            get_function_name(value) if isinstance(value, FunctionType) else str(value)
-        )
+        self.value = str(value)
 
     def _has_(self, element: String) -> Integer:
         return Int(element.value in self.value)
@@ -860,12 +852,10 @@ class FileManager:
         return null
 
     @staticmethod
-    def open(
-        path: String | Integer, mode: Mode, *, binary: bool = False
-    ) -> File:
+    def open(path: String | Integer, mode: Mode, *, binary: bool = False) -> File:
         if isinstance(path, Integer) and mode is Mode.READ_WRITE:
             raise SamariumIOError(
-                "cannot open a file descriptor in a read & write mode"
+                "cannot open a standard stream in a read & write mode"
             )
         f = open(path.value, mode.value + "b" * binary)
         return File(f, mode.name, path.value, binary)

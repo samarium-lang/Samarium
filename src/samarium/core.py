@@ -10,7 +10,7 @@ from . import exceptions as exc
 from .objects import (
     null,
     Int,
-    assert_smtype,
+    Function,
     class_attributes,
     smhash,
     verify_type,
