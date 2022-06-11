@@ -72,28 +72,28 @@ pow(**arguments)!;
 
 ## Decorators
 
-Decorators are syntactic sugar for calling a function with the argument of it being another function.
+Decorators are syntactic sugar for calling a function/class which argument is another callable.
 
 To use a function as a decorator, write the name, `@` and then declare the function it is decorating.
 
-
 ```sm
-
-== function to use as a decorator
-debug res * {
-    "calling the function"!;
-    res!;
-    * res
+== Decorator
+double func * {
+    wrapper args... * {
+        * func(**args) ++ /\;
+    }
+    * wrapper;
 }
 
-== the decorated function, can be called with `pow`
-debug @ pow a b * {
-    * a +++ b;
+== Decorated functions
+double @ multiply a b * {
+    * a ++ b;
 }
 
-==< will print
-calling the function
-pow
->==
-pow(/\, //);
+double @ codeToChar code * {
+    * code%;
+}
+
+multiply(/\, /\\)!;  == 16
+codeToChar(/\\\\/)!;  == !!
 ```
