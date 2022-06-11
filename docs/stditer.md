@@ -22,7 +22,7 @@ Function                       | Use
 `findAll(array, target)`       | Finds all instances of `target` in `array`, and returns an array of their indices.
 `pairwise(array)`              | Returns successive overlapping pairs taken from `array`.
 `zip(arrays)`                  | Iterate over several iterables in parallel, producing arrays with an item from each one.
-`zipLongest(arrays, fill)`     | 
+`zipLongest(fill, arrays...)`  | Iterates over several arrays, producing a set of arrays containing an item from each original array. If the arrays are of uneven length, missing values are filled using the `fill` argument.
 
 <sup id="note-a">a</sup> Note that `function` must take only one argument (excluding default arguments).
 
