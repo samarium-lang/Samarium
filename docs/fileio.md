@@ -128,3 +128,46 @@ string ~> "file.txt";
 array <% "file.bin";
 == reads the full contents of `file.bin` directly into `array`
 ```
+
+## File Descriptors
+You can also use file descriptors instead of file paths in order to access standard I/O streams.
+
+Integer value | Name
+:---:         | :---:
+`\`           | Standard Input
+`/`           | Standard Output
+`/\`          | Standard Error
+
+An example use of these could be printing without a newline at the end:
+```sm
+=> * {
+    <-iter.range;
+    ... i ->? range(/\/\) {
+        i ~> /;
+    }
+}
+```
+The above code is equivalent to the following Python snippets:
+```py
+def main():
+    for i in range(10):
+        print(i, end="", flush=True)
+
+if __name__ == "__main__":
+    main()
+```
+```py
+import sys
+
+def main():
+    for i in range(10):
+        sys.stdout.write(str(i))
+        sys.stdout.flush()
+
+if __name__ == "__main__":
+    main()
+```
+All snippets produce the following output:
+```
+0123456789
+```
