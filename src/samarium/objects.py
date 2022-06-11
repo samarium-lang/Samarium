@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 
 from collections.abc import Iterable
+from contextlib import suppress
 from enum import Enum
 from functools import lru_cache, wraps
 from inspect import signature
@@ -107,7 +108,8 @@ class Class:
     __slots__ = ("value",)
 
     def __init__(self, *args: Any, **kwargs: Any):
-        self._create_(*args, **kwargs)
+        with suppress(NotDefinedError):
+            self._create_(*args, **kwargs)
 
     def __bool__(self) -> bool:
         return bool(self._toBit_().value)
