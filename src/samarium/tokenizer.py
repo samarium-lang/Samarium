@@ -44,7 +44,6 @@ def tokenize(program: str) -> list[Tokenlike]:
         if comment:
             if scroller.pointer == "\n":
                 comment = False
-            continue
 
         # String submitting
         elif scroller.pointer == '"' and scroller.prev != "\\":  # FIXME
