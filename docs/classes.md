@@ -112,3 +112,32 @@ Operator | Inferred from
 `>:`     | `>` and `::`
 
 <sup id="note-a">a</sup> Note that order will be preserved here — if both class `A` and class `B` implement a function `f`, and class `C` inherits them in the order `(A, B)`, then `C` will inherit `f` from class `B`, as it is inherited later.
+
+## Class Decorators
+Decorators can also be created using classes:
+```sm
+@ OutputStorage {
+
+    create func * {
+        'func: func;
+        'outputs: [];
+    }
+
+    call args... * {
+        out: 'function(**args);
+        'outputs_: [out];
+        * out;
+    }
+
+}
+
+OutputStorage @ multiply a b * {
+    * a ++ b;
+}
+
+multiply(/\, /\/)!;  == 10
+multiply(//, ///)!;  == 21
+multiply(/\\/, //\\)!;  == 108
+
+multiply.outputs!;  == [10, 21, 108]
+```
