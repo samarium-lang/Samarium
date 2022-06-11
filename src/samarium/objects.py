@@ -884,7 +884,7 @@ class FileManager:
             with open(path.value, mode.value + "b" * binary) as f:
                 if mode is Mode.READ:
                     if binary:
-                        return Array(Int(i) for i in f.read())
+                        return Array(map(Int, f.read()))
                     return String(f.read())
                 if data is None:
                     raise SamariumIOError("missing data")
