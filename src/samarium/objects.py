@@ -877,7 +877,7 @@ class FileManager:
         path: String | File,
         mode: Mode,
         *,
-        data: Class | None = None,
+        data: String | Array | None = None,
         binary: bool = False,
     ) -> String | Array | Null:
         if isinstance(path, String):
@@ -889,7 +889,7 @@ class FileManager:
                 if data is None:
                     raise SamariumIOError("missing data")
                 if isinstance(data, Array):
-                    f.write(b"".join(int(x).to_bytes(1, "big") for x in data.value))
+                    f.write(b"".join(x.value.to_bytes(1, "big") for x in data.value))
                 else:
                     f.write(data.value)
         elif isinstance(path, Integer):
@@ -966,7 +966,7 @@ class File(Class):
         ):
             raise SamariumTypeError(type(data).__name__)
         if isinstance(data, Array):
-            self.value.write(b"".join(int(x).to_bytes(1, "big") for x in data.value))
+            self.value.write(b"".join(x.value.to_bytes(1, "big") for x in data.value))
         else:
             self.value.write(data.value)
         return null
