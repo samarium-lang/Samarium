@@ -97,9 +97,9 @@ class Transpiler:
         if error:
             throw_syntax(
                 {
-                    -1: 'missing closing bracket for "{}"',
-                    +1: 'missing opening bracket for "{}"',
-                }[error].format(data)
+                    -1: '"{0.value}" does not match "{1.value}"',
+                    +1: 'missing closing bracket for "{0.value}"',
+                }[error].format(*data)
             )
         for index, token in enumerate(self.tokens):
             self.transpile_token(token, index)

@@ -22,20 +22,21 @@ OPEN_TO_CLOSE = {
 }
 
 
-# FIXME: doesn't return proper token names when throwing an error
-def match_brackets(tokens: list[Tokenlike]) -> tuple[int, Tokenlike]:
+def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
     stack = []
+    token = Token.NULL
+    tokens: list[Token] = [t for t in tokens_ if t in OPEN_TOKENS + CLOSE_TOKENS]
     for token in tokens:
         if token in OPEN_TOKENS:
             stack.append(token)
-        elif token in CLOSE_TOKENS:
+        else:
             if OPEN_TO_CLOSE[stack[-1]] == token:
-                stack.pop(-1)
+                stack.pop()
             else:
-                return 1, token
+                return -1, [stack[-1], token]
     if stack:
-        return -1, stack[-1]
-    return 0, 0
+        return 1, [token]
+    return 0, []
 
 
 def readfile(path: str) -> str:
