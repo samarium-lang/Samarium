@@ -1,6 +1,6 @@
 from __future__ import annotations
 from contextlib import suppress
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 from .exceptions import handle_exception, SamariumSyntaxError
 from .tokenizer import Tokenlike
@@ -40,12 +40,11 @@ class Scope:
 
 class CodeHandler:
     def __init__(self, globals: dict[str, Any]):
-        self.class_indent = []
-        self.code = []
-        self.line = []
-        self.line_tokens = []
+        self.class_indent: list[int] = []
+        self.code: list[str] = []
+        self.line: list[Tokenlike] = []
+        self.line_tokens: list[Tokenlike] = []
         self.indent = 0
-        self.locals = {}
         self.globals = globals
         self.scope = Scope()
         self.switches = {
@@ -62,7 +61,7 @@ class CodeHandler:
                 "slice",
             }
         }
-        self.all_tokens = []
+        self.all_tokens: list[Tokenlike] = []
 
 
 class Transpiler:
@@ -72,15 +71,19 @@ class Transpiler:
         self.set_slice = 0
         self.slicing = False
         self.slice = False
-        self.slice_tokens = []
+        self.slice_tokens: list[Transpilable] = []
 
     def is_first_token(self) -> bool:
-        return not self.ch.line or (
-            len(self.ch.line) == 1 and self.ch.line[0].isspace()
+        line = self.ch.line
+        return (
+            not line
+            or len(line) == 1
+            and isinstance(line[0], str)
+            and line[0].isspace()
         )
 
     def groupnames(self, array: list[str]) -> list[str]:
-        out = []
+        out: list[str] = []
         for item in array:
             if not item or item.isspace():
                 continue
@@ -117,16 +120,12 @@ class Transpiler:
 
         if token == Token.SLICE_OPEN:
             prev_token = self.ch.line_tokens[-2]
-            self.slice = (
-                prev_token
-                not in {
-                    Token.ASSIGN,
-                    Token.SEP,
-                    Token.TO,
-                    *OPEN_TOKENS,
-                }
-                or isinstance(prev_token, str)
-            )
+            self.slice = prev_token not in {
+                Token.ASSIGN,
+                Token.SEP,
+                Token.TO,
+                *OPEN_TOKENS,
+            } or isinstance(prev_token, str)
             self.slicing = True
             self.slice_tokens.append(token)
             return
@@ -145,7 +144,7 @@ class Transpiler:
                 return
 
         if self.ch.switches["newline"]:
-            self.ch.code.append("".join(self.ch.line))
+            self.ch.code.append("".join(map(str, self.ch.line)))
             self.ch.all_tokens.extend(self.ch.line_tokens)
 
             self.ch.line_tokens = []
@@ -247,7 +246,7 @@ class Transpiler:
         elif Token.WHILE in tokens or Token.SLICE_STEP in tokens:
             self.ch.line.append(f"{slce}(")
 
-            def index(lst: list[Tokenlike | str], target: Token) -> int:
+            def index(lst: list[Transpilable], target: Token) -> int:
                 return lst.index(target) if target in lst else -1
 
             while_index = index(tokens, Token.WHILE)
@@ -287,14 +286,16 @@ class Transpiler:
         self.slicing = False
         return assign
 
-    def transpile_fileio(self, tokens: list[str]) -> str:
-        raw_tokens = [token for token in tokens if token in FILE_IO_TOKENS]
+    def transpile_fileio(self, tokens: list[Tokenlike]) -> str:
+        raw_tokens: list[Token] = [
+            cast(Token, token) for token in tokens if token in FILE_IO_TOKENS
+        ]
         if len(raw_tokens) > 2:
             throw_syntax("can only perform one file operation at a time")
         raw_token = raw_tokens[0]
         raw_token_index = tokens.index(raw_token)
-        before_token = "".join(tokens[:raw_token_index])
-        after_token = "".join(tokens[raw_token_index + 1 :])
+        before_token = "".join(map(str, tokens[:raw_token_index]))
+        after_token = "".join(map(str, tokens[raw_token_index + 1 :]))
         open_template = f"{before_token}=FileManager.{{}}" f"({after_token}, Mode.{{}})"
         quick_template = [
             f"FileManager.quick({after_token},",
@@ -431,6 +432,7 @@ class Transpiler:
             with suppress(IndexError):
                 if (
                     isinstance(self.ch.line_tokens[-2], str)
+                    and isinstance(self.ch.line[-1], str)
                     and not self.ch.line[-1].isspace()
                 ):
                     return f"readline({self.ch.line.pop()})"
@@ -441,7 +443,9 @@ class Transpiler:
             throw_syntax("instance operator cannot be used outside a class")
         elif token == Token.DEFAULT:
             template = " = {0} if not isinstance({0}, MISSING) else "
-            self.ch.line.append(template.format("".join(self.ch.line).strip()))
+            self.ch.line.append(
+                template.format("".join(map(str, self.ch.line)).strip())
+            )
         elif token == Token.ASSIGN:
             if (
                 self.ch.line_tokens.count(token) > 1
@@ -481,10 +485,9 @@ class Transpiler:
             if "=" in self.ch.line:
                 assign_idx = self.ch.line.index("=")
                 stop = assign_idx - (
-                    self.ch.line[assign_idx - 1]
-                    in {*"+-*%&|^", "**", "//"}
+                    self.ch.line[assign_idx - 1] in {*"+-*%&|^", "**", "//"}
                 )
-                variable = "".join(self.ch.line[start:stop])
+                variable = "".join(map(str, self.ch.line[start:stop]))
                 self.ch.line.append(f";verify_type({variable})")
             self.transpile_token(None)
         elif token == Token.STDOUT:
@@ -548,7 +551,7 @@ class Transpiler:
                 if self.ch.line_tokens[0] == Token.FROM:
                     return "*"
             indent = bool(self.ch.indent)
-            self.ch.line = [*filter(None, self.ch.line)]
+            self.ch.line = [cast(Tokenlike, i) for i in filter(None, self.ch.line)]
             if self.is_first_token():
                 self.ch.line.insert(indent, "return ")
                 return 1
@@ -556,21 +559,16 @@ class Transpiler:
                 self.ch.scope += "function"
             self.ch.line = [
                 *self.ch.line[:indent],
-                "@assert_smtype\n",
+                "@Function\n",
                 *self.ch.line[:indent],
                 "def ",
                 self.ch.line[indent],
                 "(",
                 ",".join(
                     self.groupnames(
-                        (
-                            ["self"]
-                            * (
-                                self.ch.switches["class"]
-                                and self.ch.scope[-2] == "class"
-                            )
-                        )
-                        + self.ch.line[indent + 1 :]
+                        ["self"]
+                        * (self.ch.switches["class"] and self.ch.scope[-2] == "class")
+                        + cast(list[str], self.ch.line[indent + 1 :])
                     )
                 ),
                 ")",
@@ -595,6 +593,7 @@ class Transpiler:
             # if self.is_first_token():
             #     self.ch.scope += "enum"
             #     return 1
+            previous: Transpilable
             try:
                 previous = self.ch.line_tokens[-2]
             except IndexError:

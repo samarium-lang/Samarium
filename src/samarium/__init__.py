@@ -25,14 +25,13 @@ def main(debug: bool = False):
         return run_shell(debug)
 
     if (arg := sys.argv[1]) in OPTIONS:
-        q = 0
         if arg in OPTIONS[:2]:
             print(f"Samarium {__version__}")
         elif arg in OPTIONS[2:4]:
-            q = run(f"=> argv * {{\n\t{sys.argv[2]} !;\n}}", MAIN, debug)
+            run(f"=> argv * {{\n\t{sys.argv[2]} !;\n}}", MAIN, debug)
         elif arg in OPTIONS[4:]:
             print(HELP)
-        sys.exit(q)
+        sys.exit()
 
     try:
         file = readfile(arg)

@@ -3,7 +3,7 @@ import sys
 
 from contextlib import contextmanager, suppress
 from string import digits, hexdigits, octdigits
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, TypeVar, cast
 
 from .exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
 from .tokenizer import Tokenlike
@@ -25,7 +25,9 @@ OPEN_TO_CLOSE = {
 def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
     stack = []
     token = Token.NULL
-    tokens: list[Token] = [t for t in tokens_ if t in OPEN_TOKENS + CLOSE_TOKENS]
+    tokens: list[Token] = [
+        cast(Token, t) for t in tokens_ if t in OPEN_TOKENS + CLOSE_TOKENS
+    ]
     for token in tokens:
         if token in OPEN_TOKENS:
             stack.append(token)
@@ -75,19 +77,9 @@ def parse_integer(string: str) -> int:
         b, string = string.split(":")
         if b not in "box":
             raise SamariumValueError(f"{b} is not a valid base")
-    base = {
-        "b": 2,
-        "o": 8,
-        "x": 16,
-        "d": 10,
-    }[b]
+    base = {"b": 2, "o": 8, "x": 16, "d": 10,}[b]
     string = string.lstrip("-")
-    digitset = {
-        2: "01",
-        8: octdigits,
-        10: digits,
-        16: hexdigits,
-    }[base]
+    digitset = {2: "01", 8: octdigits, 10: digits, 16: hexdigits,}[base]
     neg -= len(string)
     neg %= 2
     if all(i in digitset for i in string.lower()):

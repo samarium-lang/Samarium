@@ -10,7 +10,7 @@ IN = colored("==> ", "cyan")
 INDENT = colored("  > ", "cyan")
 
 
-def read_statement():
+def read_statement() -> str:
     statement = ""
     prompt = IN
     while True:

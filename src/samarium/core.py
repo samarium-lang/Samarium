@@ -55,10 +55,10 @@ class MISSING:
 def dtnow() -> Array:
     utcnow = datetime.utcnow()
     now = datetime.now().timetuple()
-    utcnow_tl = utcnow.timetuple()
-    tz = now[3] - utcnow_tl[3], now[4] - utcnow_tl[4]
-    utcnow_tl = utcnow_tl[:-3] + (utcnow.microsecond // 1000,) + tz
-    return Array(map(Int, utcnow_tl))
+    utcnow_tt = utcnow.timetuple()
+    tz = now[3] - utcnow_tt[3], now[4] - utcnow_tt[4]
+    utcnow_tpl = utcnow_tt[:-3] + (utcnow.microsecond // 1000,) + tz
+    return Array(map(Int, utcnow_tpl))
 
 
 def import_module(data: str, ch: CodeHandler):

@@ -94,7 +94,7 @@ def verify_type(obj: Any, *args) -> Class | Callable | Module:
         return obj
     elif isinstance(obj, tuple):
         return Array(obj)
-    elif isinstance(obj, NoneType):
+    elif obj is None:
         return null
     elif isinstance(obj, bool):
         return Int(obj)
@@ -862,7 +862,7 @@ class FileManager:
     @staticmethod
     def open(
         path: String | Integer, mode: Mode, *, binary: bool = False
-    ) -> Tuple[IO, bool]:
+    ) -> File:
         if isinstance(path, Integer) and mode is Mode.READ_WRITE:
             raise SamariumIOError(
                 "cannot open a file descriptor in a read & write mode"
@@ -871,7 +871,7 @@ class FileManager:
         return File(f, mode.name, path.value, binary)
 
     @staticmethod
-    def open_binary(path: String, mode: Mode) -> tuple[IO, bool]:
+    def open_binary(path: String, mode: Mode) -> File:
         return FileManager.open(path, mode, binary=True)
 
     @staticmethod
@@ -962,9 +962,8 @@ class File(Class):
         return String(val)
 
     def save(self, data: String | Array):
-        if (
-            (self.binary and isinstance(data, String))
-            or (not self.binary and isinstance(data, Array))
+        if (self.binary and isinstance(data, String)) or (
+            not self.binary and isinstance(data, Array)
         ):
             raise SamariumTypeError(type(data).__name__)
         if isinstance(data, Array):
