@@ -46,7 +46,7 @@ def tokenize(program: str) -> list[Tokenlike]:
                 comment = False
 
         # String submitting
-        elif scroller.pointer == '"' and scroller.prev != "\\":  # FIXME
+        elif scroller.pointer == '"' and is_safely_escaped(temp):
             if not string and temp:
                 tokens.append(temp)
                 temp = ""
@@ -106,11 +106,15 @@ def tokenize_number(scroller: handlers.Scroller) -> tuple[int, int]:
     return int(temp, 2), len(temp)
 
 
+def is_safely_escaped(string: str) -> bool:
+    return (len(string) - len(string.rstrip("\\"))) % 2 == 0
+
+
 def exclude_backticks(program: str) -> str:
     out = ""
     skip = False
     for i, c in enumerate(program):
-        if c == '"' and program[i - 1] != "\\":  # FIXME
+        if c == '"' and is_safely_escaped(program[:i]):
             skip = not skip
         if c == "`" and skip or c != "`":
             out += c
