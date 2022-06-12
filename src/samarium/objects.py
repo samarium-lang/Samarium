@@ -350,6 +350,11 @@ class Function(Class):
     def _special_(self) -> Integer:
         return Int(self.argc)
 
+    def _equals_(self, other: Class) -> Integer:
+        if isinstance(other, Function):
+            return Int(self.func == other.func)
+        return Int(0)
+
 
 class Type(Class):
     def _create_(self, type_: type):
