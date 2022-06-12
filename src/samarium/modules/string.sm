@@ -11,7 +11,9 @@ whitespace: " \t\n\r\f\v";
 
 printable: letters + digits + punctuation + whitespace;
 
-center string length char:" " * {
+
+center string length char? * {
+    char <> " ";
     ? char$ > / {
         "char has to be of length 1"!!!;
     }
@@ -29,18 +31,27 @@ center string length char:" " * {
 }
 
 startsWith string prefix * {
-    ? prefix$ > string$ { * \; }
-    ? prefix :: string { * /; }
+    ? prefix$ > string$ {
+        * \;
+    }
+    ? prefix :: string {
+        * /;
+    }
     * string<<..prefix$>> :: prefix;
 }
 
 endsWith string suffix * {
-    ? suffix$ > string$ { * \; }
-    ? suffix :: string { * /; }
+    ? suffix$ > string$ {
+        * \;
+    }
+    ? suffix :: string {
+        * /;
+    }
     * string<<-suffix$..>> :: suffix;
 }
 
-split string delimiter:" " * {
+split string delimiter? * {
+    delimiter <> " ";
     ? delimiter ~~ ->? string {
         * [string];
     }
@@ -59,7 +70,9 @@ split string delimiter:" " * {
 }
 
 capitalize string * {
-    ? string$ :: \ { * string; }
+    ? string$ :: \ {
+        * string;
+    }
     * toUpper(string<<\>>) + toLower(string<</..>>);
 }
 
@@ -67,13 +80,16 @@ title string * {
     * join([capitalize(w) ... w ->? split(string)]);
 }
 
-join iterable delimiter:" " * {
+join iterable delimiter? * {
+    delimiter <> "";
     o: "";
     ... e ->? iterable {
         o+: e.toString();
         o+: delimiter;
     }
-    o: o<<..-delimiter$>>;
+    ? delimiter {
+        o: o<<..-delimiter$>>;
+    }
     * o;
 }
 
@@ -101,13 +117,14 @@ isWrapped string chars * {
 
 toLower string * {
     <-iter.range;
-    ? string?! ::: ""?! {
+    <-types.String;
+    ? string?! ::: String {
         "invalid type: " + string?!.toString()!!!;
     }
     out: "";
     ... char ->? string {
-        ? char% ->? range(/\\\\\/, /\//\/\) {
-            out+: (char% + /\\\\\)%;
+        ? char% ->? range(/\\`\\\/, /\/`/\/\) {
+            out+: (char% + /\`\\\\)%;
         } ,, {
             out+: char;
         }
@@ -117,13 +134,14 @@ toLower string * {
 
 toUpper string * {
     <-iter.range;
-    ? string?! ::: ""?! {
+    <-types.String;
+    ? string?! ::: String {
         "invalid type: " + string?!.toString()!!!;
     }
     out: "";
     ... char ->? string {
-        ? char% ->? range(//\\\\/, ////\/\) {
-            out+: (char% - /\\\\\)%;
+        ? char% ->? range(//\`\\\/, ///`/\/\) {
+            out+: (char% - /\`\\\\)%;
         } ,, {
             out+: char;
         }
@@ -143,19 +161,24 @@ swapcase string * {
     * out;
 }
 
-pad string length char:" " * {
+pad string length char? * {
+    char <> " ";
     ? char$ > / {
         "char has to be of length 1"!!!;
     }
-    ? length <: string$ { * string; }
+    ? length < string$ {
+        * string;
+    }
     * char ++ (length - string$);
 }
 
-leftpad string length char:" " * {
+leftpad string length char? * {
+    char <> " ";
     * pad(string, length, char) + string;
 }
 
-rightpad string length char:" " * {
+rightpad string length char? * {
+    char <> " ";
     * string + pad(string, length, char);
 }
 
@@ -206,32 +229,124 @@ wrap string wrapper * {
     * wrapper + string + wrapper;
 }
 
-replace string replacement count:-/ * {
-
-    replaceOne string from to * {
-        <-iter.find;
-        replaced: \;
-        i: find(string, from);
-        ? i >: \ {
-            replaced: /;
-            string: string<<..i>> + to + string<<i + from$..>>;
+format string fields * {
+    <-types.Table;
+    ? fields?! ::: Table {
+        "invalid type: " + fields?!.toString()!!!;
+    }
+    ? ~~ fields {
+        * string;
+    }
+    newString: "";
+    index: \;
+    .. index < string$ {
+        char: string<<index>>;
+        ? char ::: "$" {
+            newString+: char;
+            index+: /;
+        } ,, ? string<<index + />> :: "$" {
+            newString+: "$";
+            index+: /\;
+        } ,, {
+            ... k ->? fields {
+                v: fields<<k>>.toString();
+                k: k.toString();
+                ? string<<index + /..index + k$ + />> :: k {
+                    newString+: v;
+                    index+: k$ + /;
+                    <-;
+                }
+            }
         }
-        * [string, replaced];
     }
+    * newString;
+}
 
-    ? replacement?! ::: {{}}?! {
-        "invalid type: " + replacement?!.toString()!!!;
-    }
+replace string replacements count? * {
+    count <> -/;
+    <-iter.all, find, zip;
+    <-types.String, Table;
 
-    ... k ->? replacement {
-        v: replacement<<k>>;
-        replacements: \;
-        .. replacements ::: count {
-            string, replaced: replaceOne(string, k, v);
-            ? ~~ replaced { <- }
-            replacements+: /;
+    replace string from to count * {
+        empty * {
+            ? ~~ from { * to; }
+            * string;
+        }
+
+        interleave count * {
+            out: to;
+            count-: /;
+            ... i ->? string {
+                out+: i;
+                ? count {
+                    out+: to;
+                    count-: /;
+                }
+            }
+            * out;
+        }
+
+        delChar count * {
+            out: "";
+            ... i ->? string {
+                ? count && i :: from {
+                    count-: /;
+                } ,, {
+                    out+: i;
+                }
+            }
+            * out;
+        }
+
+        replaceSubstring count * {
+            stringCopy: string;
+            out: "";
+            .. count && from ->? stringCopy {
+                i: find(stringCopy, from);
+                out+: stringCopy<<..i>>;
+                out+: to;
+                stringCopy: stringCopy<<i + from$..>>;
+                count-: /;
+            }
+            * out + stringCopy;
+        }
+
+        replaceChar count * {
+            out: "";
+            ... i ->? string {
+                ? i :: from && count {
+                    out+: to;
+                    count-: /;
+                } ,, {
+                    out+: i;
+                }
+            }
+            * out;
+        }
+
+        ? ~~ string {
+            * empty();
+        } ,, ? ~~ from {
+            * interleave(count);
+        } ,, ? from$ :: / {
+            ? ~~ to {
+                * delChar(count);
+            }
+            * replaceChar(count);
+        } ,, {
+            * replaceSubstring(count);
         }
     }
 
+    ? replacements?! ::: Table {
+        "invalid type for replacements: " + String(replacements?!)!!!;
+    }
+    replacements: {{k -> v ... k, v ->? zip([replacements.iterate(), replacements$])}};
+    ? ~~ all([count, replacements]) {
+        * string;
+    }
+    ... f, t ->? zip([replacements.iterate(), replacements$]) {
+        string: replace(string, f, t, count);
+    }
     * string;
 }

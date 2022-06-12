@@ -97,3 +97,50 @@ Method                   | Use
 <sup id="note-a">a</sup> Note that this will always return `0` if the specified capacity is negative, or if the user does not provide a capacity.
 
 <sup id="note-b">b</sup> `toBit()` is functionally the opposite of `isEmpty()`.
+
+## ArithmeticArray
+
+An arithmetic array is an array which can be used with different binary operators.
+
+```sm
+<-collections.ArithmeticArray;
+
+aa: ArithmeticArray([/\, //, /\/]);
+
+aa!;  == [2, 3, 5]
+aa + /\!;  == [4, 5, 7]
+aa ++ ///!;  == [14, 21, 35]
+
+isOdd: aa --- /\;
+isOdd!;  == [0, 1, 1]
+
+aa: ArithmeticArray(["oh", "hey", "hello"]);
+aa + "!"!;  == ["oh!", "hey!", "hello!"]
+```
+
+Binary operators supported by ArithmeticArray:
+- arithmetic: `+`, `++`, `+++`, `-`, `--`, `---`
+- bitwise: `&`, `|`, `^`
+- comparison: `::`, `>:`, `>`, `<:`, `<`, `:::`
+
+ArithmeticArray allows item assignment and inherits behavior for `$`, `toBit`, and `toString` from the `Array` class.
+
+You can also use your own custom operators in the form of functions by using the `apply(op, other)` method:
+
+```sm
+<-collections.ArithmeticArray;
+<-math.shl;
+
+aa: ArithmeticArray([///, /\//, //\/]);
+aa!;
+aa.apply(shl, /\)!;
+
+
+removeNull nullable default * {
+    * default ? nullable :: _ ,, nullable;
+}
+
+aa: ArithmeticArray([_, /\, //, _, /\/, _, ///]);
+aa!;  == [null, 2, 3, null, 5, null, 7]
+aa.apply(removeNull, \)!;  == [0, 2, 3, 0, 5, 0, 7]
+```

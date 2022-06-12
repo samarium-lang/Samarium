@@ -1,53 +1,67 @@
-from . import exceptions
 import os
 import sys
-from contextlib import contextmanager
+
 from datetime import datetime
-from .objects import (
-    assert_smtype, class_attributes, smhash, verify_type,
-    Class, Type, Slice, Null, String, Integer, Module,
-    Table, Array, Mode, FileManager, File
-)
-from secrets import randbelow
+from termcolor import colored
 from time import sleep as _sleep
+from types import GeneratorType
+
+from . import exceptions as exc
+from .objects import (
+    null,
+    Int,
+    Function,
+    class_attributes,
+    smhash,
+    verify_type,
+    Class,
+    Type,
+    Slice,
+    String,
+    Integer,
+    Module,
+    Null,
+    Table,
+    Array,
+    Enum,
+    Mode,
+    FileManager,
+    File,
+)
+from .runtime import Runtime
 from .tokenizer import tokenize
 from .transpiler import Transpiler, CodeHandler
-from typing import Union
+from .utils import readfile, silence_stdout, sysexit
 
-Castable = Union[Integer, String]
-MODULE_NAMES = ["math", "random", "iter", "collections", "types", "string"]
+MODULE_NAMES = [
+    "collections",
+    "datetime",
+    "iter",
+    "math",
+    "operator",
+    "random",
+    "string",
+    "terminal",
+    "types",
+    "utils",
+]
 
 
-class Runtime:
-    frozen: list[str] = []
-    import_level = 0
+class MISSING:
+    def __getattr__(self, _):
+        raise exc.SamariumValueError("cannot use the MISSING object")
 
 
 def dtnow() -> Array:
     utcnow = datetime.utcnow()
-    now = [*datetime.now().timetuple()]
-    utcnow_tl = [*datetime.utcnow().timetuple()]
-    tz = [now[3] - utcnow_tl[3], now[4] - utcnow_tl[4]]
-    utcnow_tl = utcnow_tl[:-3] + [utcnow.microsecond // 1000] + tz
-    return Array([Integer(i) for i in utcnow_tl])
-
-
-def freeze(obj: Class) -> Class:
-    def throw_immutable(*_):
-        raise exceptions.SamariumTypeError("object is immutable")
-    obj._setSlice_ = throw_immutable
-    obj._setItem_ = throw_immutable
-    return obj
+    now = datetime.now().timetuple()
+    utcnow_tt = utcnow.timetuple()
+    tz = now[3] - utcnow_tt[3], now[4] - utcnow_tt[4]
+    utcnow_tpl = utcnow_tt[:-3] + (utcnow.microsecond // 1000,) + tz
+    return Array(map(Int, utcnow_tpl))
 
 
 def import_module(data: str, ch: CodeHandler):
-
-    @contextmanager
-    def silence_stdout():
-        stdout = sys.stdout
-        sys.stdout = open(os.devnull, "w")
-        yield
-        sys.stdout = stdout
 
     module_import = False
     try:
@@ -58,15 +72,18 @@ def import_module(data: str, ch: CodeHandler):
         objects = []
         module_import = True
     name = name.strip("_")
-    path = sys.argv[1][:sys.argv[1].rfind("/") + 1] or "."
+    if name == "samarium":
+        sys.stderr.write(colored("[RecursionError]\n", "red"))
+        return
+    try:
+        path = sys.argv[1][: sys.argv[1].rfind("/") + 1] or "."
+    except IndexError:  # REPL
+        path = os.getcwd() + "/"
 
     if f"{name}.sm" not in os.listdir(path):
         if name not in MODULE_NAMES:
-            raise exceptions.SamariumImportError(name)
-        path = os.path.join(
-            os.path.dirname(__file__),
-            "modules"
-        )
+            raise exc.SamariumImportError(name)
+        path = os.path.join(os.path.dirname(__file__), "modules")
 
     with silence_stdout():
         imported = run(readfile(f"{path}/{name}.sm"), CodeHandler(globals()))
@@ -75,8 +92,9 @@ def import_module(data: str, ch: CodeHandler):
         ch.globals.update({f"_{name}_": Module(name, imported.globals)})
     elif objects == ["*"]:
         imported.globals = {
-            k: v for k, v in imported.globals.items()
-            if not k.startswith("__") and not k[0].isalnum()
+            k: v
+            for k, v in imported.globals.items()
+            if not (k.startswith("__") or k[0].isalnum())
         }
         ch.globals.update(imported.globals)
     else:
@@ -85,83 +103,63 @@ def import_module(data: str, ch: CodeHandler):
 
 
 def print_safe(*args):
-    args = [
-        assert_smtype(
-            lambda: Type(i) if isinstance(i, (type, type(lambda: 0))) else i
-        )()
-        for i in args
-    ]
-    types = [type(i) for i in args]
-    if any(i in (tuple, type(i for i in [])) for i in types):
-        raise exceptions.SamariumSyntaxError(
-            "missing brackets"
-            if tuple in types else
-            "invalid comprehension"
-        )
+    args = [*map(verify_type, args)]
+    return_args = args[:]
+    args = [*map(str, args)]
+    types = [*map(type, args)]
+    if tuple in types:
+        raise exc.SamariumSyntaxError("missing brackets")
+    if GeneratorType in types:
+        raise exc.SamariumSyntaxError("invalid comprehension")
     print(*args)
-    if len(args) > 1:
-        return Array([*args])
-    elif not args or types[0] is Null:
-        return Null()
-    return args[0]
-
-
-def random(start: Integer, end: Integer) -> Integer:
-    return Integer(
-        randbelow(int(end) - int(start) + 1) + int(start)
-    )
-
-
-def readfile(path: str) -> str:
-    with open(path) as f:
-        return f.read()
+    if len(return_args) > 1:
+        return Array(return_args)
+    elif not return_args or types[0] is Null:
+        return null
+    return return_args[0]
 
 
 def readline(prompt: str = "") -> String:
     return String(input(prompt))
 
 
-def run(code: str, ch: CodeHandler, debug: bool = False) -> CodeHandler:
+def run(
+    code: str,
+    ch: CodeHandler,
+    debug: bool = False,
+    *,
+    load_template: bool = True,
+    quit_on_error: bool = True,
+) -> CodeHandler:
 
-    ch = Transpiler(tokenize(code), ch).transpile()
-    prefix = [
-        "import sys",
-        "import os",
-        "STDOUT = sys.stdout",
-        "sys.stdout = open(os.devnull, 'w')"
-    ]
-    suffix = [
-        "if __name__ == 'samarium':",
-        "    sys.stdout = STDOUT",
-        "    argv = Array([String(i) for i in sys.argv[1:]])",
-        "    try:",
-        "        ex = entry(argv)",
-        "    except TypeError:",
-        "        ex = entry()",
-        "    sys.exit(ex.value)"
-    ]
-    code = "\n".join(prefix + ch.code + suffix)
+    Runtime.quit_on_error = quit_on_error
+    code = "\n".join(Transpiler(tokenize(code), ch).transpile().code)
+    if load_template:
+        code = readfile(f"{os.path.dirname(__file__)}/template.py").replace(
+            "{{ CODE }}", code
+        )
     try:
         if debug:
-            for line in code.splitlines():
-                print(line)
+            print(code)
         Runtime.import_level += 1
-        ch.globals = {**globals(), **ch.globals}
+        ch.globals = globals() | ch.globals
         exec(code, ch.globals)
         Runtime.import_level -= 1
     except Exception as e:
-        exceptions.handle_exception(e)
+        exc.handle_exception(e)
     return ch
 
 
-def sleep(time: int):
-    _sleep(time / 1000)
+def sleep(*args: Integer):
+    if not args:
+        raise exc.SamariumTypeError("no argument provided for ,.,")
+    if len(args) > 1:
+        raise exc.SamariumTypeError(",., only takes one argument")
+    (time,) = args
+    if not isinstance(time.value, int):
+        raise exc.SamariumTypeError(",., only accepts integers")
+    _sleep(time.value / 1000)
 
 
 def throw(message: str = ""):
-    raise exceptions.SamariumError(message)
-
-
-def verify_mutable(string: str):
-    if string in Runtime.frozen:
-        raise exceptions.SamariumTypeError("object is immutable")
+    raise exc.SamariumError(message)

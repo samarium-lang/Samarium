@@ -17,6 +17,12 @@ Function                       | Use
 `enumerate(array)`             | Returns a copy of `array` but with each item as a length 2 array containing the item's index paired with the original item.
 `range(start, stop[, step])`   | Generates an array of integers from `start` (inclusive) to `stop` (exclusive) separated by gaps of size `step`. If only one argument is provided, it will apply to `stop`, and `start` will default to `0`. If a value for `step` is not provided, it will default to `1`. Commonly used in [`foreach` loops](09controlflow.md#foreach-loop).
 `sort(array)`                  | Returns a sorted copy of `array`, using the comparison operators `<`, `>`, etc.
+`all(array)`                   | Returns `1` if all elements of `array` are truthy, `0` otherwise. Returns `1` for empty arrays.
+`any(array)`                   | Returns `1` if any of the elements of `array` is truthy, `0` otherwise. Returns `0` for empty arrays.
+`findAll(array, target)`       | Finds all instances of `target` in `array`, and returns an array of their indices.
+`pairwise(array)`              | Returns successive overlapping pairs taken from `array`.
+`zip(arrays)`                  | Iterate over several iterables in parallel, producing arrays with an item from each one.
+`zipLongest(fill, arrays...)`  | Iterates over several arrays, producing a set of arrays containing an item from each original array. If the arrays are of uneven length, missing values are filled using the `fill` argument.
 
 <sup id="note-a">a</sup> Note that `function` must take only one argument (excluding default arguments).
 

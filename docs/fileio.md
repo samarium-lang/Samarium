@@ -25,7 +25,7 @@ f <~~ "file.txt";
 == opens `file.txt` for reading, in text mode,
 == and stores the file I/O object in `f`.
 
-f <~% "file.bin:
+f <~% "file.bin";
 == opens `file.bin` for reading, in binary mode,
 == and stores the file I/O object in `f`.
 ```
@@ -34,12 +34,12 @@ These file I/O objects can be read into a variable (a string for text mode, and 
 
 ```sm
 string <~ f;
-== reading the full contents of the file I/O object `f`
+== reads the full contents of the file I/O object `f`
 == into `string` (assuming `f` is in text read mode)
 
-array <~ f;
-== reading the full contents of the file I/O object `f`
-== into `array` (assuming `f` is in text binary mode)
+array <% f;
+== reads the full contents of the file I/O object `f`
+== into `array` (assuming `f` is in binary read mode)
 ```
 
 ## Writing
@@ -51,8 +51,8 @@ f ~~> "file.txt";
 == opens/creates `file.txt` for writing, in text
 == mode, and stores the file I/O object in `f`.
 
-f %-> "file.bin";
-== opens/creates `file.bin` for writing, in binary
+f %~> "file.bin";
+== opens/creates `file.bin` for writing, in binary 
 == mode, and stores the file I/O object in `f`.
 ```
 
@@ -63,10 +63,9 @@ string ~> f;
 == writes the entirety of `string` into the file I/O
 == object `f` (assuming `f` is in text write mode)
 
-array %> f;
-== writes the entirety of `array` into the file I/O
+string %> f;
+== writes the entire contents of `array` into the file I/O
 == object `f` (assuming `f` is in binary write mode)
-
 ```
 
 ## Appending
@@ -74,19 +73,19 @@ array %> f;
 Files can be opened for appending in two ways:
 
 ```sm
-f &~~> "file.txt";
-== opens/creates `file.txt` fpr appending, in text
+f ~~> "file.txt";
+== opens/creates `file.txt` for appending, in text
 == mode, and stores the file I/O object in `f`.
 
-f &%~> "file.bin";
-== opens/creates `file.bin` fpr appending, in binary
+f %~> "file.bin";
+== opens/creates `file.bin` for appending, in binary 
 == mode, and stores the file I/O object in `f`.
-
 ```
+
 The contents of these file I/O objects can be added to from a variable (a string for text mode, and an array of integers for binary mode).
 
 ```sm
-string &-> f;
+string &~> f;
 == appends the entirety of `string` to the current contents of
 == the file I/O object `f` (assuming `f` is in text append mode)
 
@@ -94,6 +93,7 @@ array &%> f;
 == appends the entirety of `array` to the current contents of
 == the file I/O object `f` (assuming `f` is in binary append mode)
 ```
+
 ## Closing
 
 Files can be closed with the `~` operator.
@@ -104,6 +104,7 @@ Note that the file I/O object will not be released from memory, but it still can
 ~f;
 == closes the file I/O object `f`
 ```
+
 ## Quick Operations
 
 Files can be read from, written to or appended to directly using the filename, with quick operations.
@@ -126,4 +127,47 @@ string ~> "file.txt";
 
 array <% "file.bin";
 == reads the full contents of `file.bin` directly into `array`
+```
+
+## File Descriptors
+You can also use file descriptors instead of file paths in order to access standard I/O streams.
+
+Integer value | Name
+:---:         | :---:
+`\`           | Standard Input
+`/`           | Standard Output
+`/\`          | Standard Error
+
+An example use of these could be printing without a newline at the end:
+```sm
+=> * {
+    <-iter.range;
+    ... i ->? range(/\/\) {
+        i ~> /;
+    }
+}
+```
+The above code is equivalent to the following Python snippets:
+```py
+def main():
+    for i in range(10):
+        print(i, end="", flush=True)
+
+if __name__ == "__main__":
+    main()
+```
+```py
+import sys
+
+def main():
+    for i in range(10):
+        sys.stdout.write(str(i))
+        sys.stdout.flush()
+
+if __name__ == "__main__":
+    main()
+```
+All snippets produce the following output:
+```
+0123456789
 ```

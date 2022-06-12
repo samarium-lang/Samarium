@@ -22,7 +22,7 @@ This function will return what it writes to stdout (though not necessarily as a 
 
 ```sm
 x: //\!;
-== the string "6" is written to the stout, and `x` now has the value 6 (integer)
+== the string "6" is written to stdout, and `x` now has the value 6 (integer)
 ```
 
 ## STDERR
@@ -56,12 +56,14 @@ The typeof function `?!` returns the type of an object, as an instance of the `T
 
 `/?!?!` returns `Type`.
 
-These instances are callable and can be used to convert variables into that type, like so (currently only works for integers):
+These instances are callable and can be used to convert values into that type, like so:
 
 ```sm
-/?!("123")!;
-== writes `123` (as an integer) to stdout
+\?!("123") + /\!;
+== writes `125` to stdout
 ```
+
+> Related library: [`types`](stdtypes.md)
 
 ## CAST
 
@@ -73,20 +75,21 @@ The cast function `%` can convert between a Unicode character (a string) and its
 
 ## SPECIAL
 
-The special function `$` has different uses depending on the type of object it's used on.
+The special method `$` has different uses depending on the type of object it's used on.
 
-Object  | Function
----     | ---
-Integer | Returns the binary representation of the integer as a string
-String  | Returns the length of the string
-Array   | Returns the length of the array
-Table   | Returns an array of the table's values
+Object   | Use
+---      | ---
+Array    | Returns the length of the array
+Function | Returns the number of parameters the function has
+Integer  | Returns the binary representation of the integer as a string
+String   | Returns the length of the string
+Table    | Returns an array of the table's values
 
 For example:
 
 ```sm
 "string"$!;
-== writes `6` to stout
+== writes `6` to stdout
 ```
 
 ## DTNOW
@@ -121,3 +124,17 @@ If a class only has one parent, it will be return directly.
 If a class has multiple parents, they will be returned in an array, in the same order as in the class definition.
 
 Note that this will only go one layer deep, i.e. if class `A` has parent `B` and class `B` has parent `C`, `A!?` will only return `B`, and `A!?!?` will return `C`.
+
+## RANDOM
+
+The special method `??` has different uses depending on the type of object it's used on.
+
+Object  | Use
+---     | ---
+Array   | Returns a random element
+Integer | Returns a random integer from<br>an interval based on its value<br>`n = 0` → `0`<br>`n > 0` → `[0, n)`<br>`n < 0` → `[n, 0)`
+Slice   | Returns a random number that fits the slice's conditions
+String  | Returns a random character
+Table   | Returns a random key
+
+> Related library: [`random`](stdrandom.md)

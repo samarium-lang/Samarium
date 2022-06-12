@@ -1,6 +1,7 @@
 find array target * {
+    <-types.String;
     index: \;
-    ? array?! :: ""?! {
+    ? array?! :: String {
         .. index + target$ <: array$ {
             ? array<<index..index+target$>> :: target {
                 * index;
@@ -9,7 +10,9 @@ find array target * {
         }
     } ,, {
         ... e ->? array {
-            ? e :: target { * index; }
+            ? e :: target {
+                * index;
+            }
             index+: /;
         }
     }
@@ -27,7 +30,9 @@ filter array function * {
 }
 
 filterFalse array function * {
-    flip arg * { * ~~ function(arg); }
+    flip arg * {
+        * ~~ function(arg);
+    }
     * filter(array, flip);
 }
 
@@ -97,7 +102,9 @@ enumerate array * {
     * o;
 }
 
-range start stop:_ step:/ * {
+range start stop? step? * {
+    stop <> _;
+    step <> /;
     ? step :: \ {
         "step cannot be zero"!!!;
     }
@@ -153,4 +160,58 @@ sort arr * {
         }
     }
     * arr;
+}
+
+pairwise array * {
+    * [array<<i..i+/\>> ... i ->? range(array$ - /)];
+}
+
+zip arrays... * {
+    <-math.min;
+    out: [];
+    shortest: min([i$ ... i ->? arrays]);
+    ... i ->? range(shortest) {
+        out+: [[it<<i>> ... it ->? arrays]];
+    }
+    * out;
+}
+
+zipLongest fill arrays... * {
+    <-math.max;
+    out: [];
+    longest: max([i$ ... i ->? arrays]);
+    ... i ->? range(longest) {
+        zip: [];
+        ... it ->? arrays {
+            ?? {
+                zip+: [it<<i>>];
+            } !! {
+                zip+: [fill];
+            }
+        }
+        out+: [zip];
+    }
+    * out;
+}
+
+findAll array target * {
+    * [i ... i, v ->? enumerate(array) ? v :: target];
+}
+
+all array * {
+    ... i ->? array {
+        ? ~~ i {
+            * \;
+        }
+    }
+    * /;
+}
+
+any array * {
+    ... i ->? array {
+        ? i {
+            * /;
+        }
+    }
+    * \;
 }

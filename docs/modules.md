@@ -23,7 +23,7 @@ string.digits!;
 Objects can also be directly imported from a module one by one, in which case they don't need to be preceded by the module name when using them:
 
 ```sm
-<-math.sqrt, abs;
+<-math.abs, sqrt;
 
 sqrt(/\\/)!;    == prints 3
 abs(-/\)!;      == prints 2
@@ -35,5 +35,5 @@ Importing everything in this way is typically advised against, as it may cause p
 ```sm
 <-math.*;
 
-factorial(//)!; == prints 6
+factorial(//)!;     == prints 6
 ```

@@ -1,5 +1,7 @@
 abs n * {
-    ? n < \ { * -n; }
+    ? n < \ {
+        * -n;
+    }
     * n;
 }
 
@@ -23,8 +25,11 @@ gcd a b * {
 }
 
 lcm a b * {
-    ?? { * abs(a ++ b) -- gcd(a, b); }
-    !! { * \; }
+    ?? {
+        * abs(a ++ b) -- gcd(a, b);
+    } !! {
+        * \;
+    }
 }
 
 product array * {
@@ -63,27 +68,6 @@ min array * {
     * o;
 }
 
-fromDecimal string * {
-    neg: \;
-    o: \;
-    i: \;
-    errorMsg: "invalid decimal literal for fromDecimal";
-    .. i < string$ {
-        digit: string<<i>>;
-        ? digit :: "-" {
-            ? i ::: \ { errorMsg!!!; }
-            neg: /;
-        }
-        ,,? digit ~~->? "0123456789" { errorMsg!!!; }
-        ,, {
-            o++: /\/\;
-            o+: digit% - "0"%;
-        }
-        i+: /;
-    }
-    * -o ? neg ,, o;
-}
-
 sqrt n * {
     ? n < \ {
         "sqrt is defined only for non-negative numbers"!!!;
@@ -93,10 +77,10 @@ sqrt n * {
     s: n$$ - (/ ? n$$ --- /\ ,, /\);
     .. s >: \ {
         bits: shr(n,s) & //;
-        rmdr: shl(rmdr,/\) | bits;
-        cand: shl(root,/\) | /;
+        rmdr: shl(rmdr, /\) | bits;
+        cand: shl(root, /\) | /;
         bitnext: rmdr >: cand;
-        root: shl(root,/) | bitnext;
+        root: shl(root, /) | bitnext;
         rmdr-: cand ++ bitnext;
         s-: /\;
     }
@@ -109,4 +93,41 @@ shl a b * {
 
 shr a b * {
     * a -- /\ +++ b;
+}
+
+toHex n * {
+    <-string.hexdigits;
+    div: n -- /\\\\;
+    mod: n --- /\\\\;
+    ? ~~ div {
+        * hexdigits<<mod>>;
+    }
+    * toHex(div) + hexdigits<<mod>>;
+}
+
+toOct n * {
+    <-string.octdigits;
+    div: n -- /\\\;
+    mod: n --- /\\\;
+    ? ~~ div {
+        * octdigits<<mod>>;
+    }
+    * toOct(div) + octdigits<<mod>>;
+}
+
+isPrime n * {
+    ? n <: // {
+        * n > /;
+    }
+    ? n --- /\ :: \ || n --- // :: \ {
+        * \;
+    }
+    i: /\/;
+    .. i +++ /\ <: n {
+        ? n --- i :: \ || n --- (i + /\) :: \ {
+            * \;
+        }
+        i+: //\;
+    }
+    * /;
 }

@@ -1,13 +1,14 @@
 [tool.poetry]
 name = "samarium"
-version = "0.1.0"
-description = ""
+version = "0.2.0-beta.1"
+description = "The Samarium Programming Language"
 authors = ["trag1c <trag1cdev@yahoo.com>"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8"
+python = ">=3.9"
+termcolor = "^1.1.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"

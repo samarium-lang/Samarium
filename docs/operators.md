@@ -53,7 +53,6 @@ All arithmetic and bitwise operators (except `~`) can be used together with the 
 
 For example:
 
-
 ```sm
 x: x - /\/;
 x: x ++ //;
@@ -62,9 +61,8 @@ x: x --- /\\;
 
 is equivalent to:
 
-
 ```sm
-x-: x /\/;
-x+: x //;
-x---: x /\\;
+x-: /\/;
+x++: //;
+x---: /\\;
 ```

@@ -12,24 +12,25 @@ class Token(Enum):
     MOD = "---"
 
     # Comparison
-    LT = "<"
+    GE = ">:"
     GT = ">"
     LE = "<:"
-    GE = ">:"
+    LT = "<"
     EQ = "::"
     NE = ":::"
 
     # Logical and Membership
     AND = "&&"
-    OR = "||"
-    NOT = "~~"
     IN = "->?"
+    NOT = "~~"
+    OR = "||"
+    XOR = "^^"  # TODO
 
     # Bitwise
     BINAND = "&"
-    BINOR = "|"
     BINNOT = "~"
-    XOR = "^"
+    BINOR = "|"
+    BINXOR = "^"
 
     # Parens, Brackets and Braces
     BRACKET_OPEN = "["
@@ -45,15 +46,15 @@ class Token(Enum):
     TABLE_CLOSE = "}}"
 
     # Control Flow
-    IF = "?"
-    ELSE = ",,"
-    WHILE = ".."
-    FOR = "..."
-    TRY = "??"
     CATCH = "!!"
-    THROW = "!!!"
+    ELSE = ",,"
+    FOR = "..."
     FROM = "<-"
+    IF = "?"
+    THROW = "!!!"
     TO = "->"
+    TRY = "??"
+    WHILE = ".."
 
     # Comments
     COMMENT = "=="
@@ -61,8 +62,9 @@ class Token(Enum):
     COMMENT_CLOSE = ">=="
 
     # OOP / Functions
-    FUNCTION = "*"
     CLASS = "@"
+    DEFAULT = "<>"
+    FUNCTION = "*"
     INSTANCE = "'"
     MAIN = "=>"
 
@@ -83,36 +85,49 @@ class Token(Enum):
 
     # File I/O
     FILE_CREATE = "?~>"
+    FILE_APPEND = "&~~>"
     FILE_READ = "<~~"
     FILE_WRITE = "~~>"
     FILE_READ_WRITE = "<~>"
-    FILE_APPEND = "&~~>"
+    FILE_BINARY_APPEND = "&%~>"
     FILE_BINARY_READ = "<~%"
     FILE_BINARY_WRITE = "%~>"
     FILE_BINARY_READ_WRITE = "<%>"
-    FILE_BINARY_APPEND = "&%~>"
+    FILE_QUICK_APPEND = "&~>"
     FILE_QUICK_READ = "<~"
     FILE_QUICK_WRITE = "~>"
-    FILE_QUICK_APPEND = "&~>"
+    FILE_QUICK_BINARY_APPEND = "&%>"
     FILE_QUICK_BINARY_READ = "<%"
     FILE_QUICK_BINARY_WRITE = "%>"
-    FILE_QUICK_BINARY_APPEND = "&%>"
 
     # Other
     ASSERT = "#"
     ASSIGN = ":"
     ATTRIBUTE = "."
-    CONST = "<>"
     DTNOW = "@@"
     END = ";"
     NULL = "_"
-    RANDOM = "^^"
     SEP = ","
     SLEEP = ",.,"
     STRING = '"'
 
 
 FILE_IO_TOKENS = [
-    token for name, token in Token.__members__.items()
-    if name.startswith("FILE_")
+    token for name, token in Token.__members__.items() if name.startswith("FILE_")
+]
+
+OPEN_TOKENS = [
+    Token.BRACKET_OPEN,
+    Token.BRACE_OPEN,
+    Token.PAREN_OPEN,
+    Token.TABLE_OPEN,
+    Token.SLICE_OPEN,
+]
+
+CLOSE_TOKENS = [
+    Token.BRACKET_CLOSE,
+    Token.BRACE_CLOSE,
+    Token.PAREN_CLOSE,
+    Token.TABLE_CLOSE,
+    Token.SLICE_CLOSE,
 ]
