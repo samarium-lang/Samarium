@@ -653,7 +653,7 @@ class Integer(Class):
         return String(f"{self.value:b}")
 
 
-Int = lru_cache(256)(Integer)
+Int = lru_cache(1024)(Integer)
 
 
 class Table(Class):
