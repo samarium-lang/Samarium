@@ -13,10 +13,10 @@ Method            | Use
 `pushAll(items)`  | Pushes each element of `items` on top of the stack, one at a time.
 `pop()`           | Pops/removes an item from the top of the stack, and returns it. If the stack is empty, this will instead throw an error.
 `peek()`          | Returns the value of the item on top of the stack without popping it. If the stack is empty, this will instead throw an error.
-`isFull()`        | Returns `1` if the number of items in the stack is equal to the specified capacity, otherwise returns `0`.[<sup>a</sup>](#note-a)
+`isFull()`        | Returns `1` if the number of items in the stack is equal to the specified capacity, otherwise returns `0`.[^1]
 `isEmpty()`       | Returns `1` if the number of items in the stack is equal to 0, otherwise returns `0`.
 `special()`       | Returns the number of items in the stack.
-`toBit()`         | Returns `1` if the stack is not empty, otherwise returns `0`.[<sup>b</sup>](#note-b)
+`toBit()`         | Returns `1` if the stack is not empty, otherwise returns `0`.[^2]
 `toString()`      | Returns some information about the stack as a string; its capacity, number of items, and the value of the top item.
 
 ## Queue
@@ -31,10 +31,10 @@ Method           | Use
 `get()`          | Gets/removes an item from the front of the queue, and returns it. If the queue is empty, this will instead throw an error.
 `first()`        | Returns the value of the item at the front of the queue, without removing it. If the queue is empty, this will instead throw an error.
 `last()`         | Returns the value of the item at the back of the queue, without removing it. If the queue is empty, this will instead throw an error.
-`isFull()`       | Returns `1` if the number of items in the queue is equal to the specified capacity, otherwise returns `0`.[<sup>a</sup>](#note-a)
+`isFull()`       | Returns `1` if the number of items in the queue is equal to the specified capacity, otherwise returns `0`.[^1]
 `isEmpty()`      | Returns `1` if the number of items in the queue is equal to 0, otherwise returns `0`.
 `special()`      | Returns the number of items in the queue.
-`toBit()`        | Returns `1` if the queue is not empty, otherwise returns `0`.[<sup>b</sup>](#note-b)
+`toBit()`        | Returns `1` if the queue is not empty, otherwise returns `0`.[^2]
 `toString()`     | Returns some information about the queue as a string; its capacity, number of items, and the values of its items. Note that if there are more than 5 items in the queue, the string will be truncated.
 
 ## Deque
@@ -52,10 +52,10 @@ Method               | Use
 `get()`              | Gets/removes an item from the back of the deque, and returns it. If the deque is empty, this will instead throw an error.
 `front()`            | Returns the value of the item at the front of the deque, without removing it. If the deque is empty, this will instead throw an error.
 `back()`             | Returns the value of the item at the back of the deque, without removing it. If the deque is empty, this will instead throw an error.
-`isFull()`           | Returns `1` if the number of items in the deque is equal to the specified capacity, otherwise returns `0`.[<sup>a</sup>](#note-a)
+`isFull()`           | Returns `1` if the number of items in the deque is equal to the specified capacity, otherwise returns `0`.[^1]
 `isEmpty()`          | Returns `1` if the number of items in the deque is equal to 0, otherwise returns `0`.
 `special()`          | Returns the number of items in the deque.
-`toBit()`            | Returns `1` if the deque is not empty, otherwise returns `0`.[<sup>b</sup>](#note-b)
+`toBit()`            | Returns `1` if the deque is not empty, otherwise returns `0`.[^2]
 `toString()`         | Returns some information about the deque as a string; its capacity, number of items, and the values of its items. Note that if there are more than 5 items in the deque, the string will be truncated.
 
 ## Set
@@ -73,11 +73,11 @@ Method                        | Use
 `difference(other)`           | Returns the difference of the current set and `other`, i.e. a new set containing all items that the current set contains but `other` does not.
 `values()`                    | Returns the contents of the set as an array.
 `has(value)`                  | Returns `1` if `value` is contained in the set, otherwise returns `0`.
-`isFull()`                    | Returns `1` if the number of items in the set is equal to the specified capacity, otherwise returns `0`.[<sup>a</sup>](#note-a)
+`isFull()`                    | Returns `1` if the number of items in the set is equal to the specified capacity, otherwise returns `0`.[^1]
 `isEmpty()`                   | Returns `1` if the number of items in the set is equal to 0, otherwise returns `0`.
 `isSubset(other)`             | Returns `1` if the current set is a subset of `other`, i.e. every element of the current set is contained in `other`.
 `special()`                   | Returns the number of items in the set.
-`toBit()`                     | Returns `1` if the deque is not empty, otherwise returns `0`.[<sup>b</sup>](#note-b)
+`toBit()`                     | Returns `1` if the deque is not empty, otherwise returns `0`.[^2]
 `toString()`                  | Returns some information about the set as a string; its capacity, number of items, and the values of its items.
 
 ## StaticArray
@@ -92,11 +92,6 @@ Method                   | Use
 `special()`              | Returns an array containing all items in the static array, with any unassigned indices ignored.
 `toBit()`                | Returns `1` if the static array is not empty, otherwise returns `0`.
 `toString()`             | Returns some information about the static array as a string; its size, its type ("null" if it doesn't enforce one), and a table mapping each item's index to its value.
-
-
-<sup id="note-a">a</sup> Note that this will always return `0` if the specified capacity is negative, or if the user does not provide a capacity.
-
-<sup id="note-b">b</sup> `toBit()` is functionally the opposite of `isEmpty()`.
 
 ## ArithmeticArray
 
@@ -144,3 +139,8 @@ aa: ArithmeticArray([_, /\, //, _, /\/, _, ///]);
 aa!;  == [null, 2, 3, null, 5, null, 7]
 aa.apply(removeNull, \)!;  == [0, 2, 3, 0, 5, 0, 7]
 ```
+
+
+[^1]: Note that this will always return `0` if the specified capacity is negative, or if the user does not provide a capacity.
+
+[^2]: `toBit()` is functionally the opposite of `isEmpty()`.
