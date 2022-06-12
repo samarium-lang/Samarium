@@ -101,7 +101,7 @@ If files are not closed manually by the user, they will be automatically closed 
 Note that the file I/O object will not be released from memory, but it still cannot be used.
 
 ```sm
-!f;
+~f;
 == closes the file I/O object `f`
 ```
 
