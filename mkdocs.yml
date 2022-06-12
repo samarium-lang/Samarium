@@ -4,7 +4,6 @@ repo_url: https://github.com/samarium-lang/Samarium
 repo_name: samarium-lang/Samarium
 nav:
   - Home: index.md
-  - Table of Contents: tableofcontents.md
   - Base Samarium:
     - Variables: variables.md
     - Integers: integers.md
@@ -20,7 +19,7 @@ nav:
     - Modules: modules.md
     - Classes: classes.md
     - File I/O: fileio.md
-  - "Standard Library":
+  - Standard Library:
     - "collections module": stdcollections.md
     - "iter module": stditer.md
     - "math module": stdmath.md
@@ -28,6 +27,7 @@ nav:
     - "random module": stdrandom.md
     - "string module": stdstring.md
     - "types module": stdtypes.md
+  - Tools: tools.md
 theme:
   name: material
   logo: assets/icon-white.png
