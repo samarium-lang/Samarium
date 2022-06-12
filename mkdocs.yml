@@ -1,0 +1,53 @@
+site_name: Samarium Documentation 
+copyright: Copyright &copy; 2022 Samarium and Contributors
+repo_url: https://github.com/samarium-lang/Samarium
+repo_name: samarium-lang/Samarium
+nav:
+  - Home: index.md
+  - Table of Contents: tableofcontents.md
+  - Base Samarium:
+    - Variables: 00variables.md
+    - Integers: 01integers.md
+    - Operators: 02operators.md
+    - Strings: 03strings.md
+    - Arrays: 04arrays.md
+    - Tables: 05tables.md
+    - Slices: 06slices.md
+    - Comments: 07comments.md
+    - Built-in Functions: 08builtins.md
+    - Control Flow: 09controlflow.md
+    - Functions: 10functions.md
+    - Modules: 11modules.md
+    - Classes: 12classes.md
+    - File I/O: 13fileio.md
+  - "Standard Library":
+    - "`collections` module": 14stdcollections.md
+    - "`iter` module": 15stditer.md
+    - "`math` module": 16stdmath.md
+    - "`random` module": 17stdrandom.md
+    - "`string` module": 18stdstring.md
+    - "`types` module": 19stdtypes.md
+theme:
+  name: material
+  logo: assets/icon-white.png
+  favicon: assets/icon-black.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+extra_javascript:
+  - https://unpkg.com/shiki
+  - assets/script.js
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - footnotes

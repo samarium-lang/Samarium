@@ -25,4 +25,30 @@ The values of the table to the right of the operator take priority when both tab
 
 Items can be removed from a table by key using the subtraction operator `-`:
 
+<<<<<<< HEAD:docs/tables.md
 `{{"a" -> /, "b" -> /\, // -> /\//}} - "b"` gives `{{"a" -> /, // -> /\//}}`
+=======
+`{{"a" -> /, "b" -> /\, // -> /\//}} - "b"` gives `{{"a" -> /, // -> /\//}}`
+
+## Table Comprehension
+
+Tables can be created using table comprehension, using a similar syntax to [array comprehensions](04arrays.md#array-comprehension):
+
+```sm
+{{key -> value ... member ->? iterable}}
+{{key -> value ... member ->? iterable ? condition}}
+```
+
+For example, both of the following approaches are equivalent:
+
+```sm
+tab: {{}};
+... x ->? [/\, /\\, //\] {
+    tab<<x>>: x ++ x;
+}
+
+tab: {{x -> x ++ x ... x ->? [/\, /\\, //\]}};
+```
+
+In both cases, `tab` is equal to `{{2 -> 4, 4 -> 16, 6 -> 36}}`
+>>>>>>> master:docs/05tables.md

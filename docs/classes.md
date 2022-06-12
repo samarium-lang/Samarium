@@ -1,7 +1,7 @@
 # Classes
 
 Classes are defined with the `@` character.
-Any inherited classes can follow the name of the class in parentheses, separated by commas.[<sup>a</sup>](#note-a)
+Any inherited classes can follow the name of the class in parentheses, separated by commas[^1].
 Class variables and methods are defined inside curly braces.
 
 Inside a class' methods, the `'` character can be used to reference its instance variables and methods.
@@ -11,6 +11,10 @@ Class variables, instance variables and methods can be accessed with the `.` ope
 In this case, class methods will implicitly be given a reference to the instance as the first argument of the method; `x.method(arg1, arg2, ...)` is equivalent to `x?!.method(x, arg1, arg2, ...)`.
 Class variables and methods can also be accessed in the same way directly from the class itself, though note that in this case methods will not implicitly have an instance as the first argument, so it must be provided.
 
+<<<<<<< HEAD:docs/classes.md
+=======
+
+>>>>>>> master:docs/12classes.md
 ```sm
 @ A {
     shared: [];         == class variable
@@ -28,7 +32,11 @@ Class variables and methods can also be accessed in the same way directly from t
 => * {
     a: A(/\\);          == calls `A.create(4)`; `a` is now an instance of `A`
     a.method(/\/);      == calls `A.method` on the instance `a` with `arg` 5
+<<<<<<< HEAD:docs/classes.md
     a.var!;             == prints 5
+=======
+    a.var;              == prints 5
+>>>>>>> master:docs/12classes.md
 
     b: A(/\);
     a.shared+: ["str"]; == modifying a class variable for all instances
@@ -38,6 +46,10 @@ Class variables and methods can also be accessed in the same way directly from t
 
 Parent classes are inherited from right to left, i.e. the first class in the inheritance takes priority and will overwrite any functions/variables defined by the following classes:
 
+<<<<<<< HEAD:docs/classes.md
+=======
+
+>>>>>>> master:docs/12classes.md
 ```sm
 @ A {
     method * { "A"!; }
@@ -48,14 +60,25 @@ Parent classes are inherited from right to left, i.e. the first class in the inh
 }
 
 @ C(A, B) {
+<<<<<<< HEAD:docs/classes.md
     create * {}
+=======
+    create * { }
+>>>>>>> master:docs/12classes.md
 }
 
 => * {
     c: C();
+<<<<<<< HEAD:docs/classes.md
     c.method();     == prints "A", as class A was inherited last
 }
 ```
+=======
+    c.method();     == prints "A", as class `A` was inherited last
+}
+```
+
+>>>>>>> master:docs/12classes.md
 
 There are a number of special methods that the user can implement to override certain functionality of a class, such as how it's initialized (with the `create` method), or how it interacts with different operators.
 These methods are as follows (where `func(...)` indicates a variable number of arguments):
@@ -111,6 +134,7 @@ Operator | Inferred from
 `<:`     | `>`
 `>:`     | `>` and `::`
 
+<<<<<<< HEAD:docs/classes.md
 <sup id="note-a">a</sup> Note that order will be preserved here — if both class `A` and class `B` implement a function `f`, and class `C` inherits them in the order `(A, B)`, then `C` will inherit `f` from class `B`, as it is inherited later.
 
 ## Class Decorators
@@ -141,3 +165,6 @@ multiply(/\\/, //\\)!;  == 108
 
 multiply.outputs!;  == [10, 21, 108]
 ```
+=======
+[^1]: Note that order will be preserved here — if both class `A` and class `B` implement a function `f`, and class `C` inherits them in the order `(A, B)`, then `C` will inherit `f` from class `B`, as it is inherited later.
+>>>>>>> master:docs/12classes.md
