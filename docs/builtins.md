@@ -22,11 +22,7 @@ This function will return what it writes to stdout (though not necessarily as a 
 
 ```sm
 x: //\!;
-<<<<<<< HEAD:docs/builtins.md
 == the string "6" is written to stdout, and `x` now has the value 6 (integer)
-=======
-== the string "6" is written to the stout, and `x` now has the value 6 (integer)
->>>>>>> master:docs/08builtins.md
 ```
 
 ## STDERR
@@ -67,14 +63,7 @@ These instances are callable and can be used to convert values into that type, l
 == writes `125` to stdout
 ```
 
-<<<<<<< HEAD:docs/builtins.md
-> Related library: [`types`](23stdtypes.md)
-=======
-```sm
-/?!("123")!;
-== writes `123` (as an integer) to stdout
-```
->>>>>>> master:docs/08builtins.md
+> Related library: [`types`](stdtypes.md)
 
 ## CAST
 
@@ -100,18 +89,12 @@ For example:
 
 ```sm
 "string"$!;
-<<<<<<< HEAD:docs/builtins.md
 == writes `6` to stdout
-=======
-== writes `6` to stout
->>>>>>> master:docs/08builtins.md
 ```
 
 ## DTNOW
 
 The dtnow function `@@` gets the system's current date and time as an array of integers, in the format `[year, month, day, hour, minute, second, millisecond, utc_hour_offset, utc_minute_offset]`.
-
-> Related library: [`datetime`](16stddatetime.md)
 
 ## SLEEP
 
@@ -119,15 +102,8 @@ The sleep function `,.,` pauses execution for the specified number of millisecon
 
 ```sm
 ,., /////\/\\\;
-<<<<<<< HEAD:docs/builtins.md
-== sleep for 1000 milliseconds (1 second)
-```
-
-> Related library: [`datetime`](16stddatetime.md)
-=======
 == sleep for 1000 milliseconds (1 second) 
 ```
->>>>>>> master:docs/08builtins.md
 
 ## ASSERT
 
@@ -161,4 +137,4 @@ Slice   | Returns a random number that fits the slice's conditions
 String  | Returns a random character
 Table   | Returns a random key
 
-> Related library: [`random`](20stdrandom.md)
+> Related library: [`random`](stdrandom.md)
