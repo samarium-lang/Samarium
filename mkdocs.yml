@@ -1,32 +1,33 @@
 site_name: Samarium Documentation 
-copyright: Copyright &copy; 2022 Samarium and Contributors
+copyright: Copyright &copy; 2022 Samarium
 repo_url: https://github.com/samarium-lang/Samarium
 repo_name: samarium-lang/Samarium
 nav:
   - Home: index.md
   - Table of Contents: tableofcontents.md
   - Base Samarium:
-    - Variables: 00variables.md
-    - Integers: 01integers.md
-    - Operators: 02operators.md
-    - Strings: 03strings.md
-    - Arrays: 04arrays.md
-    - Tables: 05tables.md
-    - Slices: 06slices.md
-    - Comments: 07comments.md
-    - Built-in Functions: 08builtins.md
-    - Control Flow: 09controlflow.md
-    - Functions: 10functions.md
-    - Modules: 11modules.md
-    - Classes: 12classes.md
-    - File I/O: 13fileio.md
+    - Variables: variables.md
+    - Integers: integers.md
+    - Operators: operators.md
+    - Strings: strings.md
+    - Comments: comments.md
+    - Arrays: arrays.md
+    - Slices: slices.md
+    - Tables: tables.md
+    - Built-in Functions: builtins.md
+    - Control Flow: controlflow.md
+    - Functions: functions.md
+    - Modules: modules.md
+    - Classes: classes.md
+    - File I/O: fileio.md
   - "Standard Library":
-    - "`collections` module": 14stdcollections.md
-    - "`iter` module": 15stditer.md
-    - "`math` module": 16stdmath.md
-    - "`random` module": 17stdrandom.md
-    - "`string` module": 18stdstring.md
-    - "`types` module": 19stdtypes.md
+    - "collections module": stdcollections.md
+    - "iter module": stditer.md
+    - "math module": stdmath.md
+    - "operator module": stdoperator.md
+    - "random module": stdrandom.md
+    - "string module": stdstring.md
+    - "types module": stdtypes.md
 theme:
   name: material
   logo: assets/icon-white.png
