@@ -6,10 +6,9 @@ sys.stdout = open(os.devnull, "w")
 {{ CODE }}
 if __name__ == "samarium":
     sys.stdout = STDOUT
-    params = len(signature(entry).parameters)
-    if not params:
+    if not entry.argc:
         ex = entry()
-    elif params == 1:
+    elif entry.argc == 1:
         ex = entry(Array(map(String, sys.argv[1:])))
     else:
         raise SamariumSyntaxError("main function should take 0 or 1 arguments")
