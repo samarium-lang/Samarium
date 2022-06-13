@@ -31,11 +31,13 @@ def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
     for token in tokens:
         if token in OPEN_TOKENS:
             stack.append(token)
-        else:
+        elif stack:
             if OPEN_TO_CLOSE[stack[-1]] == token:
                 stack.pop()
             else:
                 return -1, [stack[-1], token]
+        else:
+            return -1, [Token.NULL, token]
     if stack:
         return 1, [token]
     return 0, []
