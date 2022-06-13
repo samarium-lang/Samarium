@@ -30,10 +30,7 @@ def handle_exception(exception: Exception):
 
 
 class SamariumError(Exception):
-    prefix = ""
-
-    def __init__(self, message: str = ""):
-        super().__init__(f"{self.prefix}{message}")
+    pass
 
 
 class NotDefinedError(SamariumError):
@@ -47,7 +44,7 @@ class NotDefinedError(SamariumError):
 
 
 class SamariumImportError(SamariumError):
-    prefix = "invalid module: "
+    pass
 
 
 class SamariumSyntaxError(SamariumError):
