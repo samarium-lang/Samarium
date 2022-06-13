@@ -4,7 +4,8 @@ repo_url: https://github.com/samarium-lang/Samarium
 repo_name: samarium-lang/Samarium
 nav:
   - Home: index.md
-  - Base Samarium:
+  - Examples: examples.md
+  - Language Guide:
     - Variables: variables.md
     - Integers: integers.md
     - Operators: operators.md
