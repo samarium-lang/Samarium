@@ -82,7 +82,7 @@ def import_module(data: str, ch: CodeHandler):
 
     if f"{name}.sm" not in os.listdir(path):
         if name not in MODULE_NAMES:
-            raise exc.SamariumImportError(name)
+            raise exc.SamariumImportError(f"invalid module: {name}")
         path = os.path.join(os.path.dirname(__file__), "modules")
 
     with silence_stdout():
@@ -99,7 +99,12 @@ def import_module(data: str, ch: CodeHandler):
         ch.globals.update(imported.globals)
     else:
         for obj in objects:
-            ch.globals[obj] = imported.globals[obj]
+            try:
+                ch.globals[obj] = imported.globals[obj]
+            except KeyError:
+                raise exc.SamariumImportError(
+                    f"{obj} is not a member of the {name} module"
+                )
 
 
 def print_safe(*args):
@@ -132,6 +137,7 @@ def run(
     quit_on_error: bool = True,
 ) -> CodeHandler:
 
+    runtime_state = Runtime.quit_on_error
     Runtime.quit_on_error = quit_on_error
     code = "\n".join(Transpiler(tokenize(code), ch).transpile().code)
     if load_template:
@@ -147,6 +153,7 @@ def run(
         Runtime.import_level -= 1
     except Exception as e:
         exc.handle_exception(e)
+    Runtime.quit_on_error = runtime_state
     return ch
 
 
