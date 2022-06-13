@@ -45,11 +45,12 @@ b: a;
 c: Array(a);
 d: a<<>>;
 
-a<</\>> = /\\;
+a<</\>>: /\\;
 a, b, c, d!;
 ```
 
-Arrays can also be constructed from strings and tables:
+Arrays can also be constructed from strings and tables:  
+
 - `Array("ball")` is equivalent to `["b", "a", "l", "l"]`
 - `Array({{// -> /\\/, "X" -> "D" }})` is equivalent to `[[//, /\\/], ["X", "D"]]`
 
@@ -59,7 +60,8 @@ The `Integer` type alias is defined to be equal to `\?!`.
 
 Caling `Integer()` with no arguments will return the integer `0`.
 
-Integers can be constructed from strings, including binary, octal, and hexadecimal representations:
+Integers can be constructed from strings, including binary, octal, and hexadecimal representations:  
+
 - `Integer("1000")` will return `1000`
 - `Integer("b:1000")` will return `8`
 - `Integer("o:1000")` will return `512`
@@ -73,7 +75,8 @@ The `Null` type alias is defined to be equal to `_?!`. Using this type alias is 
 
 The `Slice` type alias is defined to be equal to `<<>>?!`.
 
-Different slices can be constructed by using integers and nulls:
+Different slices can be constructed by using integers and nulls:  
+
 - `Slice(/, /\, //)` is equivalent to `<</../\**//>>`
 - `Slice(_, _, -/)` is equivalent to `<<**-/>>`
 - `Slice(/, _, _)` is equivalent to `<</..>>`
@@ -95,5 +98,6 @@ The `Table` type alias is defined to be equal to `{{}}?!`.
 
 Calling `Table()` with no arguments will return an empty table.
 
-Tables can be constructed from arrays containing 2-element iterables:
+Tables can be constructed from arrays containing 2-element iterables:  
+
 - `Table([[//, /\\/], "XD"])` is equivalent to `{{// -> /\\/, "X" -> "D"}}`
