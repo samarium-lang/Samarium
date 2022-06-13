@@ -62,9 +62,9 @@ def verify_type(obj: Any, *args) -> Class | Module:
 class Class:
     __slots__ = ("value",)
 
-    def __init__(self, *args: Any, **kwargs: Any):
+    def __init__(self, *args: Any):
         with suppress(NotDefinedError):
-            self._create_(*args, **kwargs)
+            self._create_(*args)
 
     def __bool__(self) -> bool:
         return bool(self._toBit_().value)
