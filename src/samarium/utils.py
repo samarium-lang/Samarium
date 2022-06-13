@@ -9,7 +9,7 @@ from .exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
 from .tokenizer import Tokenlike
 from .tokens import Token, OPEN_TOKENS, CLOSE_TOKENS
 
-__version__ = "0.2.0-beta.1"
+__version__ = "0.2.0"
 
 T = TypeVar("T")
 
