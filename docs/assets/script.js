@@ -1,5 +1,5 @@
 // @ts-check
-const codeBlocks = document.querySelectorAll("pre>code");
+const codeBlocks = document.querySelectorAll("pre.sm");
 
 fetch("https://raw.githubusercontent.com/samarium-lang/vscode-samarium/master/syntaxes/samarium.tmLanguage.json")
   .then((data) => data.json())
