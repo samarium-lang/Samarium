@@ -559,7 +559,7 @@ class Transpiler:
                 self.ch.scope += "function"
             self.ch.line = [
                 *self.ch.line[:indent],
-                "@Function\n",
+                "@function\n",
                 *self.ch.line[:indent],
                 "def ",
                 self.ch.line[indent],

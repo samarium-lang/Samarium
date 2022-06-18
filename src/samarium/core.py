@@ -10,7 +10,7 @@ from . import exceptions as exc
 from .objects import (
     null,
     Int,
-    Function,
+    function,
     class_attributes,
     smhash,
     verify_type,
@@ -110,7 +110,7 @@ def import_module(data: str, ch: CodeHandler):
 def print_safe(*args):
     args = [*map(verify_type, args)]
     return_args = args[:]
-    args = [*map(str, args)]
+    args = [i._toString_() for i in args]
     types = [*map(type, args)]
     if tuple in types:
         raise exc.SamariumSyntaxError("missing brackets")

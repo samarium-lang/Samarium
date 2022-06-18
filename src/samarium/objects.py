@@ -5,10 +5,10 @@ import os
 from collections.abc import Iterable
 from contextlib import contextmanager, suppress
 from enum import Enum
-from functools import lru_cache
+from functools import lru_cache, wraps
 from inspect import signature
 from secrets import choice, randbelow
-from types import GeneratorType
+from types import FunctionType, GeneratorType
 from typing import Any, Callable, IO, Iterator, cast
 
 from .exceptions import (
@@ -28,24 +28,24 @@ def class_attributes(cls):
     return cls
 
 
-def get_repr(obj: Class | Module) -> str:
+def get_repr(obj: Class | Callable | Module) -> str:
     if isinstance(obj, String):
         return f'"{obj}"'
-    return str(obj)
+    return str(obj._toString_())
 
 
 def smhash(obj) -> Integer:
     return Int(hash(str(hash(obj))))
 
 
-def verify_type(obj: Any, *args) -> Class | Module:
+def verify_type(obj: Any, *args) -> Class | Callable | Module:
     if args:
         for i in [obj, *args]:
             verify_type(i)
         return null
     elif isinstance(obj, type):
         return Type(obj)
-    elif isinstance(obj, (Class, Module)):
+    elif isinstance(obj, (Class, Callable, Module)):
         return obj
     elif isinstance(obj, tuple):
         return Array(obj)
@@ -312,49 +312,36 @@ class Class:
         raise NotDefinedError(self, "random")
 
 
-class Function(Class):
-    def __init__(self, func: Callable):
-        self.argc = len(signature(func).parameters)
-        self.modifiable = func.__code__.co_flags == 71
-        self.name = get_callable_name(func)
-        self.func = func
+@contextmanager
+def modify(func: Callable, args: list[Any], argc: int):
+    if func.__code__.co_flags != 71:
+        yield func, args
+        return
+    x = argc - 1
+    args = [*args[:x], Array(args[x:])]
+    func.__code__ = func.__code__.replace(co_flags=71, co_argcount=argc - 1)
+    args *= argc > 0
+    yield func, args
 
-    def mod(self, co_flags: int, co_argcount: int) -> Callable:
-        new_func = self.func
-        new_func.__code__ = new_func.__code__.replace(
-            co_flags=co_flags, co_argcount=co_argcount
-        )
-        return new_func
 
-    @contextmanager
-    def modify(self, args: list[Any]):
-        if not self.modifiable:
-            yield self.func, args
-            return
-        argc = self.argc
-        args = [*args[: argc - 1], Array(args[argc - 1 :])]
-        yield self.mod(67, argc), args
-
-    def __call__(self, *args_: Any) -> Any:
-        args = [*map(verify_type, args_)]
-
-        with self.modify(args) as (f, args):
+def function(func: Callable):
+    @wraps(func)
+    def wrapper(*args):
+        args = [*map(verify_type, args)]
+        with modify(func, args, argc) as (f, args):
             result = verify_type(f(*args))
-        if isinstance(result, (Class, Module)):
+        if isinstance(result, (Class, Callable, Module)):
             return result
         raise SamariumTypeError(f"invalid return type: {type(result).__name__}")
 
-    def _toString_(self) -> String:
-        return String(self.name)
+    argc = len(signature(func).parameters)
 
-    def _special_(self) -> Integer:
-        return Int(self.argc)
+    wrapper._toString_ = lambda: String(get_callable_name(func))
+    wrapper._special_ = lambda: Int(argc)
+    wrapper.parent = Type(Class)
+    wrapper.type = Type(FunctionType)
 
-    def _equals_(self, other: Class) -> Integer:
-        if isinstance(other, Function):
-            return Int(self.func == other.func)
-        return Int(0)
-
+    return wrapper
 
 class Type(Class):
     def _create_(self, type_: type):
@@ -367,13 +354,15 @@ class Type(Class):
         return Int(self.value != other.value)
 
     def _toString_(self) -> String:
+        if self.value is FunctionType:
+            return String("Function")
         return String(get_callable_name(self.value))
 
     def _toBit_(self) -> Integer:
         return Int(1)
 
     def _call_(self, *args) -> Class:
-        if self.value is Function:
+        if self.value is FunctionType:
             raise SamariumTypeError("cannot instantiate a function")
         if self.value is Module:
             raise SamariumTypeError("cannot instantiate a module")
