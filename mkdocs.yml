@@ -51,5 +51,8 @@ extra_javascript:
   - assets/script.js
 markdown_extensions:
   - admonition
-  - pymdownx.superfences
+  - pymdownx.superfences:
+        custom_fences:
+            - name: sm
+              class: sm
   - footnotes
