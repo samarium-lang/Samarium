@@ -393,17 +393,17 @@ class Slice(Class):
         return self.start == self.stop == self.step == null
 
     def _toString_(self) -> String:
-        start, stop, step = self.tup
-        if start is stop is step is None:
+        start, stop, step = self.start, self.stop, self.step
+        if start is stop is step is null:
             return String("<<>>")
         string = ""
-        if start is not None:
+        if start is not null:
             string += get_repr(start)
-            if stop is step is None:
+            if stop is step is null:
                 string += ".."
-        if stop is not None:
+        if stop is not null:
             string += f"..{get_repr(stop)}"
-        if step is not None:
+        if step is not null:
             string += f"**{get_repr(step)}"
         return String(f"<<{string}>>")
 
