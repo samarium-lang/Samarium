@@ -861,7 +861,7 @@ class FileManager:
 
     @staticmethod
     def quick(
-        path: String | File,
+        path: String | File | Integer,
         mode: Mode,
         *,
         data: String | Array | None = None,
