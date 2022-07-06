@@ -1,8 +1,11 @@
 import sys
-from re import findall
+from re import compile
 from termcolor import colored
 
 from .runtime import Runtime
+
+
+SINGLE_QUOTED_NAME = compile(r"'(\w+)'")
 
 
 def handle_exception(exception: Exception):
@@ -13,7 +16,7 @@ def handle_exception(exception: Exception):
             f"invalid syntax at {int(str(exception).split()[-1][:-1])}"
         )
     elif exc_type in {AttributeError, NameError}:
-        names = findall(r"'(\w+)'", str(exception))
+        names = SINGLE_QUOTED_NAME.findall(str(exception))
         if names == ["entry"]:
             names = ["no main function defined"]
         exception = NotDefinedError(".".join(names))
