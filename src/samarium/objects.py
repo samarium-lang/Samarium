@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import MISSING
 
 import os
 
@@ -7,6 +8,7 @@ from contextlib import contextmanager, suppress
 from enum import Enum
 from functools import lru_cache, wraps
 from inspect import signature
+from re import compile
 from secrets import choice, randbelow
 from types import FunctionType, GeneratorType
 from typing import Any, Callable, IO, Iterator, cast
@@ -57,6 +59,62 @@ def verify_type(obj: Any, *args) -> Class | Callable | Module:
         raise SamariumSyntaxError("invalid comprehension")
     else:
         raise SamariumTypeError(f"unknown type: {type(obj).__name__}")
+
+
+@contextmanager
+def modify(func: Callable, args: list[Any], argc: int):
+    if func.__code__.co_flags != 71:
+        yield func, args
+        return
+    x = argc - 1
+    args = [*args[:x], Array(args[x:])]
+    func.__code__ = func.__code__.replace(co_flags=71, co_argcount=argc - 1)
+    args *= argc > 0
+    yield func, args
+
+
+MISSING_ARGS_PATTERN = compile(
+    r"\w+\(\) takes exactly one argument \(0 given\)"
+    r"|\w+\(\) missing (\d+) required positional argument"
+)
+TOO_MANY_ARGS_PATTERN = compile(
+    r"\w+\(\) takes (\d+) positional arguments? but (\d+) (?:was|were) given"
+)
+
+
+def function(func: Callable):
+    @wraps(func)
+    def wrapper(*args):
+        args = [*map(verify_type, args)]
+        with modify(func, args, argc) as (f, args):
+            try:
+                result = verify_type(f(*args))
+            except TypeError as e:
+                errmsg = str(e)
+                missing_args = MISSING_ARGS_PATTERN.search(errmsg)
+                if missing_args:
+                    raise SamariumTypeError(
+                        f"not enough arguments ({argc - (int(missing_args.group(1)) or 1)}/{argc})"
+                    )
+                too_many_args = TOO_MANY_ARGS_PATTERN.search(errmsg)
+                if too_many_args:
+                    raise SamariumTypeError(
+                        f"too many arguments ({too_many_args.group(2)}/{argc})"
+                    )
+                raise e
+        if isinstance(result, (Class, Callable, Module)):
+            return result
+        raise SamariumTypeError(f"invalid return type: {type(result).__name__}")
+
+    argc = len(signature(func).parameters)
+
+    wrapper._toString_ = lambda: String(get_callable_name(func))
+    wrapper._special_ = lambda: Int(argc)
+    wrapper.argc = argc
+    wrapper.parent = Type(Class)
+    wrapper.type = Type(FunctionType)
+
+    return wrapper
 
 
 class Class:
@@ -311,38 +369,6 @@ class Class:
     def _random_(self):
         raise NotDefinedError(self, "random")
 
-
-@contextmanager
-def modify(func: Callable, args: list[Any], argc: int):
-    if func.__code__.co_flags != 71:
-        yield func, args
-        return
-    x = argc - 1
-    args = [*args[:x], Array(args[x:])]
-    func.__code__ = func.__code__.replace(co_flags=71, co_argcount=argc - 1)
-    args *= argc > 0
-    yield func, args
-
-
-def function(func: Callable):
-    @wraps(func)
-    def wrapper(*args):
-        args = [*map(verify_type, args)]
-        with modify(func, args, argc) as (f, args):
-            result = verify_type(f(*args))
-        if isinstance(result, (Class, Callable, Module)):
-            return result
-        raise SamariumTypeError(f"invalid return type: {type(result).__name__}")
-
-    argc = len(signature(func).parameters)
-
-    wrapper._toString_ = lambda: String(get_callable_name(func))
-    wrapper._special_ = lambda: Int(argc)
-    wrapper.argc = argc
-    wrapper.parent = Type(Class)
-    wrapper.type = Type(FunctionType)
-
-    return wrapper
 
 class Type(Class):
     def _create_(self, type_: type):
