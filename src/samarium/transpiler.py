@@ -55,7 +55,6 @@ class CodeHandler:
                 "exit",
                 "function",
                 "import",
-                "multiline_comment",
                 "newline",
                 "sleep",
                 "slice",
