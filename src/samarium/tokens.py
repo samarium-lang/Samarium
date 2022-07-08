@@ -27,10 +27,10 @@ class Token(Enum):
     XOR = "^^"  # TODO
 
     # Bitwise
-    BINAND = "&"
-    BINNOT = "~"
-    BINOR = "|"
-    BINXOR = "^"
+    BAND = "&"
+    BNOT = "~"
+    BOR = "|"
+    BXOR = "^"
 
     # Parens, Brackets and Braces
     BRACKET_OPEN = "["
@@ -75,7 +75,7 @@ class Token(Enum):
 
     # Object Manipulation
     CAST = "%"
-    DOLLAR = "$"
+    SPECIAL = "$"
     EXIT = "=>!"
     HASH = "##"
     PARENT = "!?"
@@ -103,7 +103,7 @@ class Token(Enum):
     # Other
     ASSERT = "#"
     ASSIGN = ":"
-    ATTRIBUTE = "."
+    ATTR = "."
     DTNOW = "@@"
     END = ";"
     NULL = "_"

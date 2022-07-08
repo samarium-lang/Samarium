@@ -345,10 +345,10 @@ class Transpiler:
             Token.NOT: " not ",
             Token.XOR: "",  # TODO before 2025
             # Bitwise
-            Token.BINAND: "&",
-            Token.BINOR: "|",
-            Token.BINNOT: "~",
-            Token.BINXOR: "^",
+            Token.BAND: "&",
+            Token.BOR: "|",
+            Token.BNOT: "~",
+            Token.BXOR: "^",
         }
         return tokens.get(token, 0)
 
@@ -414,10 +414,10 @@ class Transpiler:
             Token.INSTANCE: "self",
             Token.ASSIGN: "=",
             Token.SEP: ",",
-            Token.ATTRIBUTE: ".",
+            Token.ATTR: ".",
             Token.NULL: "null",
             Token.DTNOW: "dtnow()",
-            Token.DOLLAR: "._special_()",
+            Token.SPECIAL: "._special_()",
             Token.HASH: "._hash_()",
             Token.TYPE: ".type",
             Token.PARENT: ".parent",
