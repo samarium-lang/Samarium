@@ -75,11 +75,8 @@ class Transpiler:
 
     def is_first_token(self) -> bool:
         line = self.ch.line
-        return (
-            not line
-            or len(line) == 1
-            and isinstance(line[0], str)
-            and line[0].isspace()
+        return not line or (
+            len(line) == 1 and isinstance(line[0], str) and line[0].isspace()
         )
 
     def groupnames(self, array: list[str]) -> list[str]:
