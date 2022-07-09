@@ -83,7 +83,7 @@ def dot(scroller: Scroller) -> Token:
 
 def question(scroller: Scroller) -> Token:
     if scroller.next() == "?":
-        return Token.STDIN if scroller.next(2) == "?" else Token.TRY
+        return Token.READLINE if scroller.next(2) == "?" else Token.TRY
     elif scroller.next() == "~":
         if scroller.next(2) == ">":
             return Token.FILE_CREATE
@@ -93,7 +93,7 @@ def question(scroller: Scroller) -> Token:
 def exclamation(scroller: Scroller) -> Token:
     if scroller.next() == "!":
         return Token.THROW if scroller.next(2) == "!" else Token.CATCH
-    return Token.PARENT if scroller.next() == "?" else Token.STDOUT
+    return Token.PARENT if scroller.next() == "?" else Token.PRINT
 
 
 def pipe(scroller: Scroller) -> Token:
@@ -142,7 +142,7 @@ def hash_(scroller: Scroller) -> Token:
 
 
 def asterisk(scroller: Scroller) -> Token:
-    return Token.SLICE_STEP if scroller.next() == "*" else Token.FUNCTION
+    return Token.YIELD if scroller.next() == "*" else Token.FUNCTION
 
 
 def percent(scroller: Scroller) -> Token:

@@ -4,10 +4,10 @@ from contextlib import suppress
 
 from .core import run, readfile
 from .shell import run_shell
-from .transpiler import CodeHandler
+from .transpiler import Registry
 from .utils import __version__
 
-MAIN = CodeHandler(globals())
+MAIN = Registry(globals())
 
 OPTIONS = ["-v", "--version", "-c", "--command", "-h", "--help"]
 

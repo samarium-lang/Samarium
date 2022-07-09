@@ -30,7 +30,7 @@ from .objects import (
 )
 from .runtime import Runtime
 from .tokenizer import tokenize
-from .transpiler import Transpiler, CodeHandler
+from .transpiler import Transpiler, Registry
 from .utils import readfile, silence_stdout, sysexit
 
 MODULE_NAMES = [
@@ -61,7 +61,7 @@ def dtnow() -> Array:
     return Array(map(Int, utcnow_tpl))
 
 
-def import_module(data: str, ch: CodeHandler):
+def import_module(data: str, reg: Registry):
 
     module_import = False
     try:
@@ -86,21 +86,21 @@ def import_module(data: str, ch: CodeHandler):
         path = os.path.join(os.path.dirname(__file__), "modules")
 
     with silence_stdout():
-        imported = run(readfile(f"{path}/{name}.sm"), CodeHandler(globals()))
+        imported = run(readfile(f"{path}/{name}.sm"), Registry(globals()))
 
     if module_import:
-        ch.globals.update({f"_{name}_": Module(name, imported.globals)})
+        reg.vars.update({f"_{name}_": Module(name, imported.globals)})
     elif objects == ["*"]:
-        imported.globals = {
+        imported.vars = {
             k: v
-            for k, v in imported.globals.items()
+            for k, v in imported.vars.items()
             if not (k.startswith("__") or k[0].isalnum())
         }
-        ch.globals.update(imported.globals)
+        reg.vars.update(imported.vars)
     else:
         for obj in objects:
             try:
-                ch.globals[obj] = imported.globals[obj]
+                reg.vars[obj] = imported.vars[obj]
             except KeyError:
                 raise exc.SamariumImportError(
                     f"{obj} is not a member of the {name} module"
@@ -130,16 +130,16 @@ def readline(prompt: str = "") -> String:
 
 def run(
     code: str,
-    ch: CodeHandler,
+    reg: Registry,
     debug: bool = False,
     *,
     load_template: bool = True,
     quit_on_error: bool = True,
-) -> CodeHandler:
+) -> Registry:
 
     runtime_state = Runtime.quit_on_error
     Runtime.quit_on_error = quit_on_error
-    code = "\n".join(Transpiler(tokenize(code), ch).transpile().code)
+    code = Transpiler(tokenize(code), reg).transpile().output
     if load_template:
         code = readfile(f"{os.path.dirname(__file__)}/template.py").replace(
             "{{ CODE }}", code
@@ -148,13 +148,13 @@ def run(
         if debug:
             print(code)
         Runtime.import_level += 1
-        ch.globals = globals() | ch.globals
-        exec(code, ch.globals)
+        reg.vars = globals() | reg.vars
+        exec(code, reg.vars)
         Runtime.import_level -= 1
     except Exception as e:
         exc.handle_exception(e)
     Runtime.quit_on_error = runtime_state
-    return ch
+    return reg
 
 
 def sleep(*args: Integer):

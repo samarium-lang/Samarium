@@ -67,11 +67,11 @@ class Token(Enum):
     FUNCTION = "*"
     INSTANCE = "'"
     MAIN = "=>"
+    YIELD = "**"
 
     # Slicing
     SLICE_OPEN = "<<"
     SLICE_CLOSE = ">>"
-    SLICE_STEP = "**"
 
     # Object Manipulation
     CAST = "%"
@@ -80,8 +80,8 @@ class Token(Enum):
     HASH = "##"
     PARENT = "!?"
     TYPE = "?!"
-    STDIN = "???"
-    STDOUT = "!"
+    READLINE = "???"
+    PRINT = "!"
 
     # File I/O
     FILE_CREATE = "?~>"
@@ -101,12 +101,11 @@ class Token(Enum):
     FILE_QUICK_BINARY_WRITE = "%>"
 
     # Other
-    ASSERT = "#"
+    ENUM = "#"
     ASSIGN = ":"
     ATTR = "."
     DTNOW = "@@"
     END = ";"
-    NULL = "_"
     SEP = ","
     SLEEP = ",.,"
     STRING = '"'

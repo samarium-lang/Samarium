@@ -2,7 +2,7 @@ from termcolor import colored
 
 from .core import run
 from .tokenizer import tokenize
-from .transpiler import CodeHandler
+from .transpiler import Registry
 from .utils import match_brackets, __version__
 
 
@@ -26,7 +26,7 @@ def read_statement() -> str:
 
 def run_shell(debug: bool):
     print(colored(f"Samarium {__version__}", "cyan"))
-    MAIN = CodeHandler(globals())
+    MAIN = Registry(globals())
     while True:
         try:
             run(read_statement(), MAIN, debug, load_template=False, quit_on_error=False)
