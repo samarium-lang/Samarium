@@ -66,7 +66,7 @@ class Token(Enum):
     DEFAULT = "<>"
     FUNCTION = "*"
     INSTANCE = "'"
-    MAIN = "=>"
+    ENTRY = "=>"
     YIELD = "**"
 
     # Slicing

@@ -450,7 +450,7 @@ class Transpiler:
             ):
                 throw_syntax("cannot use multiple assignment")
             return out
-        elif token == Token.MAIN and not isinstance(self.tokens[index - 1], str):
+        elif token == Token.ENTRY and not isinstance(self.tokens[index - 1], str):
             return "entry "
         elif token == Token.EXIT:
             self.ch.line.append("sysexit(")

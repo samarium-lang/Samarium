@@ -23,6 +23,10 @@ def groupnames(array: list[str]) -> list[str]:
     return grouped
 
 
+def indent(levels: int) -> str:
+    return " " * levels * 4
+
+
 def is_first_token(line: list[str]) -> bool:
     return not line or (len(line) == 1 and line[0].isspace())
 
@@ -93,6 +97,7 @@ class Group:
         Token.BOR,
         Token.BXOR,
         Token.BNOT,
+        Token.IN,
     }
     brackets = {
         Token.BRACKET_OPEN,
@@ -104,7 +109,7 @@ class Group:
         Token.TABLE_OPEN,
         Token.TABLE_CLOSE,
     }
-    functions = {Token.FUNCTION, Token.YIELD, Token.MAIN, Token.DEFAULT}
+    functions = {Token.FUNCTION, Token.YIELD, Token.ENTRY, Token.DEFAULT}
     multisemantic = {Token.FROM, Token.TO, Token.CATCH, Token.WHILE, Token.CLASS}
     control_flow = {Token.IF, Token.ELSE, Token.FOR, Token.TRY}
     core = {Token.ASSIGN, Token.END, Token.SEP, Token.ATTR, Token.INSTANCE, Token.ENUM}
@@ -119,11 +124,71 @@ class Group:
     methods = {Token.SPECIAL, Token.HASH, Token.TYPE, Token.PARENT, Token.CAST}
 
 
+OPERATOR_MAPPING = {
+    Token.ADD: "+",
+    Token.SUB: "-",
+    Token.MUL: "*",
+    Token.DIV: "//",
+    Token.MOD: "%",
+    Token.POW: "**",
+    Token.EQ: "==",
+    Token.NE: "!=",
+    Token.GT: ">",
+    Token.LT: "<",
+    Token.GE: ">=",
+    Token.LE: "<=",
+    Token.AND: " and ",
+    Token.OR: " or ",
+    Token.XOR: "!=",  # TODO: implement this properly (before 2025)
+    Token.NOT: " not ",
+    Token.BAND: "&",
+    Token.BOR: "|",
+    Token.BXOR: "^",
+    Token.BNOT: "~",
+    Token.IN: " in ",
+}
+
+BRACKET_MAPPING = {
+    Token.BRACKET_OPEN: "Array([",
+    Token.BRACKET_CLOSE: "])",
+    Token.PAREN_OPEN: "(",
+    Token.PAREN_CLOSE: ")",
+    Token.TABLE_OPEN: "Table({",
+    Token.TABLE_CLOSE: "})",
+}
+
+METHOD_MAPPING = {
+    Token.SPECIAL: "._special_()",
+    Token.CAST: "._cast_()",
+    Token.HASH: "._hash_()",
+    Token.TYPE: ".type",
+    Token.PARENT: ".parent",
+}
+
+CONTROL_FLOW_TOKENS = {
+    Token.IF,
+    Token.FOR,
+    Token.WHILE,
+    Token.TRY,
+    Token.CATCH,
+    Token.ELSE,
+}
+
+NULLABLE_TOKENS = {
+    Token.ASSIGN,
+    Token.SEP,
+    Token.BRACKET_OPEN,
+    Token.PAREN_OPEN,
+    Token.TO,
+}
+
+
 class Transpiler:
     def __init__(self, tokens: list[Tokenlike], registry: Registry) -> None:
         self._class_indent: list[int] = []
         self._code = ""
         self._indent = 0
+        self._index = 0
         self._line: list[str] = []
         self._line_tokens: list[Tokenlike] = []
         self._processed_tokens: list[Tokenlike] = []
@@ -157,47 +222,17 @@ class Transpiler:
         self._line = []
 
         if self._indent:
-            self._line.append(" " * self._indent * 4)
+            self._line.append(indent(self._indent))
 
     def _file_io(self, token: Token) -> None:
         ...
 
     def _operators(self, token: Token) -> None:
-        self._line.append(
-            {
-                Token.ADD: "+",
-                Token.SUB: "-",
-                Token.MUL: "*",
-                Token.DIV: "//",
-                Token.MOD: "%",
-                Token.POW: "**",
-                Token.EQ: "==",
-                Token.NE: "!=",
-                Token.GT: ">",
-                Token.LT: "<",
-                Token.GE: ">=",
-                Token.LE: "<=",
-                Token.AND: " and ",
-                Token.OR: " or ",
-                Token.XOR: "!=",  # TODO: implement this properly (before 2025)
-                Token.NOT: " not ",
-                Token.BAND: "&",
-                Token.BOR: "|",
-                Token.BXOR: "^",
-                Token.BNOT: "~",
-            }[token]
-        )
+        self._line.append(OPERATOR_MAPPING[token])
 
     def _brackets(self, token: Token) -> None:
         if token is Token.BRACE_OPEN:
-            if self._line_tokens[0] in {
-                Token.IF,
-                Token.FOR,
-                Token.WHILE,
-                Token.TRY,
-                Token.CATCH,
-                Token.ELSE,
-            }:
+            if self._line_tokens[0] in CONTROL_FLOW_TOKENS:
                 self._scope.enter("control_flow")
 
             # Implicit infinite loop
@@ -229,16 +264,7 @@ class Transpiler:
                     throw_syntax("missing semicolon")
 
         else:
-            self._line.append(
-                {
-                    Token.BRACKET_OPEN: "Array([",
-                    Token.BRACKET_CLOSE: "])",
-                    Token.PAREN_OPEN: "(",
-                    Token.PAREN_CLOSE: ")",
-                    Token.TABLE_OPEN: "Table({",
-                    Token.TABLE_CLOSE: "})",
-                }[token]
-            )
+            self._line.append(BRACKET_MAPPING[token])
             return
 
         self._submit_line()
@@ -285,22 +311,60 @@ class Transpiler:
                     "".join(self._line).strip()
                 )
             )
-        else:
-            self._line.append({Token.YIELD: "yield ", Token.MAIN: "entry "}[token])
+        elif token is Token.YIELD:
+            self._line.append("yield ")
+        else:  # Token.MAIN
+            self._line.append("entry ")
 
     def _multisemantic(self, token: Token) -> None:
+        index = self._index
         if token is Token.TRY:
             self._line.append("try" if is_first_token(self._line) else "._random_()")
         elif token is Token.TO:
             self._line.append("continue" if is_first_token(self._line) else ":")
-        ...
-        # <- !! .. @
+        elif token is Token.FROM:
+            if isinstance(self._tokens[index + 1], str):
+                self._reg[Switch.IMPORT] = True
+                self._line.append("import_module('")
+            else:
+                self._line.append("break")
+                self._submit_line()
+        elif token is Token.CATCH:
+            if self._tokens[index + 1] is Token.BRACE_OPEN:
+                self._line.append("except Exception")
+            else:
+                self._line.append("assert ")
+        elif token is Token.WHILE:
+            self._line.append("while ")
+            # TODO: Slicing
+        else:  # CLASS
+            if is_first_token(self._line):
+                self._reg[Switch.CLASS] = True
+                self._reg[Switch.CLASS_DEF] = True
+                self._scope.enter("class")
+                self._class_indent.append(self._indent)
+                self._line.append(f"@class_attributes\n{indent(self._indent)}class ")
+            else:
+                indented = self._indent > 0
+                self._line = [*self._line[:indented], "@", *self._line[indented:]]
+                self._submit_line()
 
     def _control_flow(self, token: Token) -> None:
-        ...
-        # ? ,, ...
+        if not is_first_token(self._line):
+            self._line.append(" ")
+        if token is Token.IF:
+            try:
+                if self._line_tokens[-2] is Token.ELSE:
+                    self._line[-2:] = "elif", " "
+            except IndexError:
+                self._line.append("if ")
+        elif token is Token.ELSE:
+            self._line.append("else ")
+        else:  # FOR
+            self._line.append("for ")
 
     def _core(self, token: Token) -> None:
+        index = self._index
         if token is Token.END:
             if self._reg[Switch.BUILTIN]:
                 if self._line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
@@ -326,8 +390,28 @@ class Transpiler:
             #     )
             #     variable = "".join(map(str, self.ch.line[start:stop]))
             #     self.ch.line.append(f";verify_type({variable})")
-        ...
-        # : , . ' #
+        elif token is Token.ASSIGN:
+            if (
+                self._line_tokens.count(token) > 1
+                and Token.FUNCTION
+                in self._tokens[index : self._tokens[index:].index(Token.BRACE_OPEN)]
+                # TODO: Why?
+            ):
+                throw_syntax("cannot use multiple assignment")
+            else:
+                self._line.append("=")
+        elif token is Token.SEP:
+            if self._tokens[index - 1] in NULLABLE_TOKENS:
+                self._line.append("null")
+            self._line.append(",")
+        elif token is Token.ATTR:
+            self._line.append(".")
+        elif token is Token.INSTANCE:
+            if not self._reg[Switch.CLASS]:
+                throw_syntax("instance operator cannot be used outside a class")
+            self._line.append("self")
+        else:  # ENUM
+            ...
 
     def _builtins(self, token: Token) -> None:
         if token is Token.DTNOW:
@@ -357,18 +441,11 @@ class Transpiler:
             self._reg[Switch.BUILTIN] = True
 
     def _methods(self, token: Token) -> None:
-        self._line.append(
-            {
-                Token.SPECIAL: "._special_()",
-                Token.CAST: "._cast_()",
-                Token.HASH: "._hash_()",
-                Token.TYPE: ".type",
-                Token.PARENT: ".parent",
-            }[token]
-        )
+        self._line.append(METHOD_MAPPING[token])
 
     def _process_token(self, index: int, token: Tokenlike):
 
+        self._index = index
         self._line_tokens.append(token)
 
         # Integers
@@ -381,8 +458,12 @@ class Transpiler:
                 # token = token.replace("\n", "\\n")  # TODO: Understand why?
                 self._line.append(f"String({token})")
             else:
+                # [self varname] -> [self.varname]
+                with suppress(IndexError):
+                    if self._line_tokens[-2] is Token.INSTANCE:
+                        self._line.append(".")
                 # Identifiers
-                # Wrapped in underscores so
+                # Wrapped in underscores so that
                 # Python's builtins cannot be accessed nor modified
                 self._line.append(f"_{token}_")
 

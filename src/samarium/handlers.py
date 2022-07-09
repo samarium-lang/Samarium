@@ -71,7 +71,7 @@ def equal(scroller: Scroller) -> Token:
     if scroller.next() == "=":
         return Token.COMMENT_OPEN if scroller.next(2) == "<" else Token.COMMENT
     if scroller.next() == ">":
-        return Token.EXIT if scroller.next(2) == "!" else Token.MAIN
+        return Token.EXIT if scroller.next(2) == "!" else Token.ENTRY
     raise ValueError("invalid token")
 
 

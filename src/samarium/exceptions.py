@@ -18,7 +18,7 @@ def handle_exception(exception: Exception):
     elif exc_type in {AttributeError, NameError}:
         names = SINGLE_QUOTED_NAME.findall(str(exception))
         if names == ["entry"]:
-            names = ["no main function defined"]
+            names = ["no entry function defined"]
         exception = NotDefinedError(".".join(names))
         name = "NotDefinedError"
     elif exc_type not in {AssertionError, NotDefinedError}:
