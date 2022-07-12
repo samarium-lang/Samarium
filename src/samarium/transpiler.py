@@ -215,6 +215,13 @@ class Transpiler:
         return self._reg
 
     def _submit_line(self) -> None:
+
+        # Dependent/Specific shit
+        if self._reg[Switch.IMPORT]:
+            self._line.append("', Registry(globals()))")
+            self._reg[Switch.IMPORT] = False
+
+        # Regular stuff
         self._code += "\n" + "".join(self._line)
         self._processed_tokens.extend(self._line_tokens)
 
@@ -395,7 +402,7 @@ class Transpiler:
                 self._line_tokens.count(token) > 1
                 and Token.FUNCTION
                 in self._tokens[index : self._tokens[index:].index(Token.BRACE_OPEN)]
-                # TODO: Why?
+                # TODO: Why (the bit after "and")?
             ):
                 throw_syntax("cannot use multiple assignment")
             else:

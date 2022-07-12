@@ -89,7 +89,7 @@ def import_module(data: str, reg: Registry):
         imported = run(readfile(f"{path}/{name}.sm"), Registry(globals()))
 
     if module_import:
-        reg.vars.update({f"_{name}_": Module(name, imported.globals)})
+        reg.vars.update({f"_{name}_": Module(name, imported.vars)})
     elif objects == ["*"]:
         imported.vars = {
             k: v
