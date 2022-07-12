@@ -2,7 +2,7 @@ import os
 import sys
 
 from datetime import datetime
-from termcolor import colored
+from dahlia import dahlia
 from time import sleep as _sleep
 from types import GeneratorType
 
@@ -73,7 +73,7 @@ def import_module(data: str, reg: Registry):
         module_import = True
     name = name.strip("_")
     if name == "samarium":
-        sys.stderr.write(colored("[RecursionError]\n", "red"))
+        sys.stderr.write(dahlia("&4[RecursionError]\n"))
         return
     try:
         path = sys.argv[1][: sys.argv[1].rfind("/") + 1] or "."

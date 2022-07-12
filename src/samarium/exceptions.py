@@ -1,6 +1,6 @@
 import sys
+from dahlia import dahlia
 from re import compile
-from termcolor import colored
 
 from .runtime import Runtime
 
@@ -27,7 +27,7 @@ def handle_exception(exception: Exception):
             name = name.removeprefix("Samarium")
         else:
             name = f"External{name}"
-    sys.stderr.write(colored(f"[{name}] {exception}\n", "red").replace("_", ""))
+    sys.stderr.write(dahlia(f"&4[{name}] {exception}\n").replace("_", ""))
     if Runtime.quit_on_error:
         exit(1)
 
