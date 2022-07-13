@@ -3,7 +3,7 @@ import sys
 
 from datetime import datetime
 from dahlia import dahlia
-from time import sleep as _sleep
+from time import sleep as _sleep, time_ns
 from types import GeneratorType
 
 from . import exceptions as exc
@@ -170,3 +170,7 @@ def sleep(*args: Integer):
 
 def throw(message: str = ""):
     raise exc.SamariumError(message)
+
+
+def timestamp() -> Integer:
+    return Int(time_ns() // 1000)

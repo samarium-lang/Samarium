@@ -155,4 +155,8 @@ def percent(scroller: Scroller) -> Token:
 
 
 def at(scroller: Scroller) -> Token:
-    return Token.DTNOW if scroller.next() == "@" else Token.CLASS
+    if scroller.next() == "@":
+        if scroller.next(2) == "@":
+            return Token.ARR_STMP
+        return Token.UNIX_STMP
+    return Token.CLASS

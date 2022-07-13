@@ -114,7 +114,8 @@ class Group:
     control_flow = {Token.IF, Token.ELSE, Token.FOR, Token.TRY}
     core = {Token.ASSIGN, Token.END, Token.SEP, Token.ATTR, Token.INSTANCE, Token.ENUM}
     builtins = {
-        Token.DTNOW,
+        Token.ARR_STMP,
+        Token.UNIX_STMP,
         Token.READLINE,
         Token.EXIT,
         Token.SLEEP,
@@ -187,6 +188,7 @@ class Transpiler:
     def __init__(self, tokens: list[Tokenlike], registry: Registry) -> None:
         self._class_indent: list[int] = []
         self._code = ""
+        self._file_token: Token | None = None
         self._indent = 0
         self._index = 0
         self._line: list[str] = []
@@ -221,6 +223,12 @@ class Transpiler:
             self._line.append("', Registry(globals()))")
             self._reg[Switch.IMPORT] = False
 
+        if self._line[-1] == "=":
+            self._line.append("null")
+        
+        if self._file_token:
+            self._file_io()
+
         # Regular stuff
         self._code += "\n" + "".join(self._line)
         self._processed_tokens.extend(self._line_tokens)
@@ -231,8 +239,9 @@ class Transpiler:
         if self._indent:
             self._line.append(indent(self._indent))
 
-    def _file_io(self, token: Token) -> None:
-        ...
+    def _file_io(self) -> None:
+        # TODO
+        self._file_token = None
 
     def _operators(self, token: Token) -> None:
         self._line.append(OPERATOR_MAPPING[token])
@@ -418,11 +427,14 @@ class Transpiler:
                 throw_syntax("instance operator cannot be used outside a class")
             self._line.append("self")
         else:  # ENUM
+            # self._scope.enter("enum") TODO
             ...
 
     def _builtins(self, token: Token) -> None:
-        if token is Token.DTNOW:
+        if token is Token.ARR_STMP:
             self._line.append("dtnow()")
+        elif token is Token.UNIX_STMP:
+            self._line.append("timestamp()")
         elif token is Token.READLINE:
             func = "readline({})"
             try:
@@ -441,7 +453,7 @@ class Transpiler:
                 hook = self._line.index("=") + 1
             else:
                 hook = self._indent > 0
-            self._line = [*self._line[:hook], "print(", *self._line[hook:], ")"]
+            self._line = [*self._line[:hook], "print_safe(", *self._line[hook:], ")"]
         else:  # SLEEP or EXIT
             func = "sysexit" if token is Token.EXIT else "sleep"
             self._line.append(f"{func}(")
@@ -473,6 +485,9 @@ class Transpiler:
                 # Wrapped in underscores so that
                 # Python's builtins cannot be accessed nor modified
                 self._line.append(f"_{token}_")
+        
+        elif token in FILE_IO_TOKENS:
+            self._file_token = token
 
         else:
             for group, func in GROUPS:
