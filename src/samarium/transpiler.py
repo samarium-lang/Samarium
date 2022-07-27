@@ -45,9 +45,19 @@ class Scope:
     def exit(self) -> None:
         self._scope.pop()
 
+    def _get(self, index: int) -> str | None:
+        try:
+            return self._scope[index]
+        except IndexError:
+            return None
+
     @property
-    def parent(self) -> str:
-        return self._scope[-2]
+    def parent(self) -> str | None:
+        return self._get(-2)
+
+    @property
+    def current(self) -> str | None:
+        return self._get(-1)
 
 
 class Switch(Enum):
