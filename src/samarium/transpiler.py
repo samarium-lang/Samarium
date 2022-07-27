@@ -159,9 +159,9 @@ BRACKET_MAPPING = {
 }
 
 METHOD_MAPPING = {
-    Token.SPECIAL: "._special_()",
-    Token.CAST: "._cast_()",
-    Token.HASH: "._hash_()",
+    Token.SPECIAL: ".sm_special()",
+    Token.CAST: ".sm_cast()",
+    Token.HASH: ".sm_hash()",
     Token.TYPE: ".type",
     Token.PARENT: ".parent",
 }
@@ -335,7 +335,7 @@ class Transpiler:
     def _multisemantic(self, token: Token) -> None:
         index = self._index
         if token is Token.TRY:
-            self._line.append("try" if is_first_token(self._line) else "._random_()")
+            self._line.append("try" if is_first_token(self._line) else ".sm_random()")
         elif token is Token.TO:
             self._line.append("continue" if is_first_token(self._line) else ":")
         elif token is Token.FROM:
@@ -484,7 +484,7 @@ class Transpiler:
                 # Identifiers
                 # Wrapped in underscores so that
                 # Python's builtins cannot be accessed nor modified
-                self._line.append(f"_{token}_")
+                self._line.append(f"sm_{token}")
         
         elif token in FILE_IO_TOKENS:
             self._file_token = token

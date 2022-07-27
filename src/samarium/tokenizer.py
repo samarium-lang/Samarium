@@ -62,8 +62,6 @@ def tokenize(program: str) -> list[Tokenlike]:
         # String content and name handling
         elif scroller.pointer in CHARSET or string:
             temp += scroller.pointer
-            if scroller.pointer == "_" and not string:
-                temp += "us_"
 
         # Namespace submitting
         elif temp and scroller.pointer not in CHARSET and not string:
