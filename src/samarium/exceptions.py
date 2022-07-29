@@ -26,8 +26,10 @@ def handle_exception(exception: Exception):
         if name.startswith("Samarium"):
             name = name.removeprefix("Samarium")
         else:
-            name = f"External{name}"
-    sys.stderr.write(dahlia(f"&4[{name}] {exception}\n").replace("_", ""))
+            name = f"External{name}".replace("ExternalZeroDivision", "Math")
+    if exc_type is not SamariumError:
+        exception.args = (" ".join(i.removeprefix("sm_") for i in exception.args[0].split(" ")),)
+    sys.stderr.write(dahlia(f"&4[{name}] {exception}\n"))
     if Runtime.quit_on_error:
         exit(1)
 
