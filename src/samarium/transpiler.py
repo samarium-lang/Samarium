@@ -437,8 +437,11 @@ class Transpiler:
                 throw_syntax("instance operator cannot be used outside a class")
             self._line.append("self")
         else:  # ENUM
-            # self._scope.enter("enum") TODO
-            ...
+            if isinstance(self._tokens[index + 1], str):
+                if self._tokens[index - 1] is Token.INSTANCE:
+                    self._line.append(".")
+                self._line.append("__")
+                return
 
     def _builtins(self, token: Token) -> None:
         if token is Token.ARR_STMP:
