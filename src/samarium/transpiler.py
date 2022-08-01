@@ -446,7 +446,6 @@ class Transpiler:
         elif token is Token.UNIX_STMP:
             self._line.append("timestamp()")
         elif token is Token.READLINE:
-            func = "readline({})"
             try:
                 if (
                     isinstance(self._line_tokens[-2], str)
