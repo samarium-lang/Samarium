@@ -17,7 +17,7 @@ $ chmod +x script
 If you run the `samarium` command without any other arguments, you'll launch the REPL, an interactive shell that will read and evaluate any Samarium code you enter.
 ```txt
 $ samarium
-Samarium 0.2.0
+Samarium 0.3.0
 ==> 
 ```
 Interacting with the REPL is a nice way to experiment with Samarium:
