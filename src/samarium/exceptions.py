@@ -19,7 +19,7 @@ def handle_exception(exception: Exception):
         names = SINGLE_QUOTED_NAME.findall(str(exception))
         if names == ["entry"]:
             names = ["no entry function defined"]
-        exception = NotDefinedError(".".join(names))
+        exception = NotDefinedError(".".join(i.removeprefix("sm_") for i in names))
         name = "NotDefinedError"
     elif exc_type not in {AssertionError, NotDefinedError}:
         name = exc_type.__name__
@@ -27,8 +27,6 @@ def handle_exception(exception: Exception):
             name = name.removeprefix("Samarium")
         else:
             name = f"External{name}".replace("ExternalZeroDivision", "Math")
-    if exc_type is not SamariumError:
-        exception.args = (" ".join(i.removeprefix("sm_") for i in exception.args[0].split(" ")),)
     sys.stderr.write(dahlia(f"&4[{name}] {exception}\n"))
     if Runtime.quit_on_error:
         exit(1)
