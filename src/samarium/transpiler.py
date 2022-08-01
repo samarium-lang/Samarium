@@ -120,8 +120,8 @@ class Group:
         Token.TABLE_CLOSE,
     }
     functions = {Token.FUNCTION, Token.YIELD, Token.ENTRY, Token.DEFAULT}
-    multisemantic = {Token.FROM, Token.TO, Token.CATCH, Token.WHILE, Token.CLASS}
-    control_flow = {Token.IF, Token.ELSE, Token.FOR, Token.TRY}
+    multisemantic = {Token.FROM, Token.TO, Token.CATCH, Token.WHILE, Token.CLASS, Token.TRY}
+    control_flow = {Token.IF, Token.ELSE, Token.FOR}
     core = {Token.ASSIGN, Token.END, Token.SEP, Token.ATTR, Token.INSTANCE, Token.ENUM}
     builtins = {
         Token.ARR_STMP,
