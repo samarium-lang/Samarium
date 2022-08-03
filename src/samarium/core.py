@@ -172,4 +172,4 @@ def throw(message: str = ""):
 
 
 def timestamp() -> Integer:
-    return Int(time_ns() // 1000)
+    return Int(time_ns() // 1_000_000)
