@@ -233,7 +233,7 @@ class Transpiler:
             self._line.append("', Registry(globals()))")
             self._reg[Switch.IMPORT] = False
 
-        if self._line[-1] == "=":
+        if self._line and self._line[-1] == "=":
             self._line.append("null")
 
         if self._file_token:
@@ -286,6 +286,7 @@ class Transpiler:
             if self._scope.current == "enum":
                 self._line.append("''')")
 
+            if (self._processed_tokens or self._line_tokens)[-1] is Token.BRACE_OPEN:
                 # Managing empty bodies
                 if self._line_tokens == [token]:
                     self._line.append("pass")
