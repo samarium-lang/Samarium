@@ -193,6 +193,15 @@ NULLABLE_TOKENS = {
     Token.TO,
 }
 
+SLICE_OBJECT_TRIGGERS = {
+    Token.ASSIGN,
+    Token.SEP,
+    Token.BRACKET_OPEN,
+    Token.PAREN_OPEN,
+    Token.TO,
+    Token.TABLE_OPEN,
+}
+
 
 class Transpiler:
     def __init__(self, tokens: list[Tokenlike], registry: Registry) -> None:
@@ -449,6 +458,17 @@ class Transpiler:
             if not self._reg[Switch.CLASS]:
                 throw_syntax("instance operator cannot be used outside a class")
             self._line.append("self")
+        elif token is Token.SLICE_OPEN:
+            self._scope.enter("slice")
+            if self._tokens[index - 1] not in SLICE_OBJECT_TRIGGERS:
+                self._slice_object = True
+                self._line.append(".sm_getItem(")
+            self._slice_assign = ... # TODO
+            self._line.append("Slice(")
+        elif token is Token.SLICE_CLOSE:
+            self._scope.exit()
+            self._line.append(")" * (1 + self._slice_object))
+            # TODO
         else:  # ENUM
             if isinstance(self._tokens[index + 1], str):
                 if self._tokens[index - 1] is Token.INSTANCE:
