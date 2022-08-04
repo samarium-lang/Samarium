@@ -23,6 +23,7 @@ from .utils import get_callable_name, parse_integer, run_with_backup
 
 
 def class_attributes(cls):
+    cls.argc = Int(len(signature(cls.sm_create).parameters))
     cls.type = Type(Type)
     parents = cls.__bases__
     cls.parent = Type(parents[0]) if len(parents) == 1 else Array(map(Type, parents))
