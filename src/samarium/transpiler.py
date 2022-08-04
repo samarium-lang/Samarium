@@ -235,7 +235,7 @@ class Transpiler:
 
         if self._line[-1] == "=":
             self._line.append("null")
-        
+
         if self._file_token:
             self._file_io()
 
@@ -285,6 +285,7 @@ class Transpiler:
 
             if self._scope.current == "enum":
                 self._line.append("''')")
+
                 # Managing empty bodies
                 if self._line_tokens == [token]:
                     self._line.append("pass")
@@ -293,6 +294,8 @@ class Transpiler:
             self._scope.exit()
 
         else:
+            if token is Token.TABLE_CLOSE and self._tokens[self._index - 1] is Token.TO:
+                self._line.append("null")
             self._line.append(BRACKET_MAPPING[token])
             return
 
@@ -350,6 +353,8 @@ class Transpiler:
         if token is Token.TRY:
             self._line.append("try" if is_first_token(self._line) else ".sm_random()")
         elif token is Token.TO:
+            if self._tokens[index - 1] is Token.TABLE_OPEN:
+                self._line.append("null")
             self._line.append("continue" if is_first_token(self._line) else ":")
         elif token is Token.FROM:
             if isinstance(self._tokens[index + 1], str):
@@ -504,10 +509,8 @@ class Transpiler:
                     if self._line_tokens[-2] is Token.INSTANCE:
                         self._line.append(".")
                 # Identifiers
-                # Wrapped in underscores so that
-                # Python's builtins cannot be accessed nor modified
                 self._line.append(f"sm_{token}")
-        
+
         elif token in FILE_IO_TOKENS:
             self._file_token = token
 
