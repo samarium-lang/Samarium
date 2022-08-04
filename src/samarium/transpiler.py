@@ -277,7 +277,6 @@ class Transpiler:
             self._line.append(":")
 
         elif token is Token.BRACE_CLOSE:
-            self._scope.exit()
             self._indent -= 1
             self._reg[Switch.FUNCTION] = False
             if self._reg[Switch.CLASS] and self._indent == self._class_indent[-1]:
