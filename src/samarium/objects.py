@@ -998,21 +998,37 @@ class Module:
         return Type(type(self))
 
 
-class Enum_(Array):
-    def sm_create(self, *values: str):
-        if any(isinstance(i, Class) for i in values):
+class Enum_(Class):
+    def sm_create(self, globals: dict[str, Any], *values_: str):
+        if any(isinstance(i, Class) for i in values_):
             raise SamariumTypeError("enums cannot be constructed from Type")
-        value = [*values[1:]]
-        value = [*dict.fromkeys(value)]
-        if not all(i.isidentifier() for i in value):
+        name, *values = values_
+        self.name = name.removeprefix("sm_")
+        self.members: dict[str, Class] = {}
+
+        # Empty enum case
+        if len(values) == 1 and not values[0]:
+            raise SamariumValueError("enums must have at least 1 member")
+
+        i = 0
+        for v in values:
+            eqs = v.count("=")
+            if eqs >= 2:
+                raise SamariumSyntaxError("invalid expression")
+            name, value = v.split("=") if eqs == 1 else (v, "")
+            if not name.isidentifier():
             raise SamariumValueError("enum members must be identifiers")
-        super().sm_create(Array(map(String, value)))
-        self.name = values[0].strip("_")
+            if eqs == 1:
+                self.members[name] = eval(value, globals)
+            else:
+                self.members[v] = Int(i)
+                i += 1
 
     def sm_toString(self) -> String:
         return String(f"Enum({self.name})")
 
-    def __getattr__(self, name: str) -> String:
-        if String(name) in self.value:
-            return String(f"{self.name}.{name.strip('_')}")
-        raise AttributeError(f"'{self.name}' object has no attribute '{name}'")
+    def __getattr__(self, name: str) -> Class:
+        try:
+            return self.members[name]
+        except KeyError:
+            raise AttributeError(f"'{self.name}''{name}'")

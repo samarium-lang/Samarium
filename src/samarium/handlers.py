@@ -138,7 +138,7 @@ def close_brace(scroller: Scroller) -> Token:
 
 
 def hash_(scroller: Scroller) -> Token:
-    return Token.HASH if scroller.next() == "#" else Token.ASSERT
+    return Token.HASH if scroller.next() == "#" else Token.ENUM
 
 
 def asterisk(scroller: Scroller) -> Token:

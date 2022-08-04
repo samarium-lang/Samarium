@@ -272,6 +272,8 @@ class Transpiler:
             self._reg[Switch.CLASS_DEF] = False
 
             self._indent += 1
+            if self._scope.current == "enum":
+                return
             self._line.append(":")
 
         elif token is Token.BRACE_CLOSE:
@@ -282,12 +284,14 @@ class Transpiler:
                 self._reg[Switch.CLASS] = False
                 self._class_indent.pop()
 
-            if self._processed_tokens[-1] is Token.BRACE_OPEN:
+            if self._scope.current == "enum":
+                self._line.append("''')")
                 # Managing empty bodies
                 if self._line_tokens == [token]:
                     self._line.append("pass")
-                else:
+                elif self._scope.current != "enum":
                     throw_syntax("missing semicolon")
+            self._scope.exit()
 
         else:
             self._line.append(BRACKET_MAPPING[token])
@@ -392,6 +396,9 @@ class Transpiler:
     def _core(self, token: Token) -> None:
         index = self._index
         if token is Token.END:
+            if self._scope.current == "enum":
+                self._line.append("''', '''")
+                return
             if self._reg[Switch.BUILTIN]:
                 if self._line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
                     self._line.append("Int(0)")
@@ -422,6 +429,7 @@ class Transpiler:
                 and Token.FUNCTION
                 in self._tokens[index : self._tokens[index:].index(Token.BRACE_OPEN)]
                 # TODO: Why (the bit after "and")?
+                # NOTE: Doesn't work when there's an enum defined inside a function
             ):
                 throw_syntax("cannot use multiple assignment")
             else:
@@ -442,6 +450,9 @@ class Transpiler:
                     self._line.append(".")
                 self._line.append("__")
                 return
+            name = self._line[-1]
+            self._line.append(f"=Enum_(globals(), '{name}', '''")
+            self._scope.enter("enum")
 
     def _builtins(self, token: Token) -> None:
         if token is Token.ARR_STMP:

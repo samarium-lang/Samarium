@@ -22,7 +22,7 @@ from .objects import (
     Null,
     Table,
     Array,
-    Enum,
+    Enum_,
     Mode,
     FileManager,
     File,
