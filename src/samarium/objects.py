@@ -1017,7 +1017,7 @@ class Enum_(Class):
                 raise SamariumSyntaxError("invalid expression")
             name, value = v.split("=") if eqs == 1 else (v, "")
             if not name.isidentifier():
-            raise SamariumValueError("enum members must be identifiers")
+                raise SamariumValueError("enum members must be identifiers")
             if eqs == 1:
                 self.members[name] = eval(value, globals)
             else:
