@@ -490,7 +490,7 @@ class Transpiler:
     def _methods(self, token: Token) -> None:
         self._line.append(METHOD_MAPPING[token])
 
-    def _process_token(self, index: int, token: Tokenlike):
+    def _process_token(self, index: int, token: Tokenlike) -> None:
 
         self._index = index
         self._line_tokens.append(token)
