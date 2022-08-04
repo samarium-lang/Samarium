@@ -247,7 +247,7 @@ class Class:
             return Type(parents[0])
         return Array(map(Type, parents))
 
-    def sm_create(self, *args: Any, **kwargs: Any):
+    def sm_create(self, *args: Any):
         raise NotDefinedError(self, "create")
 
     def sm_toBit(self) -> Integer:
