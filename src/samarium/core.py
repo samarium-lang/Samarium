@@ -70,7 +70,7 @@ def import_module(data: str, reg: Registry):
         name = data
         objects = []
         module_import = True
-    name = name.strip("_")
+    name = name.removeprefix("sm_")
     if name == "samarium":
         sys.stderr.write(dahlia("&4[RecursionError]\n"))
         return

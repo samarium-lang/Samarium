@@ -90,4 +90,4 @@ def parse_integer(string: str) -> int:
 
 
 def get_callable_name(function: Callable) -> str:
-    return function.__name__.strip("_")
+    return function.__name__.removeprefix("sm_")
