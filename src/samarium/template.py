@@ -17,4 +17,4 @@ if __name__ == "samarium":
     else:
         raise SamariumSyntaxError("entry function should take 0 or 1 arguments")
     if not is_class:
-        sys.exit(ex)
+        sys.exit(ex.value)
