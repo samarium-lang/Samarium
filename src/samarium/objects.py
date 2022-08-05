@@ -1032,3 +1032,8 @@ class Enum_(Class):
             return self.members[name]
         except KeyError:
             raise AttributeError(f"'{self.name}''{name}'")
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name.startswith("sm_"):
+            raise SamariumTypeError("enum members cannot be modified")
+        object.__setattr__(self, name, value)
