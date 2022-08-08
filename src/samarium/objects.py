@@ -22,95 +22,9 @@ from .exceptions import (
 from .utils import get_callable_name, parse_integer, run_with_backup
 
 
-def class_attributes(cls):
-    cls.argc = Int(len(signature(cls.sm_create).parameters))
-    cls.type = Type(Type)
-    parents = cls.__bases__
-    cls.parent = Type(parents[0]) if len(parents) == 1 else Array(map(Type, parents))
-    return cls
-
-
-def get_repr(obj: Class | Callable | Module) -> str:
-    if isinstance(obj, String):
-        return f'"{obj}"'
-    return str(obj.sm_toString())
-
-
-def verify_type(obj: Any, *args) -> Class | Callable | Module:
-    if args:
-        for i in [obj, *args]:
-            verify_type(i)
-        return null
-    elif isinstance(obj, type):
-        return Type(obj)
-    elif isinstance(obj, (Class, Callable, Module)):
-        return obj
-    elif isinstance(obj, tuple):
-        return Array(obj)
-    elif obj is None:
-        return null
-    elif isinstance(obj, bool):
-        return Int(obj)
-    elif isinstance(obj, GeneratorType):
-        raise SamariumSyntaxError("invalid comprehension")
-    else:
-        raise SamariumTypeError(f"unknown type: {type(obj).__name__}")
-
-
-@contextmanager
-def modify(func: Callable, args: list[Any], argc: int):
-    if func.__code__.co_flags != 71:
-        yield func, args
-        return
-    x = argc - 1
-    args = [*args[:x], Array(args[x:])]
-    func.__code__ = func.__code__.replace(co_flags=71, co_argcount=argc - 1)
-    args *= argc > 0
-    yield func, args
-
-
-MISSING_ARGS_PATTERN = compile(
-    r"\w+\(\) takes exactly one argument \(0 given\)"
-    r"|\w+\(\) missing (\d+) required positional argument"
-)
-TOO_MANY_ARGS_PATTERN = compile(
-    r"\w+\(\) takes (\d+) positional arguments? but (\d+) (?:was|were) given"
-)
-
-
-def function(func: Callable):
-    @wraps(func)
-    def wrapper(*args):
-        args = [*map(verify_type, args)]
-        with modify(func, args, argc) as (f, args):
-            try:
-                result = verify_type(f(*args))
-            except TypeError as e:
-                errmsg = str(e)
-                missing_args = MISSING_ARGS_PATTERN.search(errmsg)
-                if missing_args:
-                    raise SamariumTypeError(
-                        f"not enough arguments ({argc - (int(missing_args.group(1)) or 1)}/{argc})"
-                    )
-                too_many_args = TOO_MANY_ARGS_PATTERN.search(errmsg)
-                if too_many_args:
-                    raise SamariumTypeError(
-                        f"too many arguments ({too_many_args.group(2)}/{argc})"
-                    )
-                raise e
-        if isinstance(result, (Class, Callable, Module)):
-            return result
-        raise SamariumTypeError(f"invalid return type: {type(result).__name__}")
-
-    argc = len(signature(func).parameters)
-
-    wrapper.sm_toString = lambda: String(get_callable_name(func))
-    wrapper.sm_special = lambda: Int(argc)
-    wrapper.argc = argc
-    wrapper.parent = Type(Class)
-    wrapper.type = Type(FunctionType)
-
-    return wrapper
+class MISSING:
+    def __getattr__(self, _):
+        raise SamariumValueError("cannot use the MISSING object")
 
 
 class Class:
@@ -392,10 +306,33 @@ class Type(Class):
         return self.value(*args)
 
 
+class Null(Class):
+    def sm_create(self):
+        self.value = None
+
+    def sm_toString(self) -> String:
+        return String("null")
+
+    def sm_hash(self) -> Integer:
+        return Int(hash(self.value))
+
+    def sm_toBit(self) -> Integer:
+        return Int(0)
+
+    def sm_equals(self, other: Null) -> Integer:
+        return Int(type(other) is Null)
+
+    def sm_notEquals(self, other: Null) -> Integer:
+        return Int(type(other) is not Null)
+
+
+null = Null()
+
+
 class Slice(Class):
     __slots__ = ("start", "stop", "step", "tup", "value")
 
-    def sm_create(self, start: Any, stop: Any, step: Any):
+    def sm_create(self, start: Any = null, stop: Any = null, step: Any = null):
         self.start = start
         self.stop = stop
         self.step = step
@@ -426,7 +363,9 @@ class Slice(Class):
         if stop is not null:
             string += f"..{get_repr(stop)}"
         if step is not null:
-            string += f"**{get_repr(step)}"
+            if stop is null:
+                string += ".."
+            string += f"..{get_repr(step)}"
         return String(f"<<{string}>>")
 
     def sm_equals(self, other: Slice) -> Integer:
@@ -434,29 +373,6 @@ class Slice(Class):
 
     def sm_notEquals(self, other: Slice) -> Integer:
         return Int(self.tup != other.tup)
-
-
-class Null(Class):
-    def sm_create(self):
-        self.value = None
-
-    def sm_toString(self) -> String:
-        return String("null")
-
-    def sm_hash(self) -> Integer:
-        return Int(hash(self.value))
-
-    def sm_toBit(self) -> Integer:
-        return Int(0)
-
-    def sm_equals(self, other: Null) -> Integer:
-        return Int(type(other) is Null)
-
-    def sm_notEquals(self, other: Null) -> Integer:
-        return Int(type(other) is not Null)
-
-
-null = Null()
 
 
 class String(Class):
@@ -1037,3 +953,111 @@ class Enum_(Class):
         if name.startswith("sm_"):
             raise SamariumTypeError("enum members cannot be modified")
         object.__setattr__(self, name, value)
+
+
+def class_attributes(cls):
+    cls.argc = Int(len(signature(cls.sm_create).parameters))
+    cls.type = Type(Type)
+    parents = cls.__bases__
+    cls.parent = Type(parents[0]) if len(parents) == 1 else Array(map(Type, parents))
+    return cls
+
+
+def get_repr(obj: Class | Callable | Module) -> str:
+    if isinstance(obj, String):
+        return f'"{obj}"'
+    return str(obj.sm_toString())
+
+
+def mkslice(start: Any = MISSING, stop: Any = MISSING, step: Any = MISSING) -> Class:
+    if stop is step is MISSING:
+        if start is None:
+            return Slice(null, null, null)
+        return start
+    missing_none = {MISSING, None}
+    start = null if start in missing_none else start
+    stop = null if stop in missing_none else stop
+    step = null if step in missing_none else step
+    return Slice(start, stop, step)
+    
+
+
+def t(obj: Any = None) -> Any:
+    return obj
+
+
+def verify_type(obj: Any, *args) -> Class | Callable | Module:
+    if args:
+        for i in [obj, *args]:
+            verify_type(i)
+        return null
+    elif isinstance(obj, type):
+        return Type(obj)
+    elif isinstance(obj, (Class, Callable, Module)):
+        return obj
+    elif isinstance(obj, tuple):
+        return Array(obj)
+    elif obj is None:
+        return null
+    elif isinstance(obj, bool):
+        return Int(obj)
+    elif isinstance(obj, GeneratorType):
+        raise SamariumSyntaxError("invalid comprehension")
+    else:
+        raise SamariumTypeError(f"unknown type: {type(obj).__name__}")
+
+
+@contextmanager
+def modify(func: Callable, args: list[Any], argc: int):
+    if func.__code__.co_flags != 71:
+        yield func, args
+        return
+    x = argc - 1
+    args = [*args[:x], Array(args[x:])]
+    func.__code__ = func.__code__.replace(co_flags=71, co_argcount=argc - 1)
+    args *= argc > 0
+    yield func, args
+
+
+MISSING_ARGS_PATTERN = compile(
+    r"\w+\(\) takes exactly one argument \(0 given\)"
+    r"|\w+\(\) missing (\d+) required positional argument"
+)
+TOO_MANY_ARGS_PATTERN = compile(
+    r"\w+\(\) takes (\d+) positional arguments? but (\d+) (?:was|were) given"
+)
+
+
+def function(func: Callable):
+    @wraps(func)
+    def wrapper(*args):
+        args = [*map(verify_type, args)]
+        with modify(func, args, argc) as (f, args):
+            try:
+                result = verify_type(f(*args))
+            except TypeError as e:
+                errmsg = str(e)
+                missing_args = MISSING_ARGS_PATTERN.search(errmsg)
+                if missing_args:
+                    raise SamariumTypeError(
+                        f"not enough arguments ({argc - (int(missing_args.group(1)) or 1)}/{argc})"
+                    )
+                too_many_args = TOO_MANY_ARGS_PATTERN.search(errmsg)
+                if too_many_args:
+                    raise SamariumTypeError(
+                        f"too many arguments ({too_many_args.group(2)}/{argc})"
+                    )
+                raise e
+        if isinstance(result, (Class, Callable, Module)):
+            return result
+        raise SamariumTypeError(f"invalid return type: {type(result).__name__}")
+
+    argc = len(signature(func).parameters)
+
+    wrapper.sm_toString = lambda: String(get_callable_name(func))
+    wrapper.sm_special = lambda: Int(argc)
+    wrapper.argc = argc
+    wrapper.parent = Type(Class)
+    wrapper.type = Type(FunctionType)
+
+    return wrapper

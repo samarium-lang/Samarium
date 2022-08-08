@@ -18,8 +18,7 @@ from .objects import (
     Slice,
     String,
     Integer,
-    Module,
-    Null,
+    MISSING,
     Table,
     Array,
     Enum_,
@@ -44,11 +43,6 @@ MODULE_NAMES = [
     "types",
     "utils",
 ]
-
-
-class MISSING:
-    def __getattr__(self, _):
-        raise exc.SamariumValueError("cannot use the MISSING object")
 
 
 def dtnow() -> Array:
