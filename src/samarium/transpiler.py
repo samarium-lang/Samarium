@@ -1,11 +1,11 @@
 from __future__ import annotations
 from contextlib import suppress
 from enum import Enum
-from typing import Any
+from typing import Any, cast
 
 from .exceptions import handle_exception, SamariumSyntaxError
 from .tokenizer import Tokenlike
-from .tokens import FILE_IO_TOKENS, Token, OPEN_TOKENS
+from .tokens import FILE_IO_TOKENS, Token
 from .utils import match_brackets
 
 
@@ -14,13 +14,20 @@ def groupnames(array: list[str]) -> list[str]:
     for item in array:
         if not item or item.isspace():
             continue
-        if item == "for ":
+        if item == " for ":
             grouped[-1] = f"*{grouped[-1]}"
-        elif item == "if ":
+        elif item == " if ":
             grouped[-1] += "=MISSING()"
         else:
             grouped.append(item)
     return grouped
+
+
+def find_next(tokens: list[Tokenlike], token: Token, *, after: int = 0) -> int:
+    for i, t in enumerate(tokens[after:]):
+        if t == token:
+            return i + after
+    return -1
 
 
 def indent(levels: int) -> str:
@@ -120,9 +127,25 @@ class Group:
         Token.TABLE_CLOSE,
     }
     functions = {Token.FUNCTION, Token.YIELD, Token.ENTRY, Token.DEFAULT}
-    multisemantic = {Token.FROM, Token.TO, Token.CATCH, Token.WHILE, Token.CLASS, Token.TRY}
+    multisemantic = {
+        Token.FROM,
+        Token.TO,
+        Token.CATCH,
+        Token.WHILE,
+        Token.CLASS,
+        Token.TRY,
+    }
     control_flow = {Token.IF, Token.ELSE, Token.FOR}
-    core = {Token.ASSIGN, Token.END, Token.SEP, Token.ATTR, Token.INSTANCE, Token.ENUM}
+    core = {
+        Token.ASSIGN,
+        Token.END,
+        Token.SEP,
+        Token.ATTR,
+        Token.INSTANCE,
+        Token.ENUM,
+        Token.SLICE_OPEN,
+        Token.SLICE_CLOSE,
+    }
     builtins = {
         Token.ARR_STMP,
         Token.UNIX_STMP,
@@ -195,12 +218,16 @@ NULLABLE_TOKENS = {
 
 SLICE_OBJECT_TRIGGERS = {
     Token.ASSIGN,
+    Token.END,
     Token.SEP,
+    Token.TO,
+    Token.BRACE_OPEN,
     Token.BRACKET_OPEN,
     Token.PAREN_OPEN,
-    Token.TO,
     Token.TABLE_OPEN,
 }
+
+FILE_OPEN_KEYWORDS = {"READ", "WRITE", "READ_WRITE", "APPEND"}
 
 
 class Transpiler:
@@ -215,6 +242,8 @@ class Transpiler:
         self._processed_tokens: list[Tokenlike] = []
         self._reg = registry
         self._scope = Scope()
+        self._slice_assign = False
+        self._slice_object = False
         self._tokens = tokens
 
     def transpile(self) -> Registry:
@@ -237,7 +266,7 @@ class Transpiler:
 
     def _submit_line(self) -> None:
 
-        # Dependent/Specific shit
+        # Special cases
         if self._reg[Switch.IMPORT]:
             self._line.append("', Registry(globals()))")
             self._reg[Switch.IMPORT] = False
@@ -259,10 +288,52 @@ class Transpiler:
             self._line.append(indent(self._indent))
 
     def _file_io(self) -> None:
-        # TODO
+        io_token = cast(Token, self._file_token)
+        io_token_index = self._line.index("FILE_IO")
+        before_token = "".join(self._line[:io_token_index])
+        after_token = "".join(self._line[io_token_index + 1:])
+        
+        open_template = f"{before_token}=FileManager.{{}}" f"({after_token}, Mode.{{}})"
+        quick_template = [
+            f"FileManager.quick({after_token},",
+            "Mode.{},",
+            f"binary={'BINARY' in io_token.name})",
+        ]
+
+        if io_token is Token.FILE_CREATE:
+            if before_token:
+                throw_syntax("file create operator must start the statement")
+            self._line.append(f"FileManager.create({after_token})")
+            return
+        
+        if not before_token:
+            throw_syntax("missing variable for file operation")
+        if not after_token:
+            throw_syntax("missing file path")
+        
+        no_prefix = io_token.name.removeprefix("FILE_")
+        if no_prefix in FILE_OPEN_KEYWORDS:
+            self._line.append(open_template.format("open", no_prefix))
+            return
+        
+        no_prefix = no_prefix.removeprefix("BINARY_")
+        if no_prefix in FILE_OPEN_KEYWORDS:
+            self._line.append(open_template.format("open_binary", no_prefix))
+            return
+        
+        token_name = io_token.name
+        if "QUICK" in token_name:
+            if "READ" in token_name:
+                quick_template.insert(0, f"{before_token}=")
+            else:
+                quick_template.insert(2, f"data={before_token},")
+            self._line = ["".join(quick_template).format(token_name.split("_")[-1])]
+        
         self._file_token = None
 
     def _operators(self, token: Token) -> None:
+        if self._tokens[self._index - 1] in {Token.IF, Token.WHILE}:
+            self._line.append("null")
         self._line.append(OPERATOR_MAPPING[token])
 
     def _brackets(self, token: Token) -> None:
@@ -379,8 +450,10 @@ class Transpiler:
             else:
                 self._line.append("assert ")
         elif token is Token.WHILE:
-            self._line.append("while ")
-            # TODO: Slicing
+            if self._scope.current == "slice":
+                self._line.append("),t(")
+            else:
+                self._line.append("while ")
         else:  # CLASS
             if is_first_token(self._line):
                 self._reg[Switch.CLASS] = True
@@ -394,22 +467,27 @@ class Transpiler:
                 self._submit_line()
 
     def _control_flow(self, token: Token) -> None:
-        if not is_first_token(self._line):
-            self._line.append(" ")
+        shift = " " * (not is_first_token(self._line))
         if token is Token.IF:
-            try:
+            with suppress(IndexError):
                 if self._line_tokens[-2] is Token.ELSE:
                     self._line[-2:] = "elif", " "
-            except IndexError:
-                self._line.append("if ")
+            self._line.append(shift + "if ")
         elif token is Token.ELSE:
-            self._line.append("else ")
+            self._line.append(shift + "else ")
         else:  # FOR
-            self._line.append("for ")
+            index = self._index
+            if self._scope.current == "slice" and self._tokens[index + 1] is Token.ATTR:
+                self._tokens[index] = self._tokens[index + 1] = Token.WHILE
+                self._process_token(index, Token.WHILE)
+            else:
+                self._line.append(shift + "for ")
 
     def _core(self, token: Token) -> None:
         index = self._index
         if token is Token.END:
+            if self._tokens[index - 1] is Token.DEFAULT:
+                self._line.append("null")
             if self._scope.current == "enum":
                 self._line.append("''', '''")
                 return
@@ -418,6 +496,9 @@ class Transpiler:
                     self._line.append("Int(0)")
                 self._line.append(")")
                 self._reg[Switch.BUILTIN] = False
+            if self._slice_assign:
+                self._line.append(")")
+                self._slice_assign = False
             self._submit_line()
             # start = self.ch.indent > 0
             # if any(token in FILE_IO_TOKENS for token in self.ch.line):
@@ -427,9 +508,6 @@ class Transpiler:
             #     self.ch.line.append(
             #         "', CodeHandler(globals()) " "if Runtime.import_level else MAIN)"
             #     )
-            # if self.set_slice:
-            #     self.ch.line.append(")")
-            #     self.set_slice -= 1
             # if "=" in self.ch.line:
             #     assign_idx = self.ch.line.index("=")
             #     stop = assign_idx - (
@@ -443,11 +521,13 @@ class Transpiler:
                 and Token.FUNCTION
                 in self._tokens[index : self._tokens[index:].index(Token.BRACE_OPEN)]
                 # TODO: Why (the bit after "and")?
-                # NOTE: Doesn't work when there's an enum defined inside a function
+                # FIXME: Causes an error when there's an enum defined inside a function
             ):
                 throw_syntax("cannot use multiple assignment")
-            else:
+            elif self._scope.current != "slice":
                 self._line.append("=")
+            else:
+                self._scope.exit()
         elif token is Token.SEP:
             if self._tokens[index - 1] in NULLABLE_TOKENS:
                 self._line.append("null")
@@ -460,15 +540,19 @@ class Transpiler:
             self._line.append("self")
         elif token is Token.SLICE_OPEN:
             self._scope.enter("slice")
-            if self._tokens[index - 1] not in SLICE_OBJECT_TRIGGERS:
-                self._slice_object = True
-                self._line.append(".sm_getItem(")
-            self._slice_assign = ... # TODO
-            self._line.append("Slice(")
+            assign_index = find_next(self._tokens, Token.ASSIGN, after=index)
+            end_index = find_next(self._tokens, Token.END, after=index)
+            self._slice_assign = assign_index < end_index if assign_index > 0 else False
+            self._slice_object = self._tokens[index - 1] in SLICE_OBJECT_TRIGGERS
+            if not self._slice_object:
+                self._line.append(f".sm_{'gs'[self._slice_assign]}etItem(")
+            self._line.append("mkslice(t(")
         elif token is Token.SLICE_CLOSE:
-            self._scope.exit()
-            self._line.append(")" * (1 + self._slice_object))
-            # TODO
+            if not self._slice_assign:
+                self._scope.exit()
+            self._line.append(")" * (3 - self._slice_object - self._slice_assign))
+            if self._slice_assign:
+                self._line.append(",")
         else:  # ENUM
             if isinstance(self._tokens[index + 1], str):
                 if self._tokens[index - 1] is Token.INSTANCE:
@@ -533,7 +617,10 @@ class Transpiler:
                 self._line.append(f"sm_{token}")
 
         elif token in FILE_IO_TOKENS:
+            if self._file_token is not None:
+                throw_syntax("can only perform one file operation at a time")
             self._file_token = token
+            self._line.append("FILE_IO")
 
         else:
             for group, func in GROUPS:
