@@ -103,7 +103,7 @@ def import_module(data: str, reg: Registry):
 def print_safe(*args):
     args = [*map(verify_type, args)]
     return_args = args[:]
-    args = [i.sm_toString() for i in args]
+    args = [i.sm_to_string() for i in args]
     types = [*map(type, args)]
     if tuple in types:
         raise exc.SamariumSyntaxError("missing brackets")

@@ -29,7 +29,7 @@ filter array function * {
     * [e ... e ->? array ? function(e)];
 }
 
-filterFalse array function * {
+filter_false array function * {
     flip arg * {
         * ~~ function(arg);
     }
@@ -50,7 +50,7 @@ reverse array * {
     * o;
 }
 
-takeWhile array function * {
+take_while array function * {
     o: [];
     ... e ->? array {
         ? function(e) {
@@ -62,7 +62,7 @@ takeWhile array function * {
     * o;
 }
 
-dropWhile array function * {
+dro_while array function * {
     o: [];
     i: \;
     ... e ->? array {
@@ -176,7 +176,7 @@ zip arrays... * {
     * out;
 }
 
-zipLongest fill arrays... * {
+zip_longest fill arrays... * {
     <-math.max;
     out: [];
     longest: max([i$ ... i ->? arrays]);
@@ -194,7 +194,7 @@ zipLongest fill arrays... * {
     * out;
 }
 
-findAll array target * {
+find_all array target * {
     * [i ... i, v ->? enumerate(array) ? v :: target];
 }
 

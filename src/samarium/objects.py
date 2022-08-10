@@ -35,10 +35,10 @@ class Class:
             self.sm_create(*args)
 
     def __bool__(self) -> bool:
-        return bool(self.sm_toBit().value)
+        return bool(self.sm_to_bit().value)
 
     def __str__(self) -> str:
-        return str(self.sm_toString().value)
+        return str(self.sm_to_string().value)
 
     def __iter__(self) -> Iterator:
         return iter(self.sm_iterate().value)
@@ -56,55 +56,55 @@ class Class:
         return self.sm_subtract(other)
 
     def __isub__(self, other: Class) -> Class:
-        return self.sm_subtractAssign(other)
+        return self.sm_subtract_assign(other)
 
     def __add__(self, other: Class) -> Class:
         return self.sm_add(other)
 
     def __iadd__(self, other: Class) -> Class:
-        return self.sm_addAssign(other)
+        return self.sm_add_assign(other)
 
     def __mul__(self, other: Class) -> Class:
         return self.sm_multiply(other)
 
     def __imul__(self, other: Class) -> Class:
-        return self.sm_multiplyAssign(other)
+        return self.sm_multiply_assign(other)
 
     def __floordiv__(self, other: Class) -> Class:
         return self.sm_divide(other)
 
     def __ifloordiv__(self, other: Class) -> Class:
-        return self.sm_divideAssign(other)
+        return self.sm_divide_assign(other)
 
     def __mod__(self, other: Class) -> Class:
         return self.sm_mod(other)
 
     def __imod__(self, other: Class) -> Class:
-        return self.sm_modAssign(other)
+        return self.sm_mod_assign(other)
 
     def __pow__(self, other: Class) -> Class:
         return self.sm_power(other)
 
     def __ipow__(self, other: Class) -> Class:
-        return self.sm_powerAssign(other)
+        return self.sm_power_assign(other)
 
     def __and__(self, other: Class) -> Class:
         return self.sm_and(other)
 
     def __iand__(self, other: Class) -> Class:
-        return self.sm_andAssign(other)
+        return self.sm_and_assign(other)
 
     def __or__(self, other: Class) -> Class:
         return self.sm_or(other)
 
     def __ior__(self, other: Class) -> Class:
-        return self.sm_orAssign(other)
+        return self.sm_or_assign(other)
 
     def __xor__(self, other: Class) -> Class:
         return self.sm_xor(other)
 
     def __ixor__(self, other: Class) -> Class:
-        return self.sm_xorAssign(other)
+        return self.sm_xor_assign(other)
 
     def __neg__(self) -> Class:
         return self.sm_negative()
@@ -116,38 +116,38 @@ class Class:
         return self.sm_not()
 
     def __getitem__(self, index: Integer | Slice) -> Any:
-        return self.sm_getItem(index)
+        return self.sm_get_item(index)
 
     def __setitem__(self, index: Integer | Slice, value: Any):
-        return self.sm_setItem(index, value)
+        return self.sm_set_item(index, value)
 
     def __eq__(self, other: Class) -> Integer:
         return self.sm_equals(other)
 
     def __ne__(self, other: Class) -> Integer:
         return run_with_backup(
-            self.sm_notEquals, lambda x: Int(not self.sm_equals(x)), other
+            self.sm_not_equals, lambda x: Int(not self.sm_equals(x)), other
         )
 
     def __lt__(self, other: Class) -> Integer:
         return run_with_backup(
-            self.sm_lessThan,
-            lambda x: Int(not (self.sm_greaterThan(x) or self.sm_equals(x))),
+            self.sm_less_than,
+            lambda x: Int(not (self.sm_greater_than(x) or self.sm_equals(x))),
             other,
         )
 
     def __le__(self, other: Class) -> Integer:
         return run_with_backup(
-            self.sm_lessThanOrEqual, lambda x: Int(not self.sm_greaterThan(x)), other
+            self.sm_less_than_or_equal, lambda x: Int(not self.sm_greater_than(x)), other
         )
 
     def __gt__(self, other: Class) -> Integer:
-        return self.sm_greaterThan(other)
+        return self.sm_greater_than(other)
 
     def __ge__(self, other: Class) -> Integer:
         return run_with_backup(
-            self.sm_greaterThanOrEqual,
-            lambda x: Int(self.sm_greaterThan(x) or self.sm_equals(x)),
+            self.sm_greater_than_or_equal,
+            lambda x: Int(self.sm_greater_than(x) or self.sm_equals(x)),
             other,
         )
 
@@ -165,11 +165,11 @@ class Class:
     def sm_create(self, *args: Any):
         raise NotDefinedError(self, "create")
 
-    def sm_toBit(self) -> Integer:
-        raise NotDefinedError(self, "toBit")
+    def sm_to_bit(self) -> Integer:
+        raise NotDefinedError(self, "to_bit")
 
-    def sm_toString(self) -> String:
-        raise NotDefinedError(self, "toString")
+    def sm_to_string(self) -> String:
+        raise NotDefinedError(self, "to_string")
 
     def sm_special(self) -> Any:
         raise NotDefinedError(self, "special")
@@ -189,56 +189,56 @@ class Class:
     def sm_subtract(self, other: Class) -> Class:
         raise NotDefinedError(self, "subtract")
 
-    def sm_subtractAssign(self, other: Class) -> Class:
-        raise NotDefinedError(self, "subtractAssign")
+    def sm_subtract_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "subtract_assign")
 
     def sm_add(self, other: Class) -> Class:
         raise NotDefinedError(self, "add")
 
-    def sm_addAssign(self, other: Class) -> Class:
-        raise NotDefinedError(self, "addAssign")
+    def sm_add_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "add_assign")
 
     def sm_multiply(self, other: Class) -> Class:
         raise NotDefinedError(self, "multiply")
 
-    def sm_multiplyAssign(self, other: Class) -> Class:
-        raise NotDefinedError(self, "multiplyAssign")
+    def sm_multiply_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "multiply_assign")
 
     def sm_divide(self, other: Class) -> Class:
         raise NotDefinedError(self, "divide")
 
-    def sm_divideAssign(self, other: Class) -> Class:
-        raise NotDefinedError(self, "divideAssign")
+    def sm_divide_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "divide_assign")
 
     def sm_mod(self, other: Class) -> Class:
         raise NotDefinedError(self, "mod")
 
-    def sm_modAssign(self, other: Class) -> Class:
-        raise NotDefinedError(self, "modAssign")
+    def sm_mod_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "mod_assign")
 
     def sm_power(self, other: Class) -> Class:
         raise NotDefinedError(self, "power")
 
-    def sm_powerAssign(self, other: Class) -> Class:
-        raise NotDefinedError(self, "powerAssign")
+    def sm_power_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "power_assign")
 
     def sm_and(self, other: Class) -> Class:
         raise NotDefinedError(self, "and")
 
-    def sm_andAssign(self, other: Class) -> Class:
-        raise NotDefinedError(self, "andAssign")
+    def sm_and_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "and_assign")
 
     def sm_or(self, other: Class) -> Class:
         raise NotDefinedError(self, "or")
 
-    def sm_orAssign(self, other: Class) -> Class:
-        raise NotDefinedError(self, "orAssign")
+    def sm_or_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "or_assign")
 
     def sm_xor(self, other: Class) -> Class:
         raise NotDefinedError(self, "xor")
 
-    def sm_xorAssign(self, other: Class) -> Class:
-        raise NotDefinedError(self, "xorAssign")
+    def sm_xor_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "xor_assign")
 
     def sm_negative(self) -> Class:
         raise NotDefinedError(self, "negative")
@@ -249,29 +249,29 @@ class Class:
     def sm_not(self) -> Class:
         raise NotDefinedError(self, "not")
 
-    def sm_getItem(self, index: Integer | Slice) -> Any:
-        raise NotDefinedError(self, "getItem")
+    def sm_get_item(self, index: Integer | Slice) -> Any:
+        raise NotDefinedError(self, "get_item")
 
-    def sm_setItem(self, index: Integer | Slice, value: Any):
-        raise NotDefinedError(self, "setItem")
+    def sm_set_item(self, index: Integer | Slice, value: Any):
+        raise NotDefinedError(self, "set_item")
 
     def sm_equals(self, other: Class) -> Integer:
         raise NotDefinedError(self, "equals")
 
-    def sm_notEquals(self, other: Class) -> Integer:
-        raise NotDefinedError(self, "notEquals")
+    def sm_not_equals(self, other: Class) -> Integer:
+        raise NotDefinedError(self, "not_equals")
 
-    def sm_lessThan(self, other: Class) -> Integer:
-        raise NotDefinedError(self, "lessThan")
+    def sm_less_than(self, other: Class) -> Integer:
+        raise NotDefinedError(self, "less_than")
 
-    def sm_lessThanOrEqual(self, other: Class) -> Integer:
-        raise NotDefinedError(self, "lessThanOrEqual")
+    def sm_less_than_or_equal(self, other: Class) -> Integer:
+        raise NotDefinedError(self, "less_than_or_equal")
 
-    def sm_greaterThan(self, other: Class) -> Integer:
-        raise NotDefinedError(self, "greaterThan")
+    def sm_greater_than(self, other: Class) -> Integer:
+        raise NotDefinedError(self, "greater_than")
 
-    def sm_greaterThanOrEqual(self, other: Class) -> Integer:
-        raise NotDefinedError(self, "greaterThanOrEqual")
+    def sm_greater_than_or_equal(self, other: Class) -> Integer:
+        raise NotDefinedError(self, "greater_than_or_equal")
 
     def sm_cast(self):
         raise NotDefinedError(self, "cast")
@@ -287,15 +287,15 @@ class Type(Class):
     def sm_equals(self, other: Type) -> Integer:
         return Int(self.value == other.value)
 
-    def sm_notEquals(self, other: Type) -> Integer:
+    def sm_not_equals(self, other: Type) -> Integer:
         return Int(self.value != other.value)
 
-    def sm_toString(self) -> String:
+    def sm_to_string(self) -> String:
         if self.value is FunctionType:
             return String("Function")
         return String(get_callable_name(self.value))
 
-    def sm_toBit(self) -> Integer:
+    def sm_to_bit(self) -> Integer:
         return Int(1)
 
     def sm_call(self, *args) -> Class:
@@ -310,19 +310,19 @@ class Null(Class):
     def sm_create(self):
         self.value = None
 
-    def sm_toString(self) -> String:
+    def sm_to_string(self) -> String:
         return String("null")
 
     def sm_hash(self) -> Integer:
         return Int(hash(self.value))
 
-    def sm_toBit(self) -> Integer:
+    def sm_to_bit(self) -> Integer:
         return Int(0)
 
     def sm_equals(self, other: Null) -> Integer:
         return Int(type(other) is Null)
 
-    def sm_notEquals(self, other: Null) -> Integer:
+    def sm_not_equals(self, other: Null) -> Integer:
         return Int(type(other) is not Null)
 
 
@@ -351,7 +351,7 @@ class Slice(Class):
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == null
 
-    def sm_toString(self) -> String:
+    def sm_to_string(self) -> String:
         start, stop, step = self.start, self.stop, self.step
         if start is stop is step is null:
             return String("<<>>")
@@ -371,7 +371,7 @@ class Slice(Class):
     def sm_equals(self, other: Slice) -> Integer:
         return Int(self.tup == other.tup)
 
-    def sm_notEquals(self, other: Slice) -> Integer:
+    def sm_not_equals(self, other: Slice) -> Integer:
         return Int(self.tup != other.tup)
 
 
@@ -402,48 +402,48 @@ class String(Class):
     def sm_special(self) -> Integer:
         return Int(len(self.value))
 
-    def sm_toBit(self) -> Integer:
+    def sm_to_bit(self) -> Integer:
         return Int(self.value != "")
 
-    def sm_toString(self) -> String:
+    def sm_to_string(self) -> String:
         return self
 
     def sm_add(self, other: String) -> String:
         return String(self.value + other.value)
 
-    def sm_addAssign(self, other: String) -> String:
+    def sm_add_assign(self, other: String) -> String:
         self = self.sm_add(other)
         return self
 
     def sm_multiply(self, times: Integer) -> String:
         return String(self.value * times.value)
 
-    def sm_multiplyAssign(self, times: Integer) -> String:
+    def sm_multiply_assign(self, times: Integer) -> String:
         self = self.sm_multiply(times)
         return self
 
     def sm_equals(self, other: String) -> Integer:
         return Int(self.value == other.value)
 
-    def sm_notEquals(self, other: String) -> Integer:
+    def sm_not_equals(self, other: String) -> Integer:
         return Int(self.value != other.value)
 
-    def sm_greaterThan(self, other: String) -> Integer:
+    def sm_greater_than(self, other: String) -> Integer:
         return Int(self.value > other.value)
 
-    def sm_lessThan(self, other: String) -> Integer:
+    def sm_less_than(self, other: String) -> Integer:
         return Int(self.value < other.value)
 
-    def sm_greaterThanOrEqual(self, other: String) -> Integer:
+    def sm_greater_than_or_equal(self, other: String) -> Integer:
         return Int(self.value >= other.value)
 
-    def sm_lessThanOrEqual(self, other: String) -> Integer:
+    def sm_less_than_or_equal(self, other: String) -> Integer:
         return Int(self.value <= other.value)
 
-    def sm_getItem(self, index: Integer | Slice) -> String:
+    def sm_get_item(self, index: Integer | Slice) -> String:
         return String(self.value[index.value])
 
-    def sm_setItem(self, index: Integer | Slice, value: String):
+    def sm_set_item(self, index: Integer | Slice, value: String):
         string = [*self.value]
         string[index.value] = value.value
         self.value = "".join(string)
@@ -481,72 +481,72 @@ class Integer(Class):
         else:
             return Int(-randbelow(v) - 1)
 
-    def sm_toBit(self) -> Integer:
+    def sm_to_bit(self) -> Integer:
         return Int(self.value != 0)
 
-    def sm_toString(self) -> String:
+    def sm_to_string(self) -> String:
         return String(str(self.value))
 
     def sm_add(self, other: Integer) -> Integer:
         return Int(self.value + other.value)
 
-    def sm_addAssign(self, other: Integer) -> Integer:
+    def sm_add_assign(self, other: Integer) -> Integer:
         self = self.sm_add(other)
         return self
 
     def sm_subtract(self, other: Integer) -> Integer:
         return Int(self.value - other.value)
 
-    def sm_subtractAssign(self, other: Integer) -> Integer:
+    def sm_subtract_assign(self, other: Integer) -> Integer:
         self = self.sm_subtract(other)
         return self
 
     def sm_multiply(self, other: Integer) -> Integer:
         return Int(self.value * other.value)
 
-    def sm_multiplyAssign(self, other: Integer) -> Integer:
+    def sm_multiply_assign(self, other: Integer) -> Integer:
         self = self.sm_multiply(other)
         return self
 
     def sm_divide(self, other: Integer) -> Integer:
         return Int(self.value // other.value)
 
-    def sm_divideAssign(self, other: Integer) -> Integer:
+    def sm_divide_assign(self, other: Integer) -> Integer:
         self = self.sm_divide(other)
         return self
 
     def sm_mod(self, other: Integer) -> Integer:
         return Int(self.value % other.value)
 
-    def sm_modAssign(self, other: Integer) -> Integer:
+    def sm_mod_assign(self, other: Integer) -> Integer:
         self = self.sm_mod(other)
         return self
 
     def sm_power(self, other: Integer) -> Integer:
         return Int(self.value ** other.value)
 
-    def sm_powerAssign(self, other: Integer) -> Integer:
+    def sm_power_assign(self, other: Integer) -> Integer:
         self = self.sm_power(other)
         return self
 
     def sm_and(self, other: Integer) -> Integer:
         return Int(self.value & other.value)
 
-    def sm_andAssign(self, other: Integer) -> Integer:
+    def sm_and_assign(self, other: Integer) -> Integer:
         self = self.sm_and(other)
         return self
 
     def sm_or(self, other: Integer) -> Integer:
         return Int(self.value | other.value)
 
-    def sm_orAssign(self, other: Integer) -> Integer:
+    def sm_or_assign(self, other: Integer) -> Integer:
         self = self.sm_or(other)
         return self
 
     def sm_xor(self, other: Integer) -> Integer:
         return Int(self.value ^ other.value)
 
-    def sm_xorAssign(self, other: Integer) -> Integer:
+    def sm_xor_assign(self, other: Integer) -> Integer:
         self = self.sm_xor(other)
         return self
 
@@ -562,19 +562,19 @@ class Integer(Class):
     def sm_equals(self, other: Integer) -> Integer:
         return Int(self.value == other.value)
 
-    def sm_notEquals(self, other: Integer) -> Integer:
+    def sm_not_equals(self, other: Integer) -> Integer:
         return Int(self.value != other.value)
 
-    def sm_greaterThan(self, other: Integer) -> Integer:
+    def sm_greater_than(self, other: Integer) -> Integer:
         return Int(self.value > other.value)
 
-    def sm_lessThan(self, other: Integer) -> Integer:
+    def sm_less_than(self, other: Integer) -> Integer:
         return Int(self.value < other.value)
 
-    def sm_greaterThanOrEqual(self, other: Integer) -> Integer:
+    def sm_greater_than_or_equal(self, other: Integer) -> Integer:
         return Int(self.value >= other.value)
 
-    def sm_lessThanOrEqual(self, other: Integer) -> Integer:
+    def sm_less_than_or_equal(self, other: Integer) -> Integer:
         return Int(self.value <= other.value)
 
     def sm_special(self) -> String:
@@ -610,7 +610,7 @@ class Table(Class):
     def sm_special(self) -> Array:
         return Array(self.value.values())
 
-    def sm_toString(self) -> String:
+    def sm_to_string(self) -> String:
         return String(
             "{{"
             + ", ".join(
@@ -619,16 +619,16 @@ class Table(Class):
             + "}}"
         )
 
-    def sm_toBit(self) -> Integer:
+    def sm_to_bit(self) -> Integer:
         return Int(self.value != {})
 
-    def sm_getItem(self, key: Any) -> Any:
+    def sm_get_item(self, key: Any) -> Any:
         try:
             return self.value[key]
         except KeyError:
             raise SamariumValueError(f"key not found: {key}")
 
-    def sm_setItem(self, key: Any, value: Any):
+    def sm_set_item(self, key: Any, value: Any):
         self.value[key] = value
 
     def sm_iterate(self) -> Array:
@@ -645,13 +645,13 @@ class Table(Class):
     def sm_equals(self, other: Table) -> Integer:
         return Int(self.value == other.value)
 
-    def sm_notEquals(self, other: Table) -> Integer:
+    def sm_not_equals(self, other: Table) -> Integer:
         return Int(self.value == other.value)
 
     def sm_add(self, other: Table) -> Table:
         return Table(self.value | other.value)
 
-    def sm_addAssign(self, other: Table) -> Table:
+    def sm_add_assign(self, other: Table) -> Table:
         self.value.update(other.value)
         return self
 
@@ -663,7 +663,7 @@ class Table(Class):
             raise SamariumValueError(f"key not found: {other}")
         return Table(c)
 
-    def sm_subtractAssign(self, other: Class) -> Table:
+    def sm_subtract_assign(self, other: Class) -> Table:
         try:
             del self.value[other]
         except KeyError:
@@ -689,10 +689,10 @@ class Array(Class):
     def sm_special(self) -> Integer:
         return Int(len(self.value))
 
-    def sm_toString(self) -> String:
+    def sm_to_string(self) -> String:
         return String(f"[{', '.join(map(get_repr, self.value))}]")
 
-    def sm_toBit(self) -> Integer:
+    def sm_to_bit(self) -> Integer:
         return Int(self.value != [])
 
     def __iter__(self) -> Iterator:
@@ -712,33 +712,33 @@ class Array(Class):
     def sm_equals(self, other: Array) -> Integer:
         return Int(self.value == other.value)
 
-    def sm_notEquals(self, other: Array) -> Integer:
+    def sm_not_equals(self, other: Array) -> Integer:
         return Int(self.value != other.value)
 
-    def sm_greaterThan(self, other: Array) -> Integer:
+    def sm_greater_than(self, other: Array) -> Integer:
         return Int(self.value > other.value)
 
-    def sm_lessThan(self, other: Array) -> Integer:
+    def sm_less_than(self, other: Array) -> Integer:
         return Int(self.value < other.value)
 
-    def sm_greaterThanOrEqual(self, other: Array) -> Integer:
+    def sm_greater_than_or_equal(self, other: Array) -> Integer:
         return Int(self.value >= other.value)
 
-    def sm_lessThanOrEqual(self, other: Array) -> Integer:
+    def sm_less_than_or_equal(self, other: Array) -> Integer:
         return Int(self.value <= other.value)
 
-    def sm_getItem(self, index: Integer | Slice) -> Any:
+    def sm_get_item(self, index: Integer | Slice) -> Any:
         if isinstance(index, Integer):
             return self.value[index.value]
         return Array(self.value[index.value])
 
-    def sm_setItem(self, index: Integer | Slice, value: Any):
+    def sm_set_item(self, index: Integer | Slice, value: Any):
         self.value[index.value] = value
 
     def sm_add(self, other: Array) -> Array:
         return Array(self.value + other.value)
 
-    def sm_addAssign(self, other: Array) -> Array:
+    def sm_add_assign(self, other: Array) -> Array:
         self.value += other.value
         return self
 
@@ -753,7 +753,7 @@ class Array(Class):
             raise SamariumTypeError(type(other).__name__)
         return Array(new_array)
 
-    def sm_subtractAssign(self, other: Array | Integer) -> Array:
+    def sm_subtract_assign(self, other: Array | Integer) -> Array:
         if isinstance(other, Array):
             for i in other:
                 self.value.remove(i)
@@ -766,7 +766,7 @@ class Array(Class):
     def sm_multiply(self, other: Integer) -> Array:
         return Array(self.value * other.value)
 
-    def sm_multiplyAssign(self, other: Integer) -> Array:
+    def sm_multiply_assign(self, other: Integer) -> Array:
         self.value *= other.value
         return self
 
@@ -846,14 +846,14 @@ class File(Class):
         self.path = path
         self.value = file
 
-    def sm_toString(self) -> String:
+    def sm_to_string(self) -> String:
         return String(f"File(path:{self.path}, mode:{self.mode})")
 
     def sm_not(self):
         self.value.close()
         return null
 
-    def sm_getItem(self, index: Integer | Slice) -> Array | String | Integer | Null:
+    def sm_get_item(self, index: Integer | Slice) -> Array | String | Integer | Null:
         if isinstance(index, Slice):
             if index.is_empty():
                 return Int(self.value.tell())
@@ -940,7 +940,7 @@ class Enum_(Class):
                 self.members[v] = Int(i)
                 i += 1
 
-    def sm_toString(self) -> String:
+    def sm_to_string(self) -> String:
         return String(f"Enum({self.name})")
 
     def __getattr__(self, name: str) -> Class:
@@ -966,7 +966,7 @@ def class_attributes(cls):
 def get_repr(obj: Class | Callable | Module) -> str:
     if isinstance(obj, String):
         return f'"{obj}"'
-    return str(obj.sm_toString())
+    return str(obj.sm_to_string())
 
 
 def mkslice(start: Any = MISSING, stop: Any = MISSING, step: Any = MISSING) -> Class:
@@ -1054,7 +1054,7 @@ def function(func: Callable):
 
     argc = len(signature(func).parameters)
 
-    wrapper.sm_toString = lambda: String(get_callable_name(func))
+    wrapper.sm_to_string = lambda: String(get_callable_name(func))
     wrapper.sm_special = lambda: Int(argc)
     wrapper.argc = argc
     wrapper.parent = Type(Class)

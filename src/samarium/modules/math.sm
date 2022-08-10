@@ -95,27 +95,27 @@ shr a b * {
     * a -- /\ +++ b;
 }
 
-toHex n * {
+to_hex n * {
     <-string.hexdigits;
     div: n -- /\\\\;
     mod: n --- /\\\\;
     ? ~~ div {
         * hexdigits<<mod>>;
     }
-    * toHex(div) + hexdigits<<mod>>;
+    * to_hex(div) + hexdigits<<mod>>;
 }
 
-toOct n * {
+to_oct n * {
     <-string.octdigits;
     div: n -- /\\\;
     mod: n --- /\\\;
     ? ~~ div {
         * octdigits<<mod>>;
     }
-    * toOct(div) + octdigits<<mod>>;
+    * to_oct(div) + octdigits<<mod>>;
 }
 
-isPrime n * {
+is_prime n * {
     ? n <: // {
         * n > /;
     }

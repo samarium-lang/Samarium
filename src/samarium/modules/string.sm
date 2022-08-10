@@ -30,7 +30,7 @@ center string length char? * {
     * string;
 }
 
-startsWith string prefix * {
+starts_with string prefix * {
     ? prefix$ > string$ {
         * \;
     }
@@ -40,7 +40,7 @@ startsWith string prefix * {
     * string<<..prefix$>> :: prefix;
 }
 
-endsWith string suffix * {
+ends_with string suffix * {
     ? suffix$ > string$ {
         * \;
     }
@@ -73,7 +73,7 @@ capitalize string * {
     ? string$ :: \ {
         * string;
     }
-    * toUpper(string<<\>>) + toLower(string<</..>>);
+    * to_upper(string<<\>>) + to_lower(string<</..>>);
 }
 
 title string * {
@@ -84,7 +84,7 @@ join iterable delimiter? * {
     delimiter <> "";
     o: "";
     ... e ->? iterable {
-        o+: e.toString();
+        o+: e.to_string();
         o+: delimiter;
     }
     ? delimiter {
@@ -93,33 +93,33 @@ join iterable delimiter? * {
     * o;
 }
 
-stripLeft string prefix * {
-    .. startsWith(string, prefix) {
+strip_left string prefix * {
+    .. starts_with(string, prefix) {
         string: string<<prefix$..>>;
     }
     * string;
 }
 
-stripRight string suffix * {
-    .. endsWith(string, suffix) {
+strip_right string suffix * {
+    .. ends_with(string, suffix) {
         string: string<<..-suffix$>>;
     }
     * string;
 }
 
 strip string chars * {
-    * stripLeft(stripRight(string, chars), chars);
+    * strip_left(strip_right(string, chars), chars);
 }
 
-isWrapped string chars * {
-    * startsWith(string, chars) && endsWith(string, chars);
+is_wrapped string chars * {
+    * starts_with(string, chars) && ends_with(string, chars);
 }
 
-toLower string * {
+to_lower string * {
     <-iter.range;
     <-types.String;
     ? string?! ::: String {
-        "invalid type: " + string?!.toString()!!!;
+        "invalid type: " + string?!.to_string()!!!;
     }
     out: "";
     ... char ->? string {
@@ -132,11 +132,11 @@ toLower string * {
     * out;
 }
 
-toUpper string * {
+to_upper string * {
     <-iter.range;
     <-types.String;
     ? string?! ::: String {
-        "invalid type: " + string?!.toString()!!!;
+        "invalid type: " + string?!.to_string()!!!;
     }
     out: "";
     ... char ->? string {
@@ -152,10 +152,10 @@ toUpper string * {
 swapcase string * {
     out: "";
     ... char ->? string {
-        ? isUpper(char) {
-            out+: toLower(char);
+        ? is_upper(char) {
+            out+: to_lower(char);
         } ,, {
-            out+: toUpper(char);
+            out+: to_upper(char);
         }
     }
     * out;
@@ -182,47 +182,47 @@ rightpad string length char? * {
     * string + pad(string, length, char);
 }
 
-isUpper string * {
-    * string :: toUpper(string);
+is_upper string * {
+    * string :: to_upper(string);
 }
 
-isLower string * {
-    * string :: toLower(string);
+is_lower string * {
+    * string :: to_lower(string);
 }
 
-isTitle string * {
+is_title string * {
     * string :: title(string);
 }
 
-isCapitalized string * {
+is_capitalized string * {
     * string :: capitalize(string);
 }
 
-isInGroup string group * {
+is_in_group string group * {
     ... char ->? string {
         ? char ~~->? group { * \; }
     }
     * /;
 }
 
-isAlphabetic string * {
-    * isInGroup(string, letters);
+is_alphabetic string * {
+    * is_in_group(string, letters);
 }
 
-isAlphanumeric string * {
-    * isInGroup(string, letters + digits);
+is_alphanumeric string * {
+    * is_in_group(string, letters + digits);
 }
 
-isDecimal string * {
-    * isInGroup(string, digits);
+is_decimal string * {
+    * is_in_group(string, digits);
 }
 
-isOctal string * {
-    * isInGroup(string, octdigits);
+is_octal string * {
+    * is_in_group(string, octdigits);
 }
 
-isHexadecimal string * {
-    * isInGroup(string, hexdigits);
+is_hexadecimal string * {
+    * is_in_group(string, hexdigits);
 }
 
 wrap string wrapper * {
@@ -232,34 +232,34 @@ wrap string wrapper * {
 format string fields * {
     <-types.Table;
     ? fields?! ::: Table {
-        "invalid type: " + fields?!.toString()!!!;
+        "invalid type: " + fields?!.to_string()!!!;
     }
     ? ~~ fields {
         * string;
     }
-    newString: "";
+    new_string: "";
     index: \;
     .. index < string$ {
         char: string<<index>>;
         ? char ::: "$" {
-            newString+: char;
+            new_string+: char;
             index+: /;
         } ,, ? string<<index + />> :: "$" {
-            newString+: "$";
+            new_string+: "$";
             index+: /\;
         } ,, {
             ... k ->? fields {
-                v: fields<<k>>.toString();
-                k: k.toString();
+                v: fields<<k>>.to_string();
+                k: k.to_string();
                 ? string<<index + /..index + k$ + />> :: k {
-                    newString+: v;
+                    new_string+: v;
                     index+: k$ + /;
                     <-;
                 }
             }
         }
     }
-    * newString;
+    * new_string;
 }
 
 replace string replacements count? * {
@@ -286,7 +286,7 @@ replace string replacements count? * {
             * out;
         }
 
-        delChar count * {
+        del_char count * {
             out: "";
             ... i ->? string {
                 ? count && i :: from {
@@ -298,20 +298,20 @@ replace string replacements count? * {
             * out;
         }
 
-        replaceSubstring count * {
-            stringCopy: string;
+        replace_substring count * {
+            string_copy: string;
             out: "";
-            .. count && from ->? stringCopy {
-                i: find(stringCopy, from);
-                out+: stringCopy<<..i>>;
+            .. count && from ->? string_copy {
+                i: find(string_copy, from);
+                out+: string_copy<<..i>>;
                 out+: to;
-                stringCopy: stringCopy<<i + from$..>>;
+                string_copy: string_copy<<i + from$..>>;
                 count-: /;
             }
-            * out + stringCopy;
+            * out + string_copy;
         }
 
-        replaceChar count * {
+        replace_char count * {
             out: "";
             ... i ->? string {
                 ? i :: from && count {
@@ -330,11 +330,11 @@ replace string replacements count? * {
             * interleave(count);
         } ,, ? from$ :: / {
             ? ~~ to {
-                * delChar(count);
+                * del_char(count);
             }
-            * replaceChar(count);
+            * replace_char(count);
         } ,, {
-            * replaceSubstring(count);
+            * replace_substring(count);
         }
     }
 
