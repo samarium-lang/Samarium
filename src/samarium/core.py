@@ -19,6 +19,7 @@ from .objects import (
     String,
     Integer,
     MISSING,
+    Null,
     Table,
     Array,
     Enum_,
