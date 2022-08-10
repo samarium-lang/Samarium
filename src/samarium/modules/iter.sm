@@ -103,12 +103,12 @@ enumerate array * {
 }
 
 range start stop? step? * {
-    stop <> _;
+    stop <>;
     step <> /;
     ? step :: \ {
         "step cannot be zero"!!!;
     }
-    ? _ :: stop {
+    ? :: stop {
         stop: start;
         start: \;
     }

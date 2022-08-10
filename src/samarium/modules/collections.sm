@@ -60,7 +60,7 @@
         ?? {
             top: 'peek();
         } !! {
-            top: _;
+            top:;
         }
         ? top?! :: String {
             top: wrap(top.toString(), "\"");
@@ -387,7 +387,7 @@
 @ StaticArray {
 
     create value type? * {
-        type <> _;
+        type <>;
         <-types.Array, Integer;
         ? value?! :: Integer {
             'value: {{}};
@@ -399,7 +399,7 @@
             'type: type;
             i: \;
             ... e ->? value {
-                ? _ ::: type ::: e?! {
+                ? ::: type ::: e?! {
                     "expected " + type.toString() + ", found " + e?!.toString()!!!;
                 }
                 'value<<i>>: e;
@@ -436,7 +436,7 @@
     }
 
     throwInvalidType type * {
-        ? _ ::: 'type ::: type {
+        ? ::: 'type ::: type {
             "expected " + 'type.toString() + ", received " + type.toString()!!!;
         }
     }

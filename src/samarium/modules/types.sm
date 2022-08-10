@@ -1,6 +1,6 @@
 Array: []?!;
 Integer: \?!;
-Null: _?!;
+Null: ?!;
 Slice: <<>>?!;
 String: ""?!;
 Table: {{}}?!;
