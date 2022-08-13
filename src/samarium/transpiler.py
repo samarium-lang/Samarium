@@ -550,7 +550,7 @@ class Transpiler:
             self._slice_assign = assign_index < end_index if assign_index > 0 else False
             self._slice_object = self._tokens[index - 1] in SLICE_OBJECT_TRIGGERS
             if not self._slice_object:
-                self._line.append(f".sm_{'gs'[self._slice_assign]}etItem(")
+                self._line.append(f".sm_{'gs'[self._slice_assign]}et_item(")
             self._line.append("mkslice(t(")
         elif token is Token.SLICE_CLOSE:
             if not self._slice_assign:
