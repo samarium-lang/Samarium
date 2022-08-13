@@ -337,7 +337,10 @@ class Transpiler:
             ]
 
     def _operators(self, token: Token) -> None:
-        if self._tokens[self._index - 1] in {Token.IF, Token.WHILE}:
+        if self._tokens[self._index - 1] in {Token.IF, Token.WHILE} and token not in {
+            Token.BNOT,
+            Token.NOT,
+        }:
             self._line.append("null")
         self._line.append(OPERATOR_MAPPING[token])
 
