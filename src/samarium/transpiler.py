@@ -290,46 +290,51 @@ class Transpiler:
     def _file_io(self) -> None:
         io_token = cast(Token, self._file_token)
         io_token_index = self._line.index("FILE_IO")
+        print(self._line)
         before_token = "".join(self._line[:io_token_index])
-        after_token = "".join(self._line[io_token_index + 1:])
-        
-        open_template = f"{before_token}=FileManager.{{}}" f"({after_token}, Mode.{{}})"
+        after_token = "".join(self._line[io_token_index + 1 :])
+
+        self._file_token = None
+
+        open_template = f"{before_token}=FileManager.{{}}({after_token}, Mode.{{}})"
         quick_template = [
             f"FileManager.quick({after_token},",
             "Mode.{},",
             f"binary={'BINARY' in io_token.name})",
         ]
+        ind = indent(self._indent)
 
         if io_token is Token.FILE_CREATE:
-            if before_token:
+            if not is_first_token([before_token]):
                 throw_syntax("file create operator must start the statement")
-            self._line.append(f"FileManager.create({after_token})")
+            self._line = [ind, f"FileManager.create({after_token})"]
             return
-        
+
         if not before_token:
             throw_syntax("missing variable for file operation")
         if not after_token:
             throw_syntax("missing file path")
-        
+
         no_prefix = io_token.name.removeprefix("FILE_")
         if no_prefix in FILE_OPEN_KEYWORDS:
-            self._line.append(open_template.format("open", no_prefix))
+            self._line = [open_template.format("open", no_prefix)]
             return
-        
+
         no_prefix = no_prefix.removeprefix("BINARY_")
         if no_prefix in FILE_OPEN_KEYWORDS:
-            self._line.append(open_template.format("open_binary", no_prefix))
+            self._line = [open_template.format("open_binary", no_prefix)]
             return
-        
+
         token_name = io_token.name
         if "QUICK" in token_name:
             if "READ" in token_name:
-                quick_template.insert(0, f"{before_token}=")
+                quick_template.insert(0, f"{before_token.strip()}=")
             else:
                 quick_template.insert(2, f"data={before_token},")
-            self._line = ["".join(quick_template).format(token_name.split("_")[-1])]
-        
-        self._file_token = None
+            self._line = [
+                ind,
+                "".join(quick_template).format(token_name.split("_")[-1]),
+            ]
 
     def _operators(self, token: Token) -> None:
         if self._tokens[self._index - 1] in {Token.IF, Token.WHILE}:
