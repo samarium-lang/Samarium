@@ -509,8 +509,6 @@ class Transpiler:
                 self._slice_assign = False
             self._submit_line()
             # start = self.ch.indent > 0
-            # if any(token in FILE_IO_TOKENS for token in self.ch.line):
-            #     self.ch.line[start:] = [self.transpile_fileio(self.ch.line[start:])]
             # if self.ch.switches["import"]:
             #     self.ch.switches["import"] = False
             #     self.ch.line.append(
@@ -550,7 +548,12 @@ class Transpiler:
             self._scope.enter("slice")
             assign_index = find_next(self._tokens, Token.ASSIGN, after=index)
             end_index = find_next(self._tokens, Token.END, after=index)
-            self._slice_assign = assign_index < end_index if assign_index > 0 else False
+            brace_index = find_next(self._tokens, Token.BRACE_OPEN, after=index)
+            self._slice_assign = (
+                assign_index < min(brace_index, end_index)
+                if assign_index > 0
+                else False
+            )
             self._slice_object = self._tokens[index - 1] in SLICE_OBJECT_TRIGGERS
             if not self._slice_object:
                 self._line.append(f".sm_{'gs'[self._slice_assign]}et_item(")
