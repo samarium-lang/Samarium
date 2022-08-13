@@ -62,7 +62,7 @@ take_while array function * {
     * o;
 }
 
-dro_while array function * {
+drop_while array function * {
     o: [];
     i: \;
     ... e ->? array {
