@@ -19,7 +19,9 @@ def handle_exception(exception: Exception):
         names = SINGLE_QUOTED_NAME.findall(str(exception))
         if names == ["entry"]:
             names = ["no entry point defined"]
-        exception = NotDefinedError(".".join(i.removeprefix("__").removeprefix("sm_") for i in names))
+        exception = NotDefinedError(
+            ".".join(i.removeprefix("__").removeprefix("sm_") for i in names)
+        )
         name = "NotDefinedError"
     elif exc_type not in {AssertionError, NotDefinedError}:
         name = exc_type.__name__

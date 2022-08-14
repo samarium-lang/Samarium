@@ -138,7 +138,9 @@ class Class:
 
     def __le__(self, other: Class) -> Integer:
         return run_with_backup(
-            self.sm_less_than_or_equal, lambda x: Int(not self.sm_greater_than(x)), other
+            self.sm_less_than_or_equal,
+            lambda x: Int(not self.sm_greater_than(x)),
+            other,
         )
 
     def __gt__(self, other: Class) -> Integer:
@@ -979,7 +981,6 @@ def mkslice(start: Any = MISSING, stop: Any = MISSING, step: Any = MISSING) -> C
     stop = null if stop in missing_none else stop
     step = null if step in missing_none else step
     return Slice(start, stop, step)
-    
 
 
 def t(obj: Any = None) -> Any:
