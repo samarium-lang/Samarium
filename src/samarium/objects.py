@@ -1038,11 +1038,12 @@ def function(func: Callable):
                 result = verify_type(f(*args))
             except TypeError as e:
                 errmsg = str(e)
+                if "missing 1 required positional argument: 'self'" in errmsg:
+                    raise SamariumTypeError("missing instance")
                 missing_args = MISSING_ARGS_PATTERN.search(errmsg)
                 if missing_args:
-                    raise SamariumTypeError(
-                        f"not enough arguments ({argc - (int(missing_args.group(1)) or 1)}/{argc})"
-                    )
+                    given = argc - (int(missing_args.group(1)) or 1)
+                    raise SamariumTypeError(f"not enough arguments ({given}/{argc})")
                 too_many_args = TOO_MANY_ARGS_PATTERN.search(errmsg)
                 if too_many_args:
                     raise SamariumTypeError(
