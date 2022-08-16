@@ -11,6 +11,10 @@ SINGLE_QUOTED_NAME = compile(r"'(\w+)'")
 def handle_exception(exception: Exception):
     exc_type = type(exception)
     name = exc_type.__name__
+    if exc_type is NotDefinedError:
+        exception = NotDefinedError(
+            ".".join(i.removeprefix("sm_") for i in str(exception).split("."))
+        )
     if exc_type is SyntaxError:
         exception = SamariumSyntaxError(
             f"invalid syntax at {int(str(exception).split()[-1][:-1])}"
