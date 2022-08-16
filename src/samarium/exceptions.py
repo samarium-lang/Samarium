@@ -15,6 +15,11 @@ def handle_exception(exception: Exception):
         exception = NotDefinedError(
             ".".join(i.removeprefix("sm_") for i in str(exception).split("."))
         )
+    if (
+        exc_type is TypeError
+        and "missing 1 required positional argument: 'self'" in str(exception)
+    ):
+        exception = SamariumTypeError("missing instance")
     if exc_type is SyntaxError:
         exception = SamariumSyntaxError(
             f"invalid syntax at {int(str(exception).split()[-1][:-1])}"
