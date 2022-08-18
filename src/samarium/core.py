@@ -97,7 +97,7 @@ def import_module(data: str, reg: Registry):
                 reg.vars[obj] = imported.vars[obj]
             except KeyError:
                 raise exc.SamariumImportError(
-                    f"{obj} is not a member of the {name} module"
+                    f"{obj.removeprefix('sm_')} is not a member of the {name} module"
                 )
 
 
