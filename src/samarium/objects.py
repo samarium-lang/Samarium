@@ -10,7 +10,7 @@ from inspect import signature
 from re import compile
 from secrets import choice, randbelow
 from types import FunctionType, GeneratorType
-from typing import Any, Callable, IO, Iterator, cast
+from typing import Any, Callable, IO, Iterator as Iter, cast
 
 from .exceptions import (
     NotDefinedError,
@@ -20,6 +20,9 @@ from .exceptions import (
     SamariumValueError,
 )
 from .utils import get_callable_name, parse_integer, run_with_backup
+
+
+I64_MAX = 9223372036854775807
 
 
 class MISSING:
@@ -40,7 +43,7 @@ class Class:
     def __str__(self) -> str:
         return str(self.sm_to_string().value)
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> Iter:
         return iter(self.sm_iterate().value)
 
     def __contains__(self, element: Any) -> Integer:
@@ -171,7 +174,7 @@ class Class:
         raise NotDefinedError(self, "to_bit")
 
     def sm_to_string(self) -> String:
-        raise NotDefinedError(self, "to_string")
+        return String(f"<{get_callable_name(type(self))}@{id(self):x}>")
 
     def sm_special(self) -> Any:
         raise NotDefinedError(self, "special")
@@ -332,23 +335,35 @@ null = Null()
 
 
 class Slice(Class):
-    __slots__ = ("start", "stop", "step", "tup", "value")
+    __slots__ = ("start", "stop", "step", "tup", "value", "range", "inf")
 
     def sm_create(self, start: Any = null, stop: Any = null, step: Any = null):
         self.start = start
         self.stop = stop
         self.step = step
         self.tup = start.value, stop.value, step.value
+        self.range = range(
+            self.tup[0] or 0,
+            I64_MAX if self.tup[1] is None else self.tup[1],
+            self.tup[2] or 1,
+        )
+        self.inf = self.tup[1] is None
         self.value = slice(*self.tup)
+
+    def sm_iterate(self) -> Iterator:
+        return Iterator(map(Int, self.range))
 
     def sm_random(self) -> Integer:
         if self.stop is None:
             raise SamariumValueError(
                 "cannot generate a random value for slice with null stop"
             )
-        tup = self.tup[0] or 0, self.tup[1], self.tup[2] or 1
-        range_ = range(*tup)
-        return Int(choice(range_))
+        return Int(choice(self.range))
+
+    def sm_special(self) -> Integer | Null:
+        if self.inf:
+            return null
+        return Int(len(self.range))
 
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == null
@@ -395,8 +410,8 @@ class String(Class):
     def sm_has(self, element: String) -> Integer:
         return Int(element.value in self.value)
 
-    def sm_iterate(self) -> Array:
-        return Array(map(String, self.value))
+    def sm_iterate(self) -> Iterator:
+        return Iterator(map(String, self.value))
 
     def sm_random(self) -> String:
         return String(choice(self.value))
@@ -633,8 +648,8 @@ class Table(Class):
     def sm_set_item(self, key: Any, value: Any):
         self.value[key] = value
 
-    def sm_iterate(self) -> Array:
-        return Array(self.value.keys())
+    def sm_iterate(self) -> Iterator:
+        return Iterator(self.value.keys())
 
     def sm_random(self) -> Any:
         if not self.value:
@@ -683,6 +698,12 @@ class Array(Class):
             self.value = Array(map(String, value.value)).value
         elif isinstance(value, Table):
             self.value = Array(map(Array, value.value.items())).value
+        elif isinstance(value, Iterator):
+            if value.length is null:
+                raise SamariumTypeError("cannot convert an infinite iterator to Array")
+            self.value = Array(list(value.value)).value
+        elif isinstance(value, Slice) and value.sm_special() is null:
+            raise SamariumTypeError("cannot convert an infinite slice to Array")
         elif isinstance(value, Iterable):
             self.value = [*map(verify_type, value)]
         else:
@@ -697,11 +718,11 @@ class Array(Class):
     def sm_to_bit(self) -> Integer:
         return Int(self.value != [])
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> Iter:
         yield from self.value
 
-    def sm_iterate(self) -> Array:
-        return self
+    def sm_iterate(self) -> Iterator:
+        return Iterator(self)
 
     def sm_random(self) -> Any:
         if not self.value:
@@ -917,7 +938,9 @@ class Module:
 
 
 class Enum_(Class):
-    def sm_create(self, globals: dict[str, Any], *values_: str):
+    __slots__ = ("name", "members")
+
+    def sm_create(self, globals: dict[str, Any], *values_: str) -> None:
         if any(isinstance(i, Class) for i in values_):
             raise SamariumTypeError("enums cannot be constructed from Type")
         name, *values = values_
@@ -955,6 +978,34 @@ class Enum_(Class):
         if name.startswith("sm_"):
             raise SamariumTypeError("enum members cannot be modified")
         object.__setattr__(self, name, value)
+
+
+class Iterator(Class):
+    __slots__ = ("value", "length", "isgen", "raw")
+
+    def sm_create(self, value: Class) -> None:
+        if not isinstance(value, Iterable):
+            raise SamariumTypeError("cannot create an Iterator from a non-iterable")
+        self.value = iter(value)
+        try:
+            self.length = Int(len(value.value))
+        except (TypeError, AttributeError):
+            self.length = null
+
+    def __iter__(self) -> Iter:
+        return self.value
+
+    def __next__(self) -> Class:
+        return next(self.value)
+
+    def sm_cast(self) -> Integer | Null:
+        return self.length
+
+    def sm_iterate(self) -> Iterator:
+        return self
+
+    def sm_special(self) -> Class:
+        return next(self)
 
 
 def class_attributes(cls):
@@ -1003,7 +1054,7 @@ def verify_type(obj: Any, *args) -> Class | Callable | Module:
     elif isinstance(obj, bool):
         return Int(obj)
     elif isinstance(obj, GeneratorType):
-        raise SamariumSyntaxError("invalid comprehension")
+        return Iterator(obj)
     else:
         raise SamariumTypeError(f"unknown type: {type(obj).__name__}")
 

@@ -1,6 +1,8 @@
 Array: []?!;
 Integer: \?!;
-Null: ?!;
+Iterator: [].iterate()?!;
+#null:;
+Null: #null?!;
 Slice: <<>>?!;
 String: ""?!;
 Table: {{}}?!;

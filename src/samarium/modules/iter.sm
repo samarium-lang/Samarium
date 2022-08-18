@@ -22,11 +22,20 @@ find array target * {
 count array target * {
     <-math.sum;
     ? target ~~ ->? array { * \; }
-    * sum([/ ... e ->? array ? e :: target]);
+    s: \;
+    ... e ->? array {
+        ? e :: target {
+            s+: /;
+        }
+    }
 }
 
 filter array function * {
-    * [e ... e ->? array ? function(e)];
+    ... e ->? array {
+        ? function(e) {
+            ** e;
+        }
+    }
 }
 
 filter_false array function * {
@@ -37,90 +46,66 @@ filter_false array function * {
 }
 
 map array function * {
-    * [function(e) ... e ->? array];
+    ... e ->? array {
+        ** function(e);
+    }
 }
 
 reverse array * {
-    o: [];
     i: array$ - /;
     .. i >: \ {
-        o+: [array<<i>>];
+        ** array<<i>>;
         i-: /;
     }
-    * o;
 }
 
 take_while array function * {
-    o: [];
     ... e ->? array {
         ? function(e) {
-            o+: [e];
+            ** e;
             ->
         }
         <-
     }
-    * o;
 }
 
 drop_while array function * {
-    o: [];
     i: \;
     ... e ->? array {
         i+: /;
         ? ~~ function(e) {
-            o+: [e];
+            ** e;
             <-
         }
     }
     ... e ->? array<<i..array$>> {
-        o+: [e];
+        ** e;
     }
-    * o;
 }
 
 accumulate array function * {
     prev: array<<\>>;
-    o: [array<<\>>];
+    ** prev;
     ... e ->? array<</..>> {
         prev: function(prev, e);
-        o+: [prev];
+        ** prev;
     }
-    * o;
 }
 
 reduce array function * {
-    * accumulate(array, function)<<-/>>;
+    prev: array<<\>>;
+    ... e ->? array<</..>> {
+        prev: function(prev, e);
+    }
+    * prev;
 }
 
 enumerate array * {
-    o: [];
     i: \;
     ... e ->? array {
-        o+: [[i, e]];
+        ** [i, e];
         i+: /;
     }
-    * o;
-}
-
-range start stop? step? * {
-    stop <>;
-    step <> /;
-    ? step :: \ {
-        "step cannot be zero"!!!;
-    }
-    ? :: stop {
-        stop: start;
-        start: \;
-    }
-    o: [];
-    .. (step < \) ^ (start < stop) {
-        o+: [start];
-        start+: step;
-    }
-    ? step < \ && o {
-        o-: -/;
-    }
-    * o;
 }
 
 sort arr * {
@@ -163,39 +148,39 @@ sort arr * {
 }
 
 pairwise array * {
-    * [array<<i..i+/\>> ... i ->? range(array$ - /)];
+    ... i ->? <<..array$$ - />> {
+        ** array<<i..i+/\>>;
+    }
 }
 
 zip arrays... * {
     <-math.min;
-    out: [];
     shortest: min([i$ ... i ->? arrays]);
     ... i ->? range(shortest) {
-        out+: [[it<<i>> ... it ->? arrays]];
+        ** [it<<i>> ... it ->? arrays];
     }
-    * out;
 }
 
 zip_longest fill arrays... * {
     <-math.max;
-    out: [];
     longest: max([i$ ... i ->? arrays]);
     ... i ->? range(longest) {
-        zip: [];
         ... it ->? arrays {
             ?? {
-                zip+: [it<<i>>];
+                ** it<<i>>;
             } !! {
-                zip+: [fill];
+                ** fill;
             }
         }
-        out+: [zip];
     }
-    * out;
 }
 
 find_all array target * {
-    * [i ... i, v ->? enumerate(array) ? v :: target];
+    ... i, v ->? enumerate(array) {
+        ? v :: target {
+            ** i;
+        }
+    }
 }
 
 all array * {
