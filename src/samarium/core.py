@@ -19,13 +19,13 @@ from .objects import (
     String,
     Integer,
     MISSING,
+    Module,
     Null,
     Table,
     Array,
     Enum_,
     Mode,
     FileManager,
-    File,
 )
 from .runtime import Runtime
 from .tokenizer import tokenize
