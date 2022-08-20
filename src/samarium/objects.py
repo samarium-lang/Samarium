@@ -110,10 +110,10 @@ class Class:
         return self.sm_xor_assign(other)
 
     def __neg__(self) -> Class:
-        return self.sm_negative()
+        return self.sm_decrement()
 
     def __pos__(self) -> Class:
-        return self.sm_positive()
+        return self.sm_increment()
 
     def __invert__(self) -> Class:
         return self.sm_not()
@@ -245,10 +245,10 @@ class Class:
     def sm_xor_assign(self, other: Class) -> Class:
         raise NotDefinedError(self, "xor_assign")
 
-    def sm_negative(self) -> Class:
-        raise NotDefinedError(self, "negative")
+    def sm_decrement(self) -> Class:
+        raise NotDefinedError(self, "decrement")
 
-    def sm_positive(self) -> Class:
+    def sm_increment(self) -> Class:
         raise NotDefinedError(self, "positive")
 
     def sm_not(self) -> Class:
@@ -570,11 +570,11 @@ class Integer(Class):
     def sm_not(self) -> Integer:
         return Int(~self.value)
 
-    def sm_negative(self) -> Integer:
-        return Int(-self.value)
+    def sm_decrement(self) -> Integer:
+        return Int(self.value - 1)
 
-    def sm_positive(self) -> Integer:
-        return Int(+self.value)
+    def sm_increment(self) -> Integer:
+        return Int(self.value + 1)
 
     def sm_equals(self, other: Integer) -> Integer:
         return Int(self.value == other.value)

@@ -68,6 +68,10 @@ min array * {
     * o;
 }
 
+neg n * {
+    * ~(n - /);
+}
+
 sqrt n * {
     ? n < \ {
         "sqrt is defined only for non-negative numbers"!!!;

@@ -13,6 +13,7 @@ Function              | Use
 `sum(array)`          | Sums the items of `array` from left to right and returns the total.<br>The `array`'s items must be integers.
 `max(array)`          | Returns the largest integer in `array`.
 `min(array)`          | Returns the smallest integer in `array`.
+`neg(n)`              | Returns the negation of `n`.
 `sqrt(n)`             | Returns the integer square root of the nonnegative integer `n`.<br>This is the floor of the exact square root of `n`.
 `shl(a, b)`           | Returns `a` shifted to the left by `b` bits.
 `shr(a, b)`           | Returns `a` shifted to the right by `b` bits.
