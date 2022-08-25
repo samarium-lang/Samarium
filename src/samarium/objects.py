@@ -477,7 +477,6 @@ class Integer(Class):
         return Int(hash(self.value))
 
     def sm_create(self, value: Any = None):
-        t = type(value)
         if hasattr(value, "value"):
             value = value.value
         if isinstance(value, (int, bool, float)):
@@ -487,7 +486,9 @@ class Integer(Class):
         elif isinstance(value, str):
             self.value = parse_integer(value)
         else:
-            raise SamariumTypeError(f"cannot cast {t.__name__} to Integer")
+            raise SamariumTypeError(
+                f"cannot cast {get_callable_name(type(value))} to Integer"
+            )
 
     def sm_random(self) -> Integer:
         v = self.value
@@ -622,7 +623,9 @@ class Table(Class):
                         table[k] = v
                 self.value = Table(table).value
         else:
-            raise SamariumTypeError(f"cannot cast {type(value).__name__} to Table")
+            raise SamariumTypeError(
+                f"cannot cast {get_callable_name(type(value))} to Table"
+            )
 
     def sm_special(self) -> Array:
         return Array(self.value.values())
@@ -707,7 +710,9 @@ class Array(Class):
         elif isinstance(value, Iterable):
             self.value = [*map(verify_type, value)]
         else:
-            raise SamariumTypeError(f"cannot cast {type(value).__name__} to Array")
+            raise SamariumTypeError(
+                f"cannot cast {get_callable_name(type(value))} to Array"
+            )
 
     def sm_special(self) -> Integer:
         return Int(len(self.value))
