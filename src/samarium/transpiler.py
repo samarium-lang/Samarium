@@ -478,10 +478,11 @@ class Transpiler:
     def _control_flow(self, token: Token) -> None:
         shift = " " * (not is_first_token(self._line))
         if token is Token.IF:
-            with suppress(IndexError):
+            try:
                 if self._line_tokens[-2] is Token.ELSE:
-                    self._line[-2:] = "elif", " "
-            self._line.append(shift + "if ")
+                    self._line[-1] = "elif "
+            except IndexError:
+                self._line.append(shift + "if ")
         elif token is Token.ELSE:
             self._line.append(shift + "else ")
         else:  # FOR
