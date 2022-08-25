@@ -1025,10 +1025,7 @@ def cmp(arr1: list[Any], arr2: list[Any]) -> int:
     for a, b in zip(arr1, arr2):
         if a == b:
             continue
-        if a > b:
-            return 1
-        if a < b:
-            return -1
+        return 1 if a > b else -1
     len1 = len(arr1)
     len2 = len(arr2)
     if len1 != len2:
