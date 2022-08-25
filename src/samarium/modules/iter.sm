@@ -200,3 +200,9 @@ any array * {
     }
     * \;
 }
+
+chunks array size * {
+    ... i ->? <<..array$..size>> {
+        ** array<<i..i + size>>;
+    }
+}
