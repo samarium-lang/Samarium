@@ -739,16 +739,16 @@ class Array(Class):
         return Int(self.value != other.value)
 
     def sm_greater_than(self, other: Array) -> Integer:
-        return Int(self.value > other.value)
+        return Int(cmp(self.value, other.value) == 1)
 
     def sm_less_than(self, other: Array) -> Integer:
-        return Int(self.value < other.value)
+        return Int(cmp(self.value, other.value) == -1)
 
     def sm_greater_than_or_equal(self, other: Array) -> Integer:
-        return Int(self.value >= other.value)
+        return Int(cmp(self.value, other.value) != -1)
 
     def sm_less_than_or_equal(self, other: Array) -> Integer:
-        return Int(self.value <= other.value)
+        return Int(cmp(self.value, other.value) != 1)
 
     def sm_get_item(self, index: Integer | Slice) -> Any:
         if isinstance(index, Integer):
@@ -1014,6 +1014,21 @@ def class_attributes(cls):
     parents = cls.__bases__
     cls.parent = Type(parents[0]) if len(parents) == 1 else Array(map(Type, parents))
     return cls
+
+
+def cmp(arr1: list[Any], arr2: list[Any]) -> int:
+    for a, b in zip(arr1, arr2):
+        if a == b:
+            continue
+        if a > b:
+            return 1
+        if a < b:
+            return -1
+    len1 = len(arr1)
+    len2 = len(arr2)
+    if len1 != len2:
+        return 1 if len1 > len2 else -1
+    return 0
 
 
 def get_repr(obj: Class | Callable | Module) -> str:
