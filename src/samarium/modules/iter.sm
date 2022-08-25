@@ -181,9 +181,9 @@ chunks array size * {
 
 sorted array key? * {
     key <> dummy;
-    decorated: [[key(v), i, v] ... i, v ->? enumerate(array)];
+    decorated: [[key(v), v] ... v ->? array];
     d_sorted: #quicksort(decorated);
-    ... k, i, v ->? d_sorted {
+    ... _, v ->? d_sorted {
         ** v;
     }
 }
