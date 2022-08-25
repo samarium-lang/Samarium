@@ -88,7 +88,7 @@ def import_module(data: str, reg: Registry):
         imported.vars = {
             k: v
             for k, v in imported.vars.items()
-            if not (k.startswith("__") or k[0].isalnum())
+            if k.startswith("sm_")
         }
         reg.vars.update(imported.vars)
     else:
