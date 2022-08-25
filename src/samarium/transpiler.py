@@ -481,6 +481,8 @@ class Transpiler:
             try:
                 if self._line_tokens[-2] is Token.ELSE:
                     self._line[-1] = "elif "
+                else:
+                    self._line.append(" if ")
             except IndexError:
                 self._line.append(shift + "if ")
         elif token is Token.ELSE:
