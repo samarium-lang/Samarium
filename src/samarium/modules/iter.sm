@@ -187,3 +187,43 @@ sorted array key? * {
         ** v;
     }
 }
+
+#flatten array * {
+    flattened: [];
+    ... i ->? array {
+        ? i?! :: Array {
+            flattened+: i;
+        } ,, {
+            flattened+: [i];
+        }
+    }
+    * flattened;
+}
+
+flatten array depth? * {
+    depth <>;
+    ? depth ::: null && depth < \ {
+        "depth cannot be negative"!!!;
+    }
+    x: [i ... i ->? array];
+
+    ? depth :: \ {
+        * x;
+    }
+
+    ? depth :: null {
+        old: x;
+        new: #flatten(x);
+        .. new ::: old {
+            old: [i ... i ->? new];
+            new: #flatten(old);
+        }
+        * new;
+    } ,, {
+        flattened: x;
+        ... _ ->? <<..depth>> {
+            flattened: #flatten(flattened);
+        }
+        * flattened;
+    }
+}
