@@ -240,6 +240,7 @@ class Transpiler:
         self._index = 0
         self._line: list[str] = []
         self._line_tokens: list[Tokenlike] = []
+        self._private = False
         self._processed_tokens: list[Tokenlike] = []
         self._reg = registry
         self._scope = Scope()
@@ -572,7 +573,7 @@ class Transpiler:
             if isinstance(self._tokens[index + 1], str):
                 if self._tokens[index - 1] is Token.INSTANCE:
                     self._line.append(".")
-                self._line.append("__")
+                self._private = True
                 return
             name = self._line[-1]
             self._line.append(f"=Enum_(globals(), '{name}', '''")
@@ -629,7 +630,11 @@ class Transpiler:
                     if self._line_tokens[-2] is Token.INSTANCE:
                         self._line.append(".")
                 # Identifiers
-                self._line.append(f"sm_{token}")
+                varname = f"sm_{token}"
+                if self._private:
+                    varname = "__" + varname
+                    self._private = False
+                self._line.append(varname)
 
         elif token in FILE_IO_TOKENS:
             if self._file_token is not None:
