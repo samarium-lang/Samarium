@@ -339,10 +339,10 @@ class Transpiler:
             ]
 
     def _operators(self, token: Token) -> None:
-        if self._tokens[self._index - 1] in {Token.IF, Token.WHILE} and token not in {
-            Token.BNOT,
-            Token.NOT,
-        }:
+        prev = self._index - 1
+        if self._tokens[prev] in {Token.IF, Token.WHILE}:
+            self._line.append("null")
+        if self._tokens[prev] in Group.operators - {Token.NOT}:
             self._line.append("null")
         self._line.append(OPERATOR_MAPPING[token])
 
@@ -354,6 +354,9 @@ class Transpiler:
             # Implicit infinite loop
             if self._line_tokens[-2] is Token.WHILE:
                 self._line.append("True")
+
+            if self._line_tokens[-2] in Group.operators:
+                self._line.append("null")
 
             # Inheriting from Class if no parent is specified
             if self._reg[Switch.CLASS_DEF]:
