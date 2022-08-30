@@ -34,15 +34,12 @@ from .utils import readfile, silence_stdout, sysexit
 
 MODULE_NAMES = [
     "collections",
-    "datetime",
     "iter",
     "math",
     "operator",
     "random",
     "string",
-    "terminal",
     "types",
-    "utils",
 ]
 
 
