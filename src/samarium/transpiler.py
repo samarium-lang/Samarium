@@ -292,7 +292,6 @@ class Transpiler:
     def _file_io(self) -> None:
         io_token = cast(Token, self._file_token)
         io_token_index = self._line.index("FILE_IO")
-        print(self._line)
         before_token = "".join(self._line[:io_token_index])
         after_token = "".join(self._line[io_token_index + 1 :])
 
@@ -438,7 +437,10 @@ class Transpiler:
                 )
             )
         elif token is Token.YIELD:
-            self._line.append("yield ")
+            if is_first_token(self._line):
+                self._line.append("yield ")
+            else:
+                self._line.append("*")
         else:  # Token.MAIN
             self._line.append("entry ")
 
