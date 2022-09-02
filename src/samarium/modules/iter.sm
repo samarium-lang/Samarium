@@ -137,9 +137,19 @@ zip_longest fill arrays... * {
 }
 
 find_all array target * {
-    ... i, v ->? enumerate(array) {
-        ? v :: target {
-            ** i;
+    <-types.String;
+    ? array?! :: String && target$ > / {
+        ... i ->? <<..array$>> {
+            substring: array<<i..i + target$>>;
+            ? substring :: target {
+                ** i;
+            }
+        }
+    } ,, {
+        ... i, v ->? enumerate(array) {
+            ? v :: target {
+                ** i;
+            }
         }
     }
 }
