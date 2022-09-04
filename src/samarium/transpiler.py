@@ -517,20 +517,15 @@ class Transpiler:
             if self._slice_assign:
                 self._line.append(")")
                 self._slice_assign = False
+            if "=" in self._line:
+                start = self._indent > 0
+                assign_idx = self._line.index("=")
+                stop = assign_idx - (
+                    self._line[assign_idx - 1] in {*"+-*%&|^", "**", "//"}
+                )
+                variable = "".join(self._line[start:stop])
+                self._line.append(f";verify_type({variable})")
             self._submit_line()
-            # start = self.ch.indent > 0
-            # if self.ch.switches["import"]:
-            #     self.ch.switches["import"] = False
-            #     self.ch.line.append(
-            #         "', CodeHandler(globals()) " "if Runtime.import_level else MAIN)"
-            #     )
-            # if "=" in self.ch.line:
-            #     assign_idx = self.ch.line.index("=")
-            #     stop = assign_idx - (
-            #         self.ch.line[assign_idx - 1] in {*"+-*%&|^", "**", "//"}
-            #     )
-            #     variable = "".join(map(str, self.ch.line[start:stop]))
-            #     self.ch.line.append(f";verify_type({variable})")
         elif token is Token.ASSIGN:
             if (
                 self._line_tokens.count(token) > 1
