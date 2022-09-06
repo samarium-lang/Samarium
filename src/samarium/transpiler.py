@@ -527,13 +527,7 @@ class Transpiler:
                 self._line.append(f";verify_type({variable})")
             self._submit_line()
         elif token is Token.ASSIGN:
-            if (
-                self._line_tokens.count(token) > 1
-                and Token.FUNCTION
-                in self._tokens[index : self._tokens[index:].index(Token.BRACE_OPEN)]
-                # TODO: Why (the bit after "and")?
-                # FIXME: Causes an error when there's an enum defined inside a function
-            ):
+            if self._line_tokens.count(token) > 1 and self._scope.current != "enum":
                 throw_syntax("cannot use multiple assignment")
             elif self._scope.current != "slice":
                 self._line.append("=")
