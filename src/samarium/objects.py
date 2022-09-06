@@ -958,6 +958,8 @@ class Enum_(Class):
 
         i = 0
         for v in values:
+            if not v:
+                continue
             eqs = v.count("=")
             if eqs >= 2:
                 raise SamariumSyntaxError("invalid expression")
