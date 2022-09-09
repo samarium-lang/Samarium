@@ -41,7 +41,7 @@ dropsort array * {
 
 ```sm
 factorial n * {
-    # n >: \;
+    !! n >: \;
     ? ~~ n {
         * /;
     }

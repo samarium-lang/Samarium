@@ -107,12 +107,12 @@ The sleep function `,.,` pauses execution for the specified number of millisecon
 
 ## ASSERT
 
-The assert function `#` is used as a debugging tool.
+The assert function `!!` is used as a debugging tool.
 If the input to this function is falsy (i.e. empty iterable, null, or just false), an `AssertionError` will be raised, otherwise, nothing will happen.
 A custom error message can be provided by putting it after a `,`.
 
 ```sm
-# / > /\, "error message";
+!! / > /\, "error message";
 ```
 
 will raise `[AssertionError] error message`.
