@@ -1,15 +1,15 @@
-uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-lowercase: "abcdefghijklmnopqrstuvwxyz";
-letters: uppercase + lowercase;
+UPPERCASE: "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+LOWERCASE: "abcdefghijklmnopqrstuvwxyz";
+LETTERS: UPPERCASE + LOWERCASE;
 
-octdigits: "01234567";
-digits: octdigits + "89";
-hexdigits: digits + "abcdef";
+OCTDIGITS: "01234567";
+DIGITS: OCTDIGITS + "89";
+HEXDIGITS: DIGITS + "abcdef";
 
-punctuation: "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
-whitespace: " \t\n\r\f\v";
+PUNCTUATION: "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+WHITESPACE: " \t\n\r\f\v";
 
-printable: letters + digits + punctuation + whitespace;
+PRINTABLE: LETTERS + DIGITS + PUNCTUATION + WHITESPACE;
 
 
 center string length char? * {
