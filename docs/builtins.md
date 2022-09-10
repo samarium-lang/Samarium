@@ -145,3 +145,12 @@ String  | Returns a random character
 Table   | Returns a random key
 
 > Related library: [`random`](stdrandom.md)
+
+## ID
+
+The special method `**` returns the memory address of a given object.
+
+```sm
+x: //;
+x**!;  == 7f7ea0367800
+```
