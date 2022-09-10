@@ -99,7 +99,7 @@ Function                    | Python       | Use
 `special()`                 | --           | Interacts with the special function character `$`.
 `cast()`                    | --           | Interacts with the cast function character `%`.
 
-Note: Some of the comparison operators can be inferred from others, so not all of them are necessary to provide implementations for.
+Some of the comparison operators can be inferred from others, so not all of them are necessary to provide implementations for.
 The specific operators needed to infer each comparison operator are listed in the following table:
 
 Operator | Inferred from

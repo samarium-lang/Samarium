@@ -14,7 +14,8 @@ pos: f<<>>;
 Files can be created with the unary `?~>` operator.
 `?~> "file.txt"` will create an empty file called `file.txt` in the program directory.
 
-Note: files will also be created if they are opened in write or append mode.
+!!! note
+    Files will also be created if they are opened in write or append mode.
 
 ## Reading
 
