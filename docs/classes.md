@@ -60,44 +60,44 @@ These methods are as follows (where `func(...)` indicates a variable number of a
 
 Function                       | Python       | Use
 ---                            | ---          | ---
-`create(...)`                  | `init`       | Initializes an instance of a class, takes any number of arguments. Typically used for setting instance variables based on these arguments. No return value necessary.
-`to_string()`                  | `str`        | Returns the string representation of an object.
-`to_bit()`                     | `bool`       | Implements boolean value testing, returns `1` (truthy) or `0` (falsy). Used for conditional statements and logical operators.
-`has(item)`                    | `contains`   | Implements membership testing, returns `1` (object contains `item`) or `0` (object does not contain `item`). Interacts with `->?` operator.
-`call(...)`                    | `call`       | Called when an instance itself is "called" as a function; `x(...)` roughly translates to `x?!.call(x, ...)`.
-`hash()`                       | `hash`       | Called by the built-in hash function `##`, and for keys in a table. Objects which compare equal should have the same hash value.
-`iterate()`                    | `iter`       | Called when iterating over an object in a `foreach` loop. Returns an array of objects to iterate over.
-`subtract(other)`              | `sub`        | Interacts with the subtraction operator `-`. `x - y` is equivalent to `x.subtract(y)`.
-`subtract_assign(other)`       | `isub`       | Interacts with the subtraction assignment operator `-:`. `x-: y` is equivalent to `x.subtract_assign(y)` (or `x: x - y`).
 `add(other)`                   | `add`        | Interacts with the addition operator `+`.
 `add_assign(other)`            | `iadd`       | Interacts with the addition assignment operator `+:`.
-`multiply(other)`              | `mul`        | Interacts with the multiplication operator `++`.
-`multiply_assign(other)`       | `imul`       | Interacts with the multiplication assignment operator `++:`.
-`divide(other)`                | `floordiv`   | Interacts with the division operator `--`.
-`divide_assign(other)`         | `ifloordiv`  | Interacts with the division assignment operator `--:`.
-`mod(other)`                   | `mod`        | Interacts with the modulo operator `---`.
-`mod_assign(other)`            | `imod`       | Interacts with the modulo assignment operator `---:`.
-`power(other)`                 | `pow`        | Interacts with the exponentiation operator `+++`.
-`power_assign(other)`          | `ipow`       | Interacts with the exponentiation assignment operator `+++:`.
 `and(other)`                   | `and`        | Interacts with the bitwise AND operator `&`.
 `and_assign(other)`            | `iand`       | Interacts with the bitwise AND assignment operator `&:`.
+`call(...)`                    | `call`       | Called when an instance itself is "called" as a function; `x(...)` roughly translates to `x?!.call(x, ...)`.
+`cast()`                       | --           | Interacts with the cast function character `%`.
+`create(...)`                  | `init`       | Initializes an instance of a class, takes any number of arguments. Typically used for setting instance variables based on these arguments. No return value necessary.
+`divide(other)`                | `floordiv`   | Interacts with the division operator `--`.
+`divide_assign(other)`         | `ifloordiv`  | Interacts with the division assignment operator `--:`.
+`equals(other)`                | `eq`         | Implements the equality operator `::`. `x :: y` is equivalent to `x.equals(y)`.
+`get_item(index)`              | `getitem`    | Implements indexing an object; `x<<index>>` is equivalent to `x.get_item(index)`.
+`greater_than(other)`          | `gt`         | Implements the greater than operator `>`.
+`greater_than_or_equal(other)` | `ge`         | Implements the greater than or equal operator `>:`.
+`has(item)`                    | `contains`   | Implements membership testing, returns `1` (object contains `item`) or `0` (object does not contain `item`). Interacts with `->?` operator.
+`hash()`                       | `hash`       | Called by the built-in hash function `##`, and for keys in a table. Objects which compare equal should have the same hash value.
+`iterate()`                    | `iter`       | Called when iterating over an object in a `foreach` loop. Returns an array of objects to iterate over.
+`less_than(other)`             | `lt`         | Implements the less than operator `<`.
+`less_than_or_equal(other)`    | `le`         | Implements the less than or equal operator `<:`.
+`mod(other)`                   | `mod`        | Interacts with the modulo operator `---`.
+`mod_assign(other)`            | `imod`       | Interacts with the modulo assignment operator `---:`.
+`multiply(other)`              | `mul`        | Interacts with the multiplication operator `++`.
+`multiply_assign(other)`       | `imul`       | Interacts with the multiplication assignment operator `++:`.
+`negative()`                   | `neg`        | Interacts with the negative unary operator `-`.
+`not()`                        | `invert`     | Interacts with the bitwise NOT operator `~`.
+`not_equals(other)`            | `ne`         | Implements the inequality operator `:::`.
 `or(other)`                    | `or`         | Interacts with the bitwise OR operator `\|`.
 `or_assign(other)`             | `ior`        | Interacts with the bitwise OR assignment operator `\|:`.
+`positive()`                   | `pos`        | Interacts with the positive unary operator `+`.
+`power(other)`                 | `pow`        | Interacts with the exponentiation operator `+++`.
+`power_assign(other)`          | `ipow`       | Interacts with the exponentiation assignment operator `+++:`.
+`set_item(index, value)`       | `setitem`    | Implements assigning to an index of an object; `x<<index>>: value` is equivalent to `x.set_item(index, value)`.
+`special()`                    | --           | Interacts with the special function character `$`.
+`subtract(other)`              | `sub`        | Interacts with the subtraction operator `-`. `x - y` is equivalent to `x.subtract(y)`.
+`subtract_assign(other)`       | `isub`       | Interacts with the subtraction assignment operator `-:`. `x-: y` is equivalent to `x.subtract_assign(y)` (or `x: x - y`).
+`to_bit()`                     | `bool`       | Implements boolean value testing, returns `1` (truthy) or `0` (falsy). Used for conditional statements and logical operators.
+`to_string()`                  | `str`        | Returns the string representation of an object.
 `xor(other)`                   | `xor`        | Interacts with the bitwise XOR operator `^`.
 `xor_assign(other)`            | `ixor`       | Interacts with the bitwise XOR assignment operator `^:`.
-`negative()`                   | `neg`        | Interacts with the negative unary operator `-`.
-`positive()`                   | `pos`        | Interacts with the positive unary operator `+`.
-`not()`                        | `invert`     | Interacts with the bitwise NOT operator `~`.
-`get_item(index)`              | `getitem`    | Implements indexing an object; `x<<index>>` is equivalent to `x.get_item(index)`.
-`set_item(index, value)`       | `setitem`    | Implements assigning to an index of an object; `x<<index>>: value` is equivalent to `x.set_item(index, value)`.
-`equals(other)`                | `eq`         | Implements the equality operator `::`. `x :: y` is equivalent to `x.equals(y)`.
-`not_equals(other)`            | `ne`         | Implements the inequality operator `:::`.
-`less_than(other)`             | `lt`         | Implements the less than operator `<`.
-`greater_than(other)`          | `gt`         | Implements the greater than operator `>`.
-`less_than_or_equal(other)`    | `le`         | Implements the less than or equal operator `<:`.
-`greater_than_or_equal(other)` | `ge`         | Implements the greater than or equal operator `>:`.
-`special()`                    | --           | Interacts with the special function character `$`.
-`cast()`                       | --           | Interacts with the cast function character `%`.
 
 Some of the comparison operators can be inferred from others, so not all of them are necessary to provide implementations for.
 The specific operators needed to infer each comparison operator are listed in the following table:

@@ -9,12 +9,12 @@ Function                      | Operator
 `cast(x)`                     | `x%`
 `divide(x, y)`                | `x -- y`
 `equals(x, y)`                | `x :: y`
-`greater_than_or_equal(x, y)` | `x >: y`
 `greater_than(x, y)`          | `x > y`
+`greater_than_or_equal(x, y)` | `x >: y`
 `has(x, y)`                   | `y ->? x`
 `hash(x)`                     | `x##`
-`less_than_or_equal(x, y)`    | `x <: y`
 `less_than(x, y)`             | `x < y`
+`less_than_or_equal(x, y)`    | `x <: y`
 `mod(x, y)`                   | `x --- y`
 `multiply(x, y)`              | `x ++ y`
 `not(x)`                      | `~x`
