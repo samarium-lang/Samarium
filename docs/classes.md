@@ -101,6 +101,27 @@ Function                       | Python       | Use
 `xor(other)`                   | `xor`        | Interacts with the bitwise XOR operator `^`.
 `xor_assign(other)`            | `ixor`       | Interacts with the bitwise XOR assignment operator `^:`.
 
+Two special methods – `create` and `to_string` – have default definitions:
+```sm
+@ Foo {}
+
+=> * {
+    f: Foo();
+    f!;  == <Foo@7fe5403d7b00>
+}
+```
+The above class definition is equivalent to:
+```sm
+@ Foo {
+    create * {}
+
+    to_string * {
+        <-string.format;
+        * format("<$name@$address>", {{"name" -> '?!, "address" -> '**}});
+    }
+}
+```
+
 Some of the comparison operators can be inferred from others, so not all of them are necessary to provide implementations for.
 The specific operators needed to infer each comparison operator are listed in the following table:
 
