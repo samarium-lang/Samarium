@@ -1,15 +1,15 @@
 # Built-in Functions
 
-## STDIN
+## INPUT
 
 Standard input can be read from with `???`.
 It will read until it receives a newline character.
 
 `x: ???` will assign to `x` as a string what it reads from standard input, stopping at a newline character.
 
-A prompt can be given by preceding the `???` with a string, for example `"input: "???`
+A prompt can be given by preceding the `???` with a string, for example `"input: "???`.
 
-## STDOUT
+## PRINTLN
 
 Objects can be written to standard output by appending a `!` character to them.
 Note that they won't be written exactly as they would appear in Samarium.
@@ -25,9 +25,9 @@ x: //\!;
 == the string "6" is written to stdout, and `x` now has the value 6 (integer)
 ```
 
-## STDERR
+## THROW
 
-Similarly to STDOUT, objects can be written to standard error using `!!!`.
+Similarly to PRINTLN, objects can be written to standard error using `!!!`.
 This will throw an error, and exit the program if the error is not caught.
 
 `"exception raised"!!!` will write `[Error] exception raised` to standard error.
