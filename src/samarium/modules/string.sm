@@ -230,7 +230,11 @@ wrap string wrapper * {
 }
 
 format string fields * {
-    <-types.Table;
+    <-types.Array, Table;
+    <-iter.enumerate;
+    ? fields?! :: Array {
+        fields: {{i -> v ... i, v ->? enumerate(fields)}};
+    }
     ? fields?! ::: Table {
         "invalid type: " + fields?!.to_string()!!!;
     }
