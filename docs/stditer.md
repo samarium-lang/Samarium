@@ -15,7 +15,6 @@ Function                       | Use
 `accumulate(array, function)`  | Returns an array of accumulated applications of `function` on consecutive elements of `array`.<br>If for example `function` returned the sum of both of its arguments, then `accumulate([/, /\, //, /\\, /\/], function)` would return `[1, 3, 6, 10, 15]`.[^2]
 `reduce(array, function)`      | Applies `function` cumulatively to consecutive items of `array`, reducing it to a single value, then returns this value.<br>Equivalent to `accumulate(array, function)<<-/>>`.[^2]
 `enumerate(array)`             | Returns a copy of `array` but with each item as a length 2 array containing the item's index paired with the original item.
-`range(start, stop[, step])`   | Generates an array of integers from `start` (inclusive) to `stop` (exclusive) separated by gaps of size `step`.<br>If only one argument is provided, it will apply to `stop`, and `start` will default to `0`.<br>If a value for `step` is not provided, it will default to `1`. Commonly used in [`foreach` loops](controlflow.md#foreach-loop).
 `sort(array)`                  | Returns a sorted copy of `array`, using the comparison operators `<`, `>`, etc.
 `all(array)`                   | Returns `1` if all elements of `array` are truthy, `0` otherwise. Returns `1` for empty arrays.
 `any(array)`                   | Returns `1` if any of the elements of `array` is truthy, `0` otherwise. Returns `0` for empty arrays.
