@@ -214,6 +214,7 @@ NULLABLE_TOKENS = {
     Token.BRACKET_OPEN,
     Token.PAREN_OPEN,
     Token.TO,
+    Token.CATCH,
 }
 
 UNPACK_TRIGGERS = {
@@ -512,7 +513,7 @@ class Transpiler:
     def _core(self, token: Token) -> None:
         index = self._index
         if token is Token.END:
-            if self._tokens[index - 1] is Token.DEFAULT:
+            if self._tokens[index - 1] in {Token.DEFAULT, Token.CATCH}:
                 self._line.append("null")
             if self._scope.current == "enum":
                 self._line.append("''', '''")
