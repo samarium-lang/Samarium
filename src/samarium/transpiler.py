@@ -216,6 +216,12 @@ NULLABLE_TOKENS = {
     Token.TO,
 }
 
+UNPACK_TRIGGERS = {
+    Token.PAREN_OPEN,
+    Token.BRACKET_OPEN,
+    Token.SEP,
+}
+
 SLICE_OBJECT_TRIGGERS = {
     Token.ASSIGN,
     Token.END,
@@ -439,8 +445,10 @@ class Transpiler:
         elif token is Token.YIELD:
             if is_first_token(self._line):
                 self._line.append("yield ")
-            else:
+            elif self._tokens[self._index - 1] in UNPACK_TRIGGERS:
                 self._line.append("*")
+            else:
+                self._line.append(".id")
         else:  # Token.MAIN
             self._line.append("entry ")
 

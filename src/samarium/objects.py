@@ -157,6 +157,10 @@ class Class:
         )
 
     @property
+    def id(self) -> String:
+        return String(f"{id(self):x}")
+
+    @property
     def type(self) -> Type:
         return Type(type(self))
 
