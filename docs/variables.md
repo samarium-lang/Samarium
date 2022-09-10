@@ -2,11 +2,17 @@
 
 Variables are defined using the assignment operator `:`, like so:
 ```sm
-myVar: /;
+my_var: /;
 ```
 Variables can have many types, such as integers, strings, arrays, tables, and null.
 Functions and classes may also be treated as first-class variables.
-Only letters and/or numbers can be used for variable names (case sensitive), thus camelCase is recommended for names consisting of multiple words.
+Only letters, numbers, and underscores can be used for variable names (case sensitive).
+
+!!! note
+    Samarium follows the same naming convention as Python, i.e.:
+    - snake_case for variables and functions
+    - PascalCase for classes and type aliases
+    - flatcase for modules
 
 ## Main Function
 

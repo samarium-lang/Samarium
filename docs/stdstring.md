@@ -4,15 +4,15 @@ The `string` module contains several useful functions for string manipulation, a
 
 Variable      | Contents
 ---           | ---
-`uppercase`   | `ABCDEFGHIJKLMNOPQRSTUVWXYZ`
-`lowercase`   | `abcdefghijklmnopqrstuvwxyz`
-`letters`     | `uppercase + lowercase`
-`octdigits`   | `01234567`
-`digits`      | `0123456789`
-`hexdigits`   | `0123456789abcdef`
-`punctuation` | ``!"#$%&'()*+,-./:;<=>?@[\]^_`{\|}~``
-`whitespace`  | `[space]\t\n\r\f\v`
-`printable`   | `letters + digits + punctuation + whitespace`
+`UPPERCASE`   | `ABCDEFGHIJKLMNOPQRSTUVWXYZ`
+`LOWERCASE`   | `abcdefghijklmnopqrstuvwxyz`
+`LETTERS`     | `UPPERCASE + LOWERCASE`
+`OCTDIGITS`   | `01234567`
+`DIGITS`      | `0123456789`
+`HEXDIGITS`   | `0123456789abcdef`
+`PUNCTUATION` | ``!"#$%&'()*+,-./:;<=>?@[\]^_`{\|}~``
+`WHITESPACE`  | `[space]\t\n\r\f\v`
+`PRINTABLE`   | `LETTERS + DIGITS + PUNCTUATION + WHITESPACE`
 
 Function                                                       | Use
 ---                                                            | ---
@@ -39,13 +39,13 @@ Function                                                       | Use
 `isInGroup(string, group)`                                     | Returns `1` if every character in `string` is in the specified `group` of type Array or String, otherwise returns `0`.
 `isAlphabetic(string)`                                         | Returns `1` if every character in `string` is an alphabetic character, i.e. is contained in the string `letters`, otherwise returns `0`.
 `isAlphanumeric(string)`                                       | Returns `1` if every character in `string` is an alphanumeric character, i.e. is contained in the strings `letters` or `numbers`, otherwise returns `0`.
-`isDecimal(string)`                                            | Returns `1` if every character in `string` is a decimal digit, i.e. is contained in the string `digits`, otherwise returns `0`.
-`isOctal(string)`                                              | Returns `1` if every character in `string` is an octal digit, i.e. is contained in the string `octdigits`, otherwise returns `0`.
-`isHexadecimal(string)`                                        | Returns `1` if every character in `string` is a hexadecimal digit, i.e. is contained in the string `hexdigits`, otherwise returns `0`.
+`isDecimal(string)`                                            | Returns `1` if every character in `string` is a decimal digit, i.e. is contained in the string `DIGITS`, otherwise returns `0`.
+`isOctal(string)`                                              | Returns `1` if every character in `string` is an octal digit, i.e. is contained in the string `OCTDIGITS`, otherwise returns `0`.
+`isHexadecimal(string)`                                        | Returns `1` if every character in `string` is a hexadecimal digit, i.e. is contained in the string `HEXDIGITS`, otherwise returns `0`.
 `wrap(string, wrapper)`                                        | Returns a copy of `string` with `wrapper` added to the start and end.
 `replace(string, replacement[, count])`                        | Returns a copy of `string`, with all instances of each key in the `replacement` table replaced with its corresponding value.<br>If `count` is specified, only the first `count` instances of each key will be replaced, starting from the left.
 `format(string, fields)`                                       | Replaces field placeholders with supplied values, e.g.:<br>`format("Hi $name!", {{"name" -> "Bob"}}) :: "Hi Bob!"`<br>`format("$$age = $age", {{"age" -> /\\\\}}) :: "$age = 16"`
 
 [^1]: An argument in `[square brackets]` means that it has a default value, and so it isn't necessary to give it a value.
 
-[^2]: Cased characters are alphabetic characters in either uppercase or lowercase; `letters` is a string of all cased characters.
+[^2]: Cased characters are alphabetic characters in either uppercase or lowercase; `LETTERS` is a string of all cased characters.

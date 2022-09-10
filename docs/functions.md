@@ -90,10 +90,10 @@ double @ multiply a b * {
     * a ++ b;
 }
 
-double @ codeToChar code * {
+double @ code_to_char code * {
     * code%;
 }
 
 multiply(/\, /\\)!;  == 16
-codeToChar(/\\\\/)!;  == !!
+code_to_char(/\\\\/)!;  == !!
 ```

@@ -13,7 +13,7 @@ Objects (classes, functions, variables) from this module can then be accessed wi
 <-string;
 == imports the `string` module from Samarium's standard library
 
-string.toUpper("abc")!;
+string.to_upper("abc")!;
 == prints "ABC"
 
 string.digits!;
