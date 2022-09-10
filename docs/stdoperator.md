@@ -24,6 +24,6 @@ Function                      | Operator
 `random(x)`                   | `x??`
 `special(x)`                  | `x$`
 `subtract(x, y)`              | `x - y`
-`to_bit(x)`                   | `x.toBit()`
-`to_string(x)`                | `x.toString()`
+`to_bit(x)`                   | `x.to_bit()`
+`to_string(x)`                | `x.to_string()`
 `xor(x, y)`                   | `x ^ y`
