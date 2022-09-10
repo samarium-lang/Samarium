@@ -14,6 +14,15 @@ Only letters, numbers, and underscores can be used for variable names (case sens
     - PascalCase for classes and type aliases
     - flatcase for modules
 
+Variables can be made private by prefixing the name with `#`, making them inaccessible to external modules. Private variable names don't collide with public variable names:
+```sm
+var: -/;
+#var: /;
+
+var!;  == -1
+#var!;  == 1
+```
+
 ## Main Function
 
 The main function/entrypoint of the program is denoted by `=>`.

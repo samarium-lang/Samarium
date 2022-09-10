@@ -11,26 +11,28 @@ Class variables, instance variables and methods can be accessed with the `.` ope
 In this case, class methods will implicitly be given a reference to the instance as the first argument of the method; `x.method(arg1, arg2, ...)` is equivalent to `x?!.method(x, arg1, arg2, ...)`.
 Class variables and methods can also be accessed in the same way directly from the class itself, though note that in this case methods will not implicitly have an instance as the first argument, so it must be provided.
 
+Just like variables, class attributes can be made private by prefixing them with `#`, making them inaccessible outside the class.
+
 ```sm
-@ A {
-    shared: [];         == class variable
+@ Foo {
+    shared: [];
 
     create var * {
         'var: var;
+        '#pv: var - /;
     }
 
-    method arg * {      == method definition
-        'var: /;        == instance variable
-        * 'var;         == return value
+    get_pv * {
+        * '#pv;
     }
 }
 
 => * {
-    a: A(/\\);          == calls `A.create(4)`; `a` is now an instance of `A`
-    a.method(/\/);      == calls `A.method` on the instance `a` with `arg` 5
+    a: Foo(/\\);        == calls `Foo.create`; `a` is now an instance of `Foo`
     a.var!;             == prints 5
+    a.get_pv()!;        == calls `Foo.get_pv(a)`; prints 4
 
-    b: A(/\);
+    b: Foo(/\);
     a.shared+: ["str"]; == modifying a class variable for all instances
     b.shared!;          == prints ["str"]
 }
@@ -61,7 +63,7 @@ These methods are as follows (where `func(...)` indicates a variable number of a
 Function                       | Python       | Use
 ---                            | ---          | ---
 `add(other)`                   | `add`        | Interacts with the addition operator `+`.
-`add_assign(other)`            | `iadd`       | Interacts with the addition assignment operator `+:`.
+`add_assign(other)`            | `iadd`       | Interacts with the addition assignment operator `+:`. `x+: y` is equivalent to `x.add_assign(y)` (or `x: x + y`).
 `and(other)`                   | `and`        | Interacts with the bitwise AND operator `&`.
 `and_assign(other)`            | `iand`       | Interacts with the bitwise AND assignment operator `&:`.
 `call(...)`                    | `call`       | Called when an instance itself is "called" as a function; `x(...)` roughly translates to `x?!.call(x, ...)`.
@@ -93,7 +95,7 @@ Function                       | Python       | Use
 `set_item(index, value)`       | `setitem`    | Implements assigning to an index of an object; `x<<index>>: value` is equivalent to `x.set_item(index, value)`.
 `special()`                    | --           | Interacts with the special function character `$`.
 `subtract(other)`              | `sub`        | Interacts with the subtraction operator `-`. `x - y` is equivalent to `x.subtract(y)`.
-`subtract_assign(other)`       | `isub`       | Interacts with the subtraction assignment operator `-:`. `x-: y` is equivalent to `x.subtract_assign(y)` (or `x: x - y`).
+`subtract_assign(other)`       | `isub`       | Interacts with the subtraction assignment operator `-:`.
 `to_bit()`                     | `bool`       | Implements boolean value testing, returns `1` (truthy) or `0` (falsy). Used for conditional statements and logical operators.
 `to_string()`                  | `str`        | Returns the string representation of an object.
 `xor(other)`                   | `xor`        | Interacts with the bitwise XOR operator `^`.
