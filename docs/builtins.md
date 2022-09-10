@@ -92,6 +92,13 @@ For example:
 == writes `6` to stdout
 ```
 
+## TIMESTAMP
+
+The timestamp function `@@` returns the time in milliseconds since the epoch.
+
+!!! note
+    Timezone is included. For UTC timestamp, use `datetime.timestamp_utc`.
+
 ## DTNOW
 
 The dtnow function `@@@` gets the system's current date and time as an array of integers, in the format `[year, month, day, hour, minute, second, millisecond, utc_hour_offset, utc_minute_offset]`.
