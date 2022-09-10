@@ -9,10 +9,10 @@ Functions and classes may also be treated as first-class variables.
 Only letters, numbers, and underscores can be used for variable names (case sensitive).
 
 !!! note
-    Samarium follows the same naming convention as Python, i.e.:
-    - snake_case for variables and functions
-    - PascalCase for classes and type aliases
-    - flatcase for modules
+    Samarium follows the same naming convention as Python, i.e.:<br>
+    — snake_case for variables and functions<br>
+    — PascalCase for classes and type aliases<br>
+    — flatcase for modules
 
 Variables can be made private by prefixing the name with `#`, making them inaccessible to external modules. Private variable names don't collide with public variable names:
 ```sm
