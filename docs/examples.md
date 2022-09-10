@@ -104,8 +104,8 @@ random_hex_color * {
 random_hex_color * {
     max: /\ +++ //\\\;
     <-string.leftpad;
-    <-math.toHex;
-    * "#" + leftpad(toHex(max??), //\, "0");
+    <-math.to_hex;
+    * "#" + leftpad(to_hex(max??), //\, "0");
 }
 
 => * {
