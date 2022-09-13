@@ -136,6 +136,22 @@ Operator | Inferred from
 `<:`     | `>`
 `>:`     | `>` and `::`
 
+## Classes As Entry Points
+
+A class named `=>` can serve as an entry point instead of a function:
+```sm
+=> argv * {
+    "Hello, " + argv<</>>!;
+}
+```
+```sm
+@ => {
+    create argv * {
+        "Hello, " + argv<</>>!;
+    }
+}
+```
+
 ## Class Decorators
 Decorators can also be created using classes:
 ```sm
