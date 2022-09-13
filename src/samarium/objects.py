@@ -1132,7 +1132,7 @@ def function(func: Callable):
 
     wrapper.sm_to_string = lambda: String(get_callable_name(func))
     wrapper.sm_special = lambda: Int(argc)
-    wrapper.argc = argc
+    wrapper.argc = Int(argc)
     wrapper.parent = Type(Class)
     wrapper.type = Type(FunctionType)
 

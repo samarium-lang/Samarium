@@ -12,7 +12,7 @@ if __name__ == "samarium":
         argc.value -= 1
     if not argc:
         ex = entry()
-    elif argc == 1:
+    elif argc.value == 1:
         ex = entry(Array(map(String, sys.argv[1:])))
     else:
         raise SamariumSyntaxError("entry function should take 0 or 1 arguments")
