@@ -4,6 +4,7 @@ Modules can contain functions and variables that a user may wish to import.
 Modules are named after their filename (with `.sm` omitted).
 Like variables, module names must consist of only letters and numbers, and are case sensitive.
 
+
 ## Importing
 
 Modules can be imported using the `<-` operator, followed by the module's name.

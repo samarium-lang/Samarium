@@ -1,5 +1,6 @@
 # Built-in Functions
 
+
 ## INPUT
 
 Standard input can be read from with `???`.
@@ -8,6 +9,7 @@ It will read until it receives a newline character.
 `x: ???` will assign to `x` as a string what it reads from standard input, stopping at a newline character.
 
 A prompt can be given by preceding the `???` with a string, for example `"input: "???`.
+
 
 ## PRINTLN
 
@@ -25,12 +27,14 @@ x: //\!;
 == the string "6" is written to stdout, and `x` now has the value 6 (integer)
 ```
 
+
 ## THROW
 
 Similarly to PRINTLN, objects can be written to standard error using `!!!`.
 This will throw an error, and exit the program if the error is not caught.
 
 `"exception raised"!!!` will write `[Error] exception raised` to standard error.
+
 
 ## EXIT
 
@@ -39,12 +43,14 @@ If a particular exit code is desired, it may be put after the exclamation mark:
 
 `=>! //` will exit the program with exit code 3.
 
+
 ## HASH
 
 The hash function `##` returns as a integer the hash value of an object if it has one (arrays and tables do not).
 The value it returns will remain consistent for the life of the program, but may vary if the program is run multiple times.
 
 `"hash"##` will return the hash value of the string `"hash"`.
+
 
 ## TYPEOF
 
@@ -65,6 +71,7 @@ These instances are callable and can be used to convert values into that type, l
 
 > Related library: [`types`](stdtypes.md)
 
+
 ## CAST
 
 The cast function `%` can convert between a Unicode character (a string) and its corresponding code (an integer).
@@ -72,6 +79,7 @@ The cast function `%` can convert between a Unicode character (a string) and its
 `"a"%` returns `97`.
 
 `/\\\\/%` returns `"!"`.
+
 
 ## SPECIAL
 
@@ -92,6 +100,7 @@ For example:
 == writes `6` to stdout
 ```
 
+
 ## TIMESTAMP
 
 The timestamp function `@@` returns the time in milliseconds since the epoch.
@@ -99,9 +108,11 @@ The timestamp function `@@` returns the time in milliseconds since the epoch.
 !!! note
     Timezone is included. For UTC timestamp, use `datetime.timestamp_utc`.
 
+
 ## DTNOW
 
 The dtnow function `@@@` gets the system's current date and time as an array of integers, in the format `[year, month, day, hour, minute, second, millisecond, utc_hour_offset, utc_minute_offset]`.
+
 
 ## SLEEP
 
@@ -111,6 +122,7 @@ The sleep function `,.,` pauses execution for the specified number of millisecon
 ,., /////\/\\\;
 == sleep for 1000 milliseconds (1 second) 
 ```
+
 
 ## ASSERT
 
@@ -124,6 +136,7 @@ A custom error message can be provided by putting it after a `,`.
 
 will raise `[AssertionError] error message`.
 
+
 ## PARENT
 
 The parent function `!?` gets the parent/inherited classes of the input class.
@@ -131,6 +144,7 @@ If a class only has one parent, it will be return directly.
 If a class has multiple parents, they will be returned in an array, in the same order as in the class definition.
 
 Note that this will only go one layer deep, i.e. if class `A` has parent `B` and class `B` has parent `C`, `A!?` will only return `B`, and `A!?!?` will return `C`.
+
 
 ## RANDOM
 
@@ -145,6 +159,7 @@ String  | Returns a random character
 Table   | Returns a random key
 
 > Related library: [`random`](stdrandom.md)
+
 
 ## ID
 

@@ -2,6 +2,7 @@
 
 The `collections` module implements a few different data structure classes: [Stack](#stack), [Queue](#queue), [Set](#set), [Deque](#deque) and [StaticArray](#staticarray).
 
+
 ## Stack
 
 A stack is a collection of items that the user may "push" a new item on top of, or "pop" the most recently added/top item from, following a last in first out order (LIFO).
@@ -22,6 +23,7 @@ Method            | Use
 `to_string()`     | Returns some information about the stack as a string;<br>its capacity, number of items, and the value of the top item.
 
 </center>
+
 
 ## Queue
 
@@ -44,6 +46,7 @@ Method           | Use
 `to_string()`    | Returns some information about the queue as a string;<br>its capacity, number of items, and the values of its items.<br>Note that if there are more than 5 items in the queue, the string will be truncated.
 
 </center>
+
 
 ## Deque
 
@@ -69,6 +72,7 @@ Method                 | Use
 `to_string()`          | Returns some information about the deque as a string;<br>its capacity, number of items, and the values of its items.<br>Note that if there are more than 5 items in the deque, the string will be truncated.
 
 </center>
+
 
 ## Set
 
@@ -96,6 +100,7 @@ Method                        | Use
 
 </center>
 
+
 ## StaticArray
 
 A static array is like a normal array, but with a fixed size. They may also enforce all elements to be of a certain type.
@@ -112,6 +117,7 @@ Method                   | Use
 `to_string()`            | Returns some information about the static array as a string;<br>its size, its type ("null" if it doesn't enforce one),<br>and a table mapping each item's index to its value.
 
 </center>
+
 
 ## ArithmeticArray
 

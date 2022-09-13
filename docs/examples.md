@@ -1,5 +1,6 @@
 # Examples
 
+
 ## Reverse a file's contents
 
 ```sm
@@ -9,6 +10,7 @@
     data<<**-/>> ~> file;
 }
 ```
+
 
 ## Truth Machine
 
@@ -21,6 +23,7 @@
     =>!;
 }
 ```
+
 
 ## Dropsort
 
@@ -36,6 +39,7 @@ dropsort array * {
     * out;
 }
 ```
+
 
 ## Factorial
 
@@ -68,6 +72,7 @@ point coords... * {
 }
 ```
 
+
 ## Loop Flow
 
 ```sm
@@ -89,6 +94,7 @@ point coords... * {
 7
 >==
 ```
+
 
 ## Randomness
 
@@ -115,6 +121,7 @@ random_hex_color * {
 }
 ```
 
+
 ## Optional Arguments
 
 ```sm
@@ -135,6 +142,7 @@ roll_dice q? * {
     roll_dice(/\\/\/)!; == [5, 5, 6, 4, 6, 5, 6, 4, 5, 4, 4, 6, 5, 3, 6, 6, 2, 1, 4, 5, 5, 1, 2, 1]
 }
 ```
+
 
 ## Classes
 

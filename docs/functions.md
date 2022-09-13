@@ -21,6 +21,7 @@ b: /\;
 c: add(a, b);
 ```
 
+
 ## Optional Parameters
 
 Parameters can be made optional by adding a `?` character after the parameter's name. Optional parameters are required to have a default value defined in the function's body using the `param <> default` syntax.
@@ -35,6 +36,7 @@ leftpad string length char? * {
 leftpad("hello", /\/\)!; ==      hello
 leftpad("hello", /\/\, "-")!; == -----hello
 ```
+
 
 ## Varargs
 
@@ -55,6 +57,7 @@ prod(///, /\/\/)!; == 147
 prod(/\/, /\\\/\, /\, /\\/\\\, ///)!; == 171360
 ```
 
+
 ## Argument Unpacking
 
 Arguments can be spread into a function by using the `**` unary operator:
@@ -69,6 +72,7 @@ arguments = [/\, //];
 pow(**arguments)!;
 == equivalent to pow(/\, //)!;
 ```
+
 
 ## Decorators
 

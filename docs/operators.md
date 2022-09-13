@@ -1,5 +1,6 @@
 # Operators
 
+
 ## Arithmetic
 
 Operator | Meaning
@@ -11,12 +12,14 @@ Operator | Meaning
 `+++`    | Exponentiation
 `---`    | Modulo
 
+
 ## Unary
 
 Operator | Meaning
 ---      | ---
 `+`      | Positive
 `-`      | Negative
+
 
 ## Comparison
 
@@ -29,6 +32,7 @@ Operator | Meaning
 `::`     | Equal to
 `:::`    | Not equal to
 
+
 ## Logic and Membership
 
 Operator | Meaning
@@ -38,6 +42,7 @@ Operator | Meaning
 `~~`     | Logical NOT
 `->?`    | `x ->? y` returns 1 if `x` is a member of `y`, and 0 if not
 
+
 ## Bitwise
 
 Operator | Meaning
@@ -46,6 +51,7 @@ Operator | Meaning
 `\|`     | Bitwise OR
 `~`      | Bitwise NOT
 `^`      | Bitwise XOR
+
 
 ## Assignment
 

@@ -9,6 +9,7 @@ pos: f<<>>;
 == assuming `f` is a file I/O object
 ```
 
+
 ## Creating
 
 Files can be created with the unary `?~>` operator.
@@ -16,6 +17,7 @@ Files can be created with the unary `?~>` operator.
 
 !!! note
     Files will also be created if they are opened in write or append mode.
+
 
 ## Reading
 
@@ -43,6 +45,7 @@ array <% f;
 == into `array` (assuming `f` is in binary read mode)
 ```
 
+
 ## Writing
 
 Files can be opened for writing in two ways:
@@ -68,6 +71,7 @@ string %> f;
 == writes the entire contents of `array` into the file I/O
 == object `f` (assuming `f` is in binary write mode)
 ```
+
 
 ## Appending
 
@@ -95,6 +99,7 @@ array &%> f;
 == the file I/O object `f` (assuming `f` is in binary append mode)
 ```
 
+
 ## Closing
 
 Files can be closed with the `~` operator.
@@ -105,6 +110,7 @@ Note that the file I/O object will not be released from memory, but it still can
 ~f;
 == closes the file I/O object `f`
 ```
+
 
 ## Quick Operations
 
@@ -129,6 +135,7 @@ string ~> "file.txt";
 array <% "file.bin";
 == reads the full contents of `file.bin` directly into `array`
 ```
+
 
 ## File Descriptors
 You can also use file descriptors instead of file paths in order to access standard I/O streams.
