@@ -76,7 +76,7 @@ Integers can be constructed from strings, including binary, octal, and hexadecim
 
 ### Null
 
-The `Null` type alias is defined to be equal to `_?!`. Using this type alias is no different than using the literal `_`.
+The `Null` type alias is defined to be equal to `[,]<<\>>?!`. It can be used to explicitly use null values instead of relying on implicit null triggers.
 
 
 ### Slice
@@ -86,9 +86,9 @@ The `Slice` type alias is defined to be equal to `<<>>?!`.
 Different slices can be constructed by using integers and nulls:  
 
 - `Slice(/, /\, //)` is equivalent to `<</../\**//>>`
-- `Slice(_, _, -/)` is equivalent to `<<**-/>>`
-- `Slice(/, _, _)` is equivalent to `<</..>>`
-- `Slice(_, /\/, _)` is equivalent to `<<../\/>>`
+- `Slice(, , -/)` is equivalent to `<<**-/>>`
+- `Slice(/, , ,)` is equivalent to `<</..>>`
+- `Slice(, /\/, ,)` is equivalent to `<<../\/>>`
 
 
 ### String
@@ -108,7 +108,5 @@ The `Table` type alias is defined to be equal to `{{}}?!`.
 
 Calling `Table()` with no arguments will return an empty table.
 
-Tables can be constructed from arrays containing 2-element iterables:  
-
-- `Table([[//, /\\/], "XD"])` is equivalent to `{{// -> /\\/, "X" -> "D"}}`
-- 
+Tables can be constructed from arrays containing 2-element iterables:<br>
+`Table([[//, /\\/], "XD"])` is equivalent to `{{// -> /\\/, "X" -> "D"}}`
