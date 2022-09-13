@@ -280,8 +280,8 @@ class Transpiler:
             self._line.append("', Registry(globals()))")
             self._reg[Switch.IMPORT] = False
 
-        if self._line and self._line[-1] == "=":
-            self._line.append("null")
+        if len(self._line) > 1 and self._line[-2] == "=":
+            self._line.insert(-1, "null")
 
         if self._file_token:
             self._file_io()
