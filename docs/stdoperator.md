@@ -2,8 +2,10 @@
 
 This module contains a set of functions corresponding to the native operators of Samarium. For instance, `operator.mul(a, b)` is equivalent to `a ++ b`. Each of the function names can be used for defining special methods in classes.
 
+<center>
+
 Function                      | Operator
----                           | ---
+---                           | :---:
 `add(x, y)`                   | `x + y`
 `and(x, y)`                   | `x & y`
 `cast(x)`                     | `x%`
@@ -27,3 +29,5 @@ Function                      | Operator
 `to_bit(x)`                   | `x.to_bit()`
 `to_string(x)`                | `x.to_string()`
 `xor(x, y)`                   | `x ^ y`
+
+</center>

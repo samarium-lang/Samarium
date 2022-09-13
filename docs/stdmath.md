@@ -2,6 +2,8 @@
 
 The `math` module provides access to a set of commonly used mathematical functions.
 
+<center>
+
 Function              | Use
 ---                   | ---
 `abs(n)`              | Returns the absolute value of `n`.
@@ -16,3 +18,5 @@ Function              | Use
 `shr(a, b)`           | Returns `a` shifted to the right by `b` bits.
 `sqrt(n)`             | Returns the integer square root of the nonnegative integer `n`.<br>This is the floor of the exact square root of `n`.
 `sum(array)`          | Sums the items of `array` from left to right and returns the total.<br>The `array`'s items must be integers.
+
+</center>
