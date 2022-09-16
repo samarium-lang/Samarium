@@ -9,6 +9,7 @@ Function                        | Use
 `accumulate(array, function)`   | Yields accumulated applications of `function`<br>on consecutive elements of `array`.<br>If for example `function` returned the sum of both of its arguments,<br>then `accumulate([/, /\, //, /\\, /\/], function)`<br>would yield `1`, `3`, `6`, `10`, and `15`.[^2]
 `all(array)`                    | Returns `1` if all elements of `array` are truthy,<br>`0` otherwise. Returns `1` for empty arrays.
 `any(array)`                    | Returns `1` if any of the elements of `array` is truthy,<br>`0` otherwise. Returns `0` for empty arrays.
+`chunks(array, size)`           | Iterates over `array` in chunks of size `size`.<br>When `array`'s length is not evenly divided by `size`,<br>the last slice of `array` will be the remainder.
 `count(array, target)`          | Returns the number of times `target` appears in `array`.
 `drop_while(array, function)`   | Evaluates `function` on each item of `array`,<br>and yields elements of `array` starting from the first item<br>(from the left) for which `function` returns a falsy value.[^1]
 `enumerate(array)`              | Yields elements of `array` but with each item as a length 2 array<br>containing the item's index paired with the original item.
