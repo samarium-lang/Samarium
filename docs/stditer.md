@@ -16,6 +16,7 @@ Function                        | Use
 `filter_false(array, function)` | Evaluates `function` on each item of `array`,<br>and yields those items that cause `function` to return a falsy value.[^1]
 `find(array, target)`           | Finds the first instance of `target` in `array`, and returns its index.<br>`array` may be of type Array or String.<br>If `target` does not appear in `array`, `-1` is returned instead.
 `find_all(array, target)`       | Finds all instances of `target` in `array`, and yields their indices.
+`flatten(array[, depth])`       | Flattens `array` `depth` times.<br>By default, flattens recursively as deep as possible.
 `map(array, function)`          | Applies `function` to each item of `array`, and yields those new values.[^1]
 `pairwise(array)`               | Yields successive overlapping pairs taken from `array`.
 `reduce(array, function)`       | Applies `function` cumulatively to consecutive items of `array`,<br>reducing it to a single value, then returns this value.<br>Equivalent to `[i ... i ->? accumulate(array, function)]<<-/>>`.[^2]
