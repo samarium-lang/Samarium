@@ -85,8 +85,8 @@ The `Slice` type alias is defined to be equal to `<<>>?!`.
 
 Different slices can be constructed by using integers and nulls:  
 
-- `Slice(/, /\, //)` is equivalent to `<</../\**//>>`
-- `Slice(, , -/)` is equivalent to `<<**-/>>`
+- `Slice(/, /\, //)` is equivalent to `<</../\..//>>`
+- `Slice(, , -/)` is equivalent to `<<....-/>>`
 - `Slice(/, , ,)` is equivalent to `<</..>>`
 - `Slice(, /\/, ,)` is equivalent to `<<../\/>>`
 
