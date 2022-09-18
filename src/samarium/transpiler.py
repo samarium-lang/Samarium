@@ -383,7 +383,7 @@ class Transpiler:
                 self._class_indent.pop()
 
             if self._scope.current == "enum":
-                self._line.append("''')")
+                self._line.append('""")')
 
             if (self._processed_tokens or self._line_tokens)[-1] is Token.BRACE_OPEN:
                 # Managing empty bodies
@@ -516,13 +516,20 @@ class Transpiler:
             if self._tokens[index - 1] in {Token.DEFAULT, Token.CATCH}:
                 self._line.append("null")
             if self._scope.current == "enum":
-                self._line.append("''', '''")
+                self._line.append('""", """')
                 return
             if self._reg[Switch.BUILTIN]:
                 if self._line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
                     self._line.append("Int(0)")
                 self._line.append(")")
                 self._reg[Switch.BUILTIN] = False
+            if all(i in self._line_tokens for i in (Token.ASSIGN, Token.SLICE_CLOSE)):
+                if (
+                    self._line_tokens[self._line_tokens.index(Token.ASSIGN) - 1]
+                    is Token.SLICE_CLOSE
+                    and self._line_tokens[-2] is Token.SLICE_CLOSE
+                ):
+                    self._line.append(")")
             if self._slice_assign:
                 self._line.append(")")
                 self._slice_assign = False
@@ -558,9 +565,9 @@ class Transpiler:
             end_index = find_next(self._tokens, Token.END, after=index)
             brace_index = find_next(self._tokens, Token.BRACE_OPEN, after=index)
             self._slice_assign = (
-                assign_index < min(brace_index, end_index)
-                if assign_index > 0
-                else False
+                0
+                < assign_index
+                < min(filter(lambda x: x >= 0, (brace_index, end_index)))
             )
             self._slice_object = self._tokens[index - 1] in SLICE_OBJECT_TRIGGERS
             if not self._slice_object:
@@ -579,7 +586,7 @@ class Transpiler:
                 self._private = True
                 return
             name = self._line[-1]
-            self._line.append(f"=Enum_(globals(), '{name}', '''")
+            self._line.append(f'=Enum_(globals(), "{name}", """')
             self._scope.enter("enum")
 
     def _builtins(self, token: Token) -> None:
