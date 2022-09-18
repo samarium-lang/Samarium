@@ -193,9 +193,7 @@ sorted array key? * {
     key <> dummy;
     decorated: [[key(v), v] ... v ->? array];
     d_sorted: #quicksort(decorated);
-    ... _, v ->? d_sorted {
-        ** v;
-    }
+    * [v ... _, v ->? d_sorted];
 }
 
 #flatten array * {
