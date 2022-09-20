@@ -1,6 +1,6 @@
 # Null
 
-The null value in Samarium is not represented by any symbol – in fact, it's represented by the lack of it:
+The null value in Samarium is not represented by any symbol—in fact, it's represented by the lack of it:
 ```sm
 x: /;
 y:;
