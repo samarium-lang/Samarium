@@ -211,7 +211,7 @@ sorted array key? * {
 
 flatten array depth? * {
     depth <>;
-    ? depth ::: null && depth < \ {
+    ? depth ::: && depth < \ {
         "depth cannot be negative"!!!;
     }
     x: [i ... i ->? array];
@@ -220,7 +220,7 @@ flatten array depth? * {
         * x;
     }
 
-    ? depth :: null {
+    ? depth :: {
         old: x;
         new: #flatten(x);
         .. new ::: old {

@@ -399,7 +399,7 @@
             'type: type;
             i: \;
             ... e ->? value {
-                ? ::: type ::: e?! {
+                ? e?! ::: type ::: {
                     "expected " + type.to_string() + ", found " + e?!.to_string()!!!;
                 }
                 'value<<i>>: e;
@@ -436,7 +436,7 @@
     }
 
     throw_invalid_type type * {
-        ? ::: 'type ::: type {
+        ? type ::: 'type ::: {
             "expected " + 'type.to_string() + ", received " + type.to_string()!!!;
         }
     }

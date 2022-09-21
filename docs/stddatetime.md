@@ -29,7 +29,7 @@ Method                      | Use
 ---                         | ---
 `subtract(other)`           | Special method [^1] to subtract two DateTime objects.
 `to_string`                 | Special method [^1] to return the timezone in the format `Y-M-D h:m:s.z`.
-`to_timestamp`                     | Returns the time in Unix Time milliseconds.
+`to_timestamp`              | Returns the time in Unix Time milliseconds.
 
 </center>
 

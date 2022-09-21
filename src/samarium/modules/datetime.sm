@@ -67,16 +67,11 @@ timestamp_utc ts? * {
     * ts - offset;
 }
 
-#add_zeros n c * {
-    <-string.leftpad;
-    * leftpad(String(n), c, "0");
-}
-
 @ DateTime {
     create Y? M? D? h? m? s? ms? tz? * {
         Y <> _;
         ? _ :: Y {
-            'array: @@;
+            'array: @@@;
             'year: 'array<<\>>;
             'month: 'array<</>>;
             'day: 'array<</\>>;
@@ -107,7 +102,7 @@ timestamp_utc ts? * {
     }
 
     subtract other * {
-        diff: 'in_ms() - other.in_ms();
+        diff: 'to_timestamp() - other.to_timestamp();
         1000: /\/\ +++ //;
         60: ////\\;
         24: //\\\;
@@ -121,23 +116,23 @@ timestamp_utc ts? * {
 
     to_string * {
         <-string.format, leftpad;
+        add0s n c * { * leftpad(String(n), c, "0"); }
         * format(
             "$Y-$M-$D $h:$m:$s.$z",
             {{
                 "Y" -> 'year,
-                "M" -> #add_zeros('month, /\),
-                "D" -> #add_zeros('day, /\),
-                "h" -> #add_zeros('hour + 'timezone<<\>>, /\),
-                "m" -> #add_zeros('minute + 'timezone<</>>, /\),
-                "s" -> #add_zeros('second, /\),
-                "z" -> #add_zeros('millisecond, //)
+                "M" -> add0s('month, /\),
+                "D" -> add0s('day, /\),
+                "h" -> add0s('hour + 'timezone<<\>>, /\),
+                "m" -> add0s('minute + 'timezone<</>>, /\),
+                "s" -> add0s('second, /\),
+                "z" -> add0s('millisecond, //)
             }}
         );
     }
 
     to_timestamp * {
         <-collections.ArithmeticArray;
-        <-iter.range;
 
         1000: /\/\ +++ //;
         60: ////\\;
@@ -170,7 +165,8 @@ timestamp_utc ts? * {
     }
 
     to_string * {
-        <-string.strip_left;
+        <-string.leftpad, strip_left;
+        add0s n c * { * leftpad(String(n), c, "0"); }
         D: 'data<<\>>;
         h: 'data<</>>;
         m: 'data<</\>>;
@@ -179,10 +175,10 @@ timestamp_utc ts? * {
         out: "";
         ? D { out+: D.to_string() + " days"; }
         ? D && (~~ (h || m || s || ms)) { out+: ", "; }
-        ? h { out+: #add_zeros(h, /\) + ":"; }
-        ? h || m { out+: #add_zeros(m, /\) + ":"; }
-        ? h || m || s { out+: #add_zeros(s, /\); }
-        ? ms { out+: "." + #add_zeros(ms, //); }
+        ? h { out+: add0s(h, /\) + ":"; }
+        ? h || m { out+: add0s(m, /\) + ":"; }
+        ? h || m || s { out+: add0s(s, /\); }
+        ? ms { out+: "." + add0s(ms, //); }
         * strip_left(out, "0") || "0";
     }
 }
