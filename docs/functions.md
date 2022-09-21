@@ -101,3 +101,40 @@ double @ code_to_char code * {
 multiply(/\, /\\)!;  == 16
 code_to_char(/\\\\/)!;  == !!
 ```
+
+
+## Generators
+
+Functions can yield values instead of returning them, thus making the function behave like an iterator. Values are yielded with the `**` operator:
+
+```sm
+<-math.is_prime;
+
+prime_generator * {
+    x: /\;
+    .. {
+        ? is_prime(x) {
+            ** x;
+        }
+        x+: /;
+    }
+}
+
+=> * {
+    pg: prime_generator();
+    pg!;
+    "Primes below 100:"!;
+    ... i ->? pg {
+        ? i > /\/\ +++ /\ {
+            !;
+            <-
+        }
+        ""?!(i) + " " ~> /;
+    }
+}
+```
+```
+<Iterator@7fd890475860>
+Primes below 100:
+2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
+```

@@ -29,5 +29,5 @@ V: null.to_bit();
 ```
 or – without introducing any variables – as
 ```sm
-V: [,]<<\>>.to_bit();
+V: (||).to_bit();
 ```

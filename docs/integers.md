@@ -1,3 +1,6 @@
+!!! note
+    The following guide assumes that you are familiar with the basics of programming.
+
 # Integers
 
 Integers are represented in base 2, using slashes and backslashes to represent 1 and 0 respectively.
