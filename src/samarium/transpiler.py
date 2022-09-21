@@ -389,6 +389,12 @@ class Transpiler:
                 # Managing empty bodies
                 if self._line_tokens == [token]:
                     self._line.append("pass")
+                elif (
+                    len(self._line_tokens) == 2
+                    and self._line_tokens[0] in {Token.FROM, Token.TO}
+                    and self._line_tokens[1] is Token.BRACE_CLOSE
+                ):
+                    pass
                 elif self._scope.current != "enum":
                     throw_syntax("missing semicolon")
             self._scope.exit()
