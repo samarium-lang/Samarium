@@ -351,7 +351,10 @@ class Transpiler:
             Token.BNOT,
         }:
             self._line.append("null")
-        if self._tokens[prev] in Group.operators - {Token.NOT}:
+        if (
+            self._tokens[prev] in Group.operators | {Token.PAREN_OPEN} - {Token.NOT}
+            and token is not Token.NOT
+        ):
             self._line.append("null")
         self._line.append(OPERATOR_MAPPING[token])
 
@@ -397,7 +400,10 @@ class Transpiler:
             self._scope.exit()
 
         else:
-            if token is Token.TABLE_CLOSE and self._tokens[self._index - 1] is Token.TO:
+            prev = self._tokens[self._index - 1]
+            if token is Token.TABLE_CLOSE and prev is Token.TO:
+                self._line.append("null")
+            if token is Token.PAREN_CLOSE and prev in Group.operators:
                 self._line.append("null")
             self._line.append(BRACKET_MAPPING[token])
             return

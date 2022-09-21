@@ -1,7 +1,7 @@
 Array: []?!;
 Integer: \?!;
 Iterator: [].iterate()?!;
-Null: [,]<<\>>?!;
+Null: (||)?!;
 Slice: <<>>?!;
 String: ""?!;
 Table: {{}}?!;
