@@ -126,7 +126,7 @@ zip arrays... * {
 zip_longest fill arrays... * {
     <-math.max;
     longest: max([i$ ... i ->? arrays]);
-    ... i ->? range(longest) {
+    ... i ->? <<..longest>> {
         ... it ->? arrays {
             ?? {
                 ** it<<i>>;
