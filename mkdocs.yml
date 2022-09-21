@@ -17,6 +17,7 @@ nav:
     - Null: null.md
     - Slices: slices.md
     - Tables: tables.md
+    - Enums: enums.md
     - Functions: functions.md
     - Modules: modules.md
     - Classes: classes.md
