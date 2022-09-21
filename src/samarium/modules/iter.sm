@@ -28,6 +28,7 @@ count array target * {
             s+: /;
         }
     }
+    * s;
 }
 
 filter array function * {
