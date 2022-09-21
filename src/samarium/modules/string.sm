@@ -132,14 +132,13 @@ to_lower string * {
 }
 
 to_upper string * {
-    <-iter.range;
     <-types.String;
     ? string?! ::: String {
         "invalid type: " + string?!.to_string()!!!;
     }
     out: "";
     ... char ->? string {
-        ? char% ->? range(//\\\\/, ////\/\) {
+        ? char% ->? <<//\\\\/..////\/\>> {
             out+: (char% - /\\\\\)%;
         } ,, {
             out+: char;
