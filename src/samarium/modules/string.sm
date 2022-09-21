@@ -204,23 +204,23 @@ is_in_group string group * {
 }
 
 is_alphabetic string * {
-    * is_in_group(string, letters);
+    * is_in_group(string, LETTERS);
 }
 
 is_alphanumeric string * {
-    * is_in_group(string, letters + digits);
+    * is_in_group(string, LETTERS + DIGITS);
 }
 
 is_decimal string * {
-    * is_in_group(string, digits);
+    * is_in_group(string, DIGITS);
 }
 
 is_octal string * {
-    * is_in_group(string, octdigits);
+    * is_in_group(string, OCTDIGITS);
 }
 
 is_hexadecimal string * {
-    * is_in_group(string, hexdigits);
+    * is_in_group(string, HEXDIGITS);
 }
 
 wrap string wrapper * {
