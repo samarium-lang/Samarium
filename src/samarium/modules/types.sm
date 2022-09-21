@@ -90,8 +90,8 @@ Table: {{}}?!;
 
     create * {
         <-random.choices;
-        <-string.hexdigits, join;
-        hex: join(choices(hexdigits, /\\\\\));
+        <-string.HEXDIGITS, join;
+        hex: join(choices(HEXDIGITS, /\\\\\));
         hex<<//\\>>: "4";
         hex<</\\\\>>: "89ab"??;
         'hex: hex;
