@@ -1,6 +1,5 @@
 <-iter.enumerate;
 <-types.String, Table;
-<-utils.static;
 
 MONTHS: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 WEEKDAYS: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -110,7 +109,7 @@ timestamp_utc ts? * {
     subtract other * {
         diff: 'in_ms() - other.in_ms();
         1000: /\/\ +++ //;
-        60: //`//\\;
+        60: ////\\;
         24: //\\\;
         ms: diff --- 1000; diff--: 1000;
         s: diff --- 60; diff--: 60;
@@ -141,14 +140,14 @@ timestamp_utc ts? * {
         <-iter.range;
 
         1000: /\/\ +++ //;
-        60: //`//\\;
+        60: ////\\;
 
         mod_array: 'array<<..-/\..>>;
         array: ArithmeticArray(mod_array<<....-/>>);
         total: \;
 
         month_days: days_in_month('year, 'month);
-        year_days: /`\//\`//\/ + is_leap_year('year);
+        year_days: /\//\//\/ + is_leap_year('year);
 
         ... i ->? [/, 1000, 60, 60, //\\\, month_days, year_days] {
             array++: i;
