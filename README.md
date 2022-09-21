@@ -39,11 +39,13 @@ There is also a VSCode syntax highlighting extension for Samarium, which can be 
 
 # Credits
 
-Samarium was inspired by several languages, including [brainfuck](https://esolangs.org/wiki/Brainfuck), [Rust](https://www.rust-lang.org/), [Java](https://www.java.com/) and [Python](https://www.python.org/).
-Thanks to:
+Samarium was inspired by several languages, including [brainfuck](https://esolangs.org/wiki/Brainfuck), [Rust](https://www.rust-lang.org/), [Python](https://www.python.org/) and [Java](https://www.java.com/).
+
+Special thanks to:
+
 - [tetraxile](https://github.com/tetraxile) for helping with design choices and writing the docs
 - [MithicSpirit](https://github.com/MithicSpirit) for making an AUR package for Samarium
 - [DarviL82](https://github.com/DarviL82) for fixing some issues
-- [Endercheif](https://github.com/Endercheif) for making the documentation look fancy
+- [Endercheif](https://github.com/Endercheif) for making the documentation look fancy and helping with design choices
 
 If you have any questions, or would like to get in touch, join the [Discord server](https://discord.gg/C8QE5tVQEq)!
