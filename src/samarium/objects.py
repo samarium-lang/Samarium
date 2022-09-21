@@ -1084,12 +1084,13 @@ def verify_type(obj: Any, *args) -> Class | Callable | Module:
 
 @contextmanager
 def modify(func: Callable, args: list[Any], argc: int):
-    if func.__code__.co_flags != 71:
+    flag = func.__code__.co_flags
+    if flag in (67, 99):
         yield func, args
         return
     x = argc - 1
     args = [*args[:x], Array(args[x:])]
-    func.__code__ = func.__code__.replace(co_flags=71, co_argcount=argc - 1)
+    func.__code__ = func.__code__.replace(co_flags=flag - 4, co_argcount=argc)
     args *= argc > 0
     yield func, args
 
