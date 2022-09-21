@@ -116,14 +116,13 @@ is_wrapped string chars * {
 }
 
 to_lower string * {
-    <-iter.range;
     <-types.String;
     ? string?! ::: String {
         "invalid type: " + string?!.to_string()!!!;
     }
     out: "";
     ... char ->? string {
-        ? char% ->? range(/\\\\\/, /\//\/\) {
+        ? char% ->? <</\\\\\/../\//\/\>> {
             out+: (char% + /\\\\\)%;
         } ,, {
             out+: char;
