@@ -1093,6 +1093,7 @@ def modify(func: Callable, args: list[Any], argc: int):
     func.__code__ = func.__code__.replace(co_flags=flag - 4, co_argcount=argc)
     args *= argc > 0
     yield func, args
+    func.__code__ = func.__code__.replace(co_flags=flag, co_argcount=argc - 1)
 
 
 MISSING_ARGS_PATTERN = compile(
