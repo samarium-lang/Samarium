@@ -77,7 +77,7 @@ capitalize string * {
 }
 
 title string * {
-    * join([capitalize(w) ... w ->? split(string)]);
+    * join([capitalize(w) ... w ->? split(string)], " ");
 }
 
 join iterable delimiter? * {
