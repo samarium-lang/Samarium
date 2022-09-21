@@ -1,0 +1,189 @@
+<-iter.enumerate;
+<-types.String, Table;
+<-utils.static;
+
+MONTHS: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+WEEKDAYS: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+_:;
+
+sleep_seconds seconds * {
+    ,., seconds ++ /////\/\\\;
+}
+
+sleep_minutes minutes * {
+    sleep_seconds(minutes ++ ////\\);
+}
+
+is_leap_year year * {
+    ? year --- //\\/\\\\ {
+        * /;
+    } ,, ? year --- //\\/\\ {
+        * \;
+    } ,, ? (year --- /\\) {
+        * /;
+    } ,, {
+        * \;
+    }
+}
+
+days_in_month year month * {
+    ? month ->? [/, //, /\/, ///, /\\\, /\/\, //\\] {
+        * /////;
+    }
+    ? month ->? [/\, //\, /\\/, /\//] {
+        * ////\;
+    }
+    ? is_leap_year(year) {
+        * ///\/;
+    }
+    * ///\\;
+}
+
+month_name n * {
+    ? n >: MONTHS$ {
+        * "";
+    } ,, ? n < \ {
+        * "";
+    } ,, {
+        * MONTHS<<n + />>;
+    }
+}
+
+weekday_name n * {
+    ? n >: WEEKDAYS$ {
+        * "";
+    } ,, ? n < \ {
+        * "";
+    } ,, {
+        * WEEKDAYS<<n>>;
+    }
+}
+
+timestamp_utc ts? * {
+    ts <> @@;
+    dtnow: @@@;
+    tz: dtnow<<-/\..>>;
+    offset: tz<<\>> ++ //\//\///\///\/\\\\\\\ + tz<</>> ++ ///\/\/\\//\\\\\;
+    * ts - offset;
+}
+
+add_zeros n c * {
+    <-string.leftpad;
+    * leftpad(String(n), c, "0");
+}
+
+@ DateTime {
+    create Y? M? D? h? m? s? ms? tz? * {
+        Y <> _;
+        ? _ :: Y {
+            'array: @@;
+            'year: 'array<<\>>;
+            'month: 'array<</>>;
+            'day: 'array<</\>>;
+            'hour: 'array<<//>>;
+            'minute: 'array<</\\>>;
+            'second: 'array<</\/>>;
+            'millisecond: 'array<<//\>>;
+            'timezone: 'array<<///..>>;
+        } ,, {
+            M <> /; D <> /;
+            h <> \; m <> \; s <> \; ms <> \;
+            tz <> [\, \];
+            'year: Y;
+            'month: M;
+            'day: D;
+            'hour: h;
+            'minute: m;
+            'second: s;
+            'millisecond: ms;
+            'timezone: tz;
+            'array: [Y, M, D, h, m, s, ms, tz<<\>>, tz<</>>];
+        }
+        ? 'timezone ::: [\, \] {
+            'utc: DateTime('year, 'month, 'day, 'hour, 'minute, 'second, 'millisecond);
+        } ,, {
+            'utc: ';
+        }
+    }
+
+    subtract other * {
+        diff: 'in_ms() - other.in_ms();
+        1000: /\/\ +++ //;
+        60: //`//\\;
+        24: //\\\;
+        ms: diff --- 1000; diff--: 1000;
+        s: diff --- 60; diff--: 60;
+        m: diff --- 60; diff--: 60;
+        h: diff --- 24; diff--: 24;
+        == `diff` is days
+        * DTDiff([diff, h, m, s, ms]);
+    }
+
+    to_string * {
+        <-string.format, leftpad;
+        * format(
+            "$Y-$M-$D $h:$m:$s.$z",
+            {{
+                "Y" -> 'year,
+                "M" -> add_zeros('month, /\),
+                "D" -> add_zeros('day, /\),
+                "h" -> add_zeros('hour + 'timezone<<\>>, /\),
+                "m" -> add_zeros('minute + 'timezone<</>>, /\),
+                "s" -> add_zeros('second, /\),
+                "z" -> add_zeros('millisecond, //)
+            }}
+        );
+    }
+
+    in_ms * {
+        <-collections.ArithmeticArray;
+        <-iter.range;
+
+        1000: /\/\ +++ //;
+        60: //`//\\;
+
+        mod_array: 'array<<..-/\..>>;
+        array: ArithmeticArray(mod_array<<....-/>>);
+        total: \;
+
+        month_days: days_in_month('year, 'month);
+        year_days: /`\//\`//\/ + is_leap_year('year);
+
+        ... i ->? [/, 1000, 60, 60, //\\\, month_days, year_days] {
+            array++: i;
+            total+: array<<\>>;
+            array: array<</..>>;
+        }
+
+        total-: 'timezone<<\>> ++ 1000 ++ 60 ++ 60;
+        total-: 'timezone<</>> ++ 1000 ++ 60;
+
+        * total;
+    }
+
+}
+
+@ DTDiff {
+
+    create data * {
+        'data: data;
+    }
+
+    to_string * {
+        <-string.strip_left;
+        D: 'data<<\>>;
+        h: 'data<</>>;
+        m: 'data<</\>>;
+        s: 'data<<//>>;
+        ms: 'data<</\\>>;
+        out: "";
+        ? D { out+: D.to_string() + " days"; }
+        ? D && (~~ (h || m || s || ms)) { out+: ", "; }
+        ? h { out+: add_zeros(h, /\) + ":"; }
+        ? h || m { out+: add_zeros(m, /\) + ":"; }
+        ? h || m || s { out+: add_zeros(s, /\); }
+        ? ms { out+: "." + add_zeros(ms, //); }
+        * strip_left(out, "0") || "0";
+    }
+}
