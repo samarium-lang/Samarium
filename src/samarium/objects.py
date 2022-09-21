@@ -371,6 +371,9 @@ class Slice(Class):
             return null
         return Int(len(self.range))
 
+    def sm_has(self, index: Integer) -> Integer:
+        return Int(index.value in self.range)
+
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == null
 
