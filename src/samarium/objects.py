@@ -342,7 +342,7 @@ class Slice(Class):
     __slots__ = ("start", "stop", "step", "tup", "value", "range", "inf")
 
     def sm_create(self, start: Any = null, stop: Any = null, step: Any = null):
-        if step == 0:
+        if step.value == 0:
             raise SamariumValueError("step cannot be zero")
         self.start = start
         self.stop = stop
