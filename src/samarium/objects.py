@@ -372,6 +372,9 @@ class Slice(Class):
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == null
 
+    def sm_get_item(self, index: Integer) -> Integer:
+        return Int(self.range[index.value])
+
     def sm_to_string(self) -> String:
         start, stop, step = self.start, self.stop, self.step
         if start is stop is step is null:
