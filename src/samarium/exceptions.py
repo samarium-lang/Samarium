@@ -1,30 +1,44 @@
 import sys
-from re import findall
-from termcolor import colored
+from dahlia import dahlia
+from re import compile
 
 from .runtime import Runtime
+
+
+SINGLE_QUOTED_NAME = compile(r"'(\w+)'")
 
 
 def handle_exception(exception: Exception):
     exc_type = type(exception)
     name = exc_type.__name__
+    if exc_type is NotDefinedError:
+        exception = NotDefinedError(
+            ".".join(i.removeprefix("sm_") for i in str(exception).split("."))
+        )
+    if (
+        exc_type is TypeError
+        and "missing 1 required positional argument: 'self'" in str(exception)
+    ):
+        exception = SamariumTypeError("missing instance")
     if exc_type is SyntaxError:
         exception = SamariumSyntaxError(
             f"invalid syntax at {int(str(exception).split()[-1][:-1])}"
         )
     elif exc_type in {AttributeError, NameError}:
-        names = findall(r"'(\w+)'", str(exception))
+        names = SINGLE_QUOTED_NAME.findall(str(exception))
         if names == ["entry"]:
-            names = ["no main function defined"]
-        exception = NotDefinedError(".".join(names))
+            names = ["no entry point defined"]
+        exception = NotDefinedError(
+            ".".join(i.removeprefix("__").removeprefix("sm_") for i in names)
+        )
         name = "NotDefinedError"
     elif exc_type not in {AssertionError, NotDefinedError}:
         name = exc_type.__name__
         if name.startswith("Samarium"):
             name = name.removeprefix("Samarium")
         else:
-            name = f"External{name}"
-    sys.stderr.write(colored(f"[{name}] {exception}\n", "red").replace("_", ""))
+            name = f"External{name}".replace("ExternalZeroDivision", "Math")
+    sys.stderr.write(dahlia(f"&4[{name}] {exception}\n"))
     if Runtime.quit_on_error:
         exit(1)
 

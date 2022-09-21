@@ -3,14 +3,14 @@ randint start end * {
 }
 
 shuffle array * {
-    shuffledArray: [];
-    oldArray: array<<>>;
-    .. oldArray$ > \ {
-        e: oldArray??;
-        shuffledArray+: [e];
-        oldArray-: [e];
+    shuffled_array: [];
+    old_array: array<<>>;
+    .. old_array$ > \ {
+        e: old_array??;
+        shuffled_array+: [e];
+        old_array-: [e];
     }
-    * shuffledArray;
+    * shuffled_array;
 }
 
 choices array k * {
@@ -26,11 +26,11 @@ sample array k * {
         "the sample cannot be bigger than the array"!!!;
     }
     o: [];
-    oldArray: array<<>>;
+    old_array: array<<>>;
     .. o$ < k {
-        e: oldArray??;
+        e: old_array??;
         o+: [e];
-        oldArray-: [e];
+        old_array-: [e];
     }
     * o;
 }

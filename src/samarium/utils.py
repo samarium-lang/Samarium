@@ -9,7 +9,7 @@ from .exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
 from .tokenizer import Tokenlike
 from .tokens import Token, OPEN_TOKENS, CLOSE_TOKENS
 
-__version__ = "0.2.3"
+__version__ = "0.3.0-alpha"
 
 T = TypeVar("T")
 
@@ -24,7 +24,7 @@ OPEN_TO_CLOSE = {
 
 def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
     stack = []
-    token = Token.NULL
+    token = Token.END
     tokens: list[Token] = [
         cast(Token, t) for t in tokens_ if t in OPEN_TOKENS + CLOSE_TOKENS
     ]
@@ -37,7 +37,7 @@ def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
             else:
                 return -1, [stack[-1], token]
         else:
-            return -1, [Token.NULL, token]
+            return -1, [Token.END, token]
     if stack:
         return 1, [token]
     return 0, []
@@ -90,4 +90,4 @@ def parse_integer(string: str) -> int:
 
 
 def get_callable_name(function: Callable) -> str:
-    return function.__name__.strip("_")
+    return function.__name__.removeprefix("sm_")

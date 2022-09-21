@@ -7,9 +7,10 @@ from contextlib import contextmanager, suppress
 from enum import Enum
 from functools import lru_cache, wraps
 from inspect import signature
+from re import compile
 from secrets import choice, randbelow
 from types import FunctionType, GeneratorType
-from typing import Any, Callable, IO, Iterator, cast
+from typing import Any, Callable, IO, Iterator as Iter, cast
 
 from .exceptions import (
     NotDefinedError,
@@ -21,42 +22,12 @@ from .exceptions import (
 from .utils import get_callable_name, parse_integer, run_with_backup
 
 
-def class_attributes(cls):
-    cls.type = Type(Type)
-    parents = cls.__bases__
-    cls.parent = Type(parents[0]) if len(parents) == 1 else Array(map(Type, parents))
-    return cls
+I64_MAX = 9223372036854775807
 
 
-def get_repr(obj: Class | Callable | Module) -> str:
-    if isinstance(obj, String):
-        return f'"{obj}"'
-    return str(obj._toString_())
-
-
-def smhash(obj) -> Integer:
-    return Int(hash(str(hash(obj))))
-
-
-def verify_type(obj: Any, *args) -> Class | Callable | Module:
-    if args:
-        for i in [obj, *args]:
-            verify_type(i)
-        return null
-    elif isinstance(obj, type):
-        return Type(obj)
-    elif isinstance(obj, (Class, Callable, Module)):
-        return obj
-    elif isinstance(obj, tuple):
-        return Array(obj)
-    elif obj is None:
-        return null
-    elif isinstance(obj, bool):
-        return Int(obj)
-    elif isinstance(obj, GeneratorType):
-        raise SamariumSyntaxError("invalid comprehension")
-    else:
-        raise SamariumTypeError(f"unknown type: {type(obj).__name__}")
+class MISSING:
+    def __getattr__(self, _):
+        raise SamariumValueError("cannot use the MISSING object")
 
 
 class Class:
@@ -64,124 +35,130 @@ class Class:
 
     def __init__(self, *args: Any):
         with suppress(NotDefinedError):
-            self._create_(*args)
+            self.sm_create(*args)
 
     def __bool__(self) -> bool:
-        return bool(self._toBit_().value)
+        return bool(self.sm_to_bit().value)
 
     def __str__(self) -> str:
-        return str(self._toString_().value)
+        return str(self.sm_to_string().value)
 
-    def __iter__(self) -> Iterator:
-        return iter(self._iterate_().value)
+    def __iter__(self) -> Iter:
+        return iter(self.sm_iterate().value)
 
     def __contains__(self, element: Any) -> Integer:
-        return self._has_(element)
+        return self.sm_has(element)
 
     def __call__(self, *args: Any) -> Any:
-        return self._call_(*args)
+        return self.sm_call(*args)
 
     def __hash__(self) -> int:
-        return self._hash_().value
+        return self.sm_hash().value
 
     def __sub__(self, other: Class) -> Class:
-        return self._subtract_(other)
+        return self.sm_subtract(other)
 
     def __isub__(self, other: Class) -> Class:
-        return self._subtractAssign_(other)
+        return self.sm_subtract_assign(other)
 
     def __add__(self, other: Class) -> Class:
-        return self._add_(other)
+        return self.sm_add(other)
 
     def __iadd__(self, other: Class) -> Class:
-        return self._addAssign_(other)
+        return self.sm_add_assign(other)
 
     def __mul__(self, other: Class) -> Class:
-        return self._multiply_(other)
+        return self.sm_multiply(other)
 
     def __imul__(self, other: Class) -> Class:
-        return self._multiplyAssign_(other)
+        return self.sm_multiply_assign(other)
 
     def __floordiv__(self, other: Class) -> Class:
-        return self._divide_(other)
+        return self.sm_divide(other)
 
     def __ifloordiv__(self, other: Class) -> Class:
-        return self._divideAssign_(other)
+        return self.sm_divide_assign(other)
 
     def __mod__(self, other: Class) -> Class:
-        return self._mod_(other)
+        return self.sm_mod(other)
 
     def __imod__(self, other: Class) -> Class:
-        return self._modAssign_(other)
+        return self.sm_mod_assign(other)
 
     def __pow__(self, other: Class) -> Class:
-        return self._power_(other)
+        return self.sm_power(other)
 
     def __ipow__(self, other: Class) -> Class:
-        return self._powerAssign_(other)
+        return self.sm_power_assign(other)
 
     def __and__(self, other: Class) -> Class:
-        return self._and_(other)
+        return self.sm_and(other)
 
     def __iand__(self, other: Class) -> Class:
-        return self._andAssign_(other)
+        return self.sm_and_assign(other)
 
     def __or__(self, other: Class) -> Class:
-        return self._or_(other)
+        return self.sm_or(other)
 
     def __ior__(self, other: Class) -> Class:
-        return self._orAssign_(other)
+        return self.sm_or_assign(other)
 
     def __xor__(self, other: Class) -> Class:
-        return self._xor_(other)
+        return self.sm_xor(other)
 
     def __ixor__(self, other: Class) -> Class:
-        return self._xorAssign_(other)
+        return self.sm_xor_assign(other)
 
     def __neg__(self) -> Class:
-        return self._negative_()
+        return self.sm_negative()
 
     def __pos__(self) -> Class:
-        return self._positive_()
+        return self.sm_positive()
 
     def __invert__(self) -> Class:
-        return self._not_()
+        return self.sm_not()
 
     def __getitem__(self, index: Integer | Slice) -> Any:
-        return self._getItem_(index)
+        return self.sm_get_item(index)
 
     def __setitem__(self, index: Integer | Slice, value: Any):
-        return self._setItem_(index, value)
+        return self.sm_set_item(index, value)
 
     def __eq__(self, other: Class) -> Integer:
-        return self._equals_(other)
+        return self.sm_equals(other)
 
     def __ne__(self, other: Class) -> Integer:
         return run_with_backup(
-            self._notEquals_, lambda x: Int(not self._equals_(x)), other
+            self.sm_not_equals, lambda x: Int(not self.sm_equals(x)), other
         )
 
     def __lt__(self, other: Class) -> Integer:
         return run_with_backup(
-            self._lessThan_,
-            lambda x: Int(not (self._greaterThan_(x) or self._equals_(x))),
+            self.sm_less_than,
+            lambda x: Int(not (self.sm_greater_than(x) or self.sm_equals(x))),
             other,
         )
 
     def __le__(self, other: Class) -> Integer:
         return run_with_backup(
-            self._lessThanOrEqual_, lambda x: Int(not self._greaterThan_(x)), other
+            self.sm_less_than_or_equal,
+            lambda x: Int(not self.sm_greater_than(x)),
+            other,
         )
 
     def __gt__(self, other: Class) -> Integer:
-        return self._greaterThan_(other)
+        return self.sm_greater_than(other)
 
     def __ge__(self, other: Class) -> Integer:
         return run_with_backup(
-            self._greaterThanOrEqual_,
-            lambda x: Int(self._greaterThan_(x) or self._equals_(x)),
+            self.sm_greater_than_or_equal,
+            lambda x: Int(self.sm_greater_than(x) or self.sm_equals(x)),
             other,
         )
+
+    @property
+    def id(self) -> String:
+        return String(f"{id(self):x}")
 
     @property
     def type(self) -> Type:
@@ -194,175 +171,143 @@ class Class:
             return Type(parents[0])
         return Array(map(Type, parents))
 
-    def _create_(self, *args: Any, **kwargs: Any):
+    def sm_create(self, *args: Any):
         raise NotDefinedError(self, "create")
 
-    def _toBit_(self) -> Integer:
-        raise NotDefinedError(self, "toBit")
+    def sm_to_bit(self) -> Integer:
+        raise NotDefinedError(self, "to_bit")
 
-    def _toString_(self) -> String:
-        raise NotDefinedError(self, "toString")
+    def sm_to_string(self) -> String:
+        return String(f"<{get_callable_name(type(self))}@{id(self):x}>")
 
-    def _special_(self) -> Any:
+    def sm_special(self) -> Any:
         raise NotDefinedError(self, "special")
 
-    def _has_(self, element: Any) -> Integer:
+    def sm_has(self, element: Any) -> Integer:
         raise NotDefinedError(self, "has")
 
-    def _iterate_(self) -> Array:
+    def sm_iterate(self) -> Array:
         raise NotDefinedError(self, "iterate")
 
-    def _call_(self, *args: Any) -> Any:
+    def sm_call(self, *args: Any) -> Any:
         raise NotDefinedError(self, "call")
 
-    def _hash_(self) -> Integer:
+    def sm_hash(self) -> Integer:
         raise NotDefinedError(self, "hash")
 
-    def _subtract_(self, other: Class) -> Class:
+    def sm_subtract(self, other: Class) -> Class:
         raise NotDefinedError(self, "subtract")
 
-    def _subtractAssign_(self, other: Class) -> Class:
-        raise NotDefinedError(self, "subtractAssign")
+    def sm_subtract_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "subtract_assign")
 
-    def _add_(self, other: Class) -> Class:
+    def sm_add(self, other: Class) -> Class:
         raise NotDefinedError(self, "add")
 
-    def _addAssign_(self, other: Class) -> Class:
-        raise NotDefinedError(self, "addAssign")
+    def sm_add_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "add_assign")
 
-    def _multiply_(self, other: Class) -> Class:
+    def sm_multiply(self, other: Class) -> Class:
         raise NotDefinedError(self, "multiply")
 
-    def _multiplyAssign_(self, other: Class) -> Class:
-        raise NotDefinedError(self, "multiplyAssign")
+    def sm_multiply_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "multiply_assign")
 
-    def _divide_(self, other: Class) -> Class:
+    def sm_divide(self, other: Class) -> Class:
         raise NotDefinedError(self, "divide")
 
-    def _divideAssign_(self, other: Class) -> Class:
-        raise NotDefinedError(self, "divideAssign")
+    def sm_divide_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "divide_assign")
 
-    def _mod_(self, other: Class) -> Class:
+    def sm_mod(self, other: Class) -> Class:
         raise NotDefinedError(self, "mod")
 
-    def _modAssign_(self, other: Class) -> Class:
-        raise NotDefinedError(self, "modAssign")
+    def sm_mod_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "mod_assign")
 
-    def _power_(self, other: Class) -> Class:
+    def sm_power(self, other: Class) -> Class:
         raise NotDefinedError(self, "power")
 
-    def _powerAssign_(self, other: Class) -> Class:
-        raise NotDefinedError(self, "powerAssign")
+    def sm_power_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "power_assign")
 
-    def _and_(self, other: Class) -> Class:
+    def sm_and(self, other: Class) -> Class:
         raise NotDefinedError(self, "and")
 
-    def _andAssign_(self, other: Class) -> Class:
-        raise NotDefinedError(self, "andAssign")
+    def sm_and_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "and_assign")
 
-    def _or_(self, other: Class) -> Class:
+    def sm_or(self, other: Class) -> Class:
         raise NotDefinedError(self, "or")
 
-    def _orAssign_(self, other: Class) -> Class:
-        raise NotDefinedError(self, "orAssign")
+    def sm_or_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "or_assign")
 
-    def _xor_(self, other: Class) -> Class:
+    def sm_xor(self, other: Class) -> Class:
         raise NotDefinedError(self, "xor")
 
-    def _xorAssign_(self, other: Class) -> Class:
-        raise NotDefinedError(self, "xorAssign")
+    def sm_xor_assign(self, other: Class) -> Class:
+        raise NotDefinedError(self, "xor_assign")
 
-    def _negative_(self) -> Class:
+    def sm_negative(self) -> Class:
         raise NotDefinedError(self, "negative")
 
-    def _positive_(self) -> Class:
+    def sm_positive(self) -> Class:
         raise NotDefinedError(self, "positive")
 
-    def _not_(self) -> Class:
+    def sm_not(self) -> Class:
         raise NotDefinedError(self, "not")
 
-    def _getItem_(self, index: Integer | Slice) -> Any:
-        raise NotDefinedError(self, "getItem")
+    def sm_get_item(self, index: Integer | Slice) -> Any:
+        raise NotDefinedError(self, "get_item")
 
-    def _setItem_(self, index: Integer | Slice, value: Any):
-        raise NotDefinedError(self, "setItem")
+    def sm_set_item(self, index: Integer | Slice, value: Any):
+        raise NotDefinedError(self, "set_item")
 
-    def _equals_(self, other: Class) -> Integer:
+    def sm_equals(self, other: Class) -> Integer:
         raise NotDefinedError(self, "equals")
 
-    def _notEquals_(self, other: Class) -> Integer:
-        raise NotDefinedError(self, "notEquals")
+    def sm_not_equals(self, other: Class) -> Integer:
+        raise NotDefinedError(self, "not_equals")
 
-    def _lessThan_(self, other: Class) -> Integer:
-        raise NotDefinedError(self, "lessThan")
+    def sm_less_than(self, other: Class) -> Integer:
+        raise NotDefinedError(self, "less_than")
 
-    def _lessThanOrEqual_(self, other: Class) -> Integer:
-        raise NotDefinedError(self, "lessThanOrEqual")
+    def sm_less_than_or_equal(self, other: Class) -> Integer:
+        raise NotDefinedError(self, "less_than_or_equal")
 
-    def _greaterThan_(self, other: Class) -> Integer:
-        raise NotDefinedError(self, "greaterThan")
+    def sm_greater_than(self, other: Class) -> Integer:
+        raise NotDefinedError(self, "greater_than")
 
-    def _greaterThanOrEqual_(self, other: Class) -> Integer:
-        raise NotDefinedError(self, "greaterThanOrEqual")
+    def sm_greater_than_or_equal(self, other: Class) -> Integer:
+        raise NotDefinedError(self, "greater_than_or_equal")
 
-    def _cast_(self):
+    def sm_cast(self):
         raise NotDefinedError(self, "cast")
 
-    def _random_(self):
+    def sm_random(self):
         raise NotDefinedError(self, "random")
 
 
-@contextmanager
-def modify(func: Callable, args: list[Any], argc: int):
-    if func.__code__.co_flags != 71:
-        yield func, args
-        return
-    x = argc - 1
-    args = [*args[:x], Array(args[x:])]
-    func.__code__ = func.__code__.replace(co_flags=71, co_argcount=argc - 1)
-    args *= argc > 0
-    yield func, args
-
-
-def function(func: Callable):
-    @wraps(func)
-    def wrapper(*args):
-        args = [*map(verify_type, args)]
-        with modify(func, args, argc) as (f, args):
-            result = verify_type(f(*args))
-        if isinstance(result, (Class, Callable, Module)):
-            return result
-        raise SamariumTypeError(f"invalid return type: {type(result).__name__}")
-
-    argc = len(signature(func).parameters)
-
-    wrapper._toString_ = lambda: String(get_callable_name(func))
-    wrapper._special_ = lambda: Int(argc)
-    wrapper.argc = argc
-    wrapper.parent = Type(Class)
-    wrapper.type = Type(FunctionType)
-
-    return wrapper
-
 class Type(Class):
-    def _create_(self, type_: type):
+    def sm_create(self, type_: type):
         self.value = type_
 
-    def _equals_(self, other: Type) -> Integer:
+    def sm_equals(self, other: Type) -> Integer:
         return Int(self.value == other.value)
 
-    def _notEquals_(self, other: Type) -> Integer:
+    def sm_not_equals(self, other: Type) -> Integer:
         return Int(self.value != other.value)
 
-    def _toString_(self) -> String:
+    def sm_to_string(self) -> String:
         if self.value is FunctionType:
             return String("Function")
         return String(get_callable_name(self.value))
 
-    def _toBit_(self) -> Integer:
+    def sm_to_bit(self) -> Integer:
         return Int(1)
 
-    def _call_(self, *args) -> Class:
+    def sm_call(self, *args) -> Class:
         if self.value is FunctionType:
             raise SamariumTypeError("cannot instantiate a function")
         if self.value is Module:
@@ -370,29 +315,72 @@ class Type(Class):
         return self.value(*args)
 
 
-class Slice(Class):
-    __slots__ = ("start", "stop", "step", "tup", "value")
+class Null(Class):
+    def sm_create(self):
+        self.value = None
 
-    def _create_(self, start: Any, stop: Any, step: Any):
+    def sm_to_string(self) -> String:
+        return String("null")
+
+    def sm_hash(self) -> Integer:
+        return Int(hash(self.value))
+
+    def sm_to_bit(self) -> Integer:
+        return Int(0)
+
+    def sm_equals(self, other: Null) -> Integer:
+        return Int(type(other) is Null)
+
+    def sm_not_equals(self, other: Null) -> Integer:
+        return Int(type(other) is not Null)
+
+
+null = Null()
+
+
+class Slice(Class):
+    __slots__ = ("start", "stop", "step", "tup", "value", "range", "inf")
+
+    def sm_create(self, start: Any = null, stop: Any = null, step: Any = null):
+        if step.value == 0:
+            raise SamariumValueError("step cannot be zero")
         self.start = start
         self.stop = stop
         self.step = step
         self.tup = start.value, stop.value, step.value
+        self.range = range(
+            self.tup[0] or 0,
+            I64_MAX if self.tup[1] is None else self.tup[1],
+            self.tup[2] or 1,
+        )
+        self.inf = self.tup[1] is None
         self.value = slice(*self.tup)
 
-    def _random_(self) -> Integer:
+    def sm_iterate(self) -> Iterator:
+        return Iterator(map(Int, self.range))
+
+    def sm_random(self) -> Integer:
         if self.stop is None:
             raise SamariumValueError(
                 "cannot generate a random value for slice with null stop"
             )
-        tup = self.tup[0] or 0, self.tup[1], self.tup[2] or 1
-        range_ = range(*tup)
-        return Int(choice(range_))
+        return Int(choice(self.range))
+
+    def sm_special(self) -> Integer | Null:
+        if self.inf:
+            return null
+        return Int(len(self.range))
+
+    def sm_has(self, index: Integer) -> Integer:
+        return Int(index.value in self.range)
 
     def is_empty(self) -> bool:
         return self.start == self.stop == self.step == null
 
-    def _toString_(self) -> String:
+    def sm_get_item(self, index: Integer) -> Integer:
+        return Int(self.range[index.value])
+
+    def sm_to_string(self) -> String:
         start, stop, step = self.start, self.stop, self.step
         if start is stop is step is null:
             return String("<<>>")
@@ -404,108 +392,87 @@ class Slice(Class):
         if stop is not null:
             string += f"..{get_repr(stop)}"
         if step is not null:
-            string += f"**{get_repr(step)}"
+            if stop is null:
+                string += ".."
+            string += f"..{get_repr(step)}"
         return String(f"<<{string}>>")
 
-    def _equals_(self, other: Slice) -> Integer:
+    def sm_equals(self, other: Slice) -> Integer:
         return Int(self.tup == other.tup)
 
-    def _notEquals_(self, other: Slice) -> Integer:
+    def sm_not_equals(self, other: Slice) -> Integer:
         return Int(self.tup != other.tup)
-
-
-class Null(Class):
-    def _create_(self):
-        self.value = None
-
-    def _toString_(self) -> String:
-        return String("null")
-
-    def _hash_(self) -> Integer:
-        return smhash(self.value)
-
-    def _toBit_(self) -> Integer:
-        return Int(0)
-
-    def _equals_(self, other: Null) -> Integer:
-        return Int(type(other) is Null)
-
-    def _notEquals_(self, other: Null) -> Integer:
-        return Int(type(other) is not Null)
-
-
-null = Null()
 
 
 class String(Class):
     def __str__(self) -> str:
         return self.value
 
-    def _hash_(self) -> Integer:
-        return smhash(self.value)
+    def sm_hash(self) -> Integer:
+        return Int(hash(self.value))
 
-    def _cast_(self) -> Integer:
+    def sm_cast(self) -> Integer:
         if len(self.value) != 1:
             raise SamariumTypeError(f"cannot cast a string of length {len(self.value)}")
         return Int(ord(self.value))
 
-    def _create_(self, value: Any = ""):
+    def sm_create(self, value: Any = ""):
         self.value = str(value)
 
-    def _has_(self, element: String) -> Integer:
+    def sm_has(self, element: String) -> Integer:
         return Int(element.value in self.value)
 
-    def _iterate_(self) -> Array:
-        return Array(map(String, self.value))
+    def sm_iterate(self) -> Iterator:
+        return Iterator(map(String, self.value))
 
-    def _random_(self) -> String:
+    def sm_random(self) -> String:
         return String(choice(self.value))
 
-    def _special_(self) -> Integer:
+    def sm_special(self) -> Integer:
         return Int(len(self.value))
 
-    def _toBit_(self) -> Integer:
+    def sm_to_bit(self) -> Integer:
         return Int(self.value != "")
 
-    def _toString_(self) -> String:
+    def sm_to_string(self) -> String:
         return self
 
-    def _add_(self, other: String) -> String:
+    def sm_add(self, other: String) -> String:
         return String(self.value + other.value)
 
-    def _addAssign_(self, other: String) -> String:
-        self = self._add_(other)
+    def sm_add_assign(self, other: String) -> String:
+        self = self.sm_add(other)
         return self
 
-    def _multiply_(self, times: Integer) -> String:
+    def sm_multiply(self, times: Integer) -> String:
         return String(self.value * times.value)
 
-    def _multiplyAssign_(self, times: Integer) -> String:
-        self = self._multiply_(times)
+    def sm_multiply_assign(self, times: Integer) -> String:
+        self = self.sm_multiply(times)
         return self
 
-    def _equals_(self, other: String) -> Integer:
+    def sm_equals(self, other: String) -> Integer:
         return Int(self.value == other.value)
 
-    def _notEquals_(self, other: String) -> Integer:
+    def sm_not_equals(self, other: String) -> Integer:
         return Int(self.value != other.value)
 
-    def _greaterThan_(self, other: String) -> Integer:
+    def sm_greater_than(self, other: String) -> Integer:
         return Int(self.value > other.value)
 
-    def _lessThan_(self, other: String) -> Integer:
+    def sm_less_than(self, other: String) -> Integer:
         return Int(self.value < other.value)
 
-    def _greaterThanOrEqual_(self, other: String) -> Integer:
+    def sm_greater_than_or_equal(self, other: String) -> Integer:
         return Int(self.value >= other.value)
 
-    def _lessThanOrEqual_(self, other: String) -> Integer:
+    def sm_less_than_or_equal(self, other: String) -> Integer:
         return Int(self.value <= other.value)
 
-    def _getItem_(self, index: Integer | Slice) -> String:
+    def sm_get_item(self, index: Integer | Slice) -> String:
         return String(self.value[index.value])
 
-    def _setItem_(self, index: Integer | Slice, value: String):
+    def sm_set_item(self, index: Integer | Slice, value: String):
         string = [*self.value]
         string[index.value] = value.value
         self.value = "".join(string)
@@ -515,14 +482,13 @@ class Integer(Class):
     def __int__(self) -> int:
         return self.value
 
-    def _cast_(self) -> String:
+    def sm_cast(self) -> String:
         return String(chr(self.value))
 
-    def _hash_(self) -> Integer:
-        return smhash(self.value)
+    def sm_hash(self) -> Integer:
+        return Int(hash(self.value))
 
-    def _create_(self, value: Any = None):
-        t = type(value)
+    def sm_create(self, value: Any = None):
         if hasattr(value, "value"):
             value = value.value
         if isinstance(value, (int, bool, float)):
@@ -532,9 +498,11 @@ class Integer(Class):
         elif isinstance(value, str):
             self.value = parse_integer(value)
         else:
-            raise SamariumTypeError(f"cannot cast {t.__name__} to Integer")
+            raise SamariumTypeError(
+                f"cannot cast {get_callable_name(type(value))} to Integer"
+            )
 
-    def _random_(self) -> Integer:
+    def sm_random(self) -> Integer:
         v = self.value
         if not v:
             return self
@@ -543,103 +511,103 @@ class Integer(Class):
         else:
             return Int(-randbelow(v) - 1)
 
-    def _toBit_(self) -> Integer:
+    def sm_to_bit(self) -> Integer:
         return Int(self.value != 0)
 
-    def _toString_(self) -> String:
+    def sm_to_string(self) -> String:
         return String(str(self.value))
 
-    def _add_(self, other: Integer) -> Integer:
+    def sm_add(self, other: Integer) -> Integer:
         return Int(self.value + other.value)
 
-    def _addAssign_(self, other: Integer) -> Integer:
-        self = self._add_(other)
+    def sm_add_assign(self, other: Integer) -> Integer:
+        self = self.sm_add(other)
         return self
 
-    def _subtract_(self, other: Integer) -> Integer:
+    def sm_subtract(self, other: Integer) -> Integer:
         return Int(self.value - other.value)
 
-    def _subtractAssign_(self, other: Integer) -> Integer:
-        self = self._subtract_(other)
+    def sm_subtract_assign(self, other: Integer) -> Integer:
+        self = self.sm_subtract(other)
         return self
 
-    def _multiply_(self, other: Integer) -> Integer:
+    def sm_multiply(self, other: Integer) -> Integer:
         return Int(self.value * other.value)
 
-    def _multiplyAssign_(self, other: Integer) -> Integer:
-        self = self._multiply_(other)
+    def sm_multiply_assign(self, other: Integer) -> Integer:
+        self = self.sm_multiply(other)
         return self
 
-    def _divide_(self, other: Integer) -> Integer:
+    def sm_divide(self, other: Integer) -> Integer:
         return Int(self.value // other.value)
 
-    def _divideAssign_(self, other: Integer) -> Integer:
-        self = self._divide_(other)
+    def sm_divide_assign(self, other: Integer) -> Integer:
+        self = self.sm_divide(other)
         return self
 
-    def _mod_(self, other: Integer) -> Integer:
+    def sm_mod(self, other: Integer) -> Integer:
         return Int(self.value % other.value)
 
-    def _modAssign_(self, other: Integer) -> Integer:
-        self = self._mod_(other)
+    def sm_mod_assign(self, other: Integer) -> Integer:
+        self = self.sm_mod(other)
         return self
 
-    def _power_(self, other: Integer) -> Integer:
+    def sm_power(self, other: Integer) -> Integer:
         return Int(self.value ** other.value)
 
-    def _powerAssign_(self, other: Integer) -> Integer:
-        self = self._power_(other)
+    def sm_power_assign(self, other: Integer) -> Integer:
+        self = self.sm_power(other)
         return self
 
-    def _and_(self, other: Integer) -> Integer:
+    def sm_and(self, other: Integer) -> Integer:
         return Int(self.value & other.value)
 
-    def _andAssign_(self, other: Integer) -> Integer:
-        self = self._and_(other)
+    def sm_and_assign(self, other: Integer) -> Integer:
+        self = self.sm_and(other)
         return self
 
-    def _or_(self, other: Integer) -> Integer:
+    def sm_or(self, other: Integer) -> Integer:
         return Int(self.value | other.value)
 
-    def _orAssign_(self, other: Integer) -> Integer:
-        self = self._or_(other)
+    def sm_or_assign(self, other: Integer) -> Integer:
+        self = self.sm_or(other)
         return self
 
-    def _xor_(self, other: Integer) -> Integer:
+    def sm_xor(self, other: Integer) -> Integer:
         return Int(self.value ^ other.value)
 
-    def _xorAssign_(self, other: Integer) -> Integer:
-        self = self._xor_(other)
+    def sm_xor_assign(self, other: Integer) -> Integer:
+        self = self.sm_xor(other)
         return self
 
-    def _not_(self) -> Integer:
+    def sm_not(self) -> Integer:
         return Int(~self.value)
 
-    def _negative_(self) -> Integer:
+    def sm_negative(self) -> Integer:
         return Int(-self.value)
 
-    def _positive_(self) -> Integer:
+    def sm_positive(self) -> Integer:
         return Int(+self.value)
 
-    def _equals_(self, other: Integer) -> Integer:
+    def sm_equals(self, other: Integer) -> Integer:
         return Int(self.value == other.value)
 
-    def _notEquals_(self, other: Integer) -> Integer:
+    def sm_not_equals(self, other: Integer) -> Integer:
         return Int(self.value != other.value)
 
-    def _greaterThan_(self, other: Integer) -> Integer:
+    def sm_greater_than(self, other: Integer) -> Integer:
         return Int(self.value > other.value)
 
-    def _lessThan_(self, other: Integer) -> Integer:
+    def sm_less_than(self, other: Integer) -> Integer:
         return Int(self.value < other.value)
 
-    def _greaterThanOrEqual_(self, other: Integer) -> Integer:
+    def sm_greater_than_or_equal(self, other: Integer) -> Integer:
         return Int(self.value >= other.value)
 
-    def _lessThanOrEqual_(self, other: Integer) -> Integer:
+    def sm_less_than_or_equal(self, other: Integer) -> Integer:
         return Int(self.value <= other.value)
 
-    def _special_(self) -> String:
+    def sm_special(self) -> String:
         return String(f"{self.value:b}")
 
 
@@ -647,7 +615,7 @@ Int = lru_cache(1024)(Integer)
 
 
 class Table(Class):
-    def _create_(self, value: Any = None):
+    def sm_create(self, value: Any = None):
         if value is None:
             self.value = {}
         elif isinstance(value, Table):
@@ -667,12 +635,14 @@ class Table(Class):
                         table[k] = v
                 self.value = Table(table).value
         else:
-            raise SamariumTypeError(f"cannot cast {type(value).__name__} to Table")
+            raise SamariumTypeError(
+                f"cannot cast {get_callable_name(type(value))} to Table"
+            )
 
-    def _special_(self) -> Array:
+    def sm_special(self) -> Array:
         return Array(self.value.values())
 
-    def _toString_(self) -> String:
+    def sm_to_string(self) -> String:
         return String(
             "{{"
             + ", ".join(
@@ -681,43 +651,43 @@ class Table(Class):
             + "}}"
         )
 
-    def _toBit_(self) -> Integer:
+    def sm_to_bit(self) -> Integer:
         return Int(self.value != {})
 
-    def _getItem_(self, key: Any) -> Any:
+    def sm_get_item(self, key: Any) -> Any:
         try:
             return self.value[key]
         except KeyError:
             raise SamariumValueError(f"key not found: {key}")
 
-    def _setItem_(self, key: Any, value: Any):
+    def sm_set_item(self, key: Any, value: Any):
         self.value[key] = value
 
-    def _iterate_(self) -> Array:
-        return Array(self.value.keys())
+    def sm_iterate(self) -> Iterator:
+        return Iterator(self.value.keys())
 
-    def _random_(self) -> Any:
+    def sm_random(self) -> Any:
         if not self.value:
             raise SamariumValueError("table is empty")
         return choice([*self.value.keys()])
 
-    def _has_(self, element: Any) -> Integer:
+    def sm_has(self, element: Any) -> Integer:
         return Int(element in self.value)
 
-    def _equals_(self, other: Table) -> Integer:
+    def sm_equals(self, other: Table) -> Integer:
         return Int(self.value == other.value)
 
-    def _notEquals_(self, other: Table) -> Integer:
+    def sm_not_equals(self, other: Table) -> Integer:
         return Int(self.value == other.value)
 
-    def _add_(self, other: Table) -> Table:
+    def sm_add(self, other: Table) -> Table:
         return Table(self.value | other.value)
 
-    def _addAssign_(self, other: Table) -> Table:
+    def sm_add_assign(self, other: Table) -> Table:
         self.value.update(other.value)
         return self
 
-    def _subtract_(self, other: Class) -> Table:
+    def sm_subtract(self, other: Class) -> Table:
         c = self.value.copy()
         try:
             del c[other]
@@ -725,7 +695,7 @@ class Table(Class):
             raise SamariumValueError(f"key not found: {other}")
         return Table(c)
 
-    def _subtractAssign_(self, other: Class) -> Table:
+    def sm_subtract_assign(self, other: Class) -> Table:
         try:
             del self.value[other]
         except KeyError:
@@ -734,7 +704,7 @@ class Table(Class):
 
 
 class Array(Class):
-    def _create_(self, value: Any = None):
+    def sm_create(self, value: Any = None):
         if value is None:
             self.value = []
         elif isinstance(value, Array):
@@ -743,68 +713,74 @@ class Array(Class):
             self.value = Array(map(String, value.value)).value
         elif isinstance(value, Table):
             self.value = Array(map(Array, value.value.items())).value
+        elif isinstance(value, Iterator):
+            self.value = Array(list(value.value)).value
+        elif isinstance(value, Slice) and value.sm_special() is null:
+            raise SamariumTypeError("cannot convert an infinite slice to Array")
         elif isinstance(value, Iterable):
             self.value = [*map(verify_type, value)]
         else:
-            raise SamariumTypeError(f"cannot cast {type(value).__name__} to Array")
+            raise SamariumTypeError(
+                f"cannot cast {get_callable_name(type(value))} to Array"
+            )
 
-    def _special_(self) -> Integer:
+    def sm_special(self) -> Integer:
         return Int(len(self.value))
 
-    def _toString_(self) -> String:
+    def sm_to_string(self) -> String:
         return String(f"[{', '.join(map(get_repr, self.value))}]")
 
-    def _toBit_(self) -> Integer:
+    def sm_to_bit(self) -> Integer:
         return Int(self.value != [])
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> Iter:
         yield from self.value
 
-    def _iterate_(self) -> Array:
-        return self
+    def sm_iterate(self) -> Iterator:
+        return Iterator(self)
 
-    def _random_(self) -> Any:
+    def sm_random(self) -> Any:
         if not self.value:
             raise SamariumValueError("array is empty")
         return choice(self.value)
 
-    def _has_(self, element: Any) -> Integer:
+    def sm_has(self, element: Any) -> Integer:
         return Int(element in self.value)
 
-    def _equals_(self, other: Array) -> Integer:
+    def sm_equals(self, other: Array) -> Integer:
         return Int(self.value == other.value)
 
-    def _notEquals_(self, other: Array) -> Integer:
+    def sm_not_equals(self, other: Array) -> Integer:
         return Int(self.value != other.value)
 
-    def _greaterThan_(self, other: Array) -> Integer:
-        return Int(self.value > other.value)
+    def sm_greater_than(self, other: Array) -> Integer:
+        return Int(cmp(self.value, other.value) == 1)
 
-    def _lessThan_(self, other: Array) -> Integer:
-        return Int(self.value < other.value)
+    def sm_less_than(self, other: Array) -> Integer:
+        return Int(cmp(self.value, other.value) == -1)
 
-    def _greaterThanOrEqual_(self, other: Array) -> Integer:
-        return Int(self.value >= other.value)
+    def sm_greater_than_or_equal(self, other: Array) -> Integer:
+        return Int(cmp(self.value, other.value) != -1)
 
-    def _lessThanOrEqual_(self, other: Array) -> Integer:
-        return Int(self.value <= other.value)
+    def sm_less_than_or_equal(self, other: Array) -> Integer:
+        return Int(cmp(self.value, other.value) != 1)
 
-    def _getItem_(self, index: Integer | Slice) -> Any:
+    def sm_get_item(self, index: Integer | Slice) -> Any:
         if isinstance(index, Integer):
             return self.value[index.value]
         return Array(self.value[index.value])
 
-    def _setItem_(self, index: Integer | Slice, value: Any):
+    def sm_set_item(self, index: Integer | Slice, value: Any):
         self.value[index.value] = value
 
-    def _add_(self, other: Array) -> Array:
+    def sm_add(self, other: Array) -> Array:
         return Array(self.value + other.value)
 
-    def _addAssign_(self, other: Array) -> Array:
+    def sm_add_assign(self, other: Array) -> Array:
         self.value += other.value
         return self
 
-    def _subtract_(self, other: Array | Integer) -> Array:
+    def sm_subtract(self, other: Array | Integer) -> Array:
         new_array = self.value.copy()
         if isinstance(other, Array):
             for i in other:
@@ -815,7 +791,7 @@ class Array(Class):
             raise SamariumTypeError(type(other).__name__)
         return Array(new_array)
 
-    def _subtractAssign_(self, other: Array | Integer) -> Array:
+    def sm_subtract_assign(self, other: Array | Integer) -> Array:
         if isinstance(other, Array):
             for i in other:
                 self.value.remove(i)
@@ -825,10 +801,10 @@ class Array(Class):
             raise SamariumTypeError(type(other).__name__)
         return self
 
-    def _multiply_(self, other: Integer) -> Array:
+    def sm_multiply(self, other: Integer) -> Array:
         return Array(self.value * other.value)
 
-    def _multiplyAssign_(self, other: Integer) -> Array:
+    def sm_multiply_assign(self, other: Integer) -> Array:
         self.value *= other.value
         return self
 
@@ -861,7 +837,7 @@ class FileManager:
 
     @staticmethod
     def quick(
-        path: String | File,
+        path: String | File | Integer,
         mode: Mode,
         *,
         data: String | Array | None = None,
@@ -902,20 +878,20 @@ class FileManager:
 class File(Class):
     __slots__ = ("binary", "mode", "path", "value")
 
-    def _create_(self, file: IO, mode: str, path: str, binary: bool):
+    def sm_create(self, file: IO, mode: str, path: str, binary: bool):
         self.binary = binary
         self.mode = mode
         self.path = path
         self.value = file
 
-    def _toString_(self) -> String:
+    def sm_to_string(self) -> String:
         return String(f"File(path:{self.path}, mode:{self.mode})")
 
-    def _not_(self):
+    def sm_not(self):
         self.value.close()
         return null
 
-    def _getItem_(self, index: Integer | Slice) -> Array | String | Integer | Null:
+    def sm_get_item(self, index: Integer | Slice) -> Array | String | Integer | Null:
         if isinstance(index, Slice):
             if index.is_empty():
                 return Int(self.value.tell())
@@ -974,3 +950,198 @@ class Module:
     @property
     def type(self) -> Type:
         return Type(type(self))
+
+
+class Enum_(Class):
+    __slots__ = ("name", "members")
+
+    def sm_create(self, globals: dict[str, Any], *values_: str) -> None:
+        if any(isinstance(i, Class) for i in values_):
+            raise SamariumTypeError("enums cannot be constructed from Type")
+        name, *values = values_
+        self.name = name.removeprefix("sm_")
+        self.members: dict[str, Class] = {}
+
+        # Empty enum case
+        if len(values) == 1 and not values[0]:
+            raise SamariumValueError("enums must have at least 1 member")
+
+        i = 0
+        for v in values:
+            if not v:
+                continue
+            eqs = v.count("=")
+            if eqs >= 2:
+                raise SamariumSyntaxError("invalid expression")
+            name, value = v.split("=") if eqs == 1 else (v, "")
+            if not name.isidentifier():
+                raise SamariumValueError("enum members must be identifiers")
+            if eqs == 1:
+                self.members[name] = eval(value, globals)
+            else:
+                self.members[v] = Int(i)
+                i += 1
+
+    def sm_to_string(self) -> String:
+        return String(f"Enum({self.name})")
+
+    def __getattr__(self, name: str) -> Class:
+        try:
+            return self.members[name]
+        except KeyError:
+            raise AttributeError(f"'{self.name}''{name}'")
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name.startswith("sm_"):
+            raise SamariumTypeError("enum members cannot be modified")
+        object.__setattr__(self, name, value)
+
+
+class Iterator(Class):
+    __slots__ = ("value", "length", "isgen", "raw")
+
+    def sm_create(self, value: Class) -> None:
+        if not isinstance(value, Iterable):
+            raise SamariumTypeError("cannot create an Iterator from a non-iterable")
+        self.value = iter(value)
+        try:
+            self.length = Int(len(value.value))
+        except (TypeError, AttributeError):
+            self.length = null
+
+    def __iter__(self) -> Iter:
+        return self.value
+
+    def __next__(self) -> Class:
+        return next(self.value)
+
+    def sm_cast(self) -> Integer | Null:
+        return self.length
+
+    def sm_iterate(self) -> Iterator:
+        return self
+
+    def sm_special(self) -> Class:
+        return next(self)
+
+
+def class_attributes(cls):
+    cls.argc = Int(len(signature(cls.sm_create).parameters))
+    cls.type = Type(Type)
+    parents = cls.__bases__
+    cls.parent = Type(parents[0]) if len(parents) == 1 else Array(map(Type, parents))
+    return cls
+
+
+def cmp(arr1: list[Any], arr2: list[Any]) -> int:
+    for a, b in zip(arr1, arr2):
+        if a == b:
+            continue
+        return 1 if a > b else -1
+    len1 = len(arr1)
+    len2 = len(arr2)
+    if len1 != len2:
+        return 1 if len1 > len2 else -1
+    return 0
+
+
+def get_repr(obj: Class | Callable | Module) -> str:
+    if isinstance(obj, String):
+        return f'"{obj}"'
+    return str(obj.sm_to_string())
+
+
+def mkslice(start: Any = MISSING, stop: Any = MISSING, step: Any = MISSING) -> Class:
+    if stop is step is MISSING:
+        if start is None:
+            return Slice(null, null, null)
+        return start
+    missing_none = {MISSING, None}
+    start = null if start in missing_none else start
+    stop = null if stop in missing_none else stop
+    step = null if step in missing_none else step
+    return Slice(start, stop, step)
+
+
+def t(obj: Any = None) -> Any:
+    return obj
+
+
+def verify_type(obj: Any, *args) -> Class | Callable | Module:
+    if args:
+        for i in [obj, *args]:
+            verify_type(i)
+        return null
+    elif isinstance(obj, type):
+        return Type(obj)
+    elif isinstance(obj, (Class, Callable, Module)):
+        return obj
+    elif isinstance(obj, tuple):
+        return Array(obj)
+    elif obj is None:
+        return null
+    elif isinstance(obj, bool):
+        return Int(obj)
+    elif isinstance(obj, GeneratorType):
+        return Iterator(obj)
+    else:
+        raise SamariumTypeError(f"unknown type: {type(obj).__name__}")
+
+
+@contextmanager
+def modify(func: Callable, args: list[Any], argc: int):
+    flag = func.__code__.co_flags
+    if flag & 4 == 0:
+        yield func, args
+        return
+    x = argc - 1
+    args = [*args[:x], Array(args[x:])]
+    func.__code__ = func.__code__.replace(co_flags=flag - 4, co_argcount=argc)
+    args *= argc > 0
+    yield func, args
+    func.__code__ = func.__code__.replace(co_flags=flag, co_argcount=argc - 1)
+
+
+MISSING_ARGS_PATTERN = compile(
+    r"\w+\(\) takes exactly one argument \(0 given\)"
+    r"|\w+\(\) missing (\d+) required positional argument"
+)
+TOO_MANY_ARGS_PATTERN = compile(
+    r"\w+\(\) takes (\d+) positional arguments? but (\d+) (?:was|were) given"
+)
+
+
+def function(func: Callable):
+    @wraps(func)
+    def wrapper(*args):
+        args = [*map(verify_type, args)]
+        with modify(func, args, argc) as (f, args):
+            try:
+                result = verify_type(f(*args))
+            except TypeError as e:
+                errmsg = str(e)
+                if "missing 1 required positional argument: 'self'" in errmsg:
+                    raise SamariumTypeError("missing instance")
+                missing_args = MISSING_ARGS_PATTERN.search(errmsg)
+                if missing_args:
+                    given = argc - (int(missing_args.group(1)) or 1)
+                    raise SamariumTypeError(f"not enough arguments ({given}/{argc})")
+                too_many_args = TOO_MANY_ARGS_PATTERN.search(errmsg)
+                if too_many_args:
+                    raise SamariumTypeError(
+                        f"too many arguments ({too_many_args.group(2)}/{argc})"
+                    )
+                raise e
+        if isinstance(result, (Class, Callable, Module)):
+            return result
+        raise SamariumTypeError(f"invalid return type: {type(result).__name__}")
+
+    argc = len(signature(func).parameters)
+
+    wrapper.sm_to_string = lambda: String(get_callable_name(func))
+    wrapper.sm_special = lambda: Int(argc)
+    wrapper.argc = Int(argc)
+    wrapper.parent = Type(Class)
+    wrapper.type = Type(FunctionType)
+
+    return wrapper

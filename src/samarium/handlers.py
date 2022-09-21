@@ -71,19 +71,19 @@ def equal(scroller: Scroller) -> Token:
     if scroller.next() == "=":
         return Token.COMMENT_OPEN if scroller.next(2) == "<" else Token.COMMENT
     if scroller.next() == ">":
-        return Token.EXIT if scroller.next(2) == "!" else Token.MAIN
+        return Token.EXIT if scroller.next(2) == "!" else Token.ENTRY
     raise ValueError("invalid token")
 
 
 def dot(scroller: Scroller) -> Token:
     if scroller.next() == ".":
         return Token.FOR if scroller.next(2) == "." else Token.WHILE
-    return Token.ATTRIBUTE
+    return Token.ATTR
 
 
 def question(scroller: Scroller) -> Token:
     if scroller.next() == "?":
-        return Token.STDIN if scroller.next(2) == "?" else Token.TRY
+        return Token.READLINE if scroller.next(2) == "?" else Token.TRY
     elif scroller.next() == "~":
         if scroller.next(2) == ">":
             return Token.FILE_CREATE
@@ -93,11 +93,11 @@ def question(scroller: Scroller) -> Token:
 def exclamation(scroller: Scroller) -> Token:
     if scroller.next() == "!":
         return Token.THROW if scroller.next(2) == "!" else Token.CATCH
-    return Token.PARENT if scroller.next() == "?" else Token.STDOUT
+    return Token.PARENT if scroller.next() == "?" else Token.PRINT
 
 
 def pipe(scroller: Scroller) -> Token:
-    return Token.OR if scroller.next() == "|" else Token.BINOR
+    return Token.OR if scroller.next() == "|" else Token.BOR
 
 
 def ampersand(scroller: Scroller) -> Token:
@@ -109,18 +109,18 @@ def ampersand(scroller: Scroller) -> Token:
         return Token.FILE_QUICK_APPEND
     elif scroller.program[:3] == "&%>":
         return Token.FILE_QUICK_BINARY_APPEND
-    return Token.AND if scroller.next() == "&" else Token.BINAND
+    return Token.AND if scroller.next() == "&" else Token.BAND
 
 
 def tilde(scroller: Scroller) -> Token:
     if scroller.next() == "~" and scroller.next(2) == ">":
         return Token.FILE_WRITE
     tokens = {">": Token.FILE_QUICK_WRITE, "~": Token.NOT}
-    return tokens.get(scroller.next(), Token.BINNOT)
+    return tokens.get(scroller.next(), Token.BNOT)
 
 
 def caret(scroller: Scroller) -> Token:
-    return Token.XOR if scroller.next() == "^" else Token.BINXOR
+    return Token.XOR if scroller.next() == "^" else Token.BXOR
 
 
 def comma(scroller: Scroller) -> Token:
@@ -138,11 +138,11 @@ def close_brace(scroller: Scroller) -> Token:
 
 
 def hash_(scroller: Scroller) -> Token:
-    return Token.HASH if scroller.next() == "#" else Token.ASSERT
+    return Token.HASH if scroller.next() == "#" else Token.ENUM
 
 
 def asterisk(scroller: Scroller) -> Token:
-    return Token.SLICE_STEP if scroller.next() == "*" else Token.FUNCTION
+    return Token.YIELD if scroller.next() == "*" else Token.FUNCTION
 
 
 def percent(scroller: Scroller) -> Token:
@@ -155,4 +155,8 @@ def percent(scroller: Scroller) -> Token:
 
 
 def at(scroller: Scroller) -> Token:
-    return Token.DTNOW if scroller.next() == "@" else Token.CLASS
+    if scroller.next() == "@":
+        if scroller.next(2) == "@":
+            return Token.ARR_STMP
+        return Token.UNIX_STMP
+    return Token.CLASS

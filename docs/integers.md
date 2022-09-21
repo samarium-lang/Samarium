@@ -1,3 +1,6 @@
+!!! note
+    The following guide assumes that you are familiar with the basics of programming.
+
 # Integers
 
 Integers are represented in base 2, using slashes and backslashes to represent 1 and 0 respectively.
@@ -17,7 +20,7 @@ Base 10 | Base 2  | Samarium
 `13`    | `1101`  | `//\/`
 `21`    | `10101` | `/\/\/`
 
-Since Samarium is transpiled to Python, there's no limit to how large am integer can be:
+Since Samarium is transpiled to Python, there's no limit to how large an integer can be:
 
 ```sm
 //\\/\\//////\\\\///\\////\\/\\/\\\\\\/////\\\\\\\\/////\\//\\/\\////\\////////\\////\\///\\\\\\\\//\\\\//\\///\\/\\\\\\/\\////\\//\\\\/\\\\/\\////\\/////\\/\\\\/\\\\\\\\\\//\\\\\\//\\\\/\\/\\\\//\\\\\\///\\/\\\\\\/\\\\\\/\\\\///\\//\\\\/\\\\//\\\\///\\//\\\\\\\\\\\\////////////////////////////////////////////////////////////////////////////////
@@ -28,8 +31,3 @@ Or in base 10:
 ```py
 99999999999999999999999999999999999999999999999999999999999999999999999999999999
 ```
-
-## Null
-
-The character `_` represents a null value, such as for default arguments in a function.
-Assignments to `_` are not allowed.

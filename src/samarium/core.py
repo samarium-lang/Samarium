@@ -2,35 +2,34 @@ import os
 import sys
 
 from datetime import datetime
-from termcolor import colored
-from time import sleep as _sleep
+from dahlia import dahlia
+from time import sleep as _sleep, time_ns
 from types import GeneratorType
 
 from . import exceptions as exc
 from .objects import (
     null,
     Int,
-    function,
     class_attributes,
-    smhash,
+    function,
+    mkslice,
+    t,
     verify_type,
     Class,
-    Type,
-    Slice,
     String,
     Integer,
+    MISSING,
     Module,
     Null,
     Table,
     Array,
-    Enum,
+    Enum_,
     Mode,
     FileManager,
-    File,
 )
 from .runtime import Runtime
 from .tokenizer import tokenize
-from .transpiler import Transpiler, CodeHandler
+from .transpiler import Transpiler, Registry
 from .utils import readfile, silence_stdout, sysexit
 
 MODULE_NAMES = [
@@ -41,15 +40,8 @@ MODULE_NAMES = [
     "operator",
     "random",
     "string",
-    "terminal",
     "types",
-    "utils",
 ]
-
-
-class MISSING:
-    def __getattr__(self, _):
-        raise exc.SamariumValueError("cannot use the MISSING object")
 
 
 def dtnow() -> Array:
@@ -61,7 +53,7 @@ def dtnow() -> Array:
     return Array(map(Int, utcnow_tpl))
 
 
-def import_module(data: str, ch: CodeHandler):
+def import_module(data: str, reg: Registry):
 
     module_import = False
     try:
@@ -71,9 +63,9 @@ def import_module(data: str, ch: CodeHandler):
         name = data
         objects = []
         module_import = True
-    name = name.strip("_")
+    name = name.removeprefix("sm_")
     if name == "samarium":
-        sys.stderr.write(colored("[RecursionError]\n", "red"))
+        sys.stderr.write(dahlia("&4[RecursionError]\n"))
         return
     try:
         path = sys.argv[1][: sys.argv[1].rfind("/") + 1] or "."
@@ -86,31 +78,31 @@ def import_module(data: str, ch: CodeHandler):
         path = os.path.join(os.path.dirname(__file__), "modules")
 
     with silence_stdout():
-        imported = run(readfile(f"{path}/{name}.sm"), CodeHandler(globals()))
+        imported = run(readfile(f"{path}/{name}.sm"), Registry(globals()))
 
     if module_import:
-        ch.globals.update({f"_{name}_": Module(name, imported.globals)})
+        reg.vars.update({f"sm_{name}": Module(name, imported.vars)})
     elif objects == ["*"]:
-        imported.globals = {
+        imported.vars = {
             k: v
-            for k, v in imported.globals.items()
-            if not (k.startswith("__") or k[0].isalnum())
+            for k, v in imported.vars.items()
+            if k.startswith("sm_")
         }
-        ch.globals.update(imported.globals)
+        reg.vars.update(imported.vars)
     else:
         for obj in objects:
             try:
-                ch.globals[obj] = imported.globals[obj]
+                reg.vars[obj] = imported.vars[obj]
             except KeyError:
                 raise exc.SamariumImportError(
-                    f"{obj} is not a member of the {name} module"
+                    f"{obj.removeprefix('sm_')} is not a member of the {name} module"
                 )
 
 
 def print_safe(*args):
     args = [*map(verify_type, args)]
     return_args = args[:]
-    args = [i._toString_() for i in args]
+    args = [i.sm_to_string() for i in args]
     types = [*map(type, args)]
     if tuple in types:
         raise exc.SamariumSyntaxError("missing brackets")
@@ -130,16 +122,16 @@ def readline(prompt: str = "") -> String:
 
 def run(
     code: str,
-    ch: CodeHandler,
+    reg: Registry,
     debug: bool = False,
     *,
     load_template: bool = True,
     quit_on_error: bool = True,
-) -> CodeHandler:
+) -> Registry:
 
     runtime_state = Runtime.quit_on_error
     Runtime.quit_on_error = quit_on_error
-    code = "\n".join(Transpiler(tokenize(code), ch).transpile().code)
+    code = Transpiler(tokenize(code), reg).transpile().output
     if load_template:
         code = readfile(f"{os.path.dirname(__file__)}/template.py").replace(
             "{{ CODE }}", code
@@ -148,13 +140,13 @@ def run(
         if debug:
             print(code)
         Runtime.import_level += 1
-        ch.globals = globals() | ch.globals
-        exec(code, ch.globals)
+        reg.vars = globals() | reg.vars
+        exec(code, reg.vars)
         Runtime.import_level -= 1
     except Exception as e:
         exc.handle_exception(e)
     Runtime.quit_on_error = runtime_state
-    return ch
+    return reg
 
 
 def sleep(*args: Integer):
@@ -170,3 +162,7 @@ def sleep(*args: Integer):
 
 def throw(message: str = ""):
     raise exc.SamariumError(message)
+
+
+def timestamp() -> Integer:
+    return Int(time_ns() // 1_000_000)

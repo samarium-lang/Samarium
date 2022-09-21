@@ -6,28 +6,31 @@ nav:
   - Home: index.md
   - Examples: examples.md
   - Language Guide:
-    - Variables: variables.md
     - Integers: integers.md
+    - Variables: variables.md
     - Operators: operators.md
     - Strings: strings.md
     - Comments: comments.md
     - Arrays: arrays.md
-    - Slices: slices.md
-    - Tables: tables.md
     - Built-in Functions: builtins.md
     - Control Flow: controlflow.md
+    - Null: null.md
+    - Slices: slices.md
+    - Tables: tables.md
+    - Enums: enums.md
     - Functions: functions.md
     - Modules: modules.md
     - Classes: classes.md
     - File I/O: fileio.md
   - Standard Library:
-    - "collections module": stdcollections.md
-    - "iter module": stditer.md
-    - "math module": stdmath.md
-    - "operator module": stdoperator.md
-    - "random module": stdrandom.md
-    - "string module": stdstring.md
-    - "types module": stdtypes.md
+    - collections module: stdcollections.md
+    - datetime module: stddatetime.md
+    - iter module: stditer.md
+    - math module: stdmath.md
+    - operator module: stdoperator.md
+    - random module: stdrandom.md
+    - string module: stdstring.md
+    - types module: stdtypes.md
   - Tools: tools.md
 theme:
   name: material

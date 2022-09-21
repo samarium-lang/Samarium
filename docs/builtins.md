@@ -1,15 +1,17 @@
 # Built-in Functions
 
-## STDIN
+
+## INPUT
 
 Standard input can be read from with `???`.
 It will read until it receives a newline character.
 
 `x: ???` will assign to `x` as a string what it reads from standard input, stopping at a newline character.
 
-A prompt can be given by preceding the `???` with a string, for example `"input: "???`
+A prompt can be given by preceding the `???` with a string, for example `"input: "???`.
 
-## STDOUT
+
+## PRINTLN
 
 Objects can be written to standard output by appending a `!` character to them.
 Note that they won't be written exactly as they would appear in Samarium.
@@ -25,12 +27,14 @@ x: //\!;
 == the string "6" is written to stdout, and `x` now has the value 6 (integer)
 ```
 
-## STDERR
 
-Similarly to STDOUT, objects can be written to standard error using `!!!`.
+## THROW
+
+Similarly to PRINTLN, objects can be written to standard error using `!!!`.
 This will throw an error, and exit the program if the error is not caught.
 
 `"exception raised"!!!` will write `[Error] exception raised` to standard error.
+
 
 ## EXIT
 
@@ -39,12 +43,14 @@ If a particular exit code is desired, it may be put after the exclamation mark:
 
 `=>! //` will exit the program with exit code 3.
 
+
 ## HASH
 
 The hash function `##` returns as a integer the hash value of an object if it has one (arrays and tables do not).
 The value it returns will remain consistent for the life of the program, but may vary if the program is run multiple times.
 
 `"hash"##` will return the hash value of the string `"hash"`.
+
 
 ## TYPEOF
 
@@ -65,6 +71,7 @@ These instances are callable and can be used to convert values into that type, l
 
 > Related library: [`types`](stdtypes.md)
 
+
 ## CAST
 
 The cast function `%` can convert between a Unicode character (a string) and its corresponding code (an integer).
@@ -72,6 +79,7 @@ The cast function `%` can convert between a Unicode character (a string) and its
 `"a"%` returns `97`.
 
 `/\\\\/%` returns `"!"`.
+
 
 ## SPECIAL
 
@@ -92,9 +100,19 @@ For example:
 == writes `6` to stdout
 ```
 
+
+## TIMESTAMP
+
+The timestamp function `@@` returns the time in milliseconds since the epoch.
+
+!!! note
+    Timezone is included. For UTC timestamp, use `datetime.timestamp_utc`.
+
+
 ## DTNOW
 
-The dtnow function `@@` gets the system's current date and time as an array of integers, in the format `[year, month, day, hour, minute, second, millisecond, utc_hour_offset, utc_minute_offset]`.
+The dtnow function `@@@` gets the system's current date and time as an array of integers, in the format `[year, month, day, hour, minute, second, millisecond, utc_hour_offset, utc_minute_offset]`.
+
 
 ## SLEEP
 
@@ -105,17 +123,19 @@ The sleep function `,.,` pauses execution for the specified number of millisecon
 == sleep for 1000 milliseconds (1 second) 
 ```
 
+
 ## ASSERT
 
-The assert function `#` is used as a debugging tool.
+The assert function `!!` is used as a debugging tool.
 If the input to this function is falsy (i.e. empty iterable, null, or just false), an `AssertionError` will be raised, otherwise, nothing will happen.
 A custom error message can be provided by putting it after a `,`.
 
 ```sm
-# / > /\, "error message";
+!! / > /\, "error message";
 ```
 
 will raise `[AssertionError] error message`.
+
 
 ## PARENT
 
@@ -124,6 +144,7 @@ If a class only has one parent, it will be return directly.
 If a class has multiple parents, they will be returned in an array, in the same order as in the class definition.
 
 Note that this will only go one layer deep, i.e. if class `A` has parent `B` and class `B` has parent `C`, `A!?` will only return `B`, and `A!?!?` will return `C`.
+
 
 ## RANDOM
 
@@ -138,3 +159,13 @@ String  | Returns a random character
 Table   | Returns a random key
 
 > Related library: [`random`](stdrandom.md)
+
+
+## ID
+
+The special method `**` returns the memory address of a given object.
+
+```sm
+x: //;
+x**!;  == 7f7ea0367800
+```

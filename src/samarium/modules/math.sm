@@ -76,7 +76,7 @@ sqrt n * {
     rmdr: \;
     s: n$$ - (/ ? n$$ --- /\ ,, /\);
     .. s >: \ {
-        bits: shr(n,s) & //;
+        bits: shr(n, s) & //;
         rmdr: shl(rmdr, /\) | bits;
         cand: shl(root, /\) | /;
         bitnext: rmdr >: cand;
@@ -95,27 +95,27 @@ shr a b * {
     * a -- /\ +++ b;
 }
 
-toHex n * {
-    <-string.hexdigits;
+to_hex n * {
+    <-string.HEXDIGITS;
     div: n -- /\\\\;
     mod: n --- /\\\\;
     ? ~~ div {
-        * hexdigits<<mod>>;
+        * HEXDIGITS<<mod>>;
     }
-    * toHex(div) + hexdigits<<mod>>;
+    * to_hex(div) + HEXDIGITS<<mod>>;
 }
 
-toOct n * {
-    <-string.octdigits;
+to_oct n * {
+    <-string.OCTDIGITS;
     div: n -- /\\\;
     mod: n --- /\\\;
     ? ~~ div {
-        * octdigits<<mod>>;
+        * OCTDIGITS<<mod>>;
     }
-    * toOct(div) + octdigits<<mod>>;
+    * to_oct(div) + OCTDIGITS<<mod>>;
 }
 
-isPrime n * {
+is_prime n * {
     ? n <: // {
         * n > /;
     }

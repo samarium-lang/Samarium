@@ -27,10 +27,10 @@ class Token(Enum):
     XOR = "^^"  # TODO
 
     # Bitwise
-    BINAND = "&"
-    BINNOT = "~"
-    BINOR = "|"
-    BINXOR = "^"
+    BAND = "&"
+    BNOT = "~"
+    BOR = "|"
+    BXOR = "^"
 
     # Parens, Brackets and Braces
     BRACKET_OPEN = "["
@@ -66,22 +66,22 @@ class Token(Enum):
     DEFAULT = "<>"
     FUNCTION = "*"
     INSTANCE = "'"
-    MAIN = "=>"
+    ENTRY = "=>"
+    YIELD = "**"
 
     # Slicing
     SLICE_OPEN = "<<"
     SLICE_CLOSE = ">>"
-    SLICE_STEP = "**"
 
     # Object Manipulation
     CAST = "%"
-    DOLLAR = "$"
+    SPECIAL = "$"
     EXIT = "=>!"
     HASH = "##"
     PARENT = "!?"
     TYPE = "?!"
-    STDIN = "???"
-    STDOUT = "!"
+    READLINE = "???"
+    PRINT = "!"
 
     # File I/O
     FILE_CREATE = "?~>"
@@ -101,12 +101,12 @@ class Token(Enum):
     FILE_QUICK_BINARY_WRITE = "%>"
 
     # Other
-    ASSERT = "#"
+    ENUM = "#"
     ASSIGN = ":"
-    ATTRIBUTE = "."
-    DTNOW = "@@"
+    ATTR = "."
+    UNIX_STMP = "@@"
+    ARR_STMP = "@@@"
     END = ";"
-    NULL = "_"
     SEP = ","
     SLEEP = ",.,"
     STRING = '"'

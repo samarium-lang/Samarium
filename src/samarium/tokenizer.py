@@ -1,4 +1,5 @@
 from contextlib import suppress
+from string import ascii_letters, digits
 from typing import Union
 
 from . import handlers
@@ -6,6 +7,8 @@ from .exceptions import SamariumSyntaxError, handle_exception
 from .tokens import Token
 
 Tokenlike = Union[Token, str, int]
+
+CHARSET = ascii_letters + digits + "_"
 
 MULTISEMANTIC = {
     "+": handlers.plus,
@@ -57,11 +60,11 @@ def tokenize(program: str) -> list[Tokenlike]:
                 temp = ""
 
         # String content and name handling
-        elif scroller.pointer.isalnum() or string:
+        elif scroller.pointer in CHARSET or string:
             temp += scroller.pointer
 
         # Namespace submitting
-        elif temp and not scroller.pointer.isalnum() and not string:
+        elif temp and scroller.pointer not in CHARSET and not string:
             tokens.append(temp)
             temp = ""
             continue

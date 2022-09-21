@@ -1,14 +1,16 @@
 # Examples
 
+
 ## Reverse a file's contents
 
 ```sm
 => argv * {
     file: argv<</>>;
     data <~ file;
-    data<<**-/>> ~> file;
+    data<<....-/>> ~> file;
 }
 ```
+
 
 ## Truth Machine
 
@@ -21,6 +23,7 @@
     =>!;
 }
 ```
+
 
 ## Dropsort
 
@@ -37,11 +40,12 @@ dropsort array * {
 }
 ```
 
+
 ## Factorial
 
 ```sm
 factorial n * {
-    # n >: \;
+    !! n >: \;
     ? ~~ n {
         * /;
     }
@@ -68,6 +72,7 @@ point coords... * {
 }
 ```
 
+
 ## Loop Flow
 
 ```sm
@@ -90,10 +95,11 @@ point coords... * {
 >==
 ```
 
+
 ## Randomness
 
 ```sm
-randomHexColor * {
+random_hex_color * {
     <-iter.range;
     <-string.hexdigits, join;
     * "#" + join([hexdigits?? ... i ->? range(/\\)]);
@@ -101,24 +107,25 @@ randomHexColor * {
 
 == could alternatively define that as
 
-randomHexColor * {
+random_hex_color * {
     max: /\ +++ //\\\;
     <-string.leftpad;
-    <-math.toHex;
-    * "#" + leftpad(toHex(max??), //\, "0");
+    <-math.to_hex;
+    * "#" + leftpad(to_hex(max??), //\, "0");
 }
 
 => * {
-    randomHexColor()!;     == #d2300a
-    randomHexColor()!;     == #f866ce
-    randomHexColor()!;     == #8fb3cf
+    random_hex_color()!;     == #d2300a
+    random_hex_color()!;     == #f866ce
+    random_hex_color()!;     == #8fb3cf
 }
 ```
+
 
 ## Optional Arguments
 
 ```sm
-rollDice q? * {
+roll_dice q? * {
     roll1 * { * //\?? + /; }
     q <> /;
     ? q :: / {
@@ -130,11 +137,12 @@ rollDice q? * {
 }
 
 => * {
-    rollDice()!;       == 5
-    rollDice(/\)!;     == [6, 3]
-    rollDice(/\\/\/)!; == [5, 5, 6, 4, 6, 5, 6, 4, 5, 4, 4, 6, 5, 3, 6, 6, 2, 1, 4, 5, 5, 1, 2, 1]
+    roll_dice()!;       == 5
+    roll_dice(/\)!;     == [6, 3]
+    roll_dice(/\\/\/)!; == [5, 5, 6, 4, 6, 5, 6, 4, 5, 4, 4, 6, 5, 3, 6, 6, 2, 1, 4, 5, 5, 1, 2, 1]
 }
 ```
+
 
 ## Classes
 
@@ -145,7 +153,7 @@ rollDice q? * {
         'b: b;
     }
 
-    toString * {
+    to_string * {
         <-types.String;
         * "Rectangle[" + String('a) + ", " + String('b) + "]";
     }
@@ -158,7 +166,7 @@ rollDice q? * {
         * 'a ++ 'b;
     }
 
-    isSquare * {
+    is_square * {
         * 'a :: 'b;
     }
 }
@@ -168,14 +176,14 @@ rollDice q? * {
     r!;                  == Rectangle[4, 3]
     r.circumference()!;  == 14
     r.area()!;           == 12
-    r.isSquare()!;       == 0
+    r.is_square()!;       == 0
 }
 ```
 
 ## Decorators
 
 ```sm
-logCall func * {
+log_call func * {
     wrapper args... * {
         "Calling function", func, "with args", args!;
         * func(**args);
@@ -183,7 +191,7 @@ logCall func * {
     * wrapper;
 }
 
-logCall @ pow a b * {
+log_call @ pow a b * {
     * a +++ b;
 }
 

@@ -1,6 +1,7 @@
 Array: []?!;
 Integer: \?!;
-Null: _?!;
+Iterator: [].iterate()?!;
+Null: (||)?!;
 Slice: <<>>?!;
 String: ""?!;
 Table: {{}}?!;
@@ -10,18 +11,18 @@ Table: {{}}?!;
 
     create value * {
         ? value?! :: ""?! {
-            <-string.toLower;
-            'value: {{"true" -> /, "false" -> \}}<<toLower(value)>>;
+            <-string.to_lower;
+            'value: {{"true" -> /, "false" -> \}}<<to_lower(value)>>;
         } ,, {
-            'value: value.toBit();
+            'value: value.to_bit();
         }
     }
 
-    toString * {
+    to_string * {
         * "true" ? 'value ,, "false";
     }
 
-    toBit * {
+    to_bit * {
         * 'value;
     }
 
@@ -29,7 +30,7 @@ Table: {{}}?!;
         * Boolean('value :: other.value);
     }
 
-    greaterThan other * {
+    greater_than other * {
         * Boolean('value > other.value);
     }
 
@@ -89,15 +90,15 @@ Table: {{}}?!;
 
     create * {
         <-random.choices;
-        <-string.hexdigits, join;
-        hex: join(choices(hexdigits, /\`\\\\));
+        <-string.HEXDIGITS, join;
+        hex: join(choices(HEXDIGITS, /\\\\\));
         hex<<//\\>>: "4";
         hex<</\\\\>>: "89ab"??;
         'hex: hex;
         'dec: Integer("x:" + hex);
     }
 
-    toString * {
+    to_string * {
         <-string.join;
         * join(
             [

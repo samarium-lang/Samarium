@@ -1,5 +1,6 @@
 # Control Flow
 
+
 ## `if`/`else`
 
 `if` statements are written using a `?` character, and `else` is written as `,,`.
@@ -16,6 +17,7 @@ Blocks are enclosed in curly brackets.
 }
 ```
 
+
 ## `foreach` loop
 
 `foreach` loops are written using `...`, and enclosed in curly brackets.
@@ -29,7 +31,9 @@ arr: [];
 == arr :: ["s", "t", "r", "i", "n", "g"]
 ```
 
+
 ### Comprehensions
+
 
 #### **Array Comprehensions**
 
@@ -77,6 +81,7 @@ filtered: [n ... n ->? arr ? n --- /\ :: /];
 
 In both cases, `filtered` is equal to `[1, 9, 25]`.
 
+
 #### **Table Comprehensions**
 
 Table comprehensions have a similar syntax to array comprehensions:
@@ -99,6 +104,7 @@ tab: {{x -> x ++ x ... x ->? [/\, /\\, //\]}};
 
 In both cases, `tab` is equal to `{{2 -> 4, 4 -> 16, 6 -> 36}}`.
 
+
 ## `while` loop
 
 `while` loops are written with `..`, and enclosed in curly brackets.
@@ -113,6 +119,7 @@ x: \;
 }
 == prints 2, 4, 6, 8, 10
 ```
+
 
 ## `break`/`continue`
 
@@ -150,6 +157,7 @@ This program will print 1, 2, skip the third iteration of the `while` loop, then
 
 !!! note
     Both `<-` and `->` do not need a semicolon at the end of the statement – it's optional.
+
 
 ## `try`/`catch`
 

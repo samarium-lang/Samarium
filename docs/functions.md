@@ -21,6 +21,7 @@ b: /\;
 c: add(a, b);
 ```
 
+
 ## Optional Parameters
 
 Parameters can be made optional by adding a `?` character after the parameter's name. Optional parameters are required to have a default value defined in the function's body using the `param <> default` syntax.
@@ -35,6 +36,7 @@ leftpad string length char? * {
 leftpad("hello", /\/\)!; ==      hello
 leftpad("hello", /\/\, "-")!; == -----hello
 ```
+
 
 ## Varargs
 
@@ -55,6 +57,7 @@ prod(///, /\/\/)!; == 147
 prod(/\/, /\\\/\, /\, /\\/\\\, ///)!; == 171360
 ```
 
+
 ## Argument Unpacking
 
 Arguments can be spread into a function by using the `**` unary operator:
@@ -69,6 +72,7 @@ arguments = [/\, //];
 pow(**arguments)!;
 == equivalent to pow(/\, //)!;
 ```
+
 
 ## Decorators
 
@@ -90,10 +94,47 @@ double @ multiply a b * {
     * a ++ b;
 }
 
-double @ codeToChar code * {
+double @ code_to_char code * {
     * code%;
 }
 
 multiply(/\, /\\)!;  == 16
-codeToChar(/\\\\/)!;  == !!
+code_to_char(/\\\\/)!;  == !!
+```
+
+
+## Generators
+
+Functions can yield values instead of returning them, thus making the function behave like an iterator. Values are yielded with the `**` operator:
+
+```sm
+<-math.is_prime;
+
+prime_generator * {
+    x: /\;
+    .. {
+        ? is_prime(x) {
+            ** x;
+        }
+        x+: /;
+    }
+}
+
+=> * {
+    pg: prime_generator();
+    pg!;
+    "Primes below 100:"!;
+    ... i ->? pg {
+        ? i > /\/\ +++ /\ {
+            !;
+            <-
+        }
+        ""?!(i) + " " ~> /;
+    }
+}
+```
+```
+<Iterator@7fd890475860>
+Primes below 100:
+2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
 ```

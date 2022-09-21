@@ -4,3 +4,5 @@ __pycache__
 test
 dist/
 site/
+src/*
+!src/samarium/
