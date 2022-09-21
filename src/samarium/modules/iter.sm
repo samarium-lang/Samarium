@@ -200,7 +200,7 @@ sorted array key? * {
 #flatten array * {
     flattened: [];
     ... i ->? array {
-        ? i?! :: Array {
+        ? i?! :: []?! {
             flattened+: i;
         } ,, {
             flattened+: [i];
