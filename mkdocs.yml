@@ -24,6 +24,7 @@ nav:
     - File I/O: fileio.md
   - Standard Library:
     - collections module: stdcollections.md
+    - datetime module: stddatetime.md
     - iter module: stditer.md
     - math module: stdmath.md
     - operator module: stdoperator.md

@@ -34,6 +34,7 @@ from .utils import readfile, silence_stdout, sysexit
 
 MODULE_NAMES = [
     "collections",
+    "datetime",
     "iter",
     "math",
     "operator",
