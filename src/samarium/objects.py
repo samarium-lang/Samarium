@@ -706,8 +706,6 @@ class Array(Class):
         elif isinstance(value, Table):
             self.value = Array(map(Array, value.value.items())).value
         elif isinstance(value, Iterator):
-            if value.length is null:
-                raise SamariumTypeError("cannot convert an infinite iterator to Array")
             self.value = Array(list(value.value)).value
         elif isinstance(value, Slice) and value.sm_special() is null:
             raise SamariumTypeError("cannot convert an infinite slice to Array")
