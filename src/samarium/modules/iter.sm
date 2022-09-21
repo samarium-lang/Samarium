@@ -110,7 +110,7 @@ enumerate array * {
 }
 
 pairwise array * {
-    ... i ->? <<..array$$ - />> {
+    ... i ->? <<..array$ - />> {
         ** array<<i..i+/\>>;
     }
 }
