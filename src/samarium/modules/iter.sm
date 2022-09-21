@@ -118,7 +118,7 @@ pairwise array * {
 zip arrays... * {
     <-math.min;
     shortest: min([i$ ... i ->? arrays]);
-    ... i ->? range(shortest) {
+    ... i ->? <<..shortest>> {
         ** [it<<i>> ... it ->? arrays];
     }
 }
