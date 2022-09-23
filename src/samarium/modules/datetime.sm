@@ -3,8 +3,6 @@
 MONTHS: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 WEEKDAYS: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-_:;
-
 sleep_seconds seconds * {
     ,., seconds ++ /////\/\\\;
 }
@@ -68,8 +66,8 @@ timestamp_utc ts? * {
 
 @ DateTime {
     create Y? M? D? h? m? s? ms? tz? * {
-        Y <> _;
-        ? _ :: Y {
+        Y <> ;
+        ? :: Y {
             'array: @@@;
             'year: 'array<<\>>;
             'month: 'array<</>>;
