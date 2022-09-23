@@ -12,11 +12,11 @@ nav:
     - Strings: strings.md
     - Comments: comments.md
     - Arrays: arrays.md
+    - Tables: tables.md
     - Built-in Functions: builtins.md
     - Control Flow: controlflow.md
     - Null: null.md
     - Slices: slices.md
-    - Tables: tables.md
     - Enums: enums.md
     - Functions: functions.md
     - Modules: modules.md

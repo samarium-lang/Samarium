@@ -54,6 +54,7 @@ Parent classes are inherited from right to left, i.e. the first class in the inh
 => * {
     c: C();
     c.method();     == prints "A", as class A was inherited last
+}
 ```
 
 

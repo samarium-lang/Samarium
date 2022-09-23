@@ -35,22 +35,22 @@ Operator | Meaning
 
 ## Logic and Membership
 
-Operator | Meaning
----      | ---
-`&&`     | Logical AND
-`\|\|`   | Logical OR
-`~~`     | Logical NOT
-`->?`    | `x ->? y` returns 1 if `x` is a member of `y`, and 0 if not
+Operator                   | Meaning
+---                        | ---
+`&&`                       | Logical AND
+<code>&#124;&#124;</code>  | Logical OR
+`~~`                       | Logical NOT
+`->?`                      | `x ->? y` returns 1 if `x` is a member of `y`, and 0 if not
 
 
 ## Bitwise
 
-Operator | Meaning
----      | ---
-`&`      | Bitwise AND
-`\|`     | Bitwise OR
-`~`      | Bitwise NOT
-`^`      | Bitwise XOR
+Operator             | Meaning
+---                  | ---
+`&`                  | Bitwise AND
+<code>&#124;</code>  | Bitwise OR
+`~`                  | Bitwise NOT
+`^`                  | Bitwise XOR
 
 
 ## Assignment

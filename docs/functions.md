@@ -103,7 +103,7 @@ code_to_char(/\\\\/)!;  == !!
 ```
 
 
-## Generators
+## Iterators
 
 Functions can yield values instead of returning them, thus making the function behave like an iterator. Values are yielded with the `**` operator:
 
@@ -138,3 +138,9 @@ prime_generator * {
 Primes below 100:
 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
 ```
+
+Iterators support special `$` and cast `%` methods.
+
+`Iterator%` returns the length of the iterator if available, and null otherwise.
+
+`Iterator$` yields the next value of the iterator.

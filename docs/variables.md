@@ -4,7 +4,7 @@ Variables are defined using the assignment operator `:`, like so:
 ```sm
 my_var: /;
 ```
-Variables can have many types, such as integers, strings, arrays, tables, and null.
+Variables can have many types, such as integers, strings, arrays, tables, slices, or null.
 Functions and classes may also be treated as first-class variables.
 Only letters, numbers, and underscores can be used for variable names (case sensitive).
 

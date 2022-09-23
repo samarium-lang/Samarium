@@ -11,7 +11,7 @@ A table may be indexed by its keys, which will return their corresponding values
 
 `tab<<"key">>` returns `"value"`
 
-`tab<</>>` returns `[2, "a"]`
+<code>tab&lt;&lt;/&gt;&gt;</code> returns `[2, "a"]`
 
 After its initialization, the items of a table can be set using this indexing syntax.
 If the key doesn't already exist in the table, it will be created.

@@ -78,11 +78,11 @@ string %> f;
 Files can be opened for appending in two ways:
 
 ```sm
-f ~~> "file.txt";
+f &~~> "file.txt";
 == opens/creates `file.txt` for appending, in text
 == mode, and stores the file I/O object in `f`.
 
-f %~> "file.bin";
+f &%~> "file.bin";
 == opens/creates `file.bin` for appending, in binary 
 == mode, and stores the file I/O object in `f`.
 ```

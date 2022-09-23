@@ -90,6 +90,7 @@ Object   | Use
 Array    | Returns the length of the array
 Function | Returns the number of parameters the function has
 Integer  | Returns the binary representation of the integer as a string
+Slice    | Returns the length of the range covered by the slice
 String   | Returns the length of the string
 Table    | Returns an array of the table's values
 

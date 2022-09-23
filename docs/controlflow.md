@@ -130,9 +130,7 @@ They can be used in both `for` and `while` loops.
 x: \;
 .. x < /\/ {
     x+: /;
-    ? x :: // {
-        <-;
-    }
+    ? x :: // { <- }
     x!;
 }
 ```
@@ -146,9 +144,7 @@ These can also be used in both `for` and `while` loops.
 x: \;
 .. x < /\/ {
     x+: /;
-    ? x :: // {
-        ->;
-    }
+    ? x :: // { -> }
     x!;
 }
 ```
