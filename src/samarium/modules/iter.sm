@@ -20,7 +20,6 @@ find array target * {
 }
 
 count array target * {
-    <-math.sum;
     ? target ~~ ->? array { * \; }
     s: \;
     ... e ->? array {

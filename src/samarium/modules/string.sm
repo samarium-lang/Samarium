@@ -198,7 +198,7 @@ is_capitalized string * {
 
 is_in_group string group * {
     ... char ->? string {
-        ? char ~~->? group { * \; }
+        ? char ~~ ->? group { * \; }
     }
     * /;
 }
