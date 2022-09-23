@@ -345,10 +345,24 @@ class Transpiler:
             ]
 
     def _operators(self, token: Token) -> None:
-        prev = self._index - 1
-        if self._tokens[prev] in Group.operators | {Token.PAREN_OPEN} - {
-            Token.NOT
-        } and token not in {Token.NOT, Token.IN, Token.SUB}:
+        prev_token = self._tokens[self._index - 1]
+        if token in {Token.NOT, Token.BNOT} and prev_token in Group.operators:
+            self._line.append("null")
+        elif token is Token.IN and prev_token is Token.NOT:
+            pass
+        elif (
+            prev_token
+            in Group.operators
+            | {
+                Token.PAREN_OPEN,
+                Token.BRACKET_OPEN,
+                Token.TABLE_OPEN,
+                Token.IF,
+                Token.WHILE,
+                Token.CATCH,
+            }
+            or is_first_token(self._line)
+        ) and token not in {Token.ADD, Token.SUB, Token.NOT, Token.BNOT}:
             self._line.append("null")
         self._line.append(OPERATOR_MAPPING[token])
 
@@ -522,7 +536,10 @@ class Transpiler:
     def _core(self, token: Token) -> None:
         index = self._index
         if token is Token.END:
-            if self._tokens[index - 1] in {Token.DEFAULT, Token.CATCH}:
+            if self._tokens[index - 1] in Group.operators | {
+                Token.DEFAULT,
+                Token.CATCH,
+            }:
                 self._line.append("null")
             if self._scope.current == "enum":
                 self._line.append('""", """')
@@ -613,9 +630,13 @@ class Transpiler:
             except IndexError:
                 self._line.append("readline()")
         elif token is Token.THROW:
+            if self._line_tokens[-2] in Group.operators:
+                self._line.append("null")
             indented = self._indent > 0
             self._line = [*self._line[:indented], "throw(", *self._line[indented:], ")"]
         elif token is Token.PRINT:
+            if self._line_tokens[-2] in Group.operators:
+                self._line.append("null")
             if "=" in self._line:
                 hook = self._line.index("=") + 1
             else:
