@@ -339,7 +339,7 @@ null = Null()
 
 
 class Slice(Class):
-    __slots__ = ("start", "stop", "step", "tup", "value", "range", "inf")
+    __slots__ = ("start", "stop", "step", "tup", "value", "range")
 
     def sm_create(self, start: Any = null, stop: Any = null, step: Any = null):
         if step.value == 0:
@@ -353,7 +353,6 @@ class Slice(Class):
             I64_MAX if self.tup[1] is None else self.tup[1],
             self.tup[2] or 1,
         )
-        self.inf = self.tup[1] is None
         self.value = slice(*self.tup)
 
     def sm_iterate(self) -> Iterator:
@@ -366,9 +365,7 @@ class Slice(Class):
             )
         return Int(choice(self.range))
 
-    def sm_special(self) -> Integer | Null:
-        if self.inf:
-            return null
+    def sm_special(self) -> Integer:
         return Int(len(self.range))
 
     def sm_has(self, index: Integer) -> Integer:
@@ -998,7 +995,7 @@ class Enum_(Class):
 
 
 class Iterator(Class):
-    __slots__ = ("value", "length", "isgen", "raw")
+    __slots__ = ("value", "length")
 
     def sm_create(self, value: Class) -> None:
         if not isinstance(value, Iterable):
