@@ -4,6 +4,8 @@ version = "0.3.1"
 description = "The Samarium Programming Language"
 authors = ["trag1c <trag1cdev@yahoo.com>"]
 license = "MIT"
+documentation = "https://samarium-lang.github.io/Samarium/"
+repository = "https://github.com/samarium-lang/Samarium"
 readme = "README.md"
 
 [tool.poetry.dependencies]
