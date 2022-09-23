@@ -50,7 +50,7 @@ theme:
         icon: material/toggle-switch-off-outline
         name: Switch to light mode
 extra_javascript:
-  - https://unpkg.com/shiki
+  - https://unpkg.com/shiki@0.10.1/dist/index.unpkg.iife.js
   - assets/script.js
 markdown_extensions:
   - admonition
