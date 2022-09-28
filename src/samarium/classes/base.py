@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from functools import wraps
 from inspect import signature
 from re import compile
@@ -68,8 +68,79 @@ class Attrs:
 
 class UserAttrs(Attrs):
 
+    def __init__(self, *args) -> None:
+        with suppress(AttributeError):
+            self.__entry__(*args)
+
     def __str__(self) -> str:
-        return f"<{get_type_name(self)}@{self.id}>"
+        try:
+            string = self.__string__
+        except AttributeError:
+            return f"<{get_type_name(self)}@{self.id}>"
+        if string.argc.val != 1:
+            raise SamariumTypeError(
+                f"{get_type_name(self)}! should only take one argument"
+            )
+        v = string().val
+        if isinstance(v, str):
+            return v
+        raise SamariumTypeError(f"{get_type_name(self)}! returned a non-string")
+
+    def __bool__(self) -> bool:
+        try:
+            bit = self.__bit__
+        except AttributeError:
+            raise NotDefinedError(f"? {get_type_name(self)}")
+        if bit.argc.val != 1:
+            raise SamariumTypeError(
+                f"? {get_type_name(self)} should only take one argument"
+            )
+        v = bit().val
+        if v == 0 or v == 1:
+            return bool(v)
+        raise SamariumTypeError(f"? {get_type_name(self)} returned a non-bit")
+
+    def __hash__(self) -> int:
+        return self.hash.val
+
+    @property
+    def special(self) -> Any:
+        try:
+            special = self.__special__
+        except AttributeError:
+            raise NotDefinedError(f"{get_type_name(self)}$")
+        if special.argc.val != 1:
+            raise SamariumTypeError(
+                f"{get_type_name(self)}$ should only take one argument"
+            )
+        return special()
+
+    @property
+    def hash(self) -> Integer:
+        try:
+            hsh = self.__hsh__
+        except AttributeError:
+            raise NotDefinedError(f"{get_type_name(self)}##")
+        if hsh.argc != 1:
+            raise SamariumTypeError(
+                f"{get_type_name(self)}## should only take one argument"
+            )
+        v = hsh()
+        if isinstance(v, Integer):
+            return v
+        raise SamariumTypeError(f"{get_type_name(self)}## returned a non-integer")
+
+    @property
+    def cast(self) -> Any:
+        try:
+            cast = self.__cast__
+        except AttributeError:
+            raise NotDefinedError(f"{get_type_name(self)}%")
+        if cast.argc != 1:
+            raise SamariumTypeError(
+                f"{get_type_name(self)}% should only take one argument"
+            )
+        return cast()
 
     @ClassProperty
     def argc(self) -> int:
