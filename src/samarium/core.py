@@ -24,6 +24,7 @@ from .classes import (
     mkslice,
     t,
     check_type,
+    correct_type,
 )
 from .runtime import Runtime
 from .tokenizer import tokenize
@@ -94,9 +95,7 @@ def import_module(data: str, reg: Registry):
 
 
 def print_safe(*args) -> Any:
-    for arg in args:
-        check_type(arg)
-    args = list(args)
+    args = list(map(correct_type, args))
     return_args = args[:]
     args = list(map(str, args))
     types = [*map(type, args)]
