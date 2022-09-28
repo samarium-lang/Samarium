@@ -142,8 +142,10 @@ class Integer(Attrs):
         return object.__new__(cls)
 
     def __init__(self, v: Any = None) -> None:
-        if isinstance(v, (int, bool, float)):
+        if isinstance(v, (int, bool)):
             self.val = int(v)
+        elif isinstance(v, Integer):
+            self.val = v.val
         elif v is None:
             self.val = 0
         elif isinstance(v, String):
