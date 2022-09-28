@@ -280,6 +280,9 @@ class Integer(Attrs):
     def __pos__(self) -> Integer:
         return self
 
+    def __neg__(self) -> Integer:
+        return Integer(-self.val)
+
     def __eq__(self, other: Any) -> Integer:
         if isinstance(other, Integer):
             return Integer(self.val == other.val)
