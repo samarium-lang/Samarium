@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 from contextlib import suppress
 from enum import Enum
 from typing import Any, cast
 
-from .exceptions import handle_exception, SamariumSyntaxError
+from .exceptions import SamariumSyntaxError, handle_exception
 from .tokenizer import Tokenlike
 from .tokens import FILE_IO_TOKENS, Token
 from .utils import match_brackets

@@ -1,6 +1,7 @@
-from inspect import signature
-import sys
 import os
+import sys
+from inspect import signature
+
 STDOUT = sys.stdout
 sys.stdout = open(os.devnull, "w")
 {{ CODE }}

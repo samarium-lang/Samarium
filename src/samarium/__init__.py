@@ -1,8 +1,7 @@
 import sys
-
 from contextlib import suppress
 
-from .core import run, readfile
+from .core import readfile, run
 from .shell import run_shell
 from .transpiler import Registry
 from .utils import __version__

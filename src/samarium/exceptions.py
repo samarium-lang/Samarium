@@ -1,9 +1,9 @@
 import sys
-from dahlia import dahlia
 from re import compile
 
-from .runtime import Runtime
+from dahlia import dahlia
 
+from .runtime import Runtime
 
 SINGLE_QUOTED_NAME = compile(r"'(\w+)'")
 

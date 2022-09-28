@@ -9,7 +9,7 @@ from typing import Any, Callable, Generic, TypeVar, cast
 
 from .exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
 from .tokenizer import Tokenlike
-from .tokens import Token, OPEN_TOKENS, CLOSE_TOKENS
+from .tokens import CLOSE_TOKENS, OPEN_TOKENS, Token
 
 __version__ = "0.3.1"
 

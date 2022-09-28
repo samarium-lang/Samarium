@@ -3,8 +3,7 @@ from dahlia import dahlia, dprint
 from .core import run
 from .tokenizer import tokenize
 from .transpiler import Registry
-from .utils import match_brackets, __version__
-
+from .utils import __version__, match_brackets
 
 IN = dahlia("&3==> ")
 INDENT = dahlia("&3  > ")
