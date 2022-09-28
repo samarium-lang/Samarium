@@ -338,8 +338,8 @@ class String(Attrs):
     def __init__(self, value: Any = "") -> None:
         self.val = str(value)
 
-    def __contains__(self, element: String) -> Integer:
-        return Integer(element.val in self.val)
+    def __contains__(self, element: String) -> bool:
+        return element.val in self.val
 
     def __iter__(self) -> Iterator[String]:
         yield from map(String, self.val)
@@ -449,8 +449,8 @@ class Array(Attrs):
     def __iter__(self) -> Iterator[Any]:
         yield from self.val
 
-    def __contains__(self, element: Any) -> Integer:
-        return Integer(element in self.val)
+    def __contains__(self, element: Any) -> bool:
+        return element in self.val
 
     def __eq__(self, other: Any) -> Integer:
         if isinstance(other, Array):
@@ -571,8 +571,8 @@ class Table(Attrs):
     def __iter__(self) -> Iterator[Any]:
         yield from self.val.keys()
 
-    def __contains__(self, element: Any) -> Integer:
-        return Integer(element in self.val)
+    def __contains__(self, element: Any) -> bool:
+        return element in self.val
 
     def __eq__(self, other: Any) -> Integer:
         if isinstance(other, Table):
