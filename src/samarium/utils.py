@@ -29,7 +29,6 @@ VT = TypeVar("VT")
 
 
 class ClassProperty:
-
     def __init__(self, func: Callable) -> None:
         self.func = func
 
@@ -40,7 +39,6 @@ class ClassProperty:
 
 
 class LFUCache(Generic[KT, VT]):
-
     def __init__(self, maxsize: int = 1024) -> None:
         self._cache: dict[KT, VT] = {}
         self._maxsize = maxsize
@@ -137,7 +135,10 @@ def parse_integer(string: str) -> int:
     neg %= 2
     if all(i in digitset for i in string.lower()):
         return int("-" * neg + string, base)
-    raise SamariumValueError(f'invalid string for Integer with base {base}: "{orig}"')
+    no_prefix = orig[2:] if orig[1] == ":" else orig
+    raise SamariumValueError(
+        f'invalid string for Integer with base {base}: "{no_prefix}"'
+    )
 
 
 def get_name(obj: Callable | type) -> str:
@@ -156,5 +157,7 @@ def guard(operator: str) -> Callable:
             if isinstance(other, Ts):
                 return function(self, other)
             raise NotDefinedError(f"{Ts.__name__} {operator} {To.__name__}")
+
         return wrapper
+
     return decorator
