@@ -711,8 +711,11 @@ class Slice(Attrs):
 
 
 def correct_type(obj: Any) -> Any:
+    check_type(obj)
     if obj is None:
         return NULL
+    if isinstance(obj, bool):
+        return Integer(obj)
     return obj
 
 
