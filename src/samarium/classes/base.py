@@ -141,17 +141,17 @@ class Integer(Attrs):
             return Integer.cache[v]
         return object.__new__(cls)
 
-    def __init__(self, v: Any) -> None:
-        if v not in Integer.cache:
-            Integer.cache[v] = self
+    def __init__(self, v: Any = None) -> None:
         if isinstance(v, (int, bool, float)):
             self.val = int(v)
         elif v is None:
             self.val = 0
-        elif isinstance(v, str):
-            self.val = parse_integer(v)
+        elif isinstance(v, String):
+            self.val = parse_integer(v.val)
         else:
             raise SamariumTypeError(f"cannot cast {get_type_name(v)} to Integer")
+        if v not in Integer.cache:
+            Integer.cache[v] = self
 
     def __bool__(self) -> bool:
         return self.val != 0
