@@ -632,7 +632,9 @@ class Slice(Attrs):
 
 
 def correct_type(obj: Any) -> Any:
-    ...
+    if obj is None:
+        return NULL
+    return obj
 
 
 def mkslice(start: Any = MISSING, stop: Any = MISSING, step: Any = MISSING) -> Any:
