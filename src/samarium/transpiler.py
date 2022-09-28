@@ -193,9 +193,9 @@ BRACKET_MAPPING = {
 }
 
 METHOD_MAPPING = {
-    Token.SPECIAL: ".sm_special()",
-    Token.CAST: ".sm_cast()",
-    Token.HASH: ".sm_hash()",
+    Token.SPECIAL: ".special",
+    Token.CAST: ".cast",
+    Token.HASH: ".hash",
     Token.TYPE: ".type",
     Token.PARENT: ".parent",
 }
@@ -379,10 +379,10 @@ class Transpiler:
             if self._line_tokens[-2] in Group.operators:
                 self._line.append("null")
 
-            # Inheriting from Class if no parent is specified
+            # Getting UserAttrs
             if self._reg[Switch.CLASS_DEF]:
                 if not isinstance(self._line_tokens[-3], str):
-                    self._line.append("(Class)")
+                    self._line.append("(UserAttrs)")
             self._reg[Switch.CLASS_DEF] = False
 
             self._indent += 1
@@ -480,7 +480,7 @@ class Transpiler:
     def _multisemantic(self, token: Token) -> None:
         index = self._index
         if token is Token.TRY:
-            self._line.append("try" if is_first_token(self._line) else ".sm_random()")
+            self._line.append("try" if is_first_token(self._line) else ".random")
         elif token is Token.TO:
             if self._tokens[index - 1] is Token.TABLE_OPEN:
                 self._line.append("null")
@@ -598,7 +598,7 @@ class Transpiler:
             )
             self._slice_object = self._tokens[index - 1] in SLICE_OBJECT_TRIGGERS
             if not self._slice_object:
-                self._line.append(f".sm_{'gs'[self._slice_assign]}et_item(")
+                self._line.append(f".__{'gs'[self._slice_assign]}etitem__(")
             self._line.append("mkslice(t(")
         elif token is Token.SLICE_CLOSE:
             if not self._slice_assign:

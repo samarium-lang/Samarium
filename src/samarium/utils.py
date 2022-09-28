@@ -28,6 +28,17 @@ KT = TypeVar("KT")
 VT = TypeVar("VT")
 
 
+class ClassProperty:
+
+    def __init__(self, func: Callable) -> None:
+        self.func = func
+
+    def __get__(self, obj, owner=None) -> Any:
+        if obj is None:
+            obj = owner
+        return self.func(obj)
+
+
 class LFUCache(Generic[KT, VT]):
 
     def __init__(self, maxsize: int = 1024) -> None:

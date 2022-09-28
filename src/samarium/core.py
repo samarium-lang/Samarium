@@ -9,7 +9,22 @@ from typing import Any
 from dahlia import dahlia
 
 from . import exceptions as exc
-from .classes import MISSING, NULL, Array, Enum, Integer, Module, Null, String, Table
+from .classes import (
+    MISSING,
+    NULL,
+    Array,
+    Enum,
+    Integer,
+    Module,
+    Null,
+    String,
+    Table,
+    UserAttrs,
+    function,
+    mkslice,
+    t,
+    check_type,
+)
 from .runtime import Runtime
 from .tokenizer import tokenize
 from .transpiler import Registry, Transpiler
@@ -66,11 +81,7 @@ def import_module(data: str, reg: Registry):
     if module_import:
         reg.vars.update({f"sm_{name}": Module(name, imported.vars)})
     elif objects == ["*"]:
-        imported.vars = {
-            k: v
-            for k, v in imported.vars.items()
-            if k.startswith("sm_")
-        }
+        imported.vars = {k: v for k, v in imported.vars.items() if k.startswith("sm_")}
         reg.vars.update(imported.vars)
     else:
         for obj in objects:
@@ -83,7 +94,9 @@ def import_module(data: str, reg: Registry):
 
 
 def print_safe(*args) -> Any:
-    args = [*map(verify_type, args)]
+    for arg in args:
+        check_type(arg)
+    args = list(args)
     return_args = args[:]
     args = [i.sm_to_string() for i in args]
     types = [*map(type, args)]

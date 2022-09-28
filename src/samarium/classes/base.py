@@ -1,23 +1,85 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
+from functools import wraps
+from inspect import signature
+from re import compile
 from secrets import choice, randbelow
-from types import FunctionType
-from typing import Any, Iterable, Iterator
+from types import FunctionType, GeneratorType
+from typing import Any, Callable, Iterable, Iterator
 
-from ..exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
-from ..utils import LFUCache, Singleton, get_name, get_type_name, guard, parse_integer
+from ..exceptions import (
+    NotDefinedError,
+    SamariumSyntaxError,
+    SamariumTypeError,
+    SamariumValueError,
+)
+from ..utils import (
+    ClassProperty,
+    LFUCache,
+    Singleton,
+    get_name,
+    get_type_name,
+    guard,
+    parse_integer,
+)
+
+
+def throw_missing(*_):
+    raise SamariumTypeError("missing default parameter value(s)")
+
+
+class Missing:
+    @property
+    def type(self) -> None:
+        throw_missing()
+
+    @property
+    def parent(self) -> None:
+        throw_missing()
+
+    @property
+    def id(self) -> None:
+        throw_missing()
+
+
+METHODS = (
+    "getattr add str sub mul floordiv pow mod and or xor neg pos invert getitem "
+    "setitem eq ne ge gt le lt contains hash call iter"
+)
+
+for m in METHODS.split():
+    setattr(Missing, f"__{m}__", throw_missing)
+
+MISSING = Missing()
 
 
 class Attrs:
-    @property
+    @ClassProperty
     def id(self) -> String:
         return String(f"{id(self):x}")
 
-    @property
+    @ClassProperty
     def type(self) -> Type:
         return Type(type(self))
 
     parent = type
+
+
+class UserAttrs(Attrs):
+    @ClassProperty
+    def argc(self) -> int:
+        return len(signature(self.__init__).parameters)
+
+    @ClassProperty
+    def parent(self) -> Array | Type:
+        parents = type(self).__bases__
+        if len(parents) == 1:
+            parent = parents[0]
+            if parent is object:
+                return self.type
+            return Type(parent)
+        return Array(map(Type, parents))
 
 
 class Type(Attrs):
@@ -556,3 +618,88 @@ class Slice(Attrs):
 
     def is_empty(self) -> bool:
         return self.start is self.stop is self.step is NULL
+
+
+def correct_type(obj: Any) -> Any:
+    ...
+
+
+def mkslice(start: Any = MISSING, stop: Any = MISSING, step: Any = MISSING) -> Any:
+    if stop is step is MISSING:
+        if start is None:
+            return Slice(NULL, NULL, NULL)
+        return start
+    missing_none = {MISSING, None}
+    start = NULL if start in missing_none else start
+    stop = NULL if stop in missing_none else stop
+    step = NULL if step in missing_none else step
+    return Slice(start, stop, step)
+
+
+def t(obj: Any = None) -> Any:
+    return obj
+
+
+def check_type(obj: Any) -> None:
+    if isinstance(obj, (tuple, GeneratorType)):
+        raise SamariumSyntaxError("invalid syntax")
+
+
+@contextmanager
+def modify(
+    func: Callable, args: list[Any], argc: int
+) -> Iterator[tuple[Callable, list[Any]]]:
+    flag = func.__code__.co_flags
+    if flag & 4 == 0:
+        yield func, args
+        return
+    x = argc - 1
+    args = [*args[:x], Array(args[x:])]
+    func.__code__ = func.__code__.replace(co_flags=flag - 4, co_argcount=argc)
+    args *= argc > 0
+    yield func, args
+    func.__code__ = func.__code__.replace(co_flags=flag, co_argcount=argc - 1)
+
+
+MISSING_ARGS_PATTERN = compile(
+    r"\w+\(\) takes exactly one argument \(0 given\)"
+    r"|\w+\(\) missing (\d+) required positional argument"
+)
+TOO_MANY_ARGS_PATTERN = compile(
+    r"\w+\(\) takes (\d+) positional arguments? but (\d+) (?:was|were) given"
+)
+
+
+def function(func: Callable) -> Callable:
+    @wraps(func)
+    def wrapper(*args) -> Any:
+        for arg in args:
+            check_type(arg)
+        with modify(func, list(args), argc) as (f, args):
+            try:
+                result = correct_type(f(*args))
+            except TypeError as e:
+                errmsg = str(e)
+                if "positional argument: 'self'" in errmsg:
+                    raise SamariumTypeError("missing instance")
+                missing_args = MISSING_ARGS_PATTERN.search(errmsg)
+                if missing_args:
+                    given = argc - (int(missing_args.group(1)) or 1)
+                    raise SamariumTypeError(f"not enough arguments ({given}/{argc})")
+                too_many_args = TOO_MANY_ARGS_PATTERN.search(errmsg)
+                if too_many_args:
+                    raise SamariumTypeError(
+                        f"too many arguments ({too_many_args.group(2)}/{argc})"
+                    )
+                raise e
+        return result
+
+    argc = len(signature(func).parameters)
+
+    wrapper.__str__ = lambda: get_name(func)
+    wrapper.special = property(lambda: Integer(argc))
+    wrapper.argc = Integer(argc)
+    wrapper.parent = Type(FunctionType)
+    wrapper.type = Type(FunctionType)
+
+    return wrapper

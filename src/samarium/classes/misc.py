@@ -7,36 +7,6 @@ from ..exceptions import SamariumSyntaxError, SamariumTypeError, SamariumValueEr
 from .base import NULL, Attrs, Integer, Null
 
 
-def throw_missing(*_):
-    raise SamariumTypeError("missing default parameter value(s)")
-
-
-class Missing:
-
-    @property
-    def type(self) -> None:
-        throw_missing()
-
-    @property
-    def parent(self) -> None:
-        throw_missing()
-
-    @property
-    def id(self) -> None:
-        throw_missing()
-
-
-METHODS = (
-    "getattr add str sub mul floordiv pow mod and or xor neg pos invert getitem "
-    "setitem eq ne ge gt le lt contains hash call iter"
-)
-
-for m in METHODS.split():
-    setattr(Missing, f"__{m}__", throw_missing)
-
-MISSING = Missing()
-
-
 class Enum(Attrs):
     __slots__ = ("name", "members")
 
