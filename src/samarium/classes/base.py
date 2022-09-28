@@ -67,6 +67,10 @@ class Attrs:
 
 
 class UserAttrs(Attrs):
+
+    def __str__(self) -> str:
+        return f"<{get_type_name(self)}@{self.id}>"
+
     @ClassProperty
     def argc(self) -> int:
         return len(signature(self.__init__).parameters)
