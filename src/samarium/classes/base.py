@@ -274,7 +274,7 @@ class Integer(Attrs):
     def __xor__(self, other: Any) -> Integer:
         return Integer(self.val ^ other.val)
 
-    def __not__(self) -> Integer:
+    def __invert__(self) -> Integer:
         return Integer(~self.val)
 
     def __pos__(self) -> Integer:
