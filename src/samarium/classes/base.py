@@ -424,6 +424,7 @@ class Array(Attrs):
     __slots__ = ("val",)
 
     def __init__(self, value: Any = None) -> None:
+        self.val: list[Any]
         if value is None:
             self.val = []
         elif isinstance(value, Array):
