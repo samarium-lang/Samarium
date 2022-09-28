@@ -747,6 +747,8 @@ def t(obj: Any = None) -> Any:
 
 
 def check_type(obj: Any) -> None:
+    if isinstance(obj, property):
+        raise SamariumTypeError("cannot use a special method on a type")
     if isinstance(obj, (tuple, GeneratorType)):
         raise SamariumSyntaxError("invalid syntax")
 

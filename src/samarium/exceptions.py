@@ -1,3 +1,4 @@
+from os import _exit
 import sys
 from re import compile
 
@@ -62,7 +63,9 @@ class SamariumImportError(SamariumError):
 
 
 class SamariumSyntaxError(SamariumError):
-    pass
+    def __init__(self, msg: str) -> None:
+        sys.stderr.write(dahlia(f"&4[SyntaxError] {msg}\n"))
+        _exit(1)
 
 
 class SamariumTypeError(SamariumError):
