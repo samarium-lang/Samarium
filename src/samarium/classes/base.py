@@ -229,6 +229,9 @@ class Integer(Attrs):
     def __le__(self, other: Any) -> Integer:
         return Integer(self.val <= other.val)
 
+    def __hash__(self) -> int:
+        return self.hash.val
+
     @property
     def cast(self) -> String:
         return String(chr(self.val))
@@ -314,6 +317,9 @@ class String(Attrs):
         string = [*self.val]
         string[index.val] = value.val
         self.val = "".join(string)
+
+    def __hash__(self) -> int:
+        return self.hash.val
 
     @property
     def cast(self) -> Integer:
@@ -544,9 +550,12 @@ class Null(Singleton, Attrs):
     def __ne__(self, other: Any) -> bool:
         return self is not other
 
+    def __hash__(self) -> int:
+        return self.hash.val
+
     @property
-    def hash(self) -> int:
-        return hash(self.val)
+    def hash(self) -> Integer:
+        return Integer(hash(self.val))
 
 
 I64_MAX = 9223372036854775807
