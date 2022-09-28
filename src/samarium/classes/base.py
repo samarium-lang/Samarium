@@ -716,15 +716,14 @@ def correct_type(obj: Any) -> Any:
     return obj
 
 
-def mkslice(start: Any = MISSING, stop: Any = MISSING, step: Any = MISSING) -> Any:
-    if stop is step is MISSING:
+def mkslice(start: Any = None, stop: Any = None, step: Any = None) -> Any:
+    if stop is step is None:
         if start is None:
             return Slice(NULL, NULL, NULL)
         return start
-    missing_none = {MISSING, None}
-    start = NULL if start in missing_none else start
-    stop = NULL if stop in missing_none else stop
-    step = NULL if step in missing_none else step
+    start = NULL if start is None else start
+    stop = NULL if stop is None else stop
+    step = NULL if step is None else step
     return Slice(start, stop, step)
 
 
