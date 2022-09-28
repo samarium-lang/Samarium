@@ -508,7 +508,7 @@ class Transpiler:
                 self._reg[Switch.CLASS_DEF] = True
                 self._scope.enter("class")
                 self._class_indent.append(self._indent)
-                self._line.append(f"@class_attributes\n{indent(self._indent)}class ")
+                self._line.append("class ")
             else:
                 indented = self._indent > 0
                 self._line = [*self._line[:indented], "@", *self._line[indented:]]
