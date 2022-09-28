@@ -567,7 +567,7 @@ class Transpiler:
                     self._line[assign_idx - 1] in {*"+-*%&|^", "**", "//"}
                 )
                 variable = "".join(self._line[start:stop])
-                self._line.append(f";verify_type({variable})")
+                self._line.append(f";check_type({variable})")
             self._submit_line()
         elif token is Token.ASSIGN:
             if self._line_tokens.count(token) > 1 and self._scope.current != "enum":
