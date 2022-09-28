@@ -43,6 +43,13 @@ def throw_syntax(message: str) -> None:
     handle_exception(SamariumSyntaxError(message))
 
 
+def transform_special(op: str, scope: Scope) -> str:
+    special = scope.current == "function" and scope.parent == "class"
+    if special and op in SPECIAL_METHOD_MAPPING:
+        return f"__{SPECIAL_METHOD_MAPPING[op]}__"
+    return op
+
+
 class Scope:
     def __init__(self) -> None:
         self._scope: list[str] = []
@@ -238,6 +245,37 @@ SLICE_OBJECT_TRIGGERS = {
 
 FILE_OPEN_KEYWORDS = {"READ", "WRITE", "READ_WRITE", "APPEND"}
 
+SPECIAL_METHOD_MAPPING = {
+    "+": "add",
+    "*": "mul",
+    "//": "floordiv",
+    "**": "pow",
+    "%": "mod",
+    "-": "sub",
+    "entry ": "entry",
+    "~": "invert",
+    "!=": "ne",
+    "==": "eq",
+    ">": "gt",
+    "<": "lt",
+    ">=": "ge",
+    "<=": "le",
+    " in ": "contains",
+    ".hash": "hsh",
+    ".special": "special",
+    "try": "random",
+    ".cast": "cast",
+    "if ": "bit",
+    "!": "string",  #
+    "&": "and",
+    "|": "or",
+    "^": "xor",
+    "+sm__": "pos",
+    "-sm__": "neg",
+    ".__getitem__(mkslice(t()))": "getitem",
+    ".__setitem__(mkslice(t()),": "setitem"
+}
+
 
 class Transpiler:
     def __init__(self, tokens: list[Tokenlike], registry: Registry) -> None:
@@ -369,7 +407,10 @@ class Transpiler:
 
     def _brackets(self, token: Token) -> None:
         if token is Token.BRACE_OPEN:
-            if self._line_tokens[0] in CONTROL_FLOW_TOKENS:
+            if (
+                self._line_tokens[0] in CONTROL_FLOW_TOKENS
+                and self._line_tokens[1] is not Token.FUNCTION
+            ):
                 self._scope.enter("control_flow")
 
             # Implicit infinite loop
@@ -441,12 +482,30 @@ class Transpiler:
             # Function definition
             self._scope.enter("function")
             indentation = self._line[:indented]
+            name = self._line[indented]
+            if name == "NULL":
+                indented += 1
+                name = self._line[indented]
+            if name in "+-" and self._line[indented + 1] == "sm__":
+                name += "sm__"
+                indented += 1
+            if name in {"(", ".__getitem__(", ".__setitem__("}:
+                indented += 1
+                name += self._line[indented]
+                print(name)
+                print(self._line[indented:])
+                if self._line[indented + 1] in {")))", "))"}:
+                    indented += 1
+                    name += self._line[indented]
+                if self._line[indented + 1] == ",":
+                    indented += 1
+                    name += self._line[indented]
             self._line = [
                 *indentation,
                 "@function\n",
                 *indentation,
                 "def ",
-                self._line[indented],
+                transform_special(name, self._scope),
                 "(",
                 ",".join(
                     groupnames(  # Making varargs and optionals work
@@ -636,6 +695,13 @@ class Transpiler:
             indented = self._indent > 0
             self._line = [*self._line[:indented], "throw(", *self._line[indented:], ")"]
         elif token is Token.PRINT:
+            if (
+                self._scope.current == "class"
+                and is_first_token(self._line)
+                and self._tokens[self._index + 1] is not Token.END
+            ):
+                self._line.append("!")
+                return
             with suppress(IndexError):
                 if self._line_tokens[-2] in Group.operators:
                     self._line.append("NULL")

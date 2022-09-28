@@ -121,7 +121,7 @@ class UserAttrs(Attrs):
             hsh = self.__hsh__
         except AttributeError:
             raise NotDefinedError(f"{get_type_name(self)}##")
-        if hsh.argc != 1:
+        if hsh.argc.val != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}## should only take one argument"
             )
@@ -136,11 +136,23 @@ class UserAttrs(Attrs):
             cast = self.__cast__
         except AttributeError:
             raise NotDefinedError(f"{get_type_name(self)}%")
-        if cast.argc != 1:
+        if cast.argc.val != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}% should only take one argument"
             )
         return cast()
+
+    @property
+    def random(self) -> Any:
+        try:
+            random = self.__random__
+        except AttributeError:
+            raise NotDefinedError(f"{get_type_name(self)}??")
+        if random.argc.val != 1:
+            raise SamariumTypeError(
+                f"{get_type_name(self)}?? should only take one argument"
+            )
+        return random()
 
     @ClassProperty
     def argc(self) -> int:
@@ -490,7 +502,7 @@ class Array(Attrs):
         raise SamariumTypeError(f"invalid index: {index}")
 
     def __setitem__(self, index: Any, value: Any) -> None:
-        if not isinstance(self, (Integer, Slice)):
+        if not isinstance(index, (Integer, Slice)):
             raise SamariumTypeError(f"invalid index: {index}")
         self.val[index.val] = value
 
