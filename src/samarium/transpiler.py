@@ -282,7 +282,7 @@ class Transpiler:
             self._reg[Switch.IMPORT] = False
 
         if len(self._line) > 1 and self._line[-2] == "=":
-            self._line.insert(-1, "null")
+            self._line.insert(-1, "NULL")
 
         if self._file_token:
             self._file_io()
@@ -348,7 +348,7 @@ class Transpiler:
     def _operators(self, token: Token) -> None:
         prev_token = self._tokens[self._index - 1]
         if token in {Token.NOT, Token.BNOT} and prev_token in Group.operators:
-            self._line.append("null")
+            self._line.append("NULL")
         elif token is Token.IN and prev_token is Token.NOT:
             pass
         elif (
@@ -364,7 +364,7 @@ class Transpiler:
             }
             or is_first_token(self._line)
         ) and token not in {Token.ADD, Token.SUB, Token.NOT, Token.BNOT}:
-            self._line.append("null")
+            self._line.append("NULL")
         self._line.append(OPERATOR_MAPPING[token])
 
     def _brackets(self, token: Token) -> None:
@@ -377,7 +377,7 @@ class Transpiler:
                 self._line.append("True")
 
             if self._line_tokens[-2] in Group.operators:
-                self._line.append("null")
+                self._line.append("NULL")
 
             # Getting UserAttrs
             if self._reg[Switch.CLASS_DEF]:
@@ -417,9 +417,9 @@ class Transpiler:
         else:
             prev = self._tokens[self._index - 1]
             if token is Token.TABLE_CLOSE and prev is Token.TO:
-                self._line.append("null")
+                self._line.append("NULL")
             if token is Token.PAREN_CLOSE and prev in Group.operators:
-                self._line.append("null")
+                self._line.append("NULL")
             self._line.append(BRACKET_MAPPING[token])
             return
 
@@ -483,7 +483,7 @@ class Transpiler:
             self._line.append("try" if is_first_token(self._line) else ".random")
         elif token is Token.TO:
             if self._tokens[index - 1] is Token.TABLE_OPEN:
-                self._line.append("null")
+                self._line.append("NULL")
             self._line.append("continue" if is_first_token(self._line) else ":")
         elif token is Token.FROM:
             if isinstance(self._tokens[index + 1], str):
@@ -541,7 +541,7 @@ class Transpiler:
                 Token.DEFAULT,
                 Token.CATCH,
             }:
-                self._line.append("null")
+                self._line.append("NULL")
             if self._scope.current == "enum":
                 self._line.append('""", """')
                 return
@@ -578,7 +578,7 @@ class Transpiler:
                 self._scope.exit()
         elif token is Token.SEP:
             if self._tokens[index - 1] in NULLABLE_TOKENS:
-                self._line.append("null")
+                self._line.append("NULL")
             self._line.append(",")
         elif token is Token.ATTR:
             self._line.append(".")
@@ -632,12 +632,13 @@ class Transpiler:
                 self._line.append("readline()")
         elif token is Token.THROW:
             if self._line_tokens[-2] in Group.operators:
-                self._line.append("null")
+                self._line.append("NULL")
             indented = self._indent > 0
             self._line = [*self._line[:indented], "throw(", *self._line[indented:], ")"]
         elif token is Token.PRINT:
-            if self._line_tokens[-2] in Group.operators:
-                self._line.append("null")
+            with suppress(IndexError):
+                if self._line_tokens[-2] in Group.operators:
+                    self._line.append("NULL")
             if "=" in self._line:
                 hook = self._line.index("=") + 1
             else:

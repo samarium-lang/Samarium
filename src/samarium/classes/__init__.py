@@ -12,6 +12,7 @@ from .base import (
     Table,
     Type,
     UserAttrs,
+    correct_type,
     check_type,
     function,
     mkslice,
@@ -41,4 +42,5 @@ __all__ = (
     "mkslice",
     "t",
     "check_type",
+    "correct_type",
 )
