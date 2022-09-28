@@ -547,7 +547,7 @@ class Transpiler:
                 return
             if self._reg[Switch.BUILTIN]:
                 if self._line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
-                    self._line.append("Int(0)")
+                    self._line.append("Integer(0)")
                 self._line.append(")")
                 self._reg[Switch.BUILTIN] = False
             if all(i in self._line_tokens for i in (Token.ASSIGN, Token.SLICE_CLOSE)):
@@ -658,7 +658,7 @@ class Transpiler:
 
         # Integers
         if isinstance(token, int):
-            self._line.append(f"Int({token})")
+            self._line.append(f"Integer({token})")
 
         elif isinstance(token, str):
             if token[0] == token[-1] == '"':

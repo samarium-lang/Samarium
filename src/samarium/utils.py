@@ -11,7 +11,7 @@ from .exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
 from .tokenizer import Tokenlike
 from .tokens import CLOSE_TOKENS, OPEN_TOKENS, Token
 
-__version__ = "0.3.1"
+__version__ = "0.4.0-alpha"
 
 T = TypeVar("T")
 
@@ -45,6 +45,9 @@ class LFUCache(Generic[KT, VT]):
         self._cache: dict[KT, VT] = {}
         self._maxsize = maxsize
         self._heatmap: Counter[KT] = Counter()
+
+    def __contains__(self, item: KT) -> bool:
+        return item in self._cache
 
     def __getitem__(self, item: KT) -> VT:
         self._heatmap[item] -= 1
@@ -113,7 +116,7 @@ def silence_stdout():
 def sysexit(*args: Any):
     if len(args) > 1:
         raise SamariumTypeError("=>! only takes one argument")
-    code = args[0].value if args else 0
+    code = args[0].val if args else 0
     if not isinstance(code, int):
         raise SamariumTypeError("=>! only accepts integers")
     os._exit(code)

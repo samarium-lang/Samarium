@@ -137,8 +137,8 @@ class Integer(Attrs):
     cache: LFUCache[Any, Integer] = LFUCache()
 
     def __new__(cls, v: Any) -> Integer:
-        if v in cls.cache:
-            return cls.cache[v]
+        if v in Integer.cache:
+            return Integer.cache[v]
         return object.__new__(cls)
 
     def __init__(self, v: Any) -> None:

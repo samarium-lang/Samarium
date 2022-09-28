@@ -98,7 +98,7 @@ def print_safe(*args) -> Any:
         check_type(arg)
     args = list(args)
     return_args = args[:]
-    args = [i.sm_to_string() for i in args]
+    args = list(map(str, args))
     types = [*map(type, args)]
     if tuple in types:
         raise exc.SamariumSyntaxError("missing brackets")
