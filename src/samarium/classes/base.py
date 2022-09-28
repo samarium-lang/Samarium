@@ -651,7 +651,7 @@ class Slice(Attrs):
         self.start = start
         self.stop = stop
         self.step = step
-        self.tup = start, stop, step
+        self.tup = start.val, stop.val, step.val
         self.range = range(
             self.tup[0] or 0,
             I64_MAX if self.tup[1] is None else self.tup[1],
