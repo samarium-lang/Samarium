@@ -121,6 +121,7 @@ def sysexit(*args: Any):
 
 
 def parse_integer(string: str) -> int:
+    string = string.strip()
     orig = string
     neg = len(string)
     b = "d"
