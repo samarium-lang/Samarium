@@ -5,7 +5,7 @@ import sys
 from collections import Counter
 from contextlib import contextmanager, suppress
 from string import digits, hexdigits, octdigits
-from typing import Any, Callable, Generic, TypeVar, cast
+from typing import Any, Callable, Generic, Iterator, TypeVar, cast
 
 from .exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
 from .tokenizer import Tokenlike
@@ -104,7 +104,7 @@ def run_with_backup(main: Callable[..., T], backup: Callable[..., T], *args) -> 
 
 
 @contextmanager
-def silence_stdout():
+def silence_stdout() -> Iterator[None]:
     stdout = sys.stdout
     sys.stdout = open(os.devnull, "w")
     yield

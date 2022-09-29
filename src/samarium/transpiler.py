@@ -313,7 +313,6 @@ class Transpiler:
         return self._reg
 
     def _submit_line(self) -> None:
-
         # Special cases
         if self._reg[Switch.IMPORT]:
             self._line.append("', Registry(globals()))")
@@ -718,7 +717,6 @@ class Transpiler:
         self._line.append(METHOD_MAPPING[token])
 
     def _process_token(self, index: int, token: Tokenlike) -> None:
-
         self._index = index
         self._line_tokens.append(token)
 

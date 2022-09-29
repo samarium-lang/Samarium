@@ -52,8 +52,7 @@ def dtnow() -> Array:
     return Array(map(Integer, utcnow_tpl))
 
 
-def import_module(data: str, reg: Registry):
-
+def import_module(data: str, reg: Registry) -> None:
     module_import = False
     try:
         name, object_string = data.split(".")
@@ -123,7 +122,6 @@ def run(
     load_template: bool = True,
     quit_on_error: bool = True,
 ) -> Registry:
-
     runtime_state = Runtime.quit_on_error
     Runtime.quit_on_error = quit_on_error
     code = Transpiler(tokenize(code), reg).transpile().output
