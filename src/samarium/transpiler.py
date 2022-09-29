@@ -18,7 +18,7 @@ def groupnames(array: list[str]) -> list[str]:
         if item == " for ":
             grouped[-1] = f"*{grouped[-1]}"
         elif item == " if ":
-            grouped[-1] += "=MISSING()"
+            grouped[-1] += "=MISSING"
         else:
             grouped.append(item)
     return grouped
@@ -492,12 +492,11 @@ class Transpiler:
             if name in {"(", ".__getitem__(", ".__setitem__("}:
                 indented += 1
                 name += self._line[indented]
-                print(name)
-                print(self._line[indented:])
                 if self._line[indented + 1] in {")))", "))"}:
                     indented += 1
                     name += self._line[indented]
                 if self._line[indented + 1] == ",":
+                    self._slice_assign = False
                     indented += 1
                     name += self._line[indented]
             self._line = [
@@ -522,7 +521,7 @@ class Transpiler:
             ]
         elif token is Token.DEFAULT:
             self._line.append(
-                " = {0} if not isinstance({0}, MISSING) else ".format(
+                " = {0} if not isinstance({0}, Missing) else ".format(
                     "".join(self._line).strip()
                 )
             )
