@@ -96,7 +96,7 @@ class UserAttrs(Attrs):
                 f"? {get_type_name(self)} should only take one argument"
             )
         v = bit().val
-        if v == 0 or v == 1:
+        if v in (0, 1):
             return bool(v)
         raise SamariumTypeError(f"? {get_type_name(self)} returned a non-bit")
 
@@ -339,8 +339,7 @@ class Integer(Attrs):
             return self
         elif v > 0:
             return Integer(randbelow(v))
-        else:
-            return Integer(-randbelow(v) - 1)
+        return Integer(-randbelow(v) - 1)
 
     @property
     def special(self) -> String:
@@ -734,7 +733,7 @@ def correct_type(obj: Any) -> Any:
 def mkslice(start: Any = None, stop: Any = None, step: Any = None) -> Any:
     if stop is step is None:
         if start is None:
-            return Slice(NULL, NULL, NULL)
+            return Slice(NULL)
         return start
     start = NULL if start is None else start
     stop = NULL if stop is None else stop
