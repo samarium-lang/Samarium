@@ -84,7 +84,7 @@ join iterable delimiter? * {
     delimiter <> "";
     o: "";
     ... e ->? iterable {
-        o+: e.to_string();
+        o+: ""?!(e);
         o+: delimiter;
     }
     ? delimiter {
@@ -118,7 +118,7 @@ is_wrapped string chars * {
 to_lower string * {
     <-types.String;
     ? string?! ::: String {
-        "invalid type: " + string?!.to_string()!!!;
+        "invalid type: " + ""?!(string?!)!!!;
     }
     out: "";
     ... char ->? string {
@@ -134,7 +134,7 @@ to_lower string * {
 to_upper string * {
     <-types.String;
     ? string?! ::: String {
-        "invalid type: " + string?!.to_string()!!!;
+        "invalid type: " + ""?!(string?!)!!!;
     }
     out: "";
     ... char ->? string {
@@ -234,7 +234,7 @@ format string fields * {
         fields: {{i -> v ... i, v ->? enumerate(fields)}};
     }
     ? fields?! ::: Table {
-        "invalid type: " + fields?!.to_string()!!!;
+        "invalid type: " + ""?!(fields?!)!!!;
     }
     ? ~~ fields {
         * string;
@@ -251,8 +251,8 @@ format string fields * {
             index+: /\;
         } ,, {
             ... k ->? fields {
-                v: fields<<k>>.to_string();
-                k: k.to_string();
+                v: ""?!(fields<<k>>);
+                k: ""?!(k);
                 ? string<<index + /..index + k$ + />> :: k {
                     new_string+: v;
                     index+: k$ + /;
@@ -343,11 +343,11 @@ replace string replacements count? * {
     ? replacements?! ::: Table {
         "invalid type for replacements: " + String(replacements?!)!!!;
     }
-    replacements: {{k -> v ... k, v ->? zip([replacements.iterate(), replacements$])}};
+    replacements: {{k -> v ... k, v ->? zip([replacements, replacements$])}};
     ? ~~ all([count, replacements]) {
         * string;
     }
-    ... f, t ->? zip([replacements.iterate(), replacements$]) {
+    ... f, t ->? zip([replacements, replacements$]) {
         string: replace(string, f, t, count);
     }
     * string;

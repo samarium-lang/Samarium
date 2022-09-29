@@ -65,7 +65,7 @@ timestamp_utc ts? * {
 }
 
 @ DateTime {
-    create Y? M? D? h? m? s? ms? tz? * {
+    => Y? M? D? h? m? s? ms? tz? * {
         Y <>;
         ? :: Y {
             'array: @@@;
@@ -98,7 +98,7 @@ timestamp_utc ts? * {
         }
     }
 
-    subtract other * {
+    - other * {
         diff: 'to_timestamp() - other.to_timestamp();
         1000: /\/\ +++ //;
         60: ////\\;
@@ -111,7 +111,7 @@ timestamp_utc ts? * {
         * DTDiff([diff, h, m, s, ms]);
     }
 
-    to_string * {
+    ! * {
         <-string.format, leftpad;
         add0s n c * { * leftpad(String(n), c, "0"); }
         * format(
@@ -157,11 +157,11 @@ timestamp_utc ts? * {
 
 @ DTDiff {
 
-    create data * {
+    => data * {
         'data: data;
     }
 
-    to_string * {
+    ! * {
         <-string.leftpad, strip_left;
         add0s n c * { * leftpad(String(n), c, "0"); }
         D: 'data<<\>>;
@@ -170,7 +170,7 @@ timestamp_utc ts? * {
         s: 'data<<//>>;
         ms: 'data<</\\>>;
         out: "";
-        ? D { out+: D.to_string() + " days"; }
+        ? D { out+: ""?!(D) + " days"; }
         ? D && (~~ (h || m || s || ms)) { out+: ", "; }
         ? h { out+: add0s(h, /\) + ":"; }
         ? h || m { out+: add0s(m, /\) + ":"; }

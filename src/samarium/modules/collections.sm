@@ -2,8 +2,7 @@
 
 
 @ Stack {
-
-    create size? * {
+    => size? * {
         size <> -/;
         'stack: [];
         'size: size;
@@ -11,7 +10,7 @@
 
     push item * {
         ? 'is_full() {
-            "stack is full (size " + 'size.to_string() + ")"!!!;
+            "stack is full (size " + ""?!('size) + ")"!!!;
         }
         'stack+: [item];
     }
@@ -22,7 +21,7 @@
         }
     }
 
-    special * {
+    $ * {
         * 'stack$;
     }
 
@@ -42,7 +41,7 @@
         * 'stack<<-/>>;
     }
 
-    to_bit * {
+    ? * {
         * 'stack$ > \;
     }
 
@@ -54,7 +53,7 @@
         * 'stack$ :: \;
     }
 
-    to_string * {
+    ! * {
         <-string.wrap;
         <-types.String;
         ?? {
@@ -63,25 +62,23 @@
             top:;
         }
         ? top?! :: String {
-            top: wrap(top.to_string(), "\"");
+            top: wrap(""?!(top), "\"");
         }
-        * "Stack(capacity:" + 'size.to_string()
-        + ", size:" + 'stack$.to_string()
-        + ", top:" + top.to_string()
+        * "Stack(capacity:" + ""?!('size)
+        + ", size:" + ""?!('stack$)
+        + ", top:" + ""?!(top)
         + ")";
     }
-
 }
 
 @ Queue {
-
-    create size? * {
+    => size? * {
         size <> -/;
         'queue: [];
         'size: size;
     }
 
-    special * {
+    $ * {
         * 'queue$;
     }
 
@@ -101,7 +98,7 @@
 
     put item * {
         ? 'is_full() {
-            "queue is full (size " + 'size.to_string() + ")"!!!;
+            "queue is full (size " + ""?!('size) + ")"!!!;
         }
         'queue+: [item];
     }
@@ -122,42 +119,41 @@
     first * {
         'throw_empty(); * 'queue<<\>>;
     }
+
     last * {
         'throw_empty(); * 'queue<<-/>>;
     }
 
-    to_bit * {
+    ? * {
         * '$ > \;
     }
 
-    to_string * {
+    ! * {
         <-string.wrap;
         <-types.String;
         ? '$ <: /\/ {
-            items: 'queue.to_string();
+            items: ""?!('queue);
         } ,, ? '$ > /\/ {
-            first: 'first().to_string();
-            last: 'last().to_string();
+            first: ""?!('first());
+            last: ""?!('last());
             ? 'first()?! :: String {
                 first: wrap(first, "\"");
             }
             ? 'last()?! :: String {
                 last: wrap(last, "\"");
             }
-            items: "[" + first.to_string() + ", ..., " + last.to_string() + "]";
+            items: "[" + ""?!(first) + ", ..., " + ""?!(last) + "]";
         } ,, {
             items: "[]";
         }
-        * "Queue(capacity:" + 'size.to_string()
-        + ", size:" + 'queue$.to_string()
+        * "Queue(capacity:" + ""?!('size)
+        + ", size:" + ""?!('queue$)
         + ", items:" + items + ")";
     }
-
 }
 
 @ Set {
-
-    create items? capacity? * {
+    => items? capacity? * {
         items <> [];
         capacity <> -/;
         <-iter.find;
@@ -166,14 +162,14 @@
         'capacity: capacity;
     }
 
-    special * {
+    $ * {
         * 'items$;
     }
 
-    add value * {
-        ? ~~ 'has(value) {
+    + value * {
+        ? value ~~ ->? ' {
             ? 'is_full() {
-                "set is full (capacity " + 'capacity.to_string() + ")"!!!;
+                "set is full (capacity " + ""?!('capacity) + ")"!!!;
             }
             'items+: [value];
             * /;
@@ -181,14 +177,14 @@
         * \;
     }
 
-    to_bit * {
+    ? * {
         * ~~ 'is_empty();
     }
 
-    to_string * {
-        * "Set(capacity:" + 'capacity.to_string()
-        + ", size:" + '$.to_string()
-        + ", items:" + 'items.to_string()
+    ! * {
+        * "Set(capacity:" + ""?!('capacity)
+        + ", size:" + ""?!('$)
+        + ", items:" + ""?!('items)
         + ")";
     }
 
@@ -196,7 +192,7 @@
         'items-: [value];
     }
 
-    has value * {
+    ->? value * {
         * 'find('items, value) >: \;
     }
 
@@ -222,13 +218,13 @@
 
     union other * {
         ? other?! ::: Set()?! {
-            "expected Set, received " + other?!.to_string()!!!;
+            "expected Set, received " + ""?!(other?!)!!!;
         }
 
         union_set: Set('values(), 'new_set_size(', other) ++ /\);
 
         ... value ->? other.values() {
-            union_set.add(value);
+            union_set+: value;
         }
 
         * union_set;
@@ -236,14 +232,14 @@
 
     intersection other * {
         ? other?! ::: Set()?! {
-            "expected Set, received " + other?!.to_string()!!!;
+            "expected Set, received " + ""?!(other?!)!!!;
         }
 
         intersection_set: Set([], 'new_set_size(', other));
 
         ... value ->? 'values() {
-            ? other.has(value) {
-                intersection_set.add(value);
+            ? value ->? other {
+                intersection_set+: value;
             }
         }
 
@@ -252,14 +248,14 @@
 
     difference other * {
         ? other?! ::: Set()?! {
-            "expected Set, received " + other?!.to_string()!!!;
+            "expected Set, received " + ""?!(other?!)!!!;
         }
 
         difference_set: Set([], 'new_set_size(', other));
 
         ... value ->? 'values() {
-            ? ~~ other.has(value) {
-                difference_set.add(value);
+            ? value ~~ ->? other {
+                difference_set+: value;
             }
         }
 
@@ -268,7 +264,7 @@
 
     is_subset other * {
         ? other?! ::: Set()?! {
-            "expected Set, received " + other?!.to_string()!!!;
+            "expected Set, received " + ""?!(other?!)!!!;
         }
 
         ? '$ > other$ { * \; }
@@ -278,18 +274,17 @@
         }
         * /;
     }
-
 }
 
 @ Deque {
 
-    create size? * {
+    => size? * {
         size <> -/;
         'deque: [];
         'size: size;
     }
 
-    special * {
+    $ * {
         * 'deque$;
     }
 
@@ -309,7 +304,7 @@
 
     throw_full * {
         ? 'is_full() {
-            "deque is full (size " + 'size.to_string() + ")"!!!;
+            "deque is full (size " + ""?!('size) + ")"!!!;
         }
     }
 
@@ -341,7 +336,7 @@
         * 'deque<<-/>>;
     }
 
-    to_bit * {
+    ? * {
         * '$ > \;
     }
 
@@ -359,34 +354,32 @@
         * out;
     }
 
-    to_string * {
+    ! * {
         <-string.wrap;
         <-types.String;
         ? '$ <: /\/ {
-            items: 'deque.to_string();
+            items: ""?!('deque);
         } ,, ? '$ > /\/ {
-            front: 'front().to_string();
-            back: 'back().to_string();
+            front: ""?!('front());
+            back: ""?!('back());
             ? 'front()?! :: String {
                 front: wrap(front, "\"");
             }
             ? 'back()?! :: String {
                 back: wrap(back, "\"");
             }
-            items: "[" + front.to_string() + ", ..., " + back.to_string() + "]";
+            items: "[" + ""?!(front) + ", ..., " + ""?!(back) + "]";
         } ,, {
             items: "[]";
         }
-        * "Deque(capacity:" + 'size.to_string()
-        + ", size:" + 'deque$.to_string()
+        * "Deque(capacity:" + ""?!('size)
+        + ", size:" + ""?!('deque$)
         + ", items:" + items + ")";
     }
-
 }
 
 @ StaticArray {
-
-    create value type? * {
+    => value type? * {
         type <>;
         <-types.Array, Integer;
         ? value?! :: Integer {
@@ -400,53 +393,53 @@
             i: \;
             ... e ->? value {
                 ? e?! ::: type ::: {
-                    "expected " + type.to_string() + ", found " + e?!.to_string()!!!;
+                    "expected " + ""?!(type) + ", found " + ""?!(e?!)!!!;
                 }
                 'value<<i>>: e;
                 i+: /;
             }
         } ,, {
-            "expected Integer or Array, found " + value?!.to_string()!!!;
+            "expected Integer or Array, found " + ""?!(value?!)!!!;
         }
     }
 
-    special * {
+    $ * {
         * 'value$;
     }
 
-    to_string * {
-        * "StaticArray(size:" + 'size.to_string()
-        + ", type:" + 'type.to_string()
-        + ", items:" + 'value.to_string()
+    ! * {
+        * "StaticArray(size:" + ""?!('size)
+        + ", type:" + ""?!('type)
+        + ", items:" + ""?!('value)
         + ")";
     }
 
-    to_bit * {
-        * 'value.to_bit();
+    ? * {
+        * / ? 'value ,, \;
     }
 
     throw_invalid_index arg * {
         <-types.Integer;
         ? arg?! ::: Integer {
-            "expected Integer, received " + arg?!.to_string()!!!;
+            "expected Integer, received " + ""?!(arg?!)!!!;
         }
         ? ~~ (\ <: arg < 'size) {
-            "index " + arg.to_string() + " is out of bounds (size " + 'size.to_string() + ")"!!!;
+            "index " + ""?!(arg) + " is out of bounds (size " + ""?!('size) + ")"!!!;
         }
     }
 
     throw_invalid_type type * {
         ? type ::: 'type ::: {
-            "expected " + 'type.to_string() + ", received " + type.to_string()!!!;
+            "expected " + ""?!('type) + ", received " + ""?!(type)!!!;
         }
     }
 
-    get_item index * {
+    <<>> index * {
         'throw_invalid_index(index);
         * 'value<<index>>;
     }
 
-    set_item index value * {
+    <<>>: index value * {
         'throw_invalid_index(index);
         'throw_invalid_type(value?!);
         'value<<index>>: value;
@@ -455,8 +448,7 @@
 }
 
 @ ArithmeticArray {
-
-    create array * {
+    => array * {
         'array: array;
     }
 
@@ -464,103 +456,67 @@
         * ArithmeticArray([op(i, other) ... i ->? 'array]);
     }
 
-    and other * {
+    & other * {
         * 'apply(operator.and, other);
     }
 
-    add other * {
+    + other * {
         * 'apply(operator.add, other);
     }
 
-    divide other * {
-        * 'apply(operator.divide, other);
+    -- other * {
+        * 'apply(operator.div, other);
     }
 
-    equals other * {
-        * 'apply(operator.equals, other);
+    :: other * {
+        * 'apply(operator.eq, other);
     }
 
-    greater_than_or_equal other * {
-        * 'apply(operator.greater_than_or_equal, other);
+    >: other * {
+        * 'apply(operator.ge, other);
     }
 
-    greater_than other * {
-        * 'apply(operator.greater_than, other);
+    > other * {
+        * 'apply(operator.gt, other);
     }
 
-    less_than_or_equal other * {
-        * 'apply(operator.less_than_or_equal, other);
+    <: other * {
+        * 'apply(operator.le, other);
     }
 
-    less_than other * {
-        * 'apply(operator.less_than, other);
+    < other * {
+        * 'apply(operator.lt, other);
     }
 
-    mod other * {
+    --- other * {
         * 'apply(operator.mod, other);
     }
 
-    multiply other * {
-        * 'apply(operator.multiply, other);
+    ++ other * {
+        * 'apply(operator.mul, other);
     }
 
-    not_equals other * {
-        * 'apply(operator.not_equals, other);
+    ::: other * {
+        * 'apply(operator.ne, other);
     }
 
-    or other * {
+    | other * {
         * 'apply(operator.or, other);
     }
 
-    power other * {
-        * 'apply(operator.power, other);
+    +++ other * {
+        * 'apply(operator.pow, other);
     }
 
-    subtract other * {
-        * 'apply(operator.subtract, other);
+    - other * {
+        * 'apply(operator.sub, other);
     }
 
-    xor other * {
+    ^ other * {
         * 'apply(operator.xor, other);
     }
 
-    and_assign other * {
-        'array: 'and(other).array; * ';
-    }
-
-    add_assign other * {
-        'array: 'add(other).array; * ';
-    }
-
-    divide_assign other * {
-        'array: 'divide(other).array; * ';
-    }
-
-    mod_assign other * {
-        'array: 'mod(other).array; * ';
-    }
-
-    multiply_assign other * {
-        'array: 'multiply(other).array; * ';
-    }
-
-    or_assign other * {
-        'array: 'or(other).array; * ';
-    }
-
-    power_assign other * {
-        'array: 'power(other).array; * ';
-    }
-
-    subtract_assign other * {
-        'array: 'subtract(other).array; * ';
-    }
-
-    xor_assign other * {
-        'array: 'xor(other).array; * ';
-    }
-
-    get_item item * {
+    <<>> item * {
         <-types.Array;
         out: 'array<<item>>;
         ? out?! :: Array {
@@ -569,20 +525,19 @@
         * out;
     }
 
-    set_item item value * {
+    <<>>: item value * {
         'array<<item>>: value;
     }
 
-    special * {
+    $ * {
         * 'array$;
     }
 
-    to_bit * {
-        * 'array.to_bit();
+    ? * {
+        * / ? 'array ,, \;
     }
 
-    to_string * {
-        * 'array.to_string();
+    ! * {
+        * ""?!('array);
     }
-
 }
