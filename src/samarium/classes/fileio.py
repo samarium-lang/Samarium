@@ -94,6 +94,9 @@ class File(Attrs):
         self.path = path
         self.val = file
 
+    def __bool__(self) -> bool:
+        return not self.val.closed
+
     def __str__(self) -> str:
         return f"File(path:{self.path}, mode:{self.mode})"
 
