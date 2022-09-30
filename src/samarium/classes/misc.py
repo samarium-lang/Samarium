@@ -4,7 +4,7 @@ from typing import Any, Iterable
 from typing import Iterator as Iter
 
 from ..exceptions import SamariumSyntaxError, SamariumTypeError, SamariumValueError
-from .base import NULL, Attrs, Integer, Null
+from .base import NULL, Attrs, Integer, Null, String, Table
 
 
 class Enum(Attrs):
@@ -53,6 +53,15 @@ class Enum(Attrs):
         if name.startswith("sm_"):
             raise SamariumTypeError("enum members cannot be modified")
         object.__setattr__(self, name, value)
+
+    @property
+    def cast(self) -> Table:
+        return Table(
+            {
+                String(k.removeprefix("__").removeprefix("sm_")): v
+                for k, v in self.members.items()
+            }
+        )
 
 
 class Iterator(Attrs):
