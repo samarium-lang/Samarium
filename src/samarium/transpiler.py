@@ -670,7 +670,7 @@ class Transpiler:
                 self._private = True
                 return
             name = self._line[-1]
-            self._line.append(f'=Enum_(globals(), "{name}", """')
+            self._line.append(f'=Enum(globals(), "{name}", """')
             self._scope.enter("enum")
 
     def _builtins(self, token: Token) -> None:
