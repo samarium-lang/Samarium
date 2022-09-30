@@ -10,6 +10,9 @@ from .base import NULL, Attrs, Integer, Null
 class Enum(Attrs):
     __slots__ = ("name", "members")
 
+    def __bool__(self) -> bool:
+        return bool(self.members)
+
     def __init__(self, globals: dict[str, Any], *values_: str) -> None:
         if any(not isinstance(i, str) for i in values_):
             raise SamariumTypeError("enums cannot be constructed from Type")
