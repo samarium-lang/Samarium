@@ -210,6 +210,9 @@ class Module(Attrs):
         self.name = name
         self.objects = objects
 
+    def __bool__(self) -> bool:
+        return True
+
     def __str__(self) -> str:
         return f"Module[{self.name}]"
 
