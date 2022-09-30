@@ -195,6 +195,9 @@ class Type(Attrs):
     def __bool__(self) -> bool:
         return True
 
+    def __hash__(self) -> int:
+        return hash(self.val)
+
     def __call__(self, *args: Any) -> Any:
         if self.val is FunctionType:
             raise SamariumTypeError("cannot instantiate a function")
