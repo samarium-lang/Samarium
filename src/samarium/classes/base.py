@@ -377,6 +377,10 @@ class String(Attrs):
     def __add__(self, other: Any) -> String:
         return String(self.val + other.val)
 
+    @guard("-")
+    def __sub__(self, other: Any) -> String:
+        return String(self.val.replace(other.val, ""))
+
     @guard("++")
     def __mul__(self, other: Any) -> String:
         return String(self.val * other.val)
