@@ -67,6 +67,9 @@ class Iterator(Attrs):
         except (TypeError, AttributeError):
             self.length = NULL
 
+    def __bool__(self) -> bool:
+        return True
+
     def __iter__(self) -> Iter[Any]:
         yield from self.val
 
