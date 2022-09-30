@@ -536,6 +536,16 @@ class Array(Attrs):
         raise NotDefinedError(f"Array ++ {get_type_name(other)}")
 
     @property
+    def cast(self) -> String:
+        s = ""
+        for i in self.val:
+            if isinstance(i, Integer):
+                s += chr(i.val)
+            else:
+                raise SamariumTypeError("array contains non-integers")
+        return String(s)
+
+    @property
     def random(self) -> Any:
         if not self.val:
             raise SamariumValueError("array is empty")
