@@ -423,10 +423,10 @@ class String(Attrs):
         return self.hash.val
 
     @property
-    def cast(self) -> Integer:
-        if len(self.val) != 1:
-            raise SamariumTypeError(f"cannot cast a string of length {len(self.val)}")
-        return Integer(ord(self.val))
+    def cast(self) -> Array | Integer:
+        if len(self.val) == 1:
+            return Integer(ord(self.val))
+        return Array(Integer(ord(i)) for i in self.val)
 
     @property
     def hash(self) -> Integer:
