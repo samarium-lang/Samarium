@@ -22,6 +22,7 @@ from ..utils import (
     get_type_name,
     guard,
     parse_integer,
+    smformat,
 )
 
 
@@ -384,6 +385,11 @@ class String(Attrs):
     @guard("++")
     def __mul__(self, other: Any) -> String:
         return String(self.val * other.val)
+
+    def __mod__(self, other: Any) -> String:
+        if isinstance(other, (String, Array, Table)):
+            return String(smformat(self.val, other.val))
+        raise NotDefinedError(f"String --- {get_type_name(other)}")
 
     def __eq__(self, other: Any) -> Integer:
         return Integer(self.val == other.val)

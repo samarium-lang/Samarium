@@ -4,6 +4,7 @@ import os
 import sys
 from collections import Counter
 from contextlib import contextmanager, suppress
+from re import sub
 from string import digits, hexdigits, octdigits
 from typing import Any, Callable, Generic, Iterator, TypeVar, cast
 
@@ -140,6 +141,17 @@ def parse_integer(string: str) -> int:
     raise SamariumValueError(
         f'invalid string for Integer with base {base}: "{no_prefix}"'
     )
+
+
+def smformat(string: str, fields: str | list[Any] | dict[Any, Any]) -> str:
+    if isinstance(fields, str):
+        fields = [fields]
+    it = enumerate(fields)
+    if isinstance(fields, dict):
+        it = fields.items()
+    for k, v in it:
+        string = sub(fr"(?<!\$)\${k}", str(v), string)
+    return string.replace("$$", "$")
 
 
 def get_name(obj: Callable | type) -> str:
