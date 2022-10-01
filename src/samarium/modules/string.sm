@@ -227,43 +227,6 @@ wrap string wrapper * {
     * wrapper + string + wrapper;
 }
 
-format string fields * {
-    <-types.Array, Table;
-    <-iter.enumerate;
-    ? fields?! :: Array {
-        fields: {{i -> v ... i, v ->? enumerate(fields)}};
-    }
-    ? fields?! ::: Table {
-        "invalid type: " + ""?!(fields?!)!!!;
-    }
-    ? ~~ fields {
-        * string;
-    }
-    new_string: "";
-    index: \;
-    .. index < string$ {
-        char: string<<index>>;
-        ? char ::: "$" {
-            new_string+: char;
-            index+: /;
-        } ,, ? string<<index + />> :: "$" {
-            new_string+: "$";
-            index+: /\;
-        } ,, {
-            ... k ->? fields {
-                v: ""?!(fields<<k>>);
-                k: ""?!(k);
-                ? string<<index + /..index + k$ + />> :: k {
-                    new_string+: v;
-                    index+: k$ + /;
-                    <-;
-                }
-            }
-        }
-    }
-    * new_string;
-}
-
 replace string replacements count? * {
     count <> -/;
     <-iter.all, find, zip;
