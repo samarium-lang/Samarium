@@ -74,7 +74,7 @@ def import_module(data: str, reg: Registry) -> None:
     if f"{name}.sm" not in list(path.iterdir()):
         if name not in MODULE_NAMES:
             raise exc.SamariumImportError(f"invalid module: {name}")
-        path = Path(__file__).absolute().parent / 'modules'
+        path = Path(__file__).absolute().parent / "modules"
 
     with silence_stdout():
         imported = run(readfile(path / f"{name}.sm"), Registry(globals()))
