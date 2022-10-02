@@ -123,6 +123,7 @@ class Group:
         Token.BXOR,
         Token.BNOT,
         Token.IN,
+        Token.ZIP,
     }
     brackets = {
         Token.BRACKET_OPEN,
@@ -188,6 +189,7 @@ OPERATOR_MAPPING = {
     Token.BXOR: "^",
     Token.BNOT: "~",
     Token.IN: " in ",
+    Token.ZIP: "@",
 }
 
 BRACKET_MAPPING = {
@@ -272,6 +274,7 @@ SPECIAL_METHOD_MAPPING = {
     "^": "xor",
     "+sm__": "pos",
     "-sm__": "neg",
+    "@": "matmul",
     ".__getitem__(mkslice(t()))": "getitem",
     ".__setitem__(mkslice(t()),": "setitem"
 }
@@ -621,7 +624,7 @@ class Transpiler:
                 start = self._indent > 0
                 assign_idx = self._line.index("=")
                 stop = assign_idx - (
-                    self._line[assign_idx - 1] in {*"+-*%&|^", "**", "//"}
+                    self._line[assign_idx - 1] in {*"+-*%&|^@", "**", "//"}
                 )
                 variable = "".join(self._line[start:stop])
                 self._line.append(f";{variable}=correct_type({variable})")
