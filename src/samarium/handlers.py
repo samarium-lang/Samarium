@@ -63,7 +63,7 @@ def less(scroller: Scroller) -> Token:
 def greater(scroller: Scroller) -> Token:
     if scroller.program[:3] == ">==":
         return Token.COMMENT_CLOSE
-    tokens = {">": Token.SLICE_CLOSE, ":": Token.GE}
+    tokens = {">": Token.SLICE_CLOSE, ":": Token.GE, "<": Token.ZIP}
     return tokens.get(scroller.next(), Token.GT)
 
 
