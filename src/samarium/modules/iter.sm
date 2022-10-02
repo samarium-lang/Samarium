@@ -106,14 +106,6 @@ pairwise array * {
     }
 }
 
-zip arrays... * {
-    <-math.min;
-    shortest: min([i$ ... i ->? arrays]);
-    ... i ->? <<..shortest>> {
-        ** [it<<i>> ... it ->? arrays];
-    }
-}
-
 zip_longest fill arrays... * {
     <-math.max;
     longest: max([i$ ... i ->? arrays]);

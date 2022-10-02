@@ -229,7 +229,7 @@ wrap string wrapper * {
 
 replace string replacements count? * {
     count <> -/;
-    <-iter.all, find, zip;
+    <-iter.all, find;
     <-types.String, Table;
 
     replace string from to count * {
@@ -306,11 +306,11 @@ replace string replacements count? * {
     ? replacements?! ::: Table {
         "invalid type for replacements: " + String(replacements?!)!!!;
     }
-    replacements: {{k -> v ... k, v ->? zip([replacements, replacements$])}};
+    replacements: {{k -> v ... k, v ->? replacements >< replacements$}};
     ? ~~ all([count, replacements]) {
         * string;
     }
-    ... f, t ->? zip([replacements, replacements$]) {
+    ... f, t ->? replacements >< replacements$ {
         string: replace(string, f, t, count);
     }
     * string;
