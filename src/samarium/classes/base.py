@@ -710,7 +710,7 @@ class Slice(Attrs):
         yield from map(Integer, self.range)
 
     def __contains__(self, value: Integer) -> bool:
-        return value in self.range
+        return value.val in self.range
 
     def __getitem__(self, index: Integer) -> Integer:
         return Integer(self.range[index.val])
