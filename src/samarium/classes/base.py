@@ -747,6 +747,35 @@ class Slice(Attrs):
         return self.start is self.stop is self.step is NULL
 
 
+class Zip(Attrs):
+    __slots__ = ("iters", "val")
+
+    def __init__(self, *values: Any) -> None:
+        if not all(isinstance(i, Iterable) for i in values):
+            raise SamariumTypeError("cannot zip a non-iterable")
+        self.iters = values
+        self.val = zip(*values)
+
+    def __hash__(self) -> int:
+        return hash(self.val)
+
+    def __bool__(self) -> bool:
+        return True
+
+    def __iter__(self) -> Iterator[Array]:
+        yield from map(Array, self.val)
+
+    def __matmul__(self, other: Any) -> Zip:
+        return Zip(*self.iters, other)
+
+    def __str__(self) -> str:
+        return f"<Zip@{id(self):x}>"
+
+    @property
+    def special(self) -> Integer:
+        return Integer(len(self.iters))
+
+
 def correct_type(obj: Any) -> Any:
     check_type(obj)
     if obj is None:
