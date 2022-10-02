@@ -428,6 +428,9 @@ class String(Attrs):
     def __hash__(self) -> int:
         return self.hash.val
 
+    def __matmul__(self, other: Any) -> Zip:
+        return Zip(self, other)
+
     @property
     def cast(self) -> Array | Integer:
         if len(self.val) == 1:
@@ -541,6 +544,9 @@ class Array(Attrs):
             return Array(self.val * other.val)
         raise NotDefinedError(f"Array ++ {get_type_name(other)}")
 
+    def __matmul__(self, other: Any) -> Zip:
+        return Zip(self, other)
+
     @property
     def cast(self) -> String:
         s = ""
@@ -637,6 +643,9 @@ class Table(Attrs):
             raise SamariumValueError(f"key not found: {other}")
         return Table(c)
 
+    def __matmul__(self, other: Any) -> Zip:
+        return Zip(self, other)
+
     @property
     def random(self) -> Any:
         if not self.val:
@@ -722,6 +731,9 @@ class Slice(Attrs):
                 string += ".."
             string += f"..{step!r}"
         return f"<<{string}>>"
+
+    def __matmul__(self, other: Any) -> Zip:
+        return Zip(self, other)
 
     __repr__ = __str__
 
