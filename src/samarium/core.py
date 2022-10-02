@@ -71,7 +71,7 @@ def import_module(data: str, reg: Registry) -> None:
     except IndexError:  # REPL
         path = Path().absolute()
 
-    if f"{name}.sm" not in list(path.iterdir()):
+    if f"{name}.sm" not in [e.name for e in path.iterdir()]:
         if name not in MODULE_NAMES:
             raise exc.SamariumImportError(f"invalid module: {name}")
         path = Path(__file__).absolute().parent / "modules"
