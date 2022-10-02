@@ -243,6 +243,7 @@ SLICE_OBJECT_TRIGGERS = {
     Token.PAREN_OPEN,
     Token.TABLE_OPEN,
     Token.IN,
+    *Group.operators,
 }
 
 FILE_OPEN_KEYWORDS = {"READ", "WRITE", "READ_WRITE", "APPEND"}
