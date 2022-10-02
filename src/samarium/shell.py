@@ -117,7 +117,7 @@ class SamariumRepl:
             self.execute(statement)
 
             if self.io.output:
-                self.messages.append("".join(self.io.output))
+                self.messages.extend("".join(self.io.output).split("\n"))
                 self.io.output.clear()
 
             self.length = 1
