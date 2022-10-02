@@ -112,20 +112,17 @@ timestamp_utc ts? * {
     }
 
     ! * {
-        <-string.format, leftpad;
+        <-string.leftpad;
         add0s n c * { * leftpad(String(n), c, "0"); }
-        * format(
-            "$Y-$M-$D $h:$m:$s.$z",
-            {{
-                "Y" -> 'year,
-                "M" -> add0s('month, /\),
-                "D" -> add0s('day, /\),
-                "h" -> add0s('hour + 'timezone<<\>>, /\),
-                "m" -> add0s('minute + 'timezone<</>>, /\),
-                "s" -> add0s('second, /\),
-                "z" -> add0s('millisecond, //)
-            }}
-        );
+        * "$Y-$M-$D $h:$m:$s.$z" --- {{
+            "Y" -> 'year,
+            "M" -> add0s('month, /\),
+            "D" -> add0s('day, /\),
+            "h" -> add0s('hour + 'timezone<<\>>, /\),
+            "m" -> add0s('minute + 'timezone<</>>, /\),
+            "s" -> add0s('second, /\),
+            "z" -> add0s('millisecond, //)
+        }};
     }
 
     to_timestamp * {
