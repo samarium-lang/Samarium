@@ -29,7 +29,7 @@ from .classes import (
 from .runtime import Runtime
 from .tokenizer import tokenize
 from .transpiler import Registry, Transpiler
-from .utils import readfile, silence_stdout, sysexit
+from .utils import silence_stdout
 
 MODULE_NAMES = [
     "collections",
@@ -77,7 +77,7 @@ def import_module(data: str, reg: Registry) -> None:
         path = Path(__file__).absolute().parent / "modules"
 
     with silence_stdout():
-        imported = run(readfile(path / f"{name}.sm"), Registry(globals()))
+        imported = run((path / f"{name}.sm").read_text(), Registry(globals()))
 
     if module_import:
         reg.vars.update({f"sm_{name}": Module(name, imported.vars)})
@@ -127,7 +127,7 @@ def run(
     Runtime.quit_on_error = quit_on_error
     code = Transpiler(tokenize(code), reg).transpile().output
     if load_template:
-        code = readfile(Path(__file__).resolve().parent / "template.py").replace(
+        code = (Path(__file__).resolve().parent / "template.py").read_text().replace(
             "{{ CODE }}", code
         )
     try:
