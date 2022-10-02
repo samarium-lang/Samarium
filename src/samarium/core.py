@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import sys
 from datetime import datetime
 from time import sleep as _sleep
@@ -29,7 +29,7 @@ from .classes import (
 from .runtime import Runtime
 from .tokenizer import tokenize
 from .transpiler import Registry, Transpiler
-from .utils import readfile, silence_stdout, sysexit
+from .utils import silence_stdout
 
 MODULE_NAMES = [
     "collections",
@@ -67,17 +67,17 @@ def import_module(data: str, reg: Registry) -> None:
         sys.stderr.write(dahlia("&4[RecursionError]\n"))
         return
     try:
-        path = sys.argv[1][: sys.argv[1].rfind("/") + 1] or "."
+        path = Path(sys.argv[1][: sys.argv[1].rfind("/") + 1] or ".")
     except IndexError:  # REPL
-        path = os.getcwd() + "/"
+        path = Path().absolute()
 
-    if f"{name}.sm" not in os.listdir(path):
+    if f"{name}.sm" not in [e.name for e in path.iterdir()]:
         if name not in MODULE_NAMES:
             raise exc.SamariumImportError(f"invalid module: {name}")
-        path = os.path.join(os.path.dirname(__file__), "modules")
+        path = Path(__file__).absolute().parent / "modules"
 
     with silence_stdout():
-        imported = run(readfile(f"{path}/{name}.sm"), Registry(globals()))
+        imported = run((path / f"{name}.sm").read_text(), Registry(globals()))
 
     if module_import:
         reg.vars.update({f"sm_{name}": Module(name, imported.vars)})
@@ -127,7 +127,7 @@ def run(
     Runtime.quit_on_error = quit_on_error
     code = Transpiler(tokenize(code), reg).transpile().output
     if load_template:
-        code = readfile(f"{os.path.dirname(__file__)}/template.py").replace(
+        code = (Path(__file__).resolve().parent / "template.py").read_text().replace(
             "{{ CODE }}", code
         )
     try:

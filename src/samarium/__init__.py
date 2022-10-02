@@ -1,7 +1,8 @@
 import sys
+from pathlib import Path
 from contextlib import suppress
 
-from .core import readfile, run
+from .core import run
 from .shell import run_shell
 from .transpiler import Registry
 from .utils import __version__
@@ -33,7 +34,7 @@ def main(debug: bool = False):
         sys.exit()
 
     try:
-        file = readfile(arg)
+        file = Path(arg).read_text()
     except IOError:
         print(f"file not found: {arg}")
     else:

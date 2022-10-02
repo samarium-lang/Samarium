@@ -93,11 +93,6 @@ def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
     return 0, []
 
 
-def readfile(path: str) -> str:
-    with open(path) as f:
-        return f.read()
-
-
 def run_with_backup(main: Callable[..., T], backup: Callable[..., T], *args) -> T:
     with suppress(NotDefinedError):
         return main(*args)
