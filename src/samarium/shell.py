@@ -58,7 +58,7 @@ class SamariumREPL:
             self.messages, (len(self.messages) - 1, len(clean_ansi(self.messages[-1])))
         )
 
-    def run(self):
+    def run(self) -> None:
         with FullscreenWindow(hide_cursor=False) as window:
             with Input() as input_gen:
                 self.render(window)
@@ -105,7 +105,7 @@ class SamariumREPL:
 
         return "\n".join(statements)
 
-    def on_return(self):
+    def on_return(self) -> bool | None:
         statement = self.format_statement(self.messages[-self.length :])
         if not statement:
             return False
@@ -127,7 +127,7 @@ class SamariumREPL:
 
         self.messages.append(self.prompt)
 
-    def on_paste(self, e: PasteEvent):
+    def on_paste(self, e: PasteEvent) -> None:
         for char in e.events:
             if char == "<SPACE>":
                 self.messages[-1] += " "
