@@ -25,7 +25,7 @@ class FakeIO:
         return len(__s)
 
 
-class SamariumRepl:
+class SamariumREPL:
     def __init__(self, debug: bool = False) -> None:
         self.registry = Registry(globals())
         self.prompt = IN
