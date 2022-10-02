@@ -3,7 +3,7 @@ import sys
 from contextlib import suppress
 
 from .core import run, readfile
-from .shell import run_shell
+from .shell import SamariumRepl
 from .transpiler import Registry
 from .utils import __version__
 
@@ -22,7 +22,7 @@ file              : reads program from script file"""
 def main(debug: bool = False):
 
     if len(sys.argv) == 1:
-        return run_shell(debug)
+        return SamariumRepl(debug).run()
 
     if (arg := sys.argv[1]) in OPTIONS:
         if arg in OPTIONS[:2]:
