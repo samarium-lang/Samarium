@@ -127,7 +127,7 @@ def run(
     Runtime.quit_on_error = quit_on_error
     code = Transpiler(tokenize(code), reg).transpile().output
     if load_template:
-        code = readfile(Path(__file__).resolve().parent / 'template.py').replace(
+        code = readfile(Path(__file__).resolve().parent / "template.py").replace(
             "{{ CODE }}", code
         )
     try:
