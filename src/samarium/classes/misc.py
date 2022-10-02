@@ -85,6 +85,9 @@ class Iterator(Attrs):
     def __next__(self) -> Any:
         return next(self.val)
 
+    def __str__(self) -> str:
+        return f"<Iterator@{id(self):x}>"
+
     @property
     def cast(self) -> Integer | Null:
         return self.length
