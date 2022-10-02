@@ -1,40 +1,40 @@
 import os
 import sys
-
 from datetime import datetime
-from dahlia import dahlia
-from time import sleep as _sleep, time_ns
+from time import sleep as _sleep
+from time import time_ns
 from types import GeneratorType
+from typing import Any
+
+from dahlia import dahlia
 
 from . import exceptions as exc
-from .objects import (
-    null,
-    Int,
-    class_attributes,
+from .classes import (
+    MISSING,
+    NULL,
+    Array,
+    Enum,
+    Integer,
+    Module,
+    Null,
+    String,
+    Table,
+    UserAttrs,
     function,
     mkslice,
     t,
-    verify_type,
-    Class,
-    String,
-    Integer,
-    MISSING,
-    Module,
-    Null,
-    Table,
-    Array,
-    Enum_,
-    Mode,
-    FileManager,
+    check_type,
+    correct_type,
 )
 from .runtime import Runtime
 from .tokenizer import tokenize
-from .transpiler import Transpiler, Registry
+from .transpiler import Registry, Transpiler
 from .utils import readfile, silence_stdout, sysexit
 
 MODULE_NAMES = [
     "collections",
     "datetime",
+    "io",
     "iter",
     "math",
     "operator",
@@ -50,11 +50,10 @@ def dtnow() -> Array:
     utcnow_tt = utcnow.timetuple()
     tz = now[3] - utcnow_tt[3], now[4] - utcnow_tt[4]
     utcnow_tpl = utcnow_tt[:-3] + (utcnow.microsecond // 1000,) + tz
-    return Array(map(Int, utcnow_tpl))
+    return Array(map(Integer, utcnow_tpl))
 
 
-def import_module(data: str, reg: Registry):
-
+def import_module(data: str, reg: Registry) -> None:
     module_import = False
     try:
         name, object_string = data.split(".")
@@ -83,11 +82,7 @@ def import_module(data: str, reg: Registry):
     if module_import:
         reg.vars.update({f"sm_{name}": Module(name, imported.vars)})
     elif objects == ["*"]:
-        imported.vars = {
-            k: v
-            for k, v in imported.vars.items()
-            if k.startswith("sm_")
-        }
+        imported.vars = {k: v for k, v in imported.vars.items() if k.startswith("sm_")}
         reg.vars.update(imported.vars)
     else:
         for obj in objects:
@@ -99,10 +94,10 @@ def import_module(data: str, reg: Registry):
                 )
 
 
-def print_safe(*args):
-    args = [*map(verify_type, args)]
+def print_safe(*args) -> Any:
+    args = list(map(correct_type, args))
     return_args = args[:]
-    args = [i.sm_to_string() for i in args]
+    args = list(map(str, args))
     types = [*map(type, args)]
     if tuple in types:
         raise exc.SamariumSyntaxError("missing brackets")
@@ -112,7 +107,7 @@ def print_safe(*args):
     if len(return_args) > 1:
         return Array(return_args)
     elif not return_args or types[0] is Null:
-        return null
+        return NULL
     return return_args[0]
 
 
@@ -128,7 +123,6 @@ def run(
     load_template: bool = True,
     quit_on_error: bool = True,
 ) -> Registry:
-
     runtime_state = Runtime.quit_on_error
     Runtime.quit_on_error = quit_on_error
     code = Transpiler(tokenize(code), reg).transpile().output
@@ -149,20 +143,20 @@ def run(
     return reg
 
 
-def sleep(*args: Integer):
+def sleep(*args: Integer) -> None:
     if not args:
         raise exc.SamariumTypeError("no argument provided for ,.,")
     if len(args) > 1:
         raise exc.SamariumTypeError(",., only takes one argument")
     (time,) = args
-    if not isinstance(time.value, int):
+    if not isinstance(time.val, int):
         raise exc.SamariumTypeError(",., only accepts integers")
-    _sleep(time.value / 1000)
+    _sleep(time.val / 1000)
 
 
-def throw(message: str = ""):
+def throw(message: str = "") -> None:
     raise exc.SamariumError(message)
 
 
 def timestamp() -> Integer:
-    return Int(time_ns() // 1_000_000)
+    return Integer(time_ns() // 1_000_000)

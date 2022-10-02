@@ -121,8 +121,7 @@ The above class definition is equivalent to:
     create * {}
 
     to_string * {
-        <-string.format;
-        * format("<$name@$address>", {{"name" -> '?!, "address" -> '**}});
+        * "<$name@$address>" --- {{"name" -> '?!, "address" -> '**}};
     }
 }
 ```

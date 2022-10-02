@@ -84,7 +84,7 @@ join iterable delimiter? * {
     delimiter <> "";
     o: "";
     ... e ->? iterable {
-        o+: e.to_string();
+        o+: ""?!(e);
         o+: delimiter;
     }
     ? delimiter {
@@ -118,7 +118,7 @@ is_wrapped string chars * {
 to_lower string * {
     <-types.String;
     ? string?! ::: String {
-        "invalid type: " + string?!.to_string()!!!;
+        "invalid type: " + ""?!(string?!)!!!;
     }
     out: "";
     ... char ->? string {
@@ -134,7 +134,7 @@ to_lower string * {
 to_upper string * {
     <-types.String;
     ? string?! ::: String {
-        "invalid type: " + string?!.to_string()!!!;
+        "invalid type: " + ""?!(string?!)!!!;
     }
     out: "";
     ... char ->? string {
@@ -227,46 +227,9 @@ wrap string wrapper * {
     * wrapper + string + wrapper;
 }
 
-format string fields * {
-    <-types.Array, Table;
-    <-iter.enumerate;
-    ? fields?! :: Array {
-        fields: {{i -> v ... i, v ->? enumerate(fields)}};
-    }
-    ? fields?! ::: Table {
-        "invalid type: " + fields?!.to_string()!!!;
-    }
-    ? ~~ fields {
-        * string;
-    }
-    new_string: "";
-    index: \;
-    .. index < string$ {
-        char: string<<index>>;
-        ? char ::: "$" {
-            new_string+: char;
-            index+: /;
-        } ,, ? string<<index + />> :: "$" {
-            new_string+: "$";
-            index+: /\;
-        } ,, {
-            ... k ->? fields {
-                v: fields<<k>>.to_string();
-                k: k.to_string();
-                ? string<<index + /..index + k$ + />> :: k {
-                    new_string+: v;
-                    index+: k$ + /;
-                    <-;
-                }
-            }
-        }
-    }
-    * new_string;
-}
-
 replace string replacements count? * {
     count <> -/;
-    <-iter.all, find, zip;
+    <-iter.all, find;
     <-types.String, Table;
 
     replace string from to count * {
@@ -343,11 +306,11 @@ replace string replacements count? * {
     ? replacements?! ::: Table {
         "invalid type for replacements: " + String(replacements?!)!!!;
     }
-    replacements: {{k -> v ... k, v ->? zip([replacements.iterate(), replacements$])}};
+    replacements: {{k -> v ... k, v ->? replacements >< replacements$}};
     ? ~~ all([count, replacements]) {
         * string;
     }
-    ... f, t ->? zip([replacements.iterate(), replacements$]) {
+    ... f, t ->? replacements >< replacements$ {
         string: replace(string, f, t, count);
     }
     * string;

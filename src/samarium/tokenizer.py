@@ -35,7 +35,6 @@ MULTISEMANTIC = {
 
 
 def tokenize(program: str) -> list[Tokenlike]:
-
     comment = False
     scroller = handlers.Scroller(exclude_backticks(program))
     string = False

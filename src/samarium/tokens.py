@@ -110,6 +110,7 @@ class Token(Enum):
     SEP = ","
     SLEEP = ",.,"
     STRING = '"'
+    ZIP = "><"
 
 
 FILE_IO_TOKENS = [

@@ -29,9 +29,8 @@
 
 ```sm
 dropsort array * {
-    <-iter.enumerate;
     out: [];
-    ... i, v ->? enumerate(array) {
+    ... i, v ->? <<>> >< array {
         ? ~~ out || v >: out<<-/>> {
             out+: [v];
         }

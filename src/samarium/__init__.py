@@ -1,9 +1,9 @@
 import sys
-
 from contextlib import suppress
 
-from .core import run, readfile
+from .core import readfile, run
 from .shell import SamariumRepl
+
 from .transpiler import Registry
 from .utils import __version__
 
