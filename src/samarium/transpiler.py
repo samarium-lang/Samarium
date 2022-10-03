@@ -277,7 +277,7 @@ SPECIAL_METHOD_MAPPING = {
     "-sm__": "neg",
     "@": "matmul",
     ".__getitem__(mkslice(t()))": "getitem",
-    ".__setitem__(mkslice(t()),": "setitem"
+    ".__setitem__(mkslice(t()),": "setitem",
 }
 
 
@@ -524,9 +524,7 @@ class Transpiler:
             ]
         elif token is Token.DEFAULT:
             self._line.append(
-                " = {0} if not isinstance({0}, Missing) else ".format(
-                    "".join(self._line).strip()
-                )
+                " = {0} if {0} is not MISSING else ".format("".join(self._line).strip())
             )
         elif token is Token.YIELD:
             if is_first_token(self._line):
