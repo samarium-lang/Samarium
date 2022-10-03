@@ -29,7 +29,7 @@ from .classes import (
 from .runtime import Runtime
 from .tokenizer import tokenize
 from .transpiler import Registry, Transpiler
-from .utils import silence_stdout
+from .utils import silence_stdout, sysexit
 
 MODULE_NAMES = [
     "collections",
