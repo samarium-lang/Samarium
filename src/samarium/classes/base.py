@@ -382,9 +382,10 @@ class String(Attrs):
     def __sub__(self, other: Any) -> String:
         return String(self.val.replace(other.val, ""))
 
-    @guard("++")
     def __mul__(self, other: Any) -> String:
-        return String(self.val * other.val)
+        if isinstance(other, Integer):
+            return String(self.val * other.val)
+        raise NotDefinedError(f"String ++ {get_type_name(other)}")
 
     def __mod__(self, other: Any) -> String:
         if isinstance(other, (String, Array, Table)):
