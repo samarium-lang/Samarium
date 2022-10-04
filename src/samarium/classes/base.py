@@ -469,9 +469,7 @@ class Array(Attrs):
             self.val = list(map(Array, value.val.items()))
         elif isinstance(value, Slice):
             if value.stop is NULL:
-                raise SamariumValueError(
-                    "cannot convert an infinite Slice to Array"
-                )
+                raise SamariumValueError("cannot convert an infinite Slice to Array")
             self.val = list(value.range)
         elif isinstance(value, Iterable):
             self.val = [*value]
