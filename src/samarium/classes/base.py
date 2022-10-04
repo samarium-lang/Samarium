@@ -826,8 +826,8 @@ def check_type(obj: Any) -> None:
 
 @contextmanager
 def modify(
-    func: Callable, args: list[Any], argc: int
-) -> Iterator[tuple[Callable, list[Any]]]:
+    func: Callable[..., Any], args: list[Any], argc: int
+) -> Iterator[tuple[Callable[..., Any], list[Any]]]:
     flag = func.__code__.co_flags
     if flag & 4 == 0:
         yield func, args
@@ -849,14 +849,14 @@ TOO_MANY_ARGS_PATTERN = compile(
 )
 
 
-def function(func: Callable) -> Callable:
+def function(func: Callable[..., Any]) -> Callable[..., Any]:
     @wraps(func)
-    def wrapper(*args) -> Any:
+    def wrapper(*args: Any) -> Any:
         for arg in args:
             check_type(arg)
-        with modify(func, list(args), argc) as (f, args):
+        with modify(func, list(args), argc) as (f, checked_args):
             try:
-                result = correct_type(f(*args))
+                result = correct_type(f(*checked_args))
             except TypeError as e:
                 errmsg = str(e)
                 if "positional argument: 'self'" in errmsg:

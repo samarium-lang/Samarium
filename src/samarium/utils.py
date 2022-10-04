@@ -3,10 +3,11 @@ from __future__ import annotations
 import os
 import sys
 from collections import Counter
+from collections.abc import Callable
 from contextlib import contextmanager, suppress
 from re import sub
 from string import digits, hexdigits, octdigits
-from typing import Any, Callable, Generic, Iterator, TypeVar, cast
+from typing import Any, Generic, Iterator, TypeVar, cast
 
 from .exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
 from .tokenizer import Tokenlike
@@ -30,10 +31,10 @@ VT = TypeVar("VT")
 
 
 class ClassProperty:
-    def __init__(self, func: Callable) -> None:
+    def __init__(self, func: Callable[..., Any]) -> None:
         self.func = func
 
-    def __get__(self, obj, owner=None) -> Any:
+    def __get__(self, obj: Any, owner: Any | None = None) -> Any:
         if obj is None:
             obj = owner
         return self.func(obj)
@@ -64,16 +65,16 @@ class LFUCache(Generic[KT, VT]):
 
 
 class Singleton:
-    _instances = {}
+    _instances: dict[type[Singleton], Singleton] = {}
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args: Any, **kwargs: Any):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__new__(cls, *args, **kwargs)
         return cls._instances[cls]
 
 
 def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
-    stack = []
+    stack: list[Token] = []
     token = Token.END
     tokens: list[Token] = [
         cast(Token, t) for t in tokens_ if t in OPEN_TOKENS + CLOSE_TOKENS
@@ -93,7 +94,7 @@ def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
     return 0, []
 
 
-def run_with_backup(main: Callable[..., T], backup: Callable[..., T], *args) -> T:
+def run_with_backup(main: Callable[..., T], backup: Callable[..., T], *args: Any) -> T:
     with suppress(NotDefinedError):
         return main(*args)
     return backup(*args)
@@ -113,7 +114,7 @@ def sysexit(*args: Any):
     code = args[0].val if args else 0
     if not isinstance(code, int):
         raise SamariumTypeError("=>! only accepts integers")
-    os._exit(code)
+    raise SystemExit(code)
 
 
 def parse_integer(string: str) -> int:
@@ -149,7 +150,7 @@ def smformat(string: str, fields: str | list[Any] | dict[Any, Any]) -> str:
     return string.replace("$$", "$")
 
 
-def get_name(obj: Callable | type) -> str:
+def get_name(obj: Callable[..., Any] | type) -> str:
     return obj.__name__.removeprefix("sm_")
 
 
@@ -157,9 +158,9 @@ def get_type_name(obj: Any) -> str:
     return type(obj).__name__.removeprefix("sm_")
 
 
-def guard(operator: str) -> Callable:
-    def decorator(function: Callable) -> Callable:
-        def wrapper(self, other: Any) -> Any:
+def guard(operator: str) -> Callable[..., Any]:
+    def decorator(function: Callable[..., Any]) -> Callable[..., Any]:
+        def wrapper(self: Any, other: Any) -> Any:
             Ts = type(self)
             To = type(other)
             if isinstance(other, Ts):
