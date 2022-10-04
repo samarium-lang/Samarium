@@ -863,9 +863,7 @@ def function(func: Callable[..., Any]) -> Callable[..., Any]:
                 missing_args = MISSING_ARGS_PATTERN.search(errmsg)
                 if missing_args:
                     given = argc - (int(missing_args.group(1)) or 1)
-                    raise SamariumTypeError(
-                        f"not enough arguments ({given}/{argc})"
-                    )
+                    raise SamariumTypeError(f"not enough arguments ({given}/{argc})")
                 too_many_args = TOO_MANY_ARGS_PATTERN.search(errmsg)
                 if too_many_args:
                     raise SamariumTypeError(
