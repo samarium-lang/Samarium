@@ -8,10 +8,7 @@ from .exceptions import SamariumSyntaxError, handle_exception
 from .tokens import Token
 
 
-if sys.version_info >= (3, 10):
-    Tokenlike = Token | str | int
-else:
-    Tokenlike = Union[Token, str, int]
+Tokenlike = Union[Token, str, int]
 
 CHARSET = ascii_letters + digits + "_"
 
