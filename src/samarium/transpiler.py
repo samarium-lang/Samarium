@@ -697,12 +697,7 @@ class Transpiler:
             if self._line_tokens[-2] in Group.operators:
                 self._line.append("NULL")
             indented = self._indent > 0
-            self._line = [
-                *self._line[:indented],
-                "throw(",
-                *self._line[indented:],
-                ")",
-            ]
+            self._line = [*self._line[:indented], "throw(", *self._line[indented:], ")"]
         elif token is Token.PRINT:
             if (
                 self._scope.current == "class"
