@@ -98,7 +98,7 @@ def import_module(data: str, reg: Registry) -> None:
                 )
 
 
-def print_safe(*args: Attrs | bool | None) -> Any:
+def print_safe(*args: Attrs | bool | None) -> Attrs:
     typechecked_args = list(map(correct_type, args))
     return_args = typechecked_args[:]
     typechecked_args = list(map(str, typechecked_args))
