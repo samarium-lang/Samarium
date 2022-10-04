@@ -802,7 +802,7 @@ def correct_type(obj: T) -> T | Integer | Null:
     return obj
 
 
-def mkslice(start: Any = None, stop: Any = None, step: Any = None) -> Slice:
+def mkslice(start: Any = None, stop: Any = None, step: Any = None) -> Any:
     if stop is step is None:
         if start is None:
             return Slice(NULL)
