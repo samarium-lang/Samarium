@@ -4,6 +4,7 @@ from .base import (
     MISSING,
     NULL,
     Array,
+    Attrs,
     Integer,
     Module,
     Null,
@@ -23,6 +24,7 @@ from .misc import Enum, Iterator
 
 __all__ = (
     "Array",
+    "Attrs",
     "Enum",
     "File",
     "Iterator",

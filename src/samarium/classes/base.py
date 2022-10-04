@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from contextlib import contextmanager, suppress
 from functools import wraps
 from inspect import signature
 from re import compile
 from secrets import choice, randbelow
 from types import FunctionType, GeneratorType
-from typing import Any, Callable, Iterable, Iterator
+from typing import Any, Iterable, Iterator, TypeVar
 
 from ..exceptions import (
     NotDefinedError,
@@ -24,6 +25,9 @@ from ..utils import (
     parse_integer,
     smformat,
 )
+
+
+T = TypeVar("T")
 
 
 def throw_missing(*_):
@@ -789,7 +793,7 @@ class Zip(Attrs):
         return Integer(len(self.iters))
 
 
-def correct_type(obj: Any) -> Any:
+def correct_type(obj: T) -> T | Integer | Null:
     check_type(obj)
     if obj is None:
         return NULL
@@ -798,7 +802,7 @@ def correct_type(obj: Any) -> Any:
     return obj
 
 
-def mkslice(start: Any = None, stop: Any = None, step: Any = None) -> Any:
+def mkslice(start: Any = None, stop: Any = None, step: Any = None) -> Slice:
     if stop is step is None:
         if start is None:
             return Slice(NULL)
@@ -809,7 +813,7 @@ def mkslice(start: Any = None, stop: Any = None, step: Any = None) -> Any:
     return Slice(start, stop, step)
 
 
-def t(obj: Any = None) -> Any:
+def t(obj: T | None = None) -> T | None:
     return obj
 
 

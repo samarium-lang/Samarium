@@ -13,6 +13,7 @@ from .classes import (
     MISSING,
     NULL,
     Array,
+    Attrs,
     Enum,
     File,
     FileManager,
@@ -72,12 +73,12 @@ def import_module(data: str, reg: Registry) -> None:
     try:
         path = Path(sys.argv[1][: sys.argv[1].rfind("/") + 1] or ".")
     except IndexError:  # REPL
-        path = Path().absolute()
+        path = Path().resolve()
 
     if f"{name}.sm" not in [e.name for e in path.iterdir()]:
         if name not in MODULE_NAMES:
             raise exc.SamariumImportError(f"invalid module: {name}")
-        path = Path(__file__).absolute().parent / "modules"
+        path = Path(__file__).resolve().parent / "modules"
 
     with silence_stdout():
         imported = run((path / f"{name}.sm").read_text(), Registry(globals()))
@@ -97,16 +98,16 @@ def import_module(data: str, reg: Registry) -> None:
                 )
 
 
-def print_safe(*args) -> Any:
-    args = list(map(correct_type, args))
-    return_args = args[:]
-    args = list(map(str, args))
-    types = [*map(type, args)]
+def print_safe(*args: Attrs | bool | None) -> Any:
+    typechecked_args = list(map(correct_type, args))
+    return_args = typechecked_args[:]
+    typechecked_args = list(map(str, typechecked_args))
+    types = [*map(type, typechecked_args)]
     if tuple in types:
         raise exc.SamariumSyntaxError("missing brackets")
     if GeneratorType in types:
         raise exc.SamariumSyntaxError("invalid comprehension")
-    print(*args)
+    print(*typechecked_args)
     if len(return_args) > 1:
         return Array(return_args)
     elif not return_args or types[0] is Null:
