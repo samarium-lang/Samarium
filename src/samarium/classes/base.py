@@ -600,9 +600,7 @@ class Table(Attrs):
                     "not all elements of the array are of length 2"
                 )
         else:
-            raise SamariumTypeError(
-                f"cannot cast {get_type_name(value)} to Table"
-            )
+            raise SamariumTypeError(f"cannot cast {get_type_name(value)} to Table")
 
     def __str__(self) -> str:
         return "{{{{{}}}}}".format(
