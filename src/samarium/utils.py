@@ -69,7 +69,9 @@ class Singleton:
 
     def __new__(cls, *args: Any, **kwargs: Any):
         if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__new__(cls, *args, **kwargs)
+            cls._instances[cls] = super(Singleton, cls).__new__(
+                cls, *args, **kwargs
+            )
         return cls._instances[cls]
 
 
@@ -94,7 +96,9 @@ def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
     return 0, []
 
 
-def run_with_backup(main: Callable[..., T], backup: Callable[..., T], *args: Any) -> T:
+def run_with_backup(
+    main: Callable[..., T], backup: Callable[..., T], *args: Any
+) -> T:
     with suppress(NotDefinedError):
         return main(*args)
     return backup(*args)
@@ -146,7 +150,7 @@ def smformat(string: str, fields: str | list[Any] | dict[Any, Any]) -> str:
     if isinstance(fields, dict):
         it = fields.items()
     for k, v in it:
-        string = sub(fr"(?<!\$)\${k}", str(v), string)
+        string = sub(rf"(?<!\$)\${k}", str(v), string)
     return string.replace("$$", "$")
 
 

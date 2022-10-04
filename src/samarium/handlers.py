@@ -11,7 +11,7 @@ class Scroller:
         return self.program[:1]
 
     def next(self, offset: int = 1) -> str:
-        return self.program[offset:offset + 1]
+        return self.program[offset : offset + 1]
 
     def shift(self, units: int = 1):
         self.prev = self.program[:units][-1]

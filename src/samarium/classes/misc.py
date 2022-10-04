@@ -3,7 +3,11 @@ from __future__ import annotations
 from typing import Any, Iterable
 from typing import Iterator as Iter
 
-from ..exceptions import SamariumSyntaxError, SamariumTypeError, SamariumValueError
+from ..exceptions import (
+    SamariumSyntaxError,
+    SamariumTypeError,
+    SamariumValueError,
+)
 from .base import NULL, Attrs, Integer, Null, String, Table
 
 
@@ -69,7 +73,9 @@ class Iterator(Attrs):
 
     def __init__(self, value: Any) -> None:
         if not isinstance(value, Iterable):
-            raise SamariumTypeError("cannot create an Iterator from a non-iterable")
+            raise SamariumTypeError(
+                "cannot create an Iterator from a non-iterable"
+            )
         self.val = iter(value)
         try:
             self.length = Integer(len(value.val))

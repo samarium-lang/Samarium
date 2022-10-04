@@ -24,7 +24,9 @@ class FileManager:
         return NULL
 
     @staticmethod
-    def open(path: String | Integer, mode: Mode, *, binary: bool = False) -> File:
+    def open(
+        path: String | Integer, mode: Mode, *, binary: bool = False
+    ) -> File:
         if isinstance(path, Integer) and mode is Mode.READ_WRITE:
             raise SamariumIOError(
                 "cannot open a standard stream in a read & write mode"
@@ -88,7 +90,9 @@ class FileManager:
 class File(Attrs):
     __slots__ = ("binary", "mode", "path", "val")
 
-    def __init__(self, file: IO, mode: str, path: str | int, binary: bool) -> None:
+    def __init__(
+        self, file: IO, mode: str, path: str | int, binary: bool
+    ) -> None:
         self.binary = binary
         self.mode = mode
         self.path = path

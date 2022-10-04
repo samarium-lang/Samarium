@@ -4,6 +4,7 @@ from datetime import datetime
 from time import sleep as _sleep
 from time import time_ns
 from types import GeneratorType
+
 from dahlia import dahlia
 
 from . import exceptions as exc
@@ -84,7 +85,9 @@ def import_module(data: str, reg: Registry) -> None:
     if module_import:
         reg.vars.update({f"sm_{name}": Module(name, imported.vars)})
     elif objects == ["*"]:
-        imported.vars = {k: v for k, v in imported.vars.items() if k.startswith("sm_")}
+        imported.vars = {
+            k: v for k, v in imported.vars.items() if k.startswith("sm_")
+        }
         reg.vars.update(imported.vars)
     else:
         for obj in objects:
@@ -129,8 +132,10 @@ def run(
     Runtime.quit_on_error = quit_on_error
     code = Transpiler(tokenize(code), reg).transpile().output
     if load_template:
-        code = (Path(__file__).resolve().parent / "template.py").read_text().replace(
-            "{{ CODE }}", code
+        code = (
+            (Path(__file__).resolve().parent / "template.py")
+            .read_text()
+            .replace("{{ CODE }}", code)
         )
     try:
         if debug:

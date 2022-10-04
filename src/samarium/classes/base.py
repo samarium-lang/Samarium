@@ -72,7 +72,6 @@ class Attrs:
 
 
 class UserAttrs(Attrs):
-
     def __init__(self, *args) -> None:
         with suppress(AttributeError):
             self.__entry__(*args)
@@ -89,7 +88,9 @@ class UserAttrs(Attrs):
         v = string().val
         if isinstance(v, str):
             return v
-        raise SamariumTypeError(f"{get_type_name(self)}! returned a non-string")
+        raise SamariumTypeError(
+            f"{get_type_name(self)}! returned a non-string"
+        )
 
     def __bool__(self) -> bool:
         try:
@@ -133,7 +134,9 @@ class UserAttrs(Attrs):
         v = hsh()
         if isinstance(v, Integer):
             return v
-        raise SamariumTypeError(f"{get_type_name(self)}## returned a non-integer")
+        raise SamariumTypeError(
+            f"{get_type_name(self)}## returned a non-integer"
+        )
 
     @property
     def cast(self) -> Any:
@@ -249,7 +252,9 @@ class Integer(Attrs):
         elif isinstance(v, String):
             self.val = parse_integer(v.val)
         else:
-            raise SamariumTypeError(f"cannot cast {get_type_name(v)} to Integer")
+            raise SamariumTypeError(
+                f"cannot cast {get_type_name(v)} to Integer"
+            )
         if v not in Integer.cache:
             Integer.cache[v] = self
 
@@ -279,7 +284,7 @@ class Integer(Attrs):
 
     @guard("+++")
     def __pow__(self, other: Any) -> Integer:
-        return Integer(self.val ** other.val)
+        return Integer(self.val**other.val)
 
     @guard("---")
     def __mod__(self, other: Any) -> Integer:
@@ -470,12 +475,16 @@ class Array(Attrs):
             self.val = list(map(Array, value.val.items()))
         elif isinstance(value, Slice):
             if value.stop is NULL:
-                raise SamariumValueError("cannot convert an infinite Slice to Array")
+                raise SamariumValueError(
+                    "cannot convert an infinite Slice to Array"
+                )
             self.val = list(value.range)
         elif isinstance(value, Iterable):
             self.val = [*value]
         else:
-            raise SamariumTypeError(f"cannot cast {get_type_name(value)} to Array")
+            raise SamariumTypeError(
+                f"cannot cast {get_type_name(value)} to Array"
+            )
 
     def __str__(self) -> str:
         return "[{}]".format(", ".join(map(repr, self.val)))
@@ -585,7 +594,9 @@ class Table(Attrs):
             self.val = value
         elif isinstance(value, Array):
             arr = value.val
-            if all(isinstance(i, (String, Array)) and len(i.val) == 2 for i in arr):
+            if all(
+                isinstance(i, (String, Array)) and len(i.val) == 2 for i in arr
+            ):
                 table = {}
                 for e in arr:
                     if isinstance(e, String):
@@ -601,7 +612,9 @@ class Table(Attrs):
                     "not all elements of the array are of length 2"
                 )
         else:
-            raise SamariumTypeError(f"cannot cast {get_type_name(value)} to Table")
+            raise SamariumTypeError(
+                f"cannot cast {get_type_name(value)} to Table"
+            )
 
     def __str__(self) -> str:
         return "{{{{{}}}}}".format(
@@ -864,7 +877,9 @@ def function(func: Callable[..., Any]) -> Callable[..., Any]:
                 missing_args = MISSING_ARGS_PATTERN.search(errmsg)
                 if missing_args:
                     given = argc - (int(missing_args.group(1)) or 1)
-                    raise SamariumTypeError(f"not enough arguments ({given}/{argc})")
+                    raise SamariumTypeError(
+                        f"not enough arguments ({given}/{argc})"
+                    )
                 too_many_args = TOO_MANY_ARGS_PATTERN.search(errmsg)
                 if too_many_args:
                     raise SamariumTypeError(
