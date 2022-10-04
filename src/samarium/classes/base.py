@@ -474,9 +474,7 @@ class Array(Attrs):
         elif isinstance(value, Iterable):
             self.val = [*value]
         else:
-            raise SamariumTypeError(
-                f"cannot cast {get_type_name(value)} to Array"
-            )
+            raise SamariumTypeError(f"cannot cast {get_type_name(value)} to Array")
 
     def __str__(self) -> str:
         return "[{}]".format(", ".join(map(repr, self.val)))
