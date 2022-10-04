@@ -584,9 +584,7 @@ class Table(Attrs):
             self.val = value
         elif isinstance(value, Array):
             arr = value.val
-            if all(
-                isinstance(i, (String, Array)) and len(i.val) == 2 for i in arr
-            ):
+            if all(isinstance(i, (String, Array)) and len(i.val) == 2 for i in arr):
                 table = {}
                 for e in arr:
                     if isinstance(e, String):
