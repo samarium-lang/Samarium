@@ -4,8 +4,6 @@ from datetime import datetime
 from time import sleep as _sleep
 from time import time_ns
 from types import GeneratorType
-from typing import Any
-
 from dahlia import dahlia
 
 from . import exceptions as exc
