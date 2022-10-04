@@ -248,9 +248,7 @@ class Integer(Attrs):
         elif isinstance(v, String):
             self.val = parse_integer(v.val)
         else:
-            raise SamariumTypeError(
-                f"cannot cast {get_type_name(v)} to Integer"
-            )
+            raise SamariumTypeError(f"cannot cast {get_type_name(v)} to Integer")
         if v not in Integer.cache:
             Integer.cache[v] = self
 
