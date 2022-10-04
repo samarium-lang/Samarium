@@ -88,9 +88,7 @@ class UserAttrs(Attrs):
         v = string().val
         if isinstance(v, str):
             return v
-        raise SamariumTypeError(
-            f"{get_type_name(self)}! returned a non-string"
-        )
+        raise SamariumTypeError(f"{get_type_name(self)}! returned a non-string")
 
     def __bool__(self) -> bool:
         try:
