@@ -1,6 +1,5 @@
 from contextlib import suppress
 from string import ascii_letters, digits
-import sys
 from typing import Union
 
 from . import handlers
