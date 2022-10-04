@@ -1,5 +1,4 @@
 import sys
-from os import _exit
 from re import compile
 
 from dahlia import dahlia
