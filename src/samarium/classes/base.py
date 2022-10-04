@@ -132,9 +132,7 @@ class UserAttrs(Attrs):
         v = hsh()
         if isinstance(v, Integer):
             return v
-        raise SamariumTypeError(
-            f"{get_type_name(self)}## returned a non-integer"
-        )
+        raise SamariumTypeError(f"{get_type_name(self)}## returned a non-integer")
 
     @property
     def cast(self) -> Any:
