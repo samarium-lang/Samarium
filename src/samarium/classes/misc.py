@@ -3,11 +3,7 @@ from __future__ import annotations
 from typing import Any, Iterable
 from typing import Iterator as Iter
 
-from ..exceptions import (
-    SamariumSyntaxError,
-    SamariumTypeError,
-    SamariumValueError,
-)
+from ..exceptions import SamariumSyntaxError, SamariumTypeError, SamariumValueError
 from .base import NULL, Attrs, Integer, Null, String, Table
 
 
