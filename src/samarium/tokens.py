@@ -114,9 +114,7 @@ class Token(Enum):
 
 
 FILE_IO_TOKENS = [
-    token
-    for name, token in Token.__members__.items()
-    if name.startswith("FILE_")
+    token for name, token in Token.__members__.items() if name.startswith("FILE_")
 ]
 
 OPEN_TOKENS = [

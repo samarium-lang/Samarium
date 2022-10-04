@@ -84,18 +84,14 @@ class SamariumREPL:
         elif e == "<BACKSPACE>":
             curr = self.messages[-1]
             if len(curr) + 4:
-                self.messages[-1] = (
-                    self.prompt + curr[len(self.prompt) : len(curr) - 1]
-                )
+                self.messages[-1] = self.prompt + curr[len(self.prompt) : len(curr) - 1]
         elif e == "<Ctrl-j>":
             if self.on_return() is False:
                 return None
         elif isinstance(e, PasteEvent):
             self.on_paste(e)
         elif (
-            isinstance(e, Event)
-            or e is None
-            or (e.startswith("<") and e.endswith(">"))
+            isinstance(e, Event) or e is None or (e.startswith("<") and e.endswith(">"))
         ):
             return None
         else:

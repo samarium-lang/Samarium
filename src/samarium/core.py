@@ -85,9 +85,7 @@ def import_module(data: str, reg: Registry) -> None:
     if module_import:
         reg.vars.update({f"sm_{name}": Module(name, imported.vars)})
     elif objects == ["*"]:
-        imported.vars = {
-            k: v for k, v in imported.vars.items() if k.startswith("sm_")
-        }
+        imported.vars = {k: v for k, v in imported.vars.items() if k.startswith("sm_")}
         reg.vars.update(imported.vars)
     else:
         for obj in objects:

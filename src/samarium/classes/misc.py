@@ -69,9 +69,7 @@ class Iterator(Attrs):
 
     def __init__(self, value: Any) -> None:
         if not isinstance(value, Iterable):
-            raise SamariumTypeError(
-                "cannot create an Iterator from a non-iterable"
-            )
+            raise SamariumTypeError("cannot create an Iterator from a non-iterable")
         self.val = iter(value)
         try:
             self.length = Integer(len(value.val))
