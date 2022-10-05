@@ -30,6 +30,15 @@ count array target * {
     * s;
 }
 
+cycle iter * {
+    saved: [e ... e ->? iter];
+    .. {
+        ... e ->? saved {
+            ** e;
+        }
+    }
+}
+
 filter array function * {
     ... e ->? array {
         ? function(e) {
