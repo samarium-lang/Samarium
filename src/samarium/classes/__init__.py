@@ -5,7 +5,9 @@ from .base import (
     NULL,
     Array,
     Attrs,
+    Enum,
     Integer,
+    Iterator,
     Module,
     Null,
     Slice,
@@ -20,7 +22,6 @@ from .base import (
     t,
 )
 from .fileio import File, FileManager, Mode
-from .misc import Enum, Iterator
 
 __all__ = (
     "Array",
