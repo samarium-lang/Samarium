@@ -486,6 +486,12 @@ class Transpiler:
             self._scope.enter("function")
             indentation = self._line[:indented]
             name = self._line[indented]
+            method = self._reg[Switch.CLASS] and self._scope.parent == "class"
+            static = self._line[-2:] == ["~", "self"]
+            if static and not method:
+                throw_syntax("cannot create a static method outside a class")
+            if static:
+                self._line = self._line[:-2]
             if name == "NULL":
                 indented += 1
                 name = self._line[indented]
@@ -510,18 +516,18 @@ class Transpiler:
                 transform_special(name, self._scope),
                 "(",
                 ",".join(
-                    groupnames(  # Making varargs and optionals work
-                        (
-                            # Adding the self parameter for class methods
-                            ["self"]
-                            if self._reg[Switch.CLASS] and self._scope.parent == "class"
-                            else []
-                        )
+                    # Making varargs and optionals work
+                    groupnames(
+                        # Adding the self parameter for class methods
+                        (["self"] if method and not static else [])
                         + self._line[indented + 1 :]
                     )
                 ),
                 ")",
             ]
+            if static:
+                self._line.insert(0, "@staticmethod\n")
+                self._line.insert(0, indentation[0] if indentation else "")
         elif token is Token.DEFAULT:
             self._line.append(
                 " = {0} if {0} is not MISSING else ".format("".join(self._line).strip())
