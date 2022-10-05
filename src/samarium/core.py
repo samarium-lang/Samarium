@@ -73,7 +73,7 @@ def import_module(data: str, reg: Registry) -> None:
         module_import = True
     name = name.removeprefix("sm_")
     if name == "samarium":
-        sys.stderr.write(DAHLIA.print("&4[RecursionError]\n"))
+        sys.stderr.write(DAHLIA.convert("&4[RecursionError]\n"))
         return
     try:
         path = Path(sys.argv[1][: sys.argv[1].rfind("/") + 1] or ".")

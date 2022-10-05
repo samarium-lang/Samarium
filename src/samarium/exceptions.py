@@ -64,7 +64,7 @@ class SamariumImportError(SamariumError):
 
 class SamariumSyntaxError(SamariumError):
     def __init__(self, msg: str) -> None:
-        sys.stderr.write(DAHLIA.print(f"&4[SyntaxError] {msg}\n"))
+        sys.stderr.write(DAHLIA.convert(f"&4[SyntaxError] {msg}\n"))
         raise SystemExit(1)
 
 
