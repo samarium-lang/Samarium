@@ -1,10 +1,11 @@
 import sys
 from re import compile
 
-from dahlia import dahlia
+from dahlia import Dahlia
 
 from .runtime import Runtime
 
+DAHLIA = Dahlia()
 SINGLE_QUOTED_NAME = compile(r"'(\w+)'")
 
 
@@ -38,7 +39,7 @@ def handle_exception(exception: Exception):
             name = name.removeprefix("Samarium")
         else:
             name = f"External{name}".replace("ExternalZeroDivision", "Math")
-    sys.stderr.write(dahlia(f"&4[{name}] {exception}\n"))
+    sys.stderr.write(DAHLIA.convert(f"&4[{name}] {exception}\n"))
     if Runtime.quit_on_error:
         raise SystemExit(1)
 
@@ -63,7 +64,7 @@ class SamariumImportError(SamariumError):
 
 class SamariumSyntaxError(SamariumError):
     def __init__(self, msg: str) -> None:
-        sys.stderr.write(dahlia(f"&4[SyntaxError] {msg}\n"))
+        sys.stderr.write(DAHLIA.convert(f"&4[SyntaxError] {msg}\n"))
         raise SystemExit(1)
 
 
