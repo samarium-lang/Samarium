@@ -7,7 +7,7 @@ from inspect import signature
 from re import compile
 from secrets import choice, randbelow
 from types import FunctionType, GeneratorType
-from typing import Any, Iterable, Iterator, TypeVar
+from typing import Any, Iterable, Iterator as Iter, TypeVar
 
 from ..exceptions import (
     NotDefinedError,
@@ -365,7 +365,7 @@ class String(Attrs):
     def __contains__(self, element: String) -> bool:
         return element.val in self.val
 
-    def __iter__(self) -> Iterator[String]:
+    def __iter__(self) -> Iter[String]:
         yield from map(String, self.val)
 
     def __bool__(self) -> bool:
@@ -484,7 +484,7 @@ class Array(Attrs):
     def __bool__(self) -> bool:
         return self.val != []
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iter[Any]:
         yield from self.val
 
     def __contains__(self, element: Any) -> bool:
@@ -619,7 +619,7 @@ class Table(Attrs):
     def __setitem__(self, key: Any, value: Any) -> None:
         self.val[key] = value
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iter[Any]:
         yield from self.val.keys()
 
     def __contains__(self, element: Any) -> bool:
@@ -710,7 +710,7 @@ class Slice(Attrs):
         )
         self.val = slice(*self.tup)
 
-    def __iter__(self) -> Iterator[Integer]:
+    def __iter__(self) -> Iter[Integer]:
         yield from map(Integer, self.range)
 
     def __contains__(self, value: Integer) -> bool:
@@ -778,7 +778,7 @@ class Zip(Attrs):
     def __bool__(self) -> bool:
         return True
 
-    def __iter__(self) -> Iterator[Array]:
+    def __iter__(self) -> Iter[Array]:
         yield from map(Array, self.val)
 
     def __matmul__(self, other: Any) -> Zip:
@@ -790,6 +790,96 @@ class Zip(Attrs):
     @property
     def special(self) -> Integer:
         return Integer(len(self.iters))
+
+
+class Iterator(Attrs):
+    __slots__ = ("val", "length")
+
+    def __init__(self, value: Any) -> None:
+        if not isinstance(value, Iterable):
+            raise SamariumTypeError("cannot create an Iterator from a non-iterable")
+        self.val = iter(value)
+        try:
+            self.length = Integer(len(value.val))
+        except (TypeError, AttributeError):
+            self.length = NULL
+
+    def __bool__(self) -> bool:
+        return True
+
+    def __iter__(self) -> Iter[Any]:
+        yield from self.val
+
+    def __next__(self) -> Any:
+        return next(self.val)
+
+    def __str__(self) -> str:
+        return f"<Iterator@{id(self):x}>"
+
+    @property
+    def cast(self) -> Integer | Null:
+        return self.length
+
+    @property
+    def special(self) -> Any:
+        return next(self)
+
+
+class Enum(Attrs):
+    __slots__ = ("name", "members")
+
+    def __bool__(self) -> bool:
+        return bool(self.members)
+
+    def __init__(self, globals: dict[str, Any], *values_: str) -> None:
+        if any(not isinstance(i, str) for i in values_):
+            raise SamariumTypeError("enums cannot be constructed from Type")
+        name, *values = values_
+        self.name = name.removeprefix("sm_")
+        self.members: dict[str, Any] = {}
+
+        # Empty enum case
+        if len(values) == 1 and not values[0]:
+            raise SamariumValueError("enums must have at least 1 member")
+
+        i = 0
+        for v in values:
+            if not v:
+                continue
+            eqs = v.count("=")
+            if eqs >= 2:
+                raise SamariumSyntaxError("invalid expression")
+            name, value = v.split("=") if eqs == 1 else (v, "")
+            if not name.isidentifier():
+                raise SamariumValueError("enum members must be identifiers")
+            if eqs == 1:
+                self.members[name] = eval(value, globals)
+            else:
+                self.members[v] = Integer(i)
+                i += 1
+
+    def __str__(self) -> str:
+        return f"Enum({self.name})"
+
+    def __getattr__(self, name: str) -> Any:
+        try:
+            return self.members[name]
+        except KeyError:
+            raise AttributeError(f"'{self.name}''{name}'")
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name.startswith("sm_"):
+            raise SamariumTypeError("enum members cannot be modified")
+        object.__setattr__(self, name, value)
+
+    @property
+    def cast(self) -> Table:
+        return Table(
+            {
+                String(k.removeprefix("__").removeprefix("sm_")): v
+                for k, v in self.members.items()
+            }
+        )
 
 
 def correct_type(obj: T) -> T | Integer | Null:
@@ -826,7 +916,7 @@ def check_type(obj: Any) -> None:
 @contextmanager
 def modify(
     func: Callable[..., Any], args: list[Any], argc: int
-) -> Iterator[tuple[Callable[..., Any], list[Any]]]:
+) -> Iter[tuple[Callable[..., Any], list[Any]]]:
     flag = func.__code__.co_flags
     if flag & 4 == 0:
         yield func, args
