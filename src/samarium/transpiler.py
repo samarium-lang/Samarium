@@ -713,12 +713,7 @@ class Transpiler:
                 hook = self._line.index("=") + 1
             else:
                 hook = self._indent > 0
-            self._line = [
-                *self._line[:hook],
-                "print_safe(",
-                *self._line[hook:],
-                ")",
-            ]
+            self._line = [*self._line[:hook], "print_safe(", *self._line[hook:], ")"]
         else:  # SLEEP or EXIT
             func = "sysexit" if token is Token.EXIT else "sleep"
             self._line.append(f"{func}(")
