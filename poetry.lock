@@ -41,7 +41,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "dahlia"
-version = "1.1.0"
+version = "2.0.0"
 description = "A library allowing you to use Minecraft format codes in strings."
 category = "main"
 optional = false
@@ -114,7 +114,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "86a7354456a24fc6922bc8b9e730d7c0164b0593901daf2de12e9e5840cfe12d"
+content-hash = "29c1549bf09c44f5c21740ebd4f386fa363a6f401a84e8d8f7cfd603293007f4"
 
 [metadata.files]
 ansicon = [
@@ -160,8 +160,8 @@ cwcwidth = [
     {file = "cwcwidth-0.1.7.tar.gz", hash = "sha256:c0d647e12e3a4b15a881e1d84f796937516648489e011257237dc2179d6b1951"},
 ]
 dahlia = [
-    {file = "dahlia-1.1.0-py3-none-any.whl", hash = "sha256:c660d21f5e05abd101928358def16732535601162467baf4bf4ccd2bfeb28ed1"},
-    {file = "dahlia-1.1.0.tar.gz", hash = "sha256:7f747da61797ab2f81b6c77ce80b09275b6bf66add2204212f468a5cc8470e81"},
+    {file = "dahlia-2.0.0-py3-none-any.whl", hash = "sha256:bc8f8601f66f4776bf3fac0973f5b3f9b02369f1240d74278a07fd9f6b4e6bf5"},
+    {file = "dahlia-2.0.0.tar.gz", hash = "sha256:35eab1af197e154aef0d59a06fb9393db2d77b964800e329ad03b05901c1a91b"},
 ]
 flake8 = [
     {file = "flake8-4.0.1-py2.py3-none-any.whl", hash = "sha256:479b1304f72536a55948cb40a32dce8bb0ffe3501e26eaf292c7e60eb5e0428d"},

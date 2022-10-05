@@ -5,15 +5,16 @@ import sys
 from curtsies.events import Event, PasteEvent
 from curtsies.input import Input
 from curtsies.window import FullscreenWindow
-from dahlia import clean_ansi, dahlia
+from dahlia import Dahlia, clean_ansi
 
 from .core import run
 from .tokenizer import tokenize
 from .transpiler import Registry
 from .utils import __version__, match_brackets
 
-IN = dahlia("&3==> ")
-INDENT = dahlia("&3  > ")
+DAHLIA = Dahlia()
+IN = DAHLIA.convert("&3==> ")
+INDENT = DAHLIA.convert("&3  > ")
 
 
 class FakeIO:
@@ -30,7 +31,7 @@ class SamariumREPL:
         self.registry = Registry(globals())
         self.prompt = IN
 
-        self.messages = [dahlia(f"&3Samarium {__version__}"), self.prompt]
+        self.messages = [DAHLIA.convert(f"&3Samarium {__version__}"), self.prompt]
 
         self.statement = ""
         self.length = 1
