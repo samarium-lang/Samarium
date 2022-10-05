@@ -55,8 +55,7 @@ class SamariumREPL:
 
     def render(self, window: FullscreenWindow) -> None:
         window.render_to_terminal(
-            self.messages,
-            (len(self.messages) - 1, len(clean_ansi(self.messages[-1]))),
+            self.messages, (len(self.messages) - 1, len(clean_ansi(self.messages[-1]))),
         )
 
     def run(self) -> None:
