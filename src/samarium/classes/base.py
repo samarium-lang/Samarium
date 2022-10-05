@@ -883,13 +883,14 @@ class Enum(Attrs):
 
 
 def correct_type(obj: T) -> T | Integer | Iterator | Null:
-    check_type(obj)
     if obj is None:
         return NULL
-    if isinstance(obj, bool):
+    elif isinstance(obj, bool):
         return Integer(obj)
-    if isinstance(obj, GeneratorType):
+    elif isinstance(obj, GeneratorType):
         return Iterator(obj)
+    else:
+        check_type(obj)
     return obj
 
 
