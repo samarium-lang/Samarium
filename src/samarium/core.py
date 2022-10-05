@@ -9,7 +9,7 @@ from time import time_ns
 from types import GeneratorType
 from typing import Any
 
-from dahlia import dahlia
+from dahlia import Dahlia
 
 from . import exceptions as exc
 from .classes import (
@@ -39,6 +39,7 @@ from .tokenizer import tokenize
 from .transpiler import Registry, Transpiler
 from .utils import silence_stdout, sysexit
 
+DAHLIA = Dahlia()
 MODULE_NAMES = [
     "collections",
     "datetime",
@@ -72,7 +73,7 @@ def import_module(data: str, reg: Registry) -> None:
         module_import = True
     name = name.removeprefix("sm_")
     if name == "samarium":
-        sys.stderr.write(dahlia("&4[RecursionError]\n"))
+        sys.stderr.write(DAHLIA.print("&4[RecursionError]\n"))
         return
     try:
         path = Path(sys.argv[1][: sys.argv[1].rfind("/") + 1] or ".")
