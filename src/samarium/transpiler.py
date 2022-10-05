@@ -570,11 +570,7 @@ class Transpiler:
                 self._line.append("class ")
             else:
                 indented = self._indent > 0
-                self._line = [
-                    *self._line[:indented],
-                    "@",
-                    *self._line[indented:],
-                ]
+                self._line = [*self._line[:indented], "@", *self._line[indented:]]
                 self._submit_line()
 
     def _control_flow(self, token: Token) -> None:
