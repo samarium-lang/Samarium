@@ -360,7 +360,7 @@ class String(Attrs):
     __slots__ = ("val",)
 
     def __init__(self, value: Any = "") -> None:
-        self.val = str(value)
+        self.val = to_string(value)
 
     def __contains__(self, element: String) -> bool:
         return element.val in self.val
@@ -973,3 +973,9 @@ def function(func: Callable[..., Any]) -> Callable[..., Any]:
     wrapper.type = Type(FunctionType)
 
     return wrapper
+
+
+def to_string(obj: Attrs | Callable) -> str:
+    if isinstance(obj, Callable):
+        return ".".join(i.removeprefix("sm_") for i in obj.__qualname__.split("."))
+    return str(obj)

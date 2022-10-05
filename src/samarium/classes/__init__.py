@@ -20,6 +20,7 @@ from .base import (
     function,
     mkslice,
     t,
+    to_string,
 )
 from .fileio import File, FileManager, Mode
 
@@ -44,6 +45,7 @@ __all__ = (
     "function",
     "mkslice",
     "t",
+    "to_string",
     "check_type",
     "correct_type",
 )

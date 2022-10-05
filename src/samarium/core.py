@@ -32,6 +32,7 @@ from .classes import (
     function,
     mkslice,
     t,
+    to_string,
 )
 from .runtime import Runtime
 from .tokenizer import tokenize
@@ -169,9 +170,3 @@ def throw(message: str = "") -> None:
 
 def timestamp() -> Integer:
     return Integer(time_ns() // 1_000_000)
-
-
-def to_string(obj: Attrs | Callable) -> str:
-    if isinstance(obj, Callable):
-        return ".".join(i.removeprefix("sm_") for i in obj.__qualname__.split("."))
-    return str(obj)
