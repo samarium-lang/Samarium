@@ -39,7 +39,7 @@ def handle_exception(exception: Exception):
             name = name.removeprefix("Samarium")
         else:
             name = f"External{name}".replace("ExternalZeroDivision", "Math")
-    sys.stderr.write(DAHLIA.print(f"&4[{name}] {exception}\n"))
+    sys.stderr.write(DAHLIA.convert(f"&4[{name}] {exception}\n"))
     if Runtime.quit_on_error:
         raise SystemExit(1)
 
