@@ -6,6 +6,7 @@ from . import handlers
 from .exceptions import SamariumSyntaxError, handle_exception
 from .tokens import Token
 
+
 Tokenlike = Union[Token, str, int]
 
 CHARSET = ascii_letters + digits + "_"
@@ -124,7 +125,7 @@ def exclude_backticks(program: str) -> str:
 
 
 def exclude_comments(tokens: list[Tokenlike]) -> list[Tokenlike]:
-    out = []
+    out: list[Tokenlike] = []
     ignore = False
     for token in tokens:
         if token == Token.COMMENT_OPEN:

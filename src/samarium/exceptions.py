@@ -1,4 +1,3 @@
-from os import _exit
 import sys
 from re import compile
 
@@ -41,7 +40,7 @@ def handle_exception(exception: Exception):
             name = f"External{name}".replace("ExternalZeroDivision", "Math")
     sys.stderr.write(dahlia(f"&4[{name}] {exception}\n"))
     if Runtime.quit_on_error:
-        exit(1)
+        raise SystemExit(1)
 
 
 class SamariumError(Exception):
@@ -65,7 +64,7 @@ class SamariumImportError(SamariumError):
 class SamariumSyntaxError(SamariumError):
     def __init__(self, msg: str) -> None:
         sys.stderr.write(dahlia(f"&4[SyntaxError] {msg}\n"))
-        _exit(1)
+        raise SystemExit(1)
 
 
 class SamariumTypeError(SamariumError):
