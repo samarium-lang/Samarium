@@ -1,9 +1,13 @@
-from pathlib import Path
+from __future__ import annotations
+
 import sys
+from collections.abc import Callable
 from datetime import datetime
+from pathlib import Path
 from time import sleep as _sleep
 from time import time_ns
 from types import GeneratorType
+from typing import Any
 
 from dahlia import dahlia
 
@@ -23,11 +27,11 @@ from .classes import (
     String,
     Table,
     UserAttrs,
+    check_type,
+    correct_type,
     function,
     mkslice,
     t,
-    check_type,
-    correct_type,
 )
 from .runtime import Runtime
 from .tokenizer import tokenize
@@ -97,16 +101,16 @@ def import_module(data: str, reg: Registry) -> None:
                 )
 
 
-def print_safe(*args: Attrs | bool | None) -> Attrs:
+def print_safe(*args: Attrs | Callable[..., Any] | bool | None) -> Attrs:
     typechecked_args = list(map(correct_type, args))
     return_args = typechecked_args[:]
-    typechecked_args = list(map(str, typechecked_args))
+    strs = list(map(to_string, typechecked_args))
     types = [*map(type, typechecked_args)]
     if tuple in types:
         raise exc.SamariumSyntaxError("missing brackets")
     if GeneratorType in types:
         raise exc.SamariumSyntaxError("invalid comprehension")
-    print(*typechecked_args)
+    print(*strs)
     if len(return_args) > 1:
         return Array(return_args)
     elif not return_args or types[0] is Null:
@@ -130,8 +134,10 @@ def run(
     Runtime.quit_on_error = quit_on_error
     code = Transpiler(tokenize(code), reg).transpile().output
     if load_template:
-        code = (Path(__file__).resolve().parent / "template.py").read_text().replace(
-            "{{ CODE }}", code
+        code = (
+            (Path(__file__).resolve().parent / "template.py")
+            .read_text()
+            .replace("{{ CODE }}", code)
         )
     try:
         if debug:
@@ -163,3 +169,9 @@ def throw(message: str = "") -> None:
 
 def timestamp() -> Integer:
     return Integer(time_ns() // 1_000_000)
+
+
+def to_string(obj: Attrs | Callable) -> str:
+    if isinstance(obj, Callable):
+        return ".".join(i.removeprefix("sm_") for i in obj.__qualname__.split("."))
+    return str(obj)
