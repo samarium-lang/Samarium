@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from functools import cached_property
 import subprocess
 from typing import IO, TypeVar
 
@@ -11,6 +10,9 @@ class Samarium:
     def __init__(self, *, file: str) -> None:
         self.file = file
         self.proc: subprocess.Popen[bytes] | None = None
+        self._stdout: bytes | None = None
+        self._stderr: bytes | None = None
+
 
     def __enter__(self: Self) -> Self:
         self.proc = subprocess.Popen(
@@ -38,17 +40,20 @@ class Samarium:
             return None
         return str(buf.read(), encoding="utf-8")
 
-    @cached_property
+    @property
     def stdout(self) -> str | None:
-        assert self.proc
-        return self.decode(self.proc.stdout)
+        return str(self._stdout, encoding="utf-8")
 
-    @cached_property
+    @property
     def stderr(self) -> str | None:
-        assert self.proc
-        return self.decode(self.proc.stderr)
+        return str(self._stderr, encoding="utf-8")
 
-    def assert_return_code(self, code: int) -> None:
+    @property
+    def return_code(self) -> int:
+        if self.proc.returncode is None:
+            raise ValueError("Has process completed?")
+        return self.proc.returncode
+
+    def finalize(self) -> None:
         assert self.proc
-        self.proc.communicate()
-        assert self.proc.returncode == code
+        (self._stdout, self._stderr) = self.proc.communicate()
