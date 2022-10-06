@@ -1,5 +1,5 @@
 from contextlib import suppress
-from string import ascii_letters, digits
+from string import ascii_letters, digits, whitespace
 from typing import Union
 
 from . import handlers
@@ -90,9 +90,16 @@ def tokenize(program: str) -> list[Tokenlike]:
             scroller.shift(length)
             continue
 
+        elif scroller.pointer in whitespace:
+            pass
+
         else:
-            with suppress(ValueError):
+            try:
                 tokens.append(Token(scroller.pointer))
+            except ValueError:
+                handle_exception(
+                    SamariumSyntaxError(f"invalid token: {scroller.pointer}")
+                )
 
         scroller.shift()
 
