@@ -246,6 +246,8 @@ SLICE_OBJECT_TRIGGERS = {
     Token.PAREN_OPEN,
     Token.TABLE_OPEN,
     Token.IN,
+    Token.IF,
+    Token.WHILE,
     *Group.operators,
 }
 
