@@ -1,3 +1,5 @@
+from __future__ import annotations
+from .exceptions import handle_exception, SamariumSyntaxError
 from .tokens import Token
 
 
@@ -13,7 +15,7 @@ class Scroller:
     def next(self, offset: int = 1) -> str:
         return self.program[offset:offset + 1]
 
-    def shift(self, units: int = 1):
+    def shift(self, units: int = 1) -> None:
         self.prev = self.program[:units][-1]
         self.program = self.program[units:]
 
@@ -67,12 +69,12 @@ def greater(scroller: Scroller) -> Token:
     return tokens.get(scroller.next(), Token.GT)
 
 
-def equal(scroller: Scroller) -> Token:
+def equal(scroller: Scroller) -> Token | None:
     if scroller.next() == "=":
         return Token.COMMENT_OPEN if scroller.next(2) == "<" else Token.COMMENT
     if scroller.next() == ">":
         return Token.EXIT if scroller.next(2) == "!" else Token.ENTRY
-    raise ValueError("invalid token")
+    handle_exception(SamariumSyntaxError(f"invalid token: {scroller.pointer}"))
 
 
 def dot(scroller: Scroller) -> Token:
