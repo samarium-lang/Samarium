@@ -34,12 +34,6 @@ class Samarium:
         self.proc.stdin.write(s.encode("utf-8"))
         self.proc.stdin.flush()
 
-    @staticmethod
-    def decode(buf: IO[bytes] | None) -> str | None:
-        if buf is None:
-            return None
-        return str(buf.read(), encoding="utf-8")
-
     @property
     def stdout(self) -> str | None:
         return str(self._stdout, encoding="utf-8")
