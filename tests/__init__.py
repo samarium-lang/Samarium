@@ -1,4 +1,4 @@
-from tests.samarium import Samarium
+from tests.utils import Samarium
 
 
 __all__: list[str] = ["Samarium"]
