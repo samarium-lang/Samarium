@@ -58,6 +58,7 @@ def less(scroller: Scroller) -> Token:
         ":": Token.LE,
         "%": Token.FILE_QUICK_BINARY_READ,
         "~": Token.FILE_QUICK_READ,
+        "=": Token.IMPORT,
     }
     return tokens.get(scroller.next(), Token.LT)
 

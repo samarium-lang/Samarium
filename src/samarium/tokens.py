@@ -51,6 +51,7 @@ class Token(Enum):
     FOR = "..."
     FROM = "<-"
     IF = "?"
+    IMPORT = "<="
     THROW = "!!!"
     TO = "->"
     TRY = "??"
