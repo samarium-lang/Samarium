@@ -710,6 +710,9 @@ class Slice(Attrs):
         )
         self.val = slice(*self.tup)
 
+    def __bool__(self) -> bool:
+        return bool(self.range)
+
     def __iter__(self) -> Iter[Integer]:
         yield from map(Integer, self.range)
 
