@@ -977,6 +977,6 @@ def function(func: Callable[..., Any]) -> Callable[..., Any]:
 
 
 def to_string(obj: Attrs | Callable) -> str:
-    if isinstance(obj, Callable):
+    if isinstance(obj, FunctionType):
         return ".".join(i.removeprefix("sm_") for i in obj.__qualname__.split("."))
     return str(obj)
