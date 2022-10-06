@@ -1,4 +1,4 @@
-from tests.samarium import Samarium
+from tests import Samarium
 
 
 def test_basics():
