@@ -58,7 +58,10 @@ class Scope:
         self._scope.append(name)
 
     def exit(self) -> None:
-        self._scope.pop()
+        try:
+            self._scope.pop()
+        except IndexError:
+            throw_syntax("invalid syntax (failed scope resolution)")
 
     def _get(self, index: int) -> str | None:
         try:
