@@ -971,6 +971,7 @@ def function(func: Callable[..., Any]) -> Callable[..., Any]:
     wrapper.special = wrapper.argc = Integer(argc)
     wrapper.parent = Type(FunctionType)
     wrapper.type = Type(FunctionType)
+    wrapper.hash = Integer(hash(func))
 
     return wrapper
 
