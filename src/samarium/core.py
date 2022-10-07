@@ -1,24 +1,18 @@
 from __future__ import annotations
 
-import sys
-from collections.abc import Callable
-from datetime import datetime
 from pathlib import Path
-from time import sleep as _sleep
-from time import time_ns
-from types import GeneratorType
-from typing import Any
+from sys import argv, stderr
 
 from dahlia import Dahlia
 
 from . import exceptions as exc
+from .builtins import dtnow, print_safe, readline, sleep, throw, timestamp
 from .classes import (
     MISSING,
     NULL,
     Array,
     Attrs,
     Enum,
-    File,
     FileManager,
     Integer,
     Mode,
@@ -27,12 +21,10 @@ from .classes import (
     String,
     Table,
     UserAttrs,
-    check_type,
     correct_type,
     function,
     mkslice,
     t,
-    to_string,
 )
 from .runtime import Runtime
 from .tokenizer import tokenize
@@ -53,15 +45,6 @@ MODULE_NAMES = [
 ]
 
 
-def dtnow() -> Array:
-    utcnow = datetime.utcnow()
-    now = datetime.now().timetuple()
-    utcnow_tt = utcnow.timetuple()
-    tz = now[3] - utcnow_tt[3], now[4] - utcnow_tt[4]
-    utcnow_tpl = utcnow_tt[:-3] + (utcnow.microsecond // 1000,) + tz
-    return Array(map(Integer, utcnow_tpl))
-
-
 def import_module(data: str, reg: Registry) -> None:
     module_import = False
     try:
@@ -73,10 +56,10 @@ def import_module(data: str, reg: Registry) -> None:
         module_import = True
     name = name.removeprefix("sm_")
     if name == "samarium":
-        sys.stderr.write(DAHLIA.convert("&4[RecursionError]\n"))
+        stderr.write(DAHLIA.convert("&4[RecursionError]\n"))
         return
     try:
-        path = Path(sys.argv[1][: sys.argv[1].rfind("/") + 1] or ".")
+        path = Path(argv[1][: argv[1].rfind("/") + 1] or ".")
     except IndexError:  # REPL
         path = Path().resolve()
 
@@ -101,27 +84,6 @@ def import_module(data: str, reg: Registry) -> None:
                 raise exc.SamariumImportError(
                     f"{obj.removeprefix('sm_')} is not a member of the {name} module"
                 )
-
-
-def print_safe(*args: Attrs | Callable[..., Any] | bool | None) -> Attrs:
-    typechecked_args = list(map(correct_type, args))
-    return_args = typechecked_args[:]
-    strs = list(map(to_string, typechecked_args))
-    types = [*map(type, typechecked_args)]
-    if tuple in types:
-        raise exc.SamariumSyntaxError("missing brackets")
-    if GeneratorType in types:
-        raise exc.SamariumSyntaxError("invalid comprehension")
-    print(*strs)
-    if len(return_args) > 1:
-        return Array(return_args)
-    elif not return_args or types[0] is Null:
-        return NULL
-    return return_args[0]
-
-
-def readline(prompt: str = "") -> String:
-    return String(input(prompt))
 
 
 def run(
@@ -152,22 +114,3 @@ def run(
         exc.handle_exception(e)
     Runtime.quit_on_error = runtime_state
     return reg
-
-
-def sleep(*args: Integer) -> None:
-    if not args:
-        raise exc.SamariumTypeError("no argument provided for ,.,")
-    if len(args) > 1:
-        raise exc.SamariumTypeError(",., only takes one argument")
-    (time,) = args
-    if not isinstance(time.val, int):
-        raise exc.SamariumTypeError(",., only accepts integers")
-    _sleep(time.val / 1000)
-
-
-def throw(message: str = "") -> None:
-    raise exc.SamariumError(message)
-
-
-def timestamp() -> Integer:
-    return Integer(time_ns() // 1_000_000)

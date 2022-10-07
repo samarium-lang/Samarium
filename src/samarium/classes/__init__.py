@@ -15,11 +15,6 @@ from .base import (
     Table,
     Type,
     UserAttrs,
-    correct_type,
-    check_type,
-    function,
-    mkslice,
-    t,
     to_string,
 )
 from .fileio import File, FileManager, Mode
@@ -42,10 +37,5 @@ __all__ = (
     "FileManager",
     "Mode",
     "UserAttrs",
-    "function",
-    "mkslice",
-    "t",
     "to_string",
-    "check_type",
-    "correct_type",
 )
