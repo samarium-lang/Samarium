@@ -6,7 +6,18 @@ from sys import argv, stderr
 from dahlia import Dahlia
 
 from . import exceptions as exc
-from .builtins import dtnow, print_safe, readline, sleep, throw, timestamp
+from .builtins import (
+    correct_type,
+    dtnow,
+    function,
+    mkslice,
+    print_safe,
+    readline,
+    sleep,
+    t,
+    throw,
+    timestamp,
+)
 from .classes import (
     MISSING,
     NULL,
@@ -21,10 +32,6 @@ from .classes import (
     String,
     Table,
     UserAttrs,
-    correct_type,
-    function,
-    mkslice,
-    t,
 )
 from .runtime import Runtime
 from .tokenizer import tokenize
