@@ -140,17 +140,18 @@ class Group:
     }
     functions = {Token.FUNCTION, Token.YIELD, Token.ENTRY, Token.DEFAULT}
     multisemantic = {
-        Token.FROM,
         Token.TO,
         Token.CATCH,
         Token.WHILE,
         Token.CLASS,
         Token.TRY,
+        Token.FROM,
     }
     control_flow = {Token.IF, Token.ELSE, Token.FOR}
     core = {
         Token.ASSIGN,
         Token.END,
+        Token.IMPORT,
         Token.SEP,
         Token.ATTR,
         Token.INSTANCE,
@@ -293,6 +294,7 @@ class Transpiler:
         self._file_token: Token | None = None
         self._indent = 0
         self._index = 0
+        self._inline_counter = 0
         self._line: list[str] = []
         self._line_tokens: list[Tokenlike] = []
         self._private = False
@@ -556,9 +558,14 @@ class Transpiler:
                 self._line.append("NULL")
             self._line.append("continue" if is_first_token(self._line) else ":")
         elif token is Token.FROM:
-            if isinstance(self._tokens[index + 1], str):
-                self._reg[Switch.IMPORT] = True
-                self._line.append("import_module('")
+            nxt = self._tokens[index + 1: index + 4]
+            if (
+                isinstance(nxt[0], str)
+                and nxt[1] is Token.ATTR
+                and isinstance(nxt[2], str)
+            ):
+                self._inline_counter = 4
+                self._line.append("import_inline('")
             else:
                 self._line.append("break")
                 self._submit_line()
@@ -646,6 +653,9 @@ class Transpiler:
                 self._line.append("=")
             else:
                 self._scope.exit()
+        elif token is Token.IMPORT:
+            self._reg[Switch.IMPORT] = True
+            self._line.append("import_to_scope('")
         elif token is Token.SEP:
             if self._tokens[index - 1] in NULLABLE_TOKENS:
                 self._line.append("NULL")
@@ -732,6 +742,10 @@ class Transpiler:
     def _process_token(self, index: int, token: Tokenlike) -> None:
         self._index = index
         self._line_tokens.append(token)
+
+        self._inline_counter -= 1
+        if self._inline_counter == 0:
+            self._line.append("')")
 
         # Integers
         if isinstance(token, int):
