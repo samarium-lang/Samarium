@@ -7,11 +7,9 @@ Table: {{}}?!;
 
 
 @ Boolean {
-
     => value * {
         ? value?! :: ""?! {
-            <-string.to_lower;
-            'value: {{"true" -> /, "false" -> \}}<<to_lower(value)>>;
+            'value: {{"true" -> /, "false" -> \}}<<<-string.to_lower(value)>>;
         } ,, {
             'value: / ? value ,, \;
         }
@@ -86,11 +84,8 @@ Table: {{}}?!;
 }
 
 @ UUID4 {
-
     => * {
-        <-random.choices;
-        <-string.HEXDIGITS, join;
-        hex: join(choices(HEXDIGITS, /\\\\\));
+        hex: <-string.join(<-random.choices(<-string.HEXDIGITS, /\\\\\));
         hex<<//\\>>: "4";
         hex<</\\\\>>: "89ab"??;
         'hex: hex;
@@ -98,8 +93,7 @@ Table: {{}}?!;
     }
 
     ! * {
-        <-string.join;
-        * join(
+        * <-string.join(
             [
                 'hex<<../\\\>>,
                 'hex<</\\\..//\\>>,

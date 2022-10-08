@@ -1,7 +1,6 @@
 find array target * {
-    <-types.String;
     index: \;
-    ? array?! :: String {
+    ? array?! :: <-types.String {
         .. index + target$ <: array$ {
             ? array<<index..index+target$>> :: target {
                 * index;
@@ -116,8 +115,7 @@ pairwise array * {
 }
 
 zip_longest fill arrays... * {
-    <-math.max;
-    longest: max([i$ ... i ->? arrays]);
+    longest: <-math.max([i$ ... i ->? arrays]);
     ... i ->? <<..longest>> {
         ... it ->? arrays {
             ?? {
@@ -130,8 +128,7 @@ zip_longest fill arrays... * {
 }
 
 find_all array target * {
-    <-types.String;
-    ? array?! :: String && target$ > / {
+    ? array?! :: <-types.String && target$ > / {
         ... i ->? <<..array$>> {
             substring: array<<i..i + target$>>;
             ? substring :: target {

@@ -96,7 +96,7 @@ shr a b * {
 }
 
 to_hex n * {
-    <-string.HEXDIGITS;
+    <=string.HEXDIGITS;
     div: n -- /\\\\;
     mod: n --- /\\\\;
     ? ~~ div {
@@ -106,7 +106,7 @@ to_hex n * {
 }
 
 to_oct n * {
-    <-string.OCTDIGITS;
+    <=string.OCTDIGITS;
     div: n -- /\\\;
     mod: n --- /\\\;
     ? ~~ div {

@@ -116,8 +116,7 @@ is_wrapped string chars * {
 }
 
 to_lower string * {
-    <-types.String;
-    ? string?! ::: String {
+    ? string?! ::: <-types.String {
         "invalid type: " + ""?!(string?!)!!!;
     }
     out: "";
@@ -132,8 +131,7 @@ to_lower string * {
 }
 
 to_upper string * {
-    <-types.String;
-    ? string?! ::: String {
+    ? string?! ::: <-types.String {
         "invalid type: " + ""?!(string?!)!!!;
     }
     out: "";
@@ -229,8 +227,6 @@ wrap string wrapper * {
 
 replace string replacements count? * {
     count <> -/;
-    <-iter.all, find;
-    <-types.String, Table;
 
     replace string from to count * {
         empty * {
@@ -267,7 +263,7 @@ replace string replacements count? * {
             string_copy: string;
             out: "";
             .. count && from ->? string_copy {
-                i: find(string_copy, from);
+                i: <-iter.find(string_copy, from);
                 out+: string_copy<<..i>>;
                 out+: to;
                 string_copy: string_copy<<i + from$..>>;
@@ -303,11 +299,11 @@ replace string replacements count? * {
         }
     }
 
-    ? replacements?! ::: Table {
-        "invalid type for replacements: " + String(replacements?!)!!!;
+    ? replacements?! ::: <-types.Table {
+        "invalid type for replacements: " + ""?!(replacements?!)!!!;
     }
     replacements: {{k -> v ... k, v ->? replacements >< replacements$}};
-    ? ~~ all([count, replacements]) {
+    ? ~~ <-iter.all([count, replacements]) {
         * string;
     }
     ... f, t ->? replacements >< replacements$ {

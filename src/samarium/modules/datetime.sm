@@ -1,4 +1,4 @@
-<-types.String, Table;
+<=types.String;
 
 MONTHS: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 WEEKDAYS: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -112,8 +112,7 @@ timestamp_utc ts? * {
     }
 
     ! * {
-        <-string.leftpad;
-        add0s n c * { * leftpad(String(n), c, "0"); }
+        add0s n c * { * <-string.leftpad(String(n), c, "0"); }
         * "$Y-$M-$D $h:$m:$s.$z" --- {{
             "Y" -> 'year,
             "M" -> add0s('month, /\),
@@ -126,13 +125,11 @@ timestamp_utc ts? * {
     }
 
     to_timestamp * {
-        <-collections.ArithmeticArray;
-
         1000: /\/\ +++ //;
         60: ////\\;
 
         mod_array: 'array<<..-/\..>>;
-        array: ArithmeticArray(mod_array<<....-/>>);
+        array: <-collections.ArithmeticArray(mod_array<<....-/>>);
         total: \;
 
         month_days: days_in_month('year, 'month);
@@ -159,8 +156,7 @@ timestamp_utc ts? * {
     }
 
     ! * {
-        <-string.leftpad, strip_left;
-        add0s n c * { * leftpad(String(n), c, "0"); }
+        add0s n c * { * <-string.leftpad(String(n), c, "0"); }
         D: 'data<<\>>;
         h: 'data<</>>;
         m: 'data<</\>>;
@@ -173,6 +169,6 @@ timestamp_utc ts? * {
         ? h || m { out+: add0s(m, /\) + ":"; }
         ? h || m || s { out+: add0s(s, /\); }
         ? ms { out+: "." + add0s(ms, //); }
-        * strip_left(out, "0") || "0";
+        * <-string.strip_left(out, "0") || "0";
     }
 }

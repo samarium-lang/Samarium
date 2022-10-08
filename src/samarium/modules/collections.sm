@@ -1,4 +1,4 @@
-<-operator;
+<=operator;
 
 
 @ Stack {
@@ -54,15 +54,13 @@
     }
 
     ! * {
-        <-string.wrap;
-        <-types.String;
         ?? {
             top: 'peek();
         } !! {
             top:;
         }
-        ? top?! :: String {
-            top: wrap(""?!(top), "\"");
+        ? top?! :: <-types.String {
+            top: <-string.wrap(""?!(top), "\"");
         }
         * "Stack(capacity:" + ""?!('size)
         + ", size:" + ""?!('stack$)
@@ -129,8 +127,8 @@
     }
 
     ! * {
-        <-string.wrap;
-        <-types.String;
+        <=string.wrap;
+        <=types.String;
         ? '$ <: /\/ {
             items: ""?!('queue);
         } ,, ? '$ > /\/ {
@@ -156,8 +154,7 @@
     => items? capacity? * {
         items <> [];
         capacity <> -/;
-        <-iter.find;
-        'find: find;
+        'find: <-iter.find;
         'items: [i ... i ->? items] ? items ,, [];
         'capacity: capacity;
     }
@@ -355,8 +352,8 @@
     }
 
     ! * {
-        <-string.wrap;
-        <-types.String;
+        <=string.wrap;
+        <=types.String;
         ? '$ <: /\/ {
             items: ""?!('deque);
         } ,, ? '$ > /\/ {
@@ -381,12 +378,11 @@
 @ StaticArray {
     => value type? * {
         type <>;
-        <-types.Array, Integer;
-        ? value?! :: Integer {
+        ? value?! :: <-types.Integer {
             'value: {{}};
             'size: value;
             'type: type;
-        } ,, ? value?! :: Array {
+        } ,, ? value?! :: <-types.Array {
             'value: {{}};
             'size: value$;
             'type: type;
@@ -419,8 +415,7 @@
     }
 
     throw_invalid_index arg * {
-        <-types.Integer;
-        ? arg?! ::: Integer {
+        ? arg?! ::: <-types.Integer {
             "expected Integer, received " + ""?!(arg?!)!!!;
         }
         ? ~~ (\ <: arg < 'size) {
@@ -517,9 +512,8 @@
     }
 
     <<>> item * {
-        <-types.Array;
         out: 'array<<item>>;
-        ? out?! :: Array {
+        ? out?! :: <-types.Array {
             * ArithmeticArray(out);
         }
         * out;
