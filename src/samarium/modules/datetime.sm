@@ -146,11 +146,9 @@ timestamp_utc ts? * {
 
         * total;
     }
-
 }
 
 @ DTDiff {
-
     => data * {
         'data: data;
     }
