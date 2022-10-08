@@ -78,3 +78,7 @@ class SamariumValueError(SamariumError):
 
 class SamariumIOError(SamariumError):
     pass
+
+
+class SamariumRecursionError(SamariumError):
+    pass
