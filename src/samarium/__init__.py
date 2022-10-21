@@ -38,9 +38,9 @@ def main(debug: bool = False):
     except IOError:
         print(f"file not found: {arg}")
     else:
-        # with suppress(Exception, KeyboardInterrupt):
-        file = "\n".join(file.splitlines()[file.startswith("#!") :])
-        run(file, MAIN, debug)
+        with suppress(Exception, KeyboardInterrupt):
+            file = "\n".join(file.splitlines()[file.startswith("#!") :])
+            run(file, MAIN, debug)
 
 
 def main_debug():
