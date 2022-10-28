@@ -74,10 +74,8 @@ def run(
     try:
         if debug:
             print(code)
-        Runtime.import_level += 1
         reg.vars = globals() | reg.vars
         exec(code, reg.vars)
-        Runtime.import_level -= 1
     except Exception as e:
         exc.handle_exception(e)
     Runtime.quit_on_error = runtime_state
