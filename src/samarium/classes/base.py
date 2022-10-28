@@ -233,7 +233,7 @@ class Integer(Attrs):
     __slots__ = ("val",)
     cache: LFUCache[Any, Integer] = LFUCache()
 
-    def __new__(cls, v: Any) -> Integer:
+    def __new__(cls, v: Any = None) -> Integer:
         if v in Integer.cache:
             return Integer.cache[v]
         return object.__new__(cls)
