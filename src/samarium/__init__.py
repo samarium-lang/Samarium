@@ -7,8 +7,6 @@ from .shell import run_shell
 from .transpiler import Registry
 from .utils import __version__
 
-MAIN = Registry(globals())
-
 OPTIONS = ["-v", "--version", "-c", "--command", "-h", "--help"]
 
 HELP = """samarium [option] [-c cmd | file]
@@ -21,6 +19,8 @@ file              : reads program from script file"""
 
 def main(debug: bool = False):
 
+    reg = Registry(globals())
+
     if len(sys.argv) == 1:
         return run_shell(debug)
 
@@ -28,7 +28,7 @@ def main(debug: bool = False):
         if arg in OPTIONS[:2]:
             print(f"Samarium {__version__}")
         elif arg in OPTIONS[2:4]:
-            run(f"=> argv * {{\n\t{sys.argv[2]} !;\n}}", MAIN, debug)
+            run(f"=> argv * {{\n\t{sys.argv[2]} !;\n}}", reg, debug)
         elif arg in OPTIONS[4:]:
             print(HELP)
         sys.exit()
@@ -40,7 +40,7 @@ def main(debug: bool = False):
     else:
         with suppress(Exception, KeyboardInterrupt):
             file = "\n".join(file.splitlines()[file.startswith("#!") :])
-            run(file, MAIN, debug)
+            run(file, reg, debug)
 
 
 def main_debug():
