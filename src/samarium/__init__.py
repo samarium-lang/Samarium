@@ -7,7 +7,7 @@ from .shell import run_shell
 from .transpiler import Registry
 from .utils import __version__
 
-OPTIONS = ["-v", "--version", "-c", "--command", "-h", "--help"]
+OPTIONS = ("-v", "--version", "-c", "--command", "-h", "--help")
 
 HELP = """samarium [option] [-c cmd | file]
 options and arguments:
