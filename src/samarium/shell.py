@@ -1,4 +1,4 @@
-import readline
+import readline  # type: ignore
 # ^ used by input() to provide elaborate line editing and history features
 
 from .core import run
@@ -30,7 +30,7 @@ def run_shell(debug: bool) -> None:
     while True:
         try:
             run(read_statement(), main, debug, load_template=False)
-            main.output *= 0
+            main.output = ""
         except KeyboardInterrupt:
             print()
         except EOFError:
