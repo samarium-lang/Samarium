@@ -75,7 +75,7 @@ def tokenize(program: str) -> list[Tokenlike]:
                 handle_exception(
                     SamariumSyntaxError(f"invalid token: {scroller.pointer}")
                 )
-            if out == Token.COMMENT:
+            if out is Token.COMMENT:
                 comment = True
                 scroller.shift(2)
                 continue
@@ -135,9 +135,9 @@ def exclude_comments(tokens: list[Tokenlike]) -> list[Tokenlike]:
     out: list[Tokenlike] = []
     ignore = False
     for token in tokens:
-        if token == Token.COMMENT_OPEN:
+        if token is Token.COMMENT_OPEN:
             ignore = True
-        elif token == Token.COMMENT_CLOSE:
+        elif token is Token.COMMENT_CLOSE:
             ignore = False
         elif not ignore:
             out.append(token)
