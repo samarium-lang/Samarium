@@ -36,7 +36,7 @@ def main(debug: bool = False):
     try:
         file = Path(arg).read_text()
     except IOError:
-        print(f"file not found: {arg}")
+        print(f"file not found: {arg}", file=sys.stderr)
     else:
         with suppress(Exception, KeyboardInterrupt):
             file = "\n".join(file.splitlines()[file.startswith("#!") :])
