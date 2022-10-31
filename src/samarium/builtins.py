@@ -115,7 +115,8 @@ def modify(
     x = argc - 1
     args = [*args[:x], Array(args[x:])]
     func.__code__ = func.__code__.replace(co_flags=flag - 4, co_argcount=argc)
-    args *= argc > 0
+    if not argc:
+        args = []
     yield func, args
     func.__code__ = func.__code__.replace(co_flags=flag, co_argcount=argc - 1)
 
