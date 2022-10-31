@@ -157,8 +157,7 @@ def sleep(*args: Integer) -> None:
         raise SamariumTypeError("no argument provided for ,.,")
     if len(args) > 1:
         raise SamariumTypeError(",., only takes one argument")
-    time = args[0]
-    if not isinstance(time, Integer):
+    if not isinstance((time := args[0]), Integer):
         raise SamariumTypeError(",., only accepts integers")
     _sleep(time.val / 1000)
 
