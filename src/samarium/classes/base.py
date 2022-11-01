@@ -61,13 +61,13 @@ NEXT = object()
 
 
 class Attrs:
-    @ClassProperty
-    def id(self) -> String:
-        return String(f"{id(self):x}")
+    @classmethod
+    def id(cls) -> String:
+        return String(f"{id(cls):x}")
 
-    @ClassProperty
-    def type(self) -> Type:
-        return Type(type(self))
+    @classmethod
+    def type(cls) -> Type:
+        return Type(cls)
 
     parent = type
 
@@ -108,7 +108,6 @@ class UserAttrs(Attrs):
     def __hash__(self) -> int:
         return self.hash.val
 
-    @property
     def special(self) -> Any:
         try:
             special = self.__special__
@@ -120,7 +119,6 @@ class UserAttrs(Attrs):
             )
         return special()
 
-    @property
     def hash(self) -> Integer:
         try:
             hsh = self.__hsh__
@@ -135,7 +133,6 @@ class UserAttrs(Attrs):
             return v
         raise SamariumTypeError(f"{get_type_name(self)}## returned a non-integer")
 
-    @property
     def cast(self) -> Any:
         try:
             cast = self.__cast__
@@ -147,7 +144,6 @@ class UserAttrs(Attrs):
             )
         return cast()
 
-    @property
     def random(self) -> Any:
         try:
             random = self.__random__
@@ -163,13 +159,13 @@ class UserAttrs(Attrs):
     def argc(self) -> int:
         return len(signature(self.__init__).parameters)
 
-    @ClassProperty
-    def parent(self) -> Array | Type:
-        parents = type(self).__bases__
+    @classmethod
+    def parent(cls) -> Array | Type:
+        parents = cls.__bases__
         if len(parents) == 1:
             parent = parents[0]
             if parent is object:
-                return self.type
+                return Type(cls)
             return Type(parent)
         return Array(map(Type, parents))
 

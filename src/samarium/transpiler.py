@@ -199,11 +199,11 @@ BRACKET_MAPPING = {
 }
 
 METHOD_MAPPING = {
-    Token.SPECIAL: ".special",
-    Token.CAST: ".cast",
-    Token.HASH: ".hash",
-    Token.TYPE: ".type",
-    Token.PARENT: ".parent",
+    Token.SPECIAL: ".special()",
+    Token.CAST: ".cast()",
+    Token.HASH: ".hash()",
+    Token.TYPE: ".type()",
+    Token.PARENT: ".parent()",
 }
 
 CONTROL_FLOW_TOKENS = {
@@ -263,10 +263,10 @@ SPECIAL_METHOD_MAPPING = {
     ">=": "ge",
     "<=": "le",
     " in ": "contains",
-    ".hash": "hsh",
-    ".special": "special",
+    ".hash()": "hsh",
+    ".special()": "special",
     "try": "random",
-    ".cast": "cast",
+    ".cast()": "cast",
     "if ": "bit",
     "!": "string",  #
     "&": "and",
@@ -544,14 +544,14 @@ class Transpiler:
             elif self._tokens[self._index - 1] in UNPACK_TRIGGERS:
                 self._line.append("*")
             else:
-                self._line.append(".id")
+                self._line.append(".id()")
         else:  # Token.MAIN
             self._line.append("entry ")
 
     def _multisemantic(self, token: Token) -> None:
         index = self._index
         if token is Token.TRY:
-            self._line.append("try" if is_first_token(self._line) else ".random")
+            self._line.append("try" if is_first_token(self._line) else ".random()")
         elif token is Token.TO:
             if self._tokens[index - 1] is Token.TABLE_OPEN:
                 self._line.append("NULL")
