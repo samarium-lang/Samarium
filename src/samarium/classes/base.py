@@ -1,17 +1,14 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from contextlib import contextmanager, suppress
-from functools import wraps
+from contextlib import suppress
 from inspect import signature
-from re import compile
 from secrets import choice, randbelow
-from types import FunctionType, GeneratorType
+from types import FunctionType
 from typing import Any, Iterable, Iterator as Iter, TypeVar
 
 from ..exceptions import (
     NotDefinedError,
-    SamariumSyntaxError,
     SamariumTypeError,
     SamariumValueError,
 )
