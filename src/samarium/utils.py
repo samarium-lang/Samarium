@@ -123,7 +123,7 @@ def parse_integer(string: str) -> int:
     neg = len(string)
     b = "d"
     if ":" in string:
-        b, string = string.split(":")
+        b, string = string.split(":", 1)
         if b not in "box":
             raise SamariumValueError(f"{b} is not a valid base")
     base = {"b": 2, "o": 8, "x": 16, "d": 10}[b]
@@ -131,7 +131,7 @@ def parse_integer(string: str) -> int:
     digitset = {2: "01", 8: octdigits, 10: digits, 16: hexdigits}[base]
     neg -= len(string)
     neg %= 2
-    if all(i in digitset for i in string.lower()):
+    if string and all(i in digitset for i in string.lower()):
         return int("-" * neg + string, base)
     no_prefix = orig[2:] if orig[1] == ":" else orig
     raise SamariumValueError(

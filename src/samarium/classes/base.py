@@ -240,7 +240,7 @@ class Integer(Attrs):
         elif v is None:
             self.val = 0
         elif isinstance(v, String):
-            self.val = parse_integer(v.val)
+            self.val = parse_integer(v.val) if v else 0
         else:
             raise SamariumTypeError(f"cannot cast {get_type_name(v)} to Integer")
         if v not in Integer.cache:
