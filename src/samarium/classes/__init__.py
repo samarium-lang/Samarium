@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .base import (
     MISSING,
+    NEXT,
     NULL,
     Array,
     Attrs,
@@ -32,6 +33,7 @@ __all__ = (
     "Module",
     "Type",
     "MISSING",
+    "NEXT",
     "NULL",
     "Null",
     "FileManager",

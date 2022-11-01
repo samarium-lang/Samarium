@@ -449,7 +449,7 @@ class Transpiler:
                 self._class_indent.pop()
 
             if self._scope.current == "enum":
-                self._line.append('""")')
+                self._line.append(')')
 
             if (self._processed_tokens or self._line_tokens)[-1] is Token.BRACE_OPEN:
                 # Managing empty bodies
@@ -620,7 +620,9 @@ class Transpiler:
             }:
                 self._line.append("NULL")
             if self._scope.current == "enum":
-                self._line.append('""", """')
+                if self._tokens[index - 2] in {token, Token.BRACE_OPEN}:
+                    self._line.append("=NEXT")
+                self._line.append(',')
                 return
             if self._reg[Switch.BUILTIN]:
                 if self._line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
@@ -693,7 +695,7 @@ class Transpiler:
                 self._private = True
                 return
             name = self._line[-1]
-            self._line.append(f'=Enum(globals(), "{name}", """')
+            self._line.append(f"=Enum('{name}',")
             self._scope.enter("enum")
 
     def _builtins(self, token: Token) -> None:

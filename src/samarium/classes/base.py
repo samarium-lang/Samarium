@@ -57,6 +57,7 @@ for m in METHODS.split():
     setattr(Missing, f"__{m}__", throw_missing)
 
 MISSING = Missing()
+NEXT = object()
 
 
 class Attrs:
@@ -834,32 +835,23 @@ class Enum(Attrs):
     def __bool__(self) -> bool:
         return bool(self.members)
 
-    def __init__(self, globals: dict[str, Any], *values_: str) -> None:
-        if any(not isinstance(i, str) for i in values_):
-            raise SamariumTypeError("enums cannot be constructed from Type")
-        name, *values = values_
+    def __init__(self, name: str, **members: Any) -> None:
         self.name = name.removeprefix("sm_")
         self.members: dict[str, Any] = {}
 
         # Empty enum case
-        if len(values) == 1 and not values[0]:
+        if not members:
             raise SamariumValueError("enums must have at least 1 member")
 
         i = 0
-        for v in values:
-            if not v:
-                continue
-            eqs = v.count("=")
-            if eqs >= 2:
-                raise SamariumSyntaxError("invalid expression")
-            name, value = v.split("=") if eqs == 1 else (v, "")
-            if not name.isidentifier():
-                raise SamariumValueError("enum members must be identifiers")
-            if eqs == 1:
-                self.members[name] = eval(value, globals)
-            else:
-                self.members[v] = Integer(i)
+        for k, v in members.items():
+            if v is NEXT:
+                self.members[k] = Integer(i)
                 i += 1
+            else:
+                self.members[k] = v
+                if isinstance(v, Integer):
+                    i = v.val + 1
 
     def __str__(self) -> str:
         return f"Enum({self.name})"

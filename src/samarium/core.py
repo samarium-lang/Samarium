@@ -17,6 +17,7 @@ from .builtins import (
 )
 from .classes import (
     MISSING,
+    NEXT,
     NULL,
     Array,
     Attrs,
