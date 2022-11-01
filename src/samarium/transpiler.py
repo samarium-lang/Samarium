@@ -24,13 +24,6 @@ def groupnames(array: list[str]) -> list[str]:
     return grouped
 
 
-def find_next(tokens: list[Tokenlike], token: Token, *, after: int = 0) -> int:
-    for i, t in enumerate(tokens[after:]):
-        if t == token:
-            return i + after
-    return -1
-
-
 def indent(levels: int) -> str:
     return " " * levels * 4
 
@@ -322,6 +315,12 @@ class Transpiler:
 
         self._reg.output = self._code
         return self._reg
+
+    def _find_next(self, token: Token) -> int:
+        for i, t in enumerate(self._tokens[self._index:]):
+            if t is token:
+                return i + self._index
+        return -1
 
     def _submit_line(self) -> None:
         # Special cases
@@ -670,9 +669,9 @@ class Transpiler:
             self._line.append("self")
         elif token is Token.SLICE_OPEN:
             self._scope.enter("slice")
-            assign_index = find_next(self._tokens, Token.ASSIGN, after=index)
-            end_index = find_next(self._tokens, Token.END, after=index)
-            brace_index = find_next(self._tokens, Token.BRACE_OPEN, after=index)
+            assign_index = self._find_next(Token.ASSIGN)
+            end_index = self._find_next(Token.END)
+            brace_index = self._find_next(Token.BRACE_OPEN)
             self._slice_assign = (
                 0
                 < assign_index
