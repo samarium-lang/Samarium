@@ -32,16 +32,16 @@ def throw_missing(*_):
 
 
 class Missing:
-    @property
-    def type(self) -> None:
+    @classmethod
+    def type(cls) -> None:
         throw_missing()
 
-    @property
-    def parent(self) -> None:
+    @classmethod
+    def parent(cls) -> None:
         throw_missing()
 
-    @property
-    def id(self) -> None:
+    @classmethod
+    def id(cls) -> None:
         throw_missing()
 
 
@@ -328,15 +328,12 @@ class Integer(Attrs):
     def __hash__(self) -> int:
         return self.hash.val
 
-    @property
     def cast(self) -> String:
         return String(chr(self.val))
 
-    @property
     def hash(self) -> Integer:
         return Integer(hash(self.val))
 
-    @property
     def random(self) -> Integer:
         v = self.val
         if not v:
@@ -345,7 +342,6 @@ class Integer(Attrs):
             return Integer(randbelow(v))
         return Integer(-randbelow(v) - 1)
 
-    @property
     def special(self) -> String:
         return String(f"{self.val:b}")
 
@@ -429,21 +425,17 @@ class String(Attrs):
     def __matmul__(self, other: Any) -> Zip:
         return Zip(self, other)
 
-    @property
     def cast(self) -> Array | Integer:
         if len(self.val) == 1:
             return Integer(ord(self.val))
         return Array(Integer(ord(i)) for i in self.val)
 
-    @property
     def hash(self) -> Integer:
         return Integer(hash(self.val))
 
-    @property
     def random(self) -> String:
         return String(choice(self.val))
 
-    @property
     def special(self) -> Integer:
         return Integer(len(self.val))
 
@@ -545,7 +537,6 @@ class Array(Attrs):
     def __matmul__(self, other: Any) -> Zip:
         return Zip(self, other)
 
-    @property
     def cast(self) -> String:
         s = ""
         for i in self.val:
@@ -555,13 +546,11 @@ class Array(Attrs):
                 raise SamariumTypeError("array contains non-integers")
         return String(s)
 
-    @property
     def random(self) -> Any:
         if not self.val:
             raise SamariumValueError("array is empty")
         return choice(self.val)
 
-    @property
     def special(self) -> Integer:
         return Integer(len(self.val))
 
@@ -644,13 +633,11 @@ class Table(Attrs):
     def __matmul__(self, other: Any) -> Zip:
         return Zip(self, other)
 
-    @property
     def random(self) -> Any:
         if not self.val:
             raise SamariumValueError("table is empty")
         return choice(list(self.val.keys()))
 
-    @property
     def special(self) -> Array:
         return Array(self.val.values())
 
@@ -678,7 +665,6 @@ class Null(Singleton, Attrs):
     def __hash__(self) -> int:
         return self.hash.val
 
-    @property
     def hash(self) -> Integer:
         return Integer(hash(self.val))
 
@@ -748,11 +734,9 @@ class Slice(Attrs):
             return Integer(self.tup != other.tup)
         return Integer(True)
 
-    @property
     def random(self) -> Integer:
         return Integer(choice(self.range))
 
-    @property
     def special(self) -> Integer:
         return Integer(len(self.range))
 
@@ -784,7 +768,6 @@ class Zip(Attrs):
     def __str__(self) -> str:
         return f"<Zip@{id(self):x}>"
 
-    @property
     def special(self) -> Integer:
         return Integer(len(self.iters))
 
@@ -813,11 +796,9 @@ class Iterator(Attrs):
     def __str__(self) -> str:
         return f"<Iterator@{id(self):x}>"
 
-    @property
     def cast(self) -> Integer | Null:
         return self.length
 
-    @property
     def special(self) -> Any:
         return next(self)
 
@@ -860,7 +841,6 @@ class Enum(Attrs):
             raise SamariumTypeError("enum members cannot be modified")
         object.__setattr__(self, name, value)
 
-    @property
     def cast(self) -> Table:
         return Table(
             {
