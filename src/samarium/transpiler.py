@@ -709,6 +709,8 @@ class Transpiler:
                     and not self._line[-1].isspace()
                 ):
                     self._line.append(f"readline({self._line.pop()})")
+                else:
+                    raise IndexError
             except IndexError:
                 self._line.append("readline()")
         elif token is Token.THROW:
