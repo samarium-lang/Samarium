@@ -1,0 +1,11 @@
+read_until target? * {
+    target <> "";
+    s: "";
+    .. {
+        i: ???;
+        s+: i;
+        ? i :: target { <- }
+        s+: "\n";
+    }
+    * s;
+}
