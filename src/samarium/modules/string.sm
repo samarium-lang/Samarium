@@ -107,7 +107,8 @@ strip_right string suffix * {
     * string;
 }
 
-strip string chars * {
+strip string chars? * {
+    chars <> " ";
     * strip_left(strip_right(string, chars), chars);
 }
 
