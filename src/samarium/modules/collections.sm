@@ -193,30 +193,24 @@
         * 'find('items, value) >: \;
     }
 
-    values * {
-        * 'items;
-    }
-
-    clear * {
-        'items: [];
-    }
-
-    is_empty * {
-        * '$ :: \;
-    }
-
-    is_full * {
-        * '$ :: 'capacity;
-    }
-
-    new_set_size a b * {
-        * a$ ? a$ > b$ ,, b$;
-    }
-
-    union other * {
-        ? other?! ::: Set()?! {
+    #check_type value * {
+        ? other?! ::: Set {
             "expected Set, received " + ""?!(other?!)!!!;
         }
+    }
+
+    clear * { 'items: []; }
+    is_empty * { * '$ :: \; }
+    is_full * { * '$ :: 'capacity; }
+    new_set_size a b * { * a$ ? a$ > b$ ,, b$; }
+    ::: other * { * ~~ ' :: other; }
+    :: other * {
+        sort: <-iter.sorted;
+        * sort('items) :: sort(other.items);
+    }
+
+    | other * {
+        '#check_type(other);
 
         union_set: Set('values(), 'new_set_size(', other) ++ /\);
 
@@ -227,10 +221,14 @@
         * union_set;
     }
 
-    intersection other * {
-        ? other?! ::: Set()?! {
-            "expected Set, received " + ""?!(other?!)!!!;
-        }
+    ^ other * {
+        '#check_type(other);
+
+        * (' - other) | (other - ');
+    }
+
+    & other * {
+        '#check_type(other);
 
         intersection_set: Set([], 'new_set_size(', other));
 
@@ -243,10 +241,8 @@
         * intersection_set;
     }
 
-    difference other * {
-        ? other?! ::: Set()?! {
-            "expected Set, received " + ""?!(other?!)!!!;
-        }
+    - other * {
+        '#check_type(other);
 
         difference_set: Set([], 'new_set_size(', other));
 
@@ -259,18 +255,18 @@
         * difference_set;
     }
 
-    is_subset other * {
-        ? other?! ::: Set()?! {
-            "expected Set, received " + ""?!(other?!)!!!;
-        }
+    > other * {
+        '#check_type(other);
 
-        ? '$ > other$ { * \; }
+        ? '$ <: other$ { * \; }
 
-        ... value ->? 'values() {
-            ? ~~ other.has(value) { * \; }
+        ... value ->? other.items {
+            ? value ~~ ->? ' { * \; }
         }
         * /;
     }
+
+    >: other * { * ' :: other || ' > other; }
 }
 
 @ Deque {
