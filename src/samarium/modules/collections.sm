@@ -130,7 +130,7 @@
 
     $ * { * 'items$; }
 
-    + value * {
+    add value * {
         ? value ~~ ->? ' {
             ? 'is_full() {
                 "set is full (capacity " + ""?!('capacity) + ")"!!!;
@@ -180,7 +180,7 @@
         union_set: Set('items, nss);
 
         ... value ->? other.items {
-            union_set+: value;
+            union_set.add(value);
         }
 
         * union_set;
@@ -199,7 +199,7 @@
 
         ... value ->? 'items {
             ? value ->? other {
-                intersection_set+: value;
+                intersection_set.add(value);
             }
         }
 
@@ -213,7 +213,7 @@
 
         ... value ->? 'items {
             ? value ~~ ->? other {
-                difference_set+: value;
+                difference_set.add(value);
             }
         }
 
