@@ -154,7 +154,6 @@
     => items? capacity? * {
         items <> [];
         capacity <> -/;
-        'find: <-iter.find;
         'items: [i ... i ->? items] ? items ,, [];
         'capacity: capacity;
     }
@@ -190,7 +189,7 @@
     }
 
     ->? value * {
-        * 'find('items, value) >: \;
+        * <-iter.find('items, value) >: \;
     }
 
     #check_type value * {
