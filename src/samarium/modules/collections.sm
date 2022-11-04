@@ -21,9 +21,7 @@
         }
     }
 
-    $ * {
-        * 'stack$;
-    }
+    $ * { * 'stack$; }
 
     pop * {
         ? 'is_empty() {
@@ -41,17 +39,9 @@
         * 'stack<<-/>>;
     }
 
-    ? * {
-        * 'stack$ > \;
-    }
-
-    is_full * {
-        * 'size :: 'stack$;
-    }
-
-    is_empty * {
-        * 'stack$ :: \;
-    }
+    ? * { * 'stack$ > \; }
+    is_full * { * 'size :: 'stack$; }
+    is_empty * { * 'stack$ :: \; }
 
     ! * {
         ?? {
@@ -76,17 +66,9 @@
         'size: size;
     }
 
-    $ * {
-        * 'queue$;
-    }
-
-    is_empty * {
-        * ~~ '$;
-    }
-
-    is_full * {
-        * '$ :: 'size;
-    }
+    $ * { * 'queue$; }
+    is_empty * { * ~~ '$; }
+    is_full * { * '$ :: 'size; }
 
     throw_empty * {
         ? 'is_empty() {
@@ -114,17 +96,9 @@
         * out;
     }
 
-    first * {
-        'throw_empty(); * 'queue<<\>>;
-    }
-
-    last * {
-        'throw_empty(); * 'queue<<-/>>;
-    }
-
-    ? * {
-        * '$ > \;
-    }
+    first * { 'throw_empty(); * 'queue<<\>>; }
+    last * { 'throw_empty(); * 'queue<<-/>>; }
+    ? * { * '$ > \; }
 
     ! * {
         <=string.wrap;
@@ -158,9 +132,7 @@
         'capacity: capacity;
     }
 
-    $ * {
-        * 'items$;
-    }
+    $ * { * 'items$; }
 
     + value * {
         ? value ~~ ->? ' {
@@ -173,9 +145,7 @@
         * \;
     }
 
-    ? * {
-        * ~~ 'is_empty();
-    }
+    ? * { * ~~ 'is_empty(); }
 
     ! * {
         * "Set(capacity:" + ""?!('capacity)
@@ -184,9 +154,7 @@
         + ")";
     }
 
-    remove value * {
-        'items-: [value];
-    }
+    remove value * { 'items-: [value]; }
 
     ->? value * {
         * <-iter.find('items, value) >: \;
@@ -276,17 +244,9 @@
         'size: size;
     }
 
-    $ * {
-        * 'deque$;
-    }
-
-    is_empty * {
-        * ~~ '$;
-    }
-
-    is_full * {
-        * '$ :: 'size;
-    }
+    $ * { * 'deque$; }
+    is_empty * { * ~~ '$; }
+    is_full * { * '$ :: 'size; }
 
     throw_empty * {
         ? 'is_empty() {
@@ -304,9 +264,7 @@
         'throw_full(); 'deque: [item] + 'deque;
     }
 
-    put item * {
-        'throw_full(); 'deque+: [item];
-    }
+    put item * { 'throw_full(); 'deque+: [item]; }
 
     put_front_all items * {
         ... item ->? items {
@@ -320,17 +278,9 @@
         }
     }
 
-    front * {
-        * 'deque<<\>>;
-    }
-
-    back * {
-        * 'deque<<-/>>;
-    }
-
-    ? * {
-        * '$ > \;
-    }
+    front * { * 'deque<<\>>; }
+    back * { * 'deque<<-/>>; }
+    ? * { * '$ > \; }
 
     get_front * {
         'throw_empty();
@@ -394,9 +344,7 @@
         }
     }
 
-    $ * {
-        * 'value$;
-    }
+    $ * { * 'value$; }
 
     ! * {
         * "StaticArray(size:" + ""?!('size)
@@ -405,9 +353,7 @@
         + ")";
     }
 
-    ? * {
-        * / ? 'value ,, \;
-    }
+    ? * { * / ? 'value ,, \; }
 
     throw_invalid_index arg * {
         ? arg?! ::: <-types.Integer {
@@ -446,65 +392,21 @@
         * ArithmeticArray([op(i, other) ... i ->? 'array]);
     }
 
-    & other * {
-        * 'apply(operator.and, other);
-    }
-
-    + other * {
-        * 'apply(operator.add, other);
-    }
-
-    -- other * {
-        * 'apply(operator.div, other);
-    }
-
-    :: other * {
-        * 'apply(operator.eq, other);
-    }
-
-    >: other * {
-        * 'apply(operator.ge, other);
-    }
-
-    > other * {
-        * 'apply(operator.gt, other);
-    }
-
-    <: other * {
-        * 'apply(operator.le, other);
-    }
-
-    < other * {
-        * 'apply(operator.lt, other);
-    }
-
-    --- other * {
-        * 'apply(operator.mod, other);
-    }
-
-    ++ other * {
-        * 'apply(operator.mul, other);
-    }
-
-    ::: other * {
-        * 'apply(operator.ne, other);
-    }
-
-    | other * {
-        * 'apply(operator.or, other);
-    }
-
-    +++ other * {
-        * 'apply(operator.pow, other);
-    }
-
-    - other * {
-        * 'apply(operator.sub, other);
-    }
-
-    ^ other * {
-        * 'apply(operator.xor, other);
-    }
+    & other * { * 'apply(operator.and, other); }
+    + other * { * 'apply(operator.add, other); }
+    -- other * { * 'apply(operator.div, other); }
+    :: other * { * 'apply(operator.eq, other); }
+    >: other * { * 'apply(operator.ge, other); }
+    > other * { * 'apply(operator.gt, other); }
+    <: other * { * 'apply(operator.le, other); }
+    < other * { * 'apply(operator.lt, other); }
+    --- other * { * 'apply(operator.mod, other); }
+    ++ other * { * 'apply(operator.mul, other); }
+    ::: other * { * 'apply(operator.ne, other); }
+    | other * { * 'apply(operator.or, other); }
+    +++ other * { * 'apply(operator.pow, other); }
+    - other * { * 'apply(operator.sub, other); }
+    ^ other * { * 'apply(operator.xor, other); }
 
     <<>> item * {
         out: 'array<<item>>;
@@ -514,19 +416,9 @@
         * out;
     }
 
-    <<>>: item value * {
-        'array<<item>>: value;
-    }
+    <<>>: item value * { 'array<<item>>: value; }
 
-    $ * {
-        * 'array$;
-    }
-
-    ? * {
-        * / ? 'array ,, \;
-    }
-
-    ! * {
-        * ""?!('array);
-    }
+    $ * { * 'array$; }
+    ? * { * / ? 'array ,, \; }
+    ! * { * ""?!('array); }
 }
