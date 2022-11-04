@@ -179,7 +179,7 @@
         ? nss > \ { nss++: /\; }
         union_set: Set('items, nss);
 
-        ... value ->? other.values() {
+        ... value ->? other.items {
             union_set+: value;
         }
 
@@ -197,7 +197,7 @@
 
         intersection_set: Set([], '#new_set_size(', other));
 
-        ... value ->? 'values() {
+        ... value ->? 'items {
             ? value ->? other {
                 intersection_set+: value;
             }
@@ -211,7 +211,7 @@
 
         difference_set: Set([], '#new_set_size(', other));
 
-        ... value ->? 'values() {
+        ... value ->? 'items {
             ? value ~~ ->? other {
                 difference_set+: value;
             }
