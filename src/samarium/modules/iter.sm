@@ -38,7 +38,7 @@ cycle iter * {
     }
 }
 
-filter array function * {
+filter function array * {
     ... e ->? array {
         ? function(e) {
             ** e;
@@ -46,12 +46,12 @@ filter array function * {
     }
 }
 
-filter_false array function * {
+filter_false function array * {
     flip arg * { * ~~ function(arg); }
-    * filter(array, flip);
+    * filter(flip, array);
 }
 
-map array function * {
+map function array * {
     ... e ->? array {
         ** function(e);
     }
