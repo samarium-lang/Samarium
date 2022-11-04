@@ -162,7 +162,10 @@
     clear * { 'items: []; }
     is_empty * { * '$ :: \; }
     is_full * { * '$ :: 'capacity; }
-    new_set_size a b * { * a$ ? a$ > b$ ,, b$; }
+    #new_set_size a b * {
+        ? <-math.min([a.capacity, b.capacity]) :: -/ { * -/; }
+        * a$ ? a$ > b$ ,, b$;
+    }
     ::: other * { * ~~ ' :: other; }
     :: other * {
         sort: <-iter.sorted;
@@ -172,7 +175,9 @@
     | other * {
         '#check_type(other);
 
-        union_set: Set('values(), 'new_set_size(', other) ++ /\);
+        nss: '#new_set_size(', other);
+        ? nss > \ { nss++: /\; }
+        union_set: Set('items, nss);
 
         ... value ->? other.values() {
             union_set+: value;
@@ -190,7 +195,7 @@
     & other * {
         '#check_type(other);
 
-        intersection_set: Set([], 'new_set_size(', other));
+        intersection_set: Set([], '#new_set_size(', other));
 
         ... value ->? 'values() {
             ? value ->? other {
@@ -204,7 +209,7 @@
     - other * {
         '#check_type(other);
 
-        difference_set: Set([], 'new_set_size(', other));
+        difference_set: Set([], '#new_set_size(', other));
 
         ... value ->? 'values() {
             ? value ~~ ->? other {
