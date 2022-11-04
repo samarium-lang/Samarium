@@ -104,8 +104,8 @@
         <=string.wrap;
         <=types.String;
         ? '$ <: /\/ {
-            items: ""?!('queue);
-        } ,, ? '$ > /\/ {
+            items: ""?!('queue)<</..-/>>;
+        } ,, {
             first: ""?!('first());
             last: ""?!('last());
             ? 'first()?! :: String {
@@ -114,13 +114,9 @@
             ? 'last()?! :: String {
                 last: wrap(last, "\"");
             }
-            items: "[" + ""?!(first) + ", ..., " + ""?!(last) + "]";
-        } ,, {
-            items: "[]";
+            items: ""?!(first) + ", ..., " + ""?!(last);
         }
-        * "Queue(capacity:" + ""?!('size)
-        + ", size:" + ""?!('queue$)
-        + ", items:" + items + ")";
+        * "Queue(" + items + ")";
     }
 }
 
@@ -148,10 +144,7 @@
     ? * { * ~~ 'is_empty(); }
 
     ! * {
-        * "Set(capacity:" + ""?!('capacity)
-        + ", size:" + ""?!('$)
-        + ", items:" + ""?!('items)
-        + ")";
+        * "Set(" + ""?!('items)<</..-/>> + ")";
     }
 
     remove value * { 'items-: [value]; }
@@ -300,8 +293,8 @@
         <=string.wrap;
         <=types.String;
         ? '$ <: /\/ {
-            items: ""?!('deque);
-        } ,, ? '$ > /\/ {
+            items: ""?!('deque)<</..-/>>;
+        } ,, {
             front: ""?!('front());
             back: ""?!('back());
             ? 'front()?! :: String {
@@ -310,13 +303,9 @@
             ? 'back()?! :: String {
                 back: wrap(back, "\"");
             }
-            items: "[" + ""?!(front) + ", ..., " + ""?!(back) + "]";
-        } ,, {
-            items: "[]";
+            items: ""?!(front) + ", ..., " + ""?!(back);
         }
-        * "Deque(capacity:" + ""?!('size)
-        + ", size:" + ""?!('deque$)
-        + ", items:" + items + ")";
+        * "Deque(" + items + ")";
     }
 }
 
@@ -420,5 +409,5 @@
 
     $ * { * 'array$; }
     ? * { * / ? 'array ,, \; }
-    ! * { * ""?!('array); }
+    ! * { * "A" + ""?!('array); }
 }
