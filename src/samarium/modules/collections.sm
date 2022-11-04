@@ -154,8 +154,8 @@
     }
 
     #check_type value * {
-        ? other?! ::: Set {
-            "expected Set, received " + ""?!(other?!)!!!;
+        ? value?! ::: Set()?! {
+            "expected Set, received " + ""?!(value?!)!!!;
         }
     }
 
