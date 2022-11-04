@@ -15,21 +15,15 @@ Table: {{}}?!;
         }
     }
 
-    ! * {
-        * "true" ? 'value ,, "false";
-    }
+    ! * { * "true" ? 'value ,, "false"; }
 
-    ? * {
-        * 'value;
-    }
+    ? * { * 'value; }
 
     :: other * {
         * Boolean('value :: other.value);
     }
 
-    > other * {
-        * Boolean('value > other.value);
-    }
+    > other * { * Boolean('value > other.value); }
 
     + other * {
         out: 'value + other.value;
@@ -65,21 +59,13 @@ Table: {{}}?!;
         * Boolean('value --- other.value);
     }
 
-    & other * {
-        * Boolean('value & other.value);
-    }
+    & other * { * Boolean('value & other.value); }
 
-    ^ other * {
-        * Boolean('value ^ other.value);
-    }
+    ^ other * { * Boolean('value ^ other.value); }
 
-    | other * {
-        * Boolean('value | other.value);
-    }
+    | other * { * Boolean('value | other.value); }
 
-    ~ * {
-        * Boolean(\ ? 'value ,, /);
-    }
+    ~ * { * Boolean(\ ? 'value ,, /); }
 }
 
 @ UUID4 {

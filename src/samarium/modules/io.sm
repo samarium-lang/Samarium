@@ -28,9 +28,7 @@
         * <-string.join([<-math.to_hex(i) ... i ->? '#value], " ");
     }
 
-    export * {
-        * '#value;
-    }
+    export * { * '#value; }
 
     export_string * {
         * <-string.join([i% ... i ->? '#value]);

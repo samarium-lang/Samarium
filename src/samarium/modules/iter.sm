@@ -47,9 +47,7 @@ filter array function * {
 }
 
 filter_false array function * {
-    flip arg * {
-        * ~~ function(arg);
-    }
+    flip arg * { * ~~ function(arg); }
     * filter(array, flip);
 }
 
