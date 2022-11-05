@@ -18,13 +18,29 @@ from ..utils import (
     Singleton,
     get_name,
     get_type_name,
-    guard,
     parse_integer,
     smformat,
 )
 
 
 T = TypeVar("T")
+
+
+def guard(operator: str, *, default: int | None = None) -> Callable[..., Any]:
+    def decorator(function: Callable[..., Any]) -> Callable[..., Any]:
+        def wrapper(self: Any, other: Any) -> Any:
+            Ts = type(self)
+            To = type(other)
+            use_default = default is not None and other.val is None
+            if isinstance(other, Ts):
+                return function(self, other)
+            if use_default:
+                return function(self, Integer(default))
+            raise NotDefinedError(f"{Ts.__name__} {operator} {To.__name__}")
+
+        return wrapper
+
+    return decorator
 
 
 def throw_missing(*_):
@@ -254,27 +270,27 @@ class Integer(Attrs):
 
     __repr__ = __str__
 
-    @guard("+")
+    @guard("+", default=1)
     def __add__(self, other: Any) -> Integer:
         return Integer(self.val + other.val)
 
-    @guard("-")
+    @guard("-", default=1)
     def __sub__(self, other: Any) -> Integer:
         return Integer(self.val - other.val)
 
-    @guard("++")
+    @guard("++", default=2)
     def __mul__(self, other: Any) -> Integer:
         return Integer(self.val * other.val)
 
-    @guard("--")
+    @guard("--", default=2)
     def __floordiv__(self, other: Any) -> Integer:
         return Integer(self.val // other.val)
 
-    @guard("+++")
+    @guard("+++", default=2)
     def __pow__(self, other: Any) -> Integer:
         return Integer(self.val**other.val)
 
-    @guard("---")
+    @guard("---", default=2)
     def __mod__(self, other: Any) -> Integer:
         return Integer(self.val % other.val)
 
@@ -309,19 +325,19 @@ class Integer(Attrs):
             return Integer(self.val != other.val)
         return Integer(True)
 
-    @guard(">")
+    @guard(">", default=0)
     def __gt__(self, other: Any) -> Integer:
         return Integer(self.val > other.val)
 
-    @guard(">:")
+    @guard(">:", default=0)
     def __ge__(self, other: Any) -> Integer:
         return Integer(self.val >= other.val)
 
-    @guard("<")
+    @guard("<", default=0)
     def __lt__(self, other: Any) -> Integer:
         return Integer(self.val < other.val)
 
-    @guard("<:")
+    @guard("<:", default=0)
     def __le__(self, other: Any) -> Integer:
         return Integer(self.val <= other.val)
 
@@ -518,13 +534,15 @@ class Array(Attrs):
     def __add__(self, other: Any) -> Array:
         return Array(self.val + other.val)
 
-    def __sub__(self, other: Any) -> Array:
+    def __sub__(self, other: Any) -> Any:
         new_array = self.val.copy()
         if isinstance(other, Array):
             for i in other:
                 new_array.remove(i)
         elif isinstance(other, Integer):
             new_array.pop(other.val)
+        elif other is NULL:
+            return self.val.pop()
         else:
             raise NotDefinedError(f"Array - {get_type_name(other)}")
         return Array(new_array)

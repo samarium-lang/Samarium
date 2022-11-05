@@ -156,17 +156,3 @@ def get_name(obj: Callable[..., Any] | type) -> str:
 
 def get_type_name(obj: Any) -> str:
     return type(obj).__name__.removeprefix("sm_")
-
-
-def guard(operator: str) -> Callable[..., Any]:
-    def decorator(function: Callable[..., Any]) -> Callable[..., Any]:
-        def wrapper(self: Any, other: Any) -> Any:
-            Ts = type(self)
-            To = type(other)
-            if isinstance(other, Ts):
-                return function(self, other)
-            raise NotDefinedError(f"{Ts.__name__} {operator} {To.__name__}")
-
-        return wrapper
-
-    return decorator
