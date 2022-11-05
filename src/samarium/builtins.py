@@ -24,7 +24,12 @@ from .classes import (
     Type,
     to_string,
 )
-from .exceptions import SamariumError, SamariumSyntaxError, SamariumTypeError
+from .exceptions import (
+    SamariumError,
+    SamariumIOError,
+    SamariumSyntaxError,
+    SamariumTypeError,
+)
 from .utils import get_name
 
 MISSING_ARGS_PATTERN = compile(
@@ -150,7 +155,13 @@ def print_safe(*args: Attrs | Callable[..., Any] | bool | None) -> Attrs:
 
 
 def readline(prompt: String = NULL_STRING) -> String:
-    return String(input(prompt.val))
+    try:
+        return String(input(prompt.val))
+    except KeyboardInterrupt:
+        msg = "^C"
+    except EOFError:
+        msg = "^D"
+    raise SamariumIOError(msg)
 
 
 def sleep(*args: Integer) -> None:
