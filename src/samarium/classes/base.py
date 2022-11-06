@@ -85,9 +85,15 @@ class Attrs:
 
 
 class UserAttrs(Attrs):
-    def __init__(self, *args) -> None:
-        with suppress(AttributeError):
-            self.__entry__(*args)
+
+    def __entry__(self, *args: Any) -> None:
+        ...
+
+    def __init__(self, *args: Any) -> None:
+        self.__entry__(*args)
+
+    def __string__(self) -> String:
+        ...
 
     def __str__(self) -> str:
         try:
@@ -102,6 +108,9 @@ class UserAttrs(Attrs):
         if isinstance(v, str):
             return v
         raise SamariumTypeError(f"{get_type_name(self)}! returned a non-string")
+
+    def __bit__(self) -> Integer:
+        ...
 
     def __bool__(self) -> bool:
         try:
@@ -120,6 +129,9 @@ class UserAttrs(Attrs):
     def __hash__(self) -> int:
         return self.hash.val
 
+    def __special__(self) -> Any:
+        ...
+
     def special(self) -> Any:
         try:
             special = self.__special__
@@ -130,6 +142,9 @@ class UserAttrs(Attrs):
                 f"{get_type_name(self)}$ should only take one argument"
             )
         return special()
+
+    def __hsh__(self) -> Integer:
+        ...
 
     def hash(self) -> Integer:
         try:
@@ -145,6 +160,9 @@ class UserAttrs(Attrs):
             return v
         raise SamariumTypeError(f"{get_type_name(self)}## returned a non-integer")
 
+    def __cast__(self) -> Any:
+        ...
+
     def cast(self) -> Any:
         try:
             cast = self.__cast__
@@ -155,6 +173,9 @@ class UserAttrs(Attrs):
                 f"{get_type_name(self)}% should only take one argument"
             )
         return cast()
+
+    def __random__(self) -> Integer:
+        ...
 
     def random(self) -> Any:
         try:
