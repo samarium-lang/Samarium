@@ -217,6 +217,8 @@ class Type(Attrs):
             raise SamariumTypeError("cannot instantiate a function")
         if self.val is Module:
             raise SamariumTypeError("cannot instantiate a module")
+        if self.val is Type:
+            raise SamariumTypeError("cannot instantiate a type")
         return self.val(*args)
 
 
