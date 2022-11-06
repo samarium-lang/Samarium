@@ -24,6 +24,7 @@ from .classes import (
     Enum,
     FileManager,
     Integer,
+    Int,
     Mode,
     Module,
     Null,

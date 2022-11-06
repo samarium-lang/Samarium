@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from contextlib import suppress
+from functools import lru_cache
 from inspect import signature
 from secrets import choice, randbelow
 from types import FunctionType
@@ -14,7 +14,6 @@ from ..exceptions import (
 )
 from ..utils import (
     ClassProperty,
-    LFUCache,
     Singleton,
     get_name,
     get_type_name,
@@ -35,7 +34,7 @@ def guard(operator: str, *, default: int | None = None) -> Callable[..., Any]:
             if isinstance(other, Ts):
                 return function(self, other)
             if use_default:
-                return function(self, Integer(default))
+                return function(self, Int(default))
             raise NotDefinedError(f"{Ts.__name__} {operator} {To.__name__}")
 
         return wrapper
@@ -191,13 +190,13 @@ class Type(Attrs):
 
     def __eq__(self, other: Any) -> Integer:
         if isinstance(other, Type):
-            return Integer(self.val == other.val)
-        return Integer(False)
+            return Int(self.val == other.val)
+        return Int(self.val == other)
 
     def __ne__(self, other: Any) -> Integer:
         if isinstance(other, Type):
-            return Integer(self.val != other.val)
-        return Integer(True)
+            return Int(self.val != other.val)
+        return Int(True)
 
     def __str__(self) -> str:
         if self.val is FunctionType:
@@ -243,12 +242,6 @@ class Module(Attrs):
 
 class Integer(Attrs):
     __slots__ = ("val",)
-    cache: LFUCache[Any, Integer] = LFUCache()
-
-    def __new__(cls, v: Any = None) -> Integer:
-        if v in Integer.cache:
-            return Integer.cache[v]
-        return object.__new__(cls)
 
     def __init__(self, v: Any = None) -> None:
         if isinstance(v, (int, bool)):
@@ -261,8 +254,6 @@ class Integer(Attrs):
             self.val = parse_integer(v.val) if v else 0
         else:
             raise SamariumTypeError(f"cannot cast {get_type_name(v)} to Integer")
-        if v not in Integer.cache:
-            Integer.cache[v] = self
 
     def __bool__(self) -> bool:
         return self.val != 0
@@ -274,74 +265,74 @@ class Integer(Attrs):
 
     @guard("+", default=1)
     def __add__(self, other: Any) -> Integer:
-        return Integer(self.val + other.val)
+        return Int(self.val + other.val)
 
     @guard("-", default=1)
     def __sub__(self, other: Any) -> Integer:
-        return Integer(self.val - other.val)
+        return Int(self.val - other.val)
 
     @guard("++", default=2)
     def __mul__(self, other: Any) -> Integer:
-        return Integer(self.val * other.val)
+        return Int(self.val * other.val)
 
     @guard("--", default=2)
     def __floordiv__(self, other: Any) -> Integer:
-        return Integer(self.val // other.val)
+        return Int(self.val // other.val)
 
     @guard("+++", default=2)
     def __pow__(self, other: Any) -> Integer:
-        return Integer(self.val**other.val)
+        return Int(self.val**other.val)
 
     @guard("---", default=2)
     def __mod__(self, other: Any) -> Integer:
-        return Integer(self.val % other.val)
+        return Int(self.val % other.val)
 
     @guard("&")
     def __and__(self, other: Any) -> Integer:
-        return Integer(self.val & other.val)
+        return Int(self.val & other.val)
 
     @guard("|")
     def __or__(self, other: Any) -> Integer:
-        return Integer(self.val | other.val)
+        return Int(self.val | other.val)
 
     @guard("^")
     def __xor__(self, other: Any) -> Integer:
-        return Integer(self.val ^ other.val)
+        return Int(self.val ^ other.val)
 
     def __invert__(self) -> Integer:
-        return Integer(~self.val)
+        return Int(~self.val)
 
     def __pos__(self) -> Integer:
         return self
 
     def __neg__(self) -> Integer:
-        return Integer(-self.val)
+        return Int(-self.val)
 
     def __eq__(self, other: Any) -> Integer:
         if isinstance(other, Integer):
-            return Integer(self.val == other.val)
-        return Integer(False)
+            return Int(self.val == other.val)
+        return Int(False)
 
     def __ne__(self, other: Any) -> Integer:
         if isinstance(other, Integer):
-            return Integer(self.val != other.val)
-        return Integer(True)
+            return Int(self.val != other.val)
+        return Int(True)
 
     @guard(">", default=0)
     def __gt__(self, other: Any) -> Integer:
-        return Integer(self.val > other.val)
+        return Int(self.val > other.val)
 
     @guard(">:", default=0)
     def __ge__(self, other: Any) -> Integer:
-        return Integer(self.val >= other.val)
+        return Int(self.val >= other.val)
 
     @guard("<", default=0)
     def __lt__(self, other: Any) -> Integer:
-        return Integer(self.val < other.val)
+        return Int(self.val < other.val)
 
     @guard("<:", default=0)
     def __le__(self, other: Any) -> Integer:
-        return Integer(self.val <= other.val)
+        return Int(self.val <= other.val)
 
     def __hash__(self) -> int:
         return self.hash.val
@@ -350,18 +341,21 @@ class Integer(Attrs):
         return String(chr(self.val))
 
     def hash(self) -> Integer:
-        return Integer(hash(self.val))
+        return Int(hash(self.val))
 
     def random(self) -> Integer:
         v = self.val
         if not v:
             return self
         elif v > 0:
-            return Integer(randbelow(v))
-        return Integer(-randbelow(v) - 1)
+            return Int(randbelow(v))
+        return Int(-randbelow(v) - 1)
 
     def special(self) -> String:
         return String(f"{self.val:b}")
+
+
+Int = lru_cache(1024)(Integer)
 
 
 class String(Attrs):
@@ -404,26 +398,26 @@ class String(Attrs):
         raise NotDefinedError(f"String --- {get_type_name(other)}")
 
     def __eq__(self, other: Any) -> Integer:
-        return Integer(self.val == other.val)
+        return Int(self.val == other.val)
 
     def __ne__(self, other: Any) -> Integer:
-        return Integer(self.val != other.val)
+        return Int(self.val != other.val)
 
     @guard(">")
     def __gt__(self, other: Any) -> Integer:
-        return Integer(self.val > other.val)
+        return Int(self.val > other.val)
 
     @guard(">:")
     def __ge__(self, other: Any) -> Integer:
-        return Integer(self.val >= other.val)
+        return Int(self.val >= other.val)
 
     @guard("<")
     def __lt__(self, other: Any) -> Integer:
-        return Integer(self.val < other.val)
+        return Int(self.val < other.val)
 
     @guard("<:")
     def __le__(self, other: Any) -> Integer:
-        return Integer(self.val <= other.val)
+        return Int(self.val <= other.val)
 
     def __getitem__(self, index: Integer | Slice) -> String:
         if isinstance(index, (Integer, Slice)):
@@ -445,17 +439,17 @@ class String(Attrs):
 
     def cast(self) -> Array | Integer:
         if len(self.val) == 1:
-            return Integer(ord(self.val))
-        return Array(Integer(ord(i)) for i in self.val)
+            return Int(ord(self.val))
+        return Array(Int(ord(i)) for i in self.val)
 
     def hash(self) -> Integer:
-        return Integer(hash(self.val))
+        return Int(hash(self.val))
 
     def random(self) -> String:
         return String(choice(self.val))
 
     def special(self) -> Integer:
-        return Integer(len(self.val))
+        return Int(len(self.val))
 
 
 class Array(Attrs):
@@ -496,29 +490,29 @@ class Array(Attrs):
 
     def __eq__(self, other: Any) -> Integer:
         if isinstance(other, Array):
-            return Integer(self.val == other.val)
-        return Integer(False)
+            return Int(self.val == other.val)
+        return Int(False)
 
     def __ne__(self, other: Any) -> Integer:
         if isinstance(other, Array):
-            return Integer(self.val != other.val)
-        return Integer(True)
+            return Int(self.val != other.val)
+        return Int(True)
 
     @guard(">")
     def __gt__(self, other: Any) -> Integer:
-        return Integer(self.val > other.val)
+        return Int(self.val > other.val)
 
     @guard(">:")
     def __ge__(self, other: Any) -> Integer:
-        return Integer(self.val >= other.val)
+        return Int(self.val >= other.val)
 
     @guard("<")
     def __lt__(self, other: Any) -> Integer:
-        return Integer(self.val < other.val)
+        return Int(self.val < other.val)
 
     @guard("<:")
     def __le__(self, other: Any) -> Integer:
-        return Integer(self.val <= other.val)
+        return Int(self.val <= other.val)
 
     def __getitem__(self, index: Any) -> Any:
         if isinstance(index, Integer):
@@ -572,7 +566,7 @@ class Array(Attrs):
         return choice(self.val)
 
     def special(self) -> Integer:
-        return Integer(len(self.val))
+        return Int(len(self.val))
 
 
 class Table(Attrs):
@@ -630,13 +624,13 @@ class Table(Attrs):
 
     def __eq__(self, other: Any) -> Integer:
         if isinstance(other, Table):
-            return Integer(self.val == other.val)
-        return Integer(False)
+            return Int(self.val == other.val)
+        return Int(False)
 
     def __ne__(self, other: Any) -> Integer:
         if isinstance(other, Table):
-            return Integer(self.val != other.val)
-        return Integer(True)
+            return Int(self.val != other.val)
+        return Int(True)
 
     @guard("+")
     def __add__(self, other: Any) -> Table:
@@ -686,7 +680,7 @@ class Null(Singleton, Attrs):
         return self.hash.val
 
     def hash(self) -> Integer:
-        return Integer(hash(self.val))
+        return Int(hash(self.val))
 
 
 I64_MAX = 9223372036854775807
@@ -714,13 +708,13 @@ class Slice(Attrs):
         return bool(self.range)
 
     def __iter__(self) -> Iter[Integer]:
-        yield from map(Integer, self.range)
+        yield from map(Int, self.range)
 
     def __contains__(self, value: Integer) -> bool:
         return value.val in self.range
 
     def __getitem__(self, index: Integer) -> Integer:
-        return Integer(self.range[index.val])
+        return Int(self.range[index.val])
 
     def __str__(self) -> str:
         start, stop, step = self.tup
@@ -746,19 +740,19 @@ class Slice(Attrs):
 
     def __eq__(self, other: Any) -> Integer:
         if isinstance(other, Slice):
-            return Integer(self.tup == other.tup)
-        return Integer(False)
+            return Int(self.tup == other.tup)
+        return Int(False)
 
     def __ne__(self, other: Any) -> Integer:
         if isinstance(other, Slice):
-            return Integer(self.tup != other.tup)
-        return Integer(True)
+            return Int(self.tup != other.tup)
+        return Int(True)
 
     def random(self) -> Integer:
-        return Integer(choice(self.range))
+        return Int(choice(self.range))
 
     def special(self) -> Integer:
-        return Integer(len(self.range))
+        return Int(len(self.range))
 
     def is_empty(self) -> bool:
         return self.start is self.stop is self.step is NULL
@@ -789,7 +783,7 @@ class Zip(Attrs):
         return f"<Zip@{id(self):x}>"
 
     def special(self) -> Integer:
-        return Integer(len(self.iters))
+        return Int(len(self.iters))
 
 
 class Iterator(Attrs):
@@ -800,7 +794,7 @@ class Iterator(Attrs):
             raise SamariumTypeError("cannot create an Iterator from a non-iterable")
         self.val = iter(value)
         try:
-            self.length = Integer(len(value.val))
+            self.length = Int(len(value.val))
         except (TypeError, AttributeError):
             self.length = NULL
 
@@ -840,7 +834,7 @@ class Enum(Attrs):
         i = 0
         for k, v in members.items():
             if v is NEXT:
-                self.members[k] = Integer(i)
+                self.members[k] = Int(i)
                 i += 1
             else:
                 self.members[k] = v

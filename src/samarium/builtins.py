@@ -17,6 +17,7 @@ from .classes import (
     Array,
     Attrs,
     Integer,
+    Int,
     Iterator,
     Null,
     Slice,
@@ -57,7 +58,7 @@ def correct_type(obj: T) -> T | Integer | Iterator | Null:
     if obj is None:
         return NULL
     elif isinstance(obj, bool):
-        return Integer(obj)
+        return Int(obj)
     elif isinstance(obj, GeneratorType):
         return Iterator(obj)
     else:
@@ -71,7 +72,7 @@ def dtnow() -> Array:
     utcnow_tt = utcnow.timetuple()
     tz = now[3] - utcnow_tt[3], now[4] - utcnow_tt[4]
     utcnow_tpl = utcnow_tt[:-3] + (utcnow.microsecond // 1000,) + tz
-    return Array(map(Integer, utcnow_tpl))
+    return Array(map(Int, utcnow_tpl))
 
 
 def function(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -101,10 +102,10 @@ def function(func: Callable[..., Any]) -> Callable[..., Any]:
     argc = len(signature(func).parameters)
 
     wrapper.__str__ = lambda: get_name(func)
-    wrapper.special = wrapper.argc = Integer(argc)
+    wrapper.special = wrapper.argc = Int(argc)
     wrapper.parent = lambda: Type(FunctionType)
     wrapper.type = lambda: Type(FunctionType)
-    wrapper.hash = lambda: Integer(hash(func))
+    wrapper.hash = lambda: Int(hash(func))
 
     return wrapper
 
@@ -183,4 +184,4 @@ def throw(message: String = NULL_STRING) -> None:
 
 
 def timestamp() -> Integer:
-    return Integer(time_ns() // 1_000_000)
+    return Int(time_ns() // 1_000_000)
