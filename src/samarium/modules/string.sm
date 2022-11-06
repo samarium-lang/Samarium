@@ -50,23 +50,36 @@ ends_with string suffix * {
     * string<<-suffix$..>> :: suffix;
 }
 
-split string delimiter? * {
-    delimiter <> " ";
-    ? delimiter ~~ ->? string {
-        * [string];
-    }
+#split_char string separator * {
     out: [];
     temp: "";
     ... char ->? string {
-        ? char :: delimiter {
+        ? char :: separator {
             out+: [temp];
             temp: "";
         } ,, {
             temp+: char;
         }
     }
-    out+: [temp];
-    * out;
+    * out + [temp];
+}
+
+split string separator? * {
+    separator <> " ";
+    ? ~~ separator { "empty separator"!!!; }
+    ? separator ~~ ->? string { * [string]; }
+    ? separator$ :: / {
+        * #split_char(string, separator);
+    }
+    out: [];
+    <=iter.find;
+    .. {
+        idx: find(string, separator);
+        ? idx :: -/ { <- }
+        out+: [string<<..idx>>];
+        string: string<<idx+separator$..>>;
+    }
+    * out + [string];
 }
 
 capitalize string * {
