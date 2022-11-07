@@ -31,11 +31,10 @@ product array * {
     * o;
 }
 
-sum array * {
-    o: \;
-    ... e ->? array {
-        o+: e;
-    }
+sum array start? * {
+    start <> \;
+    o: start;
+    ... e ->? array { o+: e; }
     * o;
 }
 
