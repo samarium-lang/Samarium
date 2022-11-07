@@ -468,7 +468,7 @@ class Transpiler:
             prev = self._tokens[self._index - 1]
             if token is Token.TABLE_CLOSE and prev is Token.TO:
                 self._line.append("NULL")
-            if token is Token.PAREN_CLOSE and prev in Group.operators:
+            if token is Token.PAREN_CLOSE and prev in Group.operators | {Token.ELSE}:
                 self._line.append("NULL")
             self._line.append(BRACKET_MAPPING[token])
             return
@@ -603,6 +603,8 @@ class Transpiler:
         elif token is Token.ELSE:
             self._line.append(shift + "else ")
         else:  # FOR
+            if self._tokens[self._index - 1] is Token.ELSE:
+                self._line.append("NULL")
             index = self._index
             if self._scope.current == "slice" and self._tokens[index + 1] is Token.ATTR:
                 self._tokens[index] = self._tokens[index + 1] = Token.WHILE
