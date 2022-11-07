@@ -264,8 +264,9 @@ replace string replacements count? * {
         replace_substring count * {
             string_copy: string;
             out: "";
+            find: <-iter.find;
             .. count && from ->? string_copy {
-                i: <-iter.find(string_copy, from);
+                i: find(string_copy, from);
                 out+: string_copy<<..i>>;
                 out+: to;
                 string_copy: string_copy<<i + from$..>>;
