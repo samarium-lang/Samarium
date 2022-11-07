@@ -13,6 +13,7 @@ from typing import Iterator as Iter
 from typing import TypeVar
 
 from .classes import (
+    MISSING,
     NULL,
     Array,
     Attrs,
@@ -127,11 +128,11 @@ def modify(
     func.__code__ = func.__code__.replace(co_flags=flag, co_argcount=argc - 1)
 
 
-def mkslice(start: Any = None, stop: Any = None, step: Any = None) -> Any:
-    if stop is step is None:
-        if start is None:
-            return Slice(NULL)
-        return start
+def mkslice(start: Any = None, stop: Any = MISSING, step: Any = None) -> Any:
+    if stop is MISSING:
+        if start is not None:
+            return start
+        return Slice(NULL)
     start = NULL if start is None else start
     stop = NULL if stop is None else stop
     step = NULL if step is None else step
