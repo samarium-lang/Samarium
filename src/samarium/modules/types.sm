@@ -16,7 +16,6 @@ Table: {{}}?!;
     }
 
     ! * { * "true" ? 'value ,, "false"; }
-
     ? * { * 'value; }
 
     :: other * {
@@ -60,9 +59,7 @@ Table: {{}}?!;
     }
 
     & other * { * Boolean('value & other.value); }
-
     ^ other * { * Boolean('value ^ other.value); }
-
     | other * { * Boolean('value | other.value); }
 
     ~ * { * Boolean(\ ? 'value ,, /); }

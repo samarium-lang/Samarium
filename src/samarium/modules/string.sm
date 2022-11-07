@@ -31,22 +31,14 @@ center string length char? * {
 }
 
 starts_with string prefix * {
-    ? prefix$ > string$ {
-        * \;
-    }
-    ? prefix :: string {
-        * /;
-    }
+    ? prefix$ > string$ { * \; }
+    ? prefix :: string { * /; }
     * string<<..prefix$>> :: prefix;
 }
 
 ends_with string suffix * {
-    ? suffix$ > string$ {
-        * \;
-    }
-    ? suffix :: string {
-        * /;
-    }
+    ? suffix$ > string$ { * \; }
+    ? suffix :: string { * /; }
     * string<<-suffix$..>> :: suffix;
 }
 
@@ -83,9 +75,7 @@ split string separator? * {
 }
 
 capitalize string * {
-    ? string$ :: \ {
-        * string;
-    }
+    ? ~~ string { * string; }
     * to_upper(string<<\>>) + to_lower(string<</..>>);
 }
 
@@ -176,9 +166,7 @@ pad string length char? * {
     ? char$ > / {
         "char has to be of length 1"!!!;
     }
-    ? length < string$ {
-        * string;
-    }
+    ? length < string$ { * string; }
     * char ++ (length - string$);
 }
 

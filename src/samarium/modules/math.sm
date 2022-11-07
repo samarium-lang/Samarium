@@ -1,7 +1,5 @@
 abs n * {
-    ? n < \ {
-        * -n;
-    }
+    ? n < \ { * -n; }
     * n;
 }
 
@@ -18,25 +16,18 @@ factorial n * {
 }
 
 gcd a b * {
-    .. b {
-        a, b: b, a --- b;
-    }
+    .. b { a, b: b, a --- b; }
     * abs(a);
 }
 
 lcm a b * {
-    ?? {
-        * abs(a ++ b) -- gcd(a, b);
-    } !! {
-        * \;
-    }
+    ?? { * abs(a ++ b) -- gcd(a, b); }
+    !! { * \; }
 }
 
 product array * {
     o: /;
-    ... e ->? array {
-        o++: e;
-    }
+    ... e ->? array { o++: e; }
     * o;
 }
 
@@ -51,9 +42,7 @@ sum array * {
 max array * {
     o: array<<\>>;
     ... e ->? array {
-        ? e > o {
-            o: e;
-        }
+        ? e > o { o: e; }
     }
     * o;
 }
@@ -61,9 +50,7 @@ max array * {
 min array * {
     o: array<<\>>;
     ... e ->? array {
-        ? e < o {
-            o: e;
-        }
+        ? e < o { o: e; }
     }
     * o;
 }
@@ -99,9 +86,7 @@ to_hex n * {
     <=string.HEXDIGITS;
     div: n -- /\\\\;
     mod: n --- /\\\\;
-    ? ~~ div {
-        * HEXDIGITS<<mod>>;
-    }
+    ? ~~ div { * HEXDIGITS<<mod>>; }
     * to_hex(div) + HEXDIGITS<<mod>>;
 }
 
@@ -109,9 +94,7 @@ to_oct n * {
     <=string.OCTDIGITS;
     div: n -- /\\\;
     mod: n --- /\\\;
-    ? ~~ div {
-        * OCTDIGITS<<mod>>;
-    }
+    ? ~~ div { * OCTDIGITS<<mod>>; }
     * to_oct(div) + OCTDIGITS<<mod>>;
 }
 
