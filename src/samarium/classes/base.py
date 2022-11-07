@@ -742,14 +742,14 @@ class Slice(Attrs):
         if self.is_empty():
             return "<<>>"
         string = ""
-        if start is not NULL:
+        if start is not None:
             string += repr(start)
-            if stop is step is NULL:
+            if stop is step is None:
                 string += ".."
-        if stop is not NULL:
+        if stop is not None:
             string += f"..{stop!r}"
-        if step is not NULL:
-            if stop is NULL:
+        if step is not None:
+            if stop is None:
                 string += ".."
             string += f"..{step!r}"
         return f"<<{string}>>"
