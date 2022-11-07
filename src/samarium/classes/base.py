@@ -265,7 +265,7 @@ class Integer(Attrs):
     __slots__ = ("val",)
 
     def __init__(self, v: Any = None) -> None:
-        if isinstance(v, (int, bool)):
+        if isinstance(v, (float, int, bool)):
             self.val = int(v)
         elif isinstance(v, Integer):
             self.val = v.val
