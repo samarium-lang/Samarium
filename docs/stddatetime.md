@@ -28,9 +28,9 @@ Function                    | Use
 Method                      | Use
 ---                         | ---
 `subtract(other)`           | Subtract two DateTime objects, returns a DTDiff object.
-`to_string`                 | Return the date and time in the format `Y-M-D h:m:s.z`.
-`to_timestamp`              | Returns the date & time as a Unix timestamp in milliseconds.
-`from_timestamp` (static)   | Returns a DateTime object from a Unix timestamp in milliseconds.
+`to_timestamp()`            | Returns the date & time as a Unix timestamp in milliseconds.
+`from_timestamp()` (static) | Returns a DateTime object from a Unix timestamp in milliseconds.
+`!`                         | Return the date and time in the format `Y-M-D h:m:s.z`.
 
 </center>
 
