@@ -21,6 +21,9 @@ Strings can be manipulated using some arithmetic operators:
 
 `"hello" ++ //` is the same as `"hellohellohello"`
 
+`"hello" - "l"` is the same as `"heo"` (the 2nd operand removes all instances
+of itself in the 1st operand)
+
 Strings can be casted to Integers (for single characters) or Arrays of Integers
 (for longer strings), representing the Unicode code point of each character:
 
