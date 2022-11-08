@@ -144,3 +144,5 @@ Iterators support special `$` and cast `%` methods.
 `Iterator%` returns the length of the iterator if available, and null otherwise.
 
 `Iterator$` yields the next value of the iterator.
+
+Iterators are always truthy.
