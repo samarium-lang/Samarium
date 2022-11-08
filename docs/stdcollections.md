@@ -91,12 +91,12 @@ Method                        | Use
 `is_empty()`                  | Returns `1` if the number of items in the set is equal to 0,<br>otherwise returns `0`.
 `is_full()`                   | Returns `1` if the number of items in the set<br>is equal to the specified capacity, otherwise returns `0`.[^1]
 `is_subset(other)`            | Returns `1` if the current set is a subset of `other`,<br>i.e. every element of the current set is contained in `other`.
+`items`                       | The contents of the set as an array.
 `remove(value)`               | Removes `value` from the set, provided it exists in the set.
 `special()`                   | Returns the number of items in the set.
 `to_bit()`                    | Returns `1` if the deque is not empty, otherwise returns `0`.[^2]
 `to_string()`                 | Returns some information about the set as a string;<br>its capacity, number of items, and the values of its items.
 `union(other)`                | Returns the union of the current set and `other`,<br>i.e. the two sets' items added together with duplicates again removed.
-`values()`                    | Returns the contents of the set as an array.
 
 </center>
 
