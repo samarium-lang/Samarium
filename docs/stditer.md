@@ -10,6 +10,7 @@ Function                        | Use
 `all(array)`                    | Returns `1` if all elements of `array` are truthy,<br>`0` otherwise. Returns `1` for empty arrays.
 `any(array)`                    | Returns `1` if any of the elements of `array` is truthy,<br>`0` otherwise. Returns `0` for empty arrays.
 `chunks(array, size)`           | Iterates over `array` in chunks of size `size`.<br>When `array`'s length is not evenly divided by `size`,<br>the last slice of `array` will be the remainder.
+`cycle(iter)`                   | Copies an iterable by consuming it, and yields its elements in an infinite cycle.
 `count(array, target)`          | Returns the number of times `target` appears in `array`.
 `drop_while(array, function)`   | Evaluates `function`[^1] on each item of `array`,<br>and yields elements of `array` starting from the first item<br>(from the left) for which `function` returns a falsy value.
 `filter(array, function)`       | Evaluates `function`[^1] on each item of `array`,<br>and yields those items that cause `function` to return a truthy value.
