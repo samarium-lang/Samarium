@@ -19,7 +19,7 @@ Booleans support several operations: all comparison operations, all arithmetic o
 Generates a random UUID, version 4. Returns a UUID object with attributes `hex` and `dec`:
 
 ```sm
-<-types.UUID4;
+<=types.UUID4;
 
 uuid: UUID4();
 uuid!;

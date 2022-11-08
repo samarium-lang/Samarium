@@ -150,8 +150,7 @@ Integer value | Name
 An example use of these could be printing without a newline at the end:
 ```sm
 => * {
-    <-iter.range;
-    ... i ->? range(/\/\) {
+    ... i ->? <<../\/\>> {
         i ~> /;
     }
 }

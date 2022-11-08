@@ -21,7 +21,7 @@ Works just like `???`, but tries converting the input to a specific type.
 
 Example (showing all available conversions):
 ```sm
-<-io.inputcast;
+<=io.inputcast;
 
 => * {
     .. {
@@ -64,11 +64,9 @@ The `target` is included in the output string.
 
 Example:
 ```sm
-<-io.read_until;
-
 => * {
     "Enter your program:"!;
-    program: read_until("}");
+    program: <-io.read_until("}");
     name: "Enter file name: "???;
     program ~> name;
     "Your program was saved to " + name!;

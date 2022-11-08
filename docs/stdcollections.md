@@ -129,7 +129,7 @@ Method                   | Use
 An arithmetic array is an array which can be used with different binary operators.
 
 ```sm
-<-collections.ArithmeticArray;
+<=collections.ArithmeticArray;
 
 aa: ArithmeticArray([/\, //, /\/]);
 
@@ -154,12 +154,11 @@ ArithmeticArray allows item assignment and inherits behavior for `$`, `to_bit`, 
 You can also use your own custom operators in the form of functions by using the `apply(op, other)` method:
 
 ```sm
-<-collections.ArithmeticArray;
-<-math.shl;
+<=collections.ArithmeticArray;
 
 aa: ArithmeticArray([///, /\//, //\/]);
 aa!;
-aa.apply(shl, /\)!;
+aa.apply(<-math.shl, /\)!;
 
 
 remove_null nullable default * {
