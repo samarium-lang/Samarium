@@ -35,3 +35,26 @@ Enum(Shape)
 1
 #FF0000
 ```
+
+Enums can be casted to Tables:
+```sm
+Shape # {
+    Circle;
+    Square;
+}
+
+Color # {
+    Red: "#FF0000";
+    Green: "#00FF00";
+    Blue: "#0000FF";
+}
+
+=> * {
+    Shape%!;
+    Color%!;
+}
+```
+```
+{{"Circle" -> 0, "Square" -> 1}}
+{{"Red" -> "#FF0000", "Green" -> "#00FF00", "Blue" -> "#0000FF"}}
+```
