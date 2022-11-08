@@ -26,12 +26,6 @@ Function                        | Use
 `take_while(array, function)`   | Evaluates `function`[^1] on each item of `array`,<br>and yields elements of `array` that is cut off at the first item<br>(from the left) for which `function` returns a falsy value.
 `zip_longest(fill, arrays...)`  | Iterates over several arrays, producing a set of arrays<br>containing an item from each original array.<br>If the arrays are of uneven length,<br>missing values are filled using the `fill` argument.
 
-<!--
-Return a new sorted list from the items in iterable.
-Has two optional arguments which must be specified as keyword arguments.
-key specifies a function of one argument that is used to extract a comparison key from each element in iterable (for example, key=str.lower). The default value is None (compare the elements directly).
--->
-
 </center>
 
 [^1]: Note that `function` must take only one argument (excluding optional parameters).
