@@ -359,7 +359,7 @@ class Integer(Attrs):
         return self.hash().val
 
     def cast(self) -> String:
-        return String(chr(self.val))
+        return String(to_chr(self.val))
 
     def hash(self) -> Integer:
         return Int(hash(self.val))
@@ -576,7 +576,7 @@ class Array(Attrs):
         s = ""
         for i in self.val:
             if isinstance(i, Integer):
-                s += chr(i.val)
+                s += to_chr(i.val)
             else:
                 raise SamariumTypeError("array contains non-integers")
         return String(s)
@@ -883,6 +883,12 @@ class Enum(Attrs):
                 for k, v in self.members.items()
             }
         )
+
+
+def to_chr(code: int) -> str:
+    if code >= 0x110000:
+        raise SamariumValueError("invalid Unicode code point")
+    return chr(code)
 
 
 def to_string(obj: Attrs | Callable) -> str:
