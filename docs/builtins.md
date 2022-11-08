@@ -72,15 +72,6 @@ These instances are callable and can be used to convert values into that type, l
 > Related library: [`types`](stdtypes.md)
 
 
-## CAST
-
-The cast function `%` can convert between a Unicode character (a string) and its corresponding code (an integer).
-
-`"a"%` returns `97`.
-
-`/\\\\/%` returns `"!"`.
-
-
 ## SPECIAL
 
 The special method `$` has different uses depending on the type of object it's used on.
