@@ -2,6 +2,7 @@
 
 Files are handled through file I/O objects, which can be in one of several modes: read, write, read & write, append, and as either text or binary for each of these.
 File I/O objects have a cursor, which is updated whenever data is written to/read from the object.
+File objects are truthy when they are open.
 The current cursor position can be gotten like so:
 
 ```sm
