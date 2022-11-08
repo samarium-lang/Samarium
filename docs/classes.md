@@ -128,6 +128,24 @@ Operator | Inferred from
 `>:`     | `>` and `::`
 
 
+## Static Methods
+Methods can be made static by replacing the `*` keyword with the `~'*` keyword
+(where `~'` can be read as "no instance"):
+```sm
+<=calendar.date;
+
+@ Calendar {
+    is_weekend date ~'* {
+        * date.weekday > /\\;
+    }
+}
+
+=> * {
+    Calendar.is_weekend(date("2022-11-08"))!;  == 0
+}
+```
+
+
 ## Classes As Entry Points
 
 A class named `=>` can serve as an entry point instead of a function:
