@@ -848,10 +848,6 @@ class Enum(Attrs):
         self.name = name.removeprefix("sm_")
         self.members: dict[str, Any] = {}
 
-        # Empty enum case
-        if not members:
-            raise SamariumValueError("enums must have at least 1 member")
-
         i = 0
         for k, v in members.items():
             if v is NEXT:
