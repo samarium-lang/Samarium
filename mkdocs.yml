@@ -25,6 +25,7 @@ nav:
   - Standard Library:
     - collections module: stdcollections.md
     - datetime module: stddatetime.md
+    - io module: stdio.md
     - iter module: stditer.md
     - math module: stdmath.md
     - operator module: stdoperator.md
