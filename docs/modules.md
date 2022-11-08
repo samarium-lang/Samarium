@@ -9,6 +9,7 @@ Like variables, module names must consist of only letters and numbers, and are c
 
 Modules can be imported using the `<-` operator, followed by the module's name.
 Objects (classes, functions, variables) from this module can then be accessed with the `.` operator.
+Module objects are always truthy.
 
 ```sm
 <-string;
