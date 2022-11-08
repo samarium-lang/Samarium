@@ -127,7 +127,7 @@ class UserAttrs(Attrs):
         raise SamariumTypeError(f"? {get_type_name(self)} returned a non-bit")
 
     def __hash__(self) -> int:
-        return self.hash.val
+        return self.hash().val
 
     def __special__(self) -> Any:
         ...
@@ -356,7 +356,7 @@ class Integer(Attrs):
         return Int(self.val <= other.val)
 
     def __hash__(self) -> int:
-        return self.hash.val
+        return self.hash().val
 
     def cast(self) -> String:
         return String(chr(self.val))
@@ -453,7 +453,7 @@ class String(Attrs):
         self.val = "".join(string)
 
     def __hash__(self) -> int:
-        return self.hash.val
+        return self.hash().val
 
     def __matmul__(self, other: Any) -> Zip:
         return Zip(self, other)
@@ -698,7 +698,7 @@ class Null(Singleton, Attrs):
         return self is not other
 
     def __hash__(self) -> int:
-        return self.hash.val
+        return self.hash().val
 
     def hash(self) -> Integer:
         return Int(hash(self.val))
