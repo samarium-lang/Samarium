@@ -8,7 +8,7 @@ By default, enum members are assigned increasing numbers, starting from 0.
 
 You can provide your own values for enum members by simply assigning values to the names.
 
-Enum members cannot be modified.
+Enum members cannot be modified. Enums are truthy when they have at least 1 member.
 
 ```sm
 Shape # {
