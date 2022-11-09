@@ -28,6 +28,26 @@ Strings can be manipulated using some arithmetic operators:
 of itself from the 1st operand)
 
 
+## Formatting
+
+Strings can be formatted using the `---` operator. The 2nd operand can be a String, Array, or a Table.
+```sm
+"Hi $0!" --- "Bob"!;
+== Hi Bob!
+
+"$0$1$0" --- ["abra", "cad"]!;
+abracadabra
+
+s: "Coordinates: $lat, $long";
+coords: {{
+    "lat" -> "56.37N",
+    "long" -> "-8.34W"
+}};
+s --- coords!;
+== Coordinates: 56.37N, -8.34W
+```
+
+
 ## Casting
 
 Strings can be casted to Integers (for single characters) or Arrays of Integers
