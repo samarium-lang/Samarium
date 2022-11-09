@@ -103,7 +103,8 @@ def function(func: Callable[..., Any]) -> Callable[..., Any]:
     argc = len(signature(func).parameters)
 
     wrapper.__str__ = lambda: get_name(func)
-    wrapper.special = wrapper.argc = Int(argc)
+    wrapper.special = lambda: Int(argc)
+    wrapper.argc = argc
     wrapper.parent = lambda: Type(FunctionType)
     wrapper.type = lambda: Type(FunctionType)
     wrapper.hash = lambda: Int(hash(func))

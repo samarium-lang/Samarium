@@ -93,14 +93,13 @@ class UserAttrs(Attrs):
         self.__entry__(*args)
 
     def __string__(self) -> String:
-        ...
+        return String(f"<{get_type_name(self)}@{self.id()}>")
+
+    __string__.argc = 1
 
     def __str__(self) -> str:
-        try:
-            string = self.__string__
-        except AttributeError:
-            return f"<{get_type_name(self)}@{self.id}>"
-        if string.argc.val != 1:
+        string = self.__string__
+        if string.argc != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}! should only take one argument"
             )
@@ -110,14 +109,13 @@ class UserAttrs(Attrs):
         raise SamariumTypeError(f"{get_type_name(self)}! returned a non-string")
 
     def __bit__(self) -> Integer:
-        ...
+        raise NotDefinedError(f"? {get_type_name(self)}")
+
+    __bit__.argc = 1
 
     def __bool__(self) -> bool:
-        try:
-            bit = self.__bit__
-        except AttributeError:
-            raise NotDefinedError(f"? {get_type_name(self)}")
-        if bit.argc.val != 1:
+        bit = self.__bit__
+        if bit.argc != 1:
             raise SamariumTypeError(
                 f"? {get_type_name(self)} should only take one argument"
             )
@@ -130,28 +128,26 @@ class UserAttrs(Attrs):
         return self.hash().val
 
     def __special__(self) -> Any:
-        ...
+        raise NotDefinedError(f"{get_type_name(self)}$")
+
+    __special__.argc = 1
 
     def special(self) -> Any:
-        try:
-            special = self.__special__
-        except AttributeError:
-            raise NotDefinedError(f"{get_type_name(self)}$")
-        if special.argc.val != 1:
+        special = self.__special__
+        if special.argc != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}$ should only take one argument"
             )
         return special()
 
     def __hsh__(self) -> Integer:
-        ...
+        raise NotDefinedError(f"{get_type_name(self)}##")
+
+    __hsh__.argc = 1
 
     def hash(self) -> Integer:
-        try:
-            hsh = self.__hsh__
-        except AttributeError:
-            raise NotDefinedError(f"{get_type_name(self)}##")
-        if hsh.argc.val != 1:
+        hsh = self.__hsh__
+        if hsh.argc != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}## should only take one argument"
             )
@@ -161,28 +157,26 @@ class UserAttrs(Attrs):
         raise SamariumTypeError(f"{get_type_name(self)}## returned a non-integer")
 
     def __cast__(self) -> Any:
-        ...
+        raise NotDefinedError(f"{get_type_name(self)}%")
+
+    __cast__.argc = 1
 
     def cast(self) -> Any:
-        try:
-            cast = self.__cast__
-        except AttributeError:
-            raise NotDefinedError(f"{get_type_name(self)}%")
-        if cast.argc.val != 1:
+        cast = self.__cast__
+        if cast.argc != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}% should only take one argument"
             )
         return cast()
 
     def __random__(self) -> Integer:
-        ...
+        raise NotDefinedError(f"{get_type_name(self)}??")
+
+    __random__.argc = 1
 
     def random(self) -> Any:
-        try:
-            random = self.__random__
-        except AttributeError:
-            raise NotDefinedError(f"{get_type_name(self)}??")
-        if random.argc.val != 1:
+        random = self.__random__
+        if random.argc != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}?? should only take one argument"
             )
