@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pathlib import Path
+from os.path import abspath
 import subprocess
 from typing import TypeVar
 
@@ -16,7 +16,7 @@ class Samarium:
 
     def __enter__(self: Self) -> Self:
         self.proc = subprocess.Popen(
-            ["samarium", Path(self.file).resolve()],
+            ["samarium", abspath(self.file)],
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
             stderr=subprocess.PIPE,
