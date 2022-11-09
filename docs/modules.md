@@ -25,10 +25,12 @@ string.digits!;
 Objects can also be directly imported from a module one by one, in which case they don't need to be preceded by the module name when using them:
 
 ```sm
+<=types.UUID4;
 <=math.[abs, sqrt];
 
-sqrt(/\\/)!;    == prints 3
-abs(-/\)!;      == prints 2
+UUID4()!;       == a3ace080-8545-4852-a4d8-0385ccbb6a70
+sqrt(/\\/)!;    == 3
+abs(-/\)!;      == 2
 ```
 
 All objects in a module can be directly imported at once by using the wildcard character `*`.

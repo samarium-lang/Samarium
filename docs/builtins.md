@@ -10,10 +10,12 @@ It will read until it receives a newline character.
 
 A prompt can be given by preceding the `???` with a string, for example `"input: "???`.
 
+> Related library: [`io`](stdio.md)
+
 
 ## PRINTLN
 
-Objects can be written to standard output by appending a `!` character to them.
+Objects can be written to standard output by adding an `!` at the end.
 Note that they won't be written exactly as they would appear in Samarium.
 
 `"a"!` will write `a` to standard output.
@@ -100,11 +102,14 @@ The timestamp function `@@` returns the time in milliseconds since the epoch.
 !!! note
     Timezone is included. For UTC timestamp, use `datetime.timestamp_utc`.
 
+> Related library: [`datetime`](stddatetime.md)
+
 
 ## DTNOW
 
 The dtnow function `@@@` gets the system's current date and time as an array of integers, in the format `[year, month, day, hour, minute, second, millisecond, utc_hour_offset, utc_minute_offset]`.
 
+> Related library: [`datetime`](stddatetime.md)
 
 ## SLEEP
 
@@ -114,6 +119,8 @@ The sleep function `,.,` pauses execution for the specified number of millisecon
 ,., /////\/\\\;
 == sleep for 1000 milliseconds (1 second) 
 ```
+
+> Related library: [`datetime`](stddatetime.md)
 
 
 ## ASSERT
@@ -132,7 +139,7 @@ will raise `[AssertionError] error message`.
 ## PARENT
 
 The parent function `!?` gets the parent/inherited classes of the input class.
-If a class only has one parent, it will be return directly.
+If a class only has one parent, it will be returned directly.
 If a class has multiple parents, they will be returned in an array, in the same order as in the class definition.
 
 Note that this will only go one layer deep, i.e. if class `A` has parent `B` and class `B` has parent `C`, `A!?` will only return `B`, and `A!?!?` will return `C`.

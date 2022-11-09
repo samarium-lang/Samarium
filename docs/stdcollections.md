@@ -93,7 +93,7 @@ Method                        | Use
 `- other`                     | Returns the difference of the current set and `other`.
 `& other`                     | Returns the intersection of the current set and `other`.
 `:: other`                    | Returns `1` if the current set and `other` have the same elements, `0` otherwise.
-`::: other`                   | Returns `1` if the current set and `other` don't have the same elements, `0` otherwise.
+`::: other`                   | Returns `1` if the current set and `other`<br>don't have the same elements, `0` otherwise.
 `<: other`                    | Returns `1` if the current set is a subset of `other`.
 `< other`                     | Returns `1` if the current set is a strict subset of `other`.
 `>: other`                    | Returns `1` if the current set is a superset of `other`.
