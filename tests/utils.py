@@ -17,7 +17,7 @@ class Samarium:
     def __enter__(self: Self) -> Self:
         path = self.file if os.name != 'nt' else self.file.replace("/", "\\")
         self.proc = subprocess.Popen(
-            ["samarium", path],
+            ["python", "-m", "samarium", path],
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
             stderr=subprocess.PIPE,
