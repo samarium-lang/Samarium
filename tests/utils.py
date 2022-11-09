@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from os.path import abspath
+import os
 import subprocess
 from typing import TypeVar
 
@@ -15,8 +15,9 @@ class Samarium:
         self._stderr: bytes | None = None
 
     def __enter__(self: Self) -> Self:
+        path = self.file if os.name != 'nt' else self.file.replace("/", "\\")
         self.proc = subprocess.Popen(
-            ["samarium", abspath(self.file)],
+            ["samarium", path],
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
             stderr=subprocess.PIPE,
