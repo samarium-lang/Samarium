@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from pathlib import Path
 import subprocess
-from typing import IO, TypeVar
+from typing import TypeVar
 
 Self = TypeVar("Self", bound="Samarium")
 
@@ -13,10 +14,9 @@ class Samarium:
         self._stdout: bytes | None = None
         self._stderr: bytes | None = None
 
-
     def __enter__(self: Self) -> Self:
         self.proc = subprocess.Popen(
-            ["samarium", self.file],
+            ["samarium", Path(self.file).resolve()],
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
             stderr=subprocess.PIPE,
