@@ -25,6 +25,14 @@ from ..utils import (
 T = TypeVar("T")
 
 
+def functype_repr(obj: Any) -> str:
+    return (
+        get_name(obj)
+        if isinstance(obj, FunctionType) or issubclass(obj, UserAttrs)
+        else repr(obj)
+    )
+
+
 def guard(operator: str, *, default: int | None = None) -> Callable[..., Any]:
     def decorator(function: Callable[..., Any]) -> Callable[..., Any]:
         def wrapper(self: Any, other: Any) -> Any:
@@ -85,7 +93,6 @@ class Attrs:
 
 
 class UserAttrs(Attrs):
-
     def __entry__(self, *args: Any) -> None:
         ...
 
@@ -296,7 +303,7 @@ class Integer(Attrs):
 
     @guard("+++", default=2)
     def __pow__(self, other: Any) -> Integer:
-        return Int(self.val**other.val)
+        return Int(self.val ** other.val)
 
     @guard("---", default=2)
     def __mod__(self, other: Any) -> Integer:
@@ -490,7 +497,7 @@ class Array(Attrs):
             raise SamariumTypeError(f"cannot cast {get_type_name(value)} to Array")
 
     def __str__(self) -> str:
-        return "[{}]".format(", ".join(map(repr, self.val)))
+        return "[{}]".format(", ".join(map(functype_repr, self.val)))
 
     __repr__ = __str__
 
@@ -616,7 +623,9 @@ class Table(Attrs):
 
     def __str__(self) -> str:
         return "{{{{{}}}}}".format(
-            ", ".join(f"{k!r} -> {v!r}" for k, v in self.val.items())
+            ", ".join(
+                f"{functype_repr(k)} -> {functype_repr(v)}" for k, v in self.val.items()
+            )
         )
 
     def __bool__(self) -> bool:
