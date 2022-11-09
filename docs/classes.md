@@ -117,15 +117,12 @@ The above class definition is equivalent to:
 }
 ```
 
-Some of the comparison operators can be inferred from others, so not all of them are necessary to provide implementations for.
-The specific operators needed to infer each comparison operator are listed in the following table:
-
-Operator | Inferred from
----      | ---
-`:::`    | `::`
-`<`      | `>` and `::`
-`<:`     | `>`
-`>:`     | `>` and `::`
+Some of the comparison operators can be inferred from others,
+so not all of them are necessary to provide implementations for.
+The following operators infer from each other:
+- `::` and `:::`
+- `>` and `<`
+- `>:` and `<:`
 
 
 ## Static Methods
