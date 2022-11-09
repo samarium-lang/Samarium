@@ -76,7 +76,7 @@ Integers can be constructed from strings, including binary, octal, and hexadecim
 
 ### Null
 
-The `Null` type alias is defined to be equal to `[,]<<\>>?!`. It can be used to explicitly use null values instead of relying on implicit null triggers.
+The `Null` type alias is defined to be equal to `(||)?!`. It can be used to explicitly use null values instead of relying on implicit null triggers.
 
 
 ### Slice
@@ -110,3 +110,12 @@ Calling `Table()` with no arguments will return an empty table.
 
 Tables can be constructed from arrays containing 2-element iterables:<br>
 `Table([[//, /\\/], "XD"])` is equivalent to `{{// -> /\\/, "X" -> "D"}}`
+
+### Zip
+
+The `Zip` type alias is defined to be equal to `("" >< "")?!`.
+
+Calling `Zip()` with no arguments will return an empty iterator.
+Passing in only 1 argument is equivalent to `... i ->? iter { ** [i]; }`.
+Calling `Zip()` with 2 or more arguments is equivalent to using the `><`
+operator on them.

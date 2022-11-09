@@ -4,6 +4,7 @@ Null: (||)?!;
 Slice: <<>>?!;
 String: ""?!;
 Table: {{}}?!;
+Zip: ("" >< "")?!;
 
 
 @ Boolean {

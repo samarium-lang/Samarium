@@ -17,6 +17,7 @@ nav:
     - Control Flow: controlflow.md
     - Null: null.md
     - Slices: slices.md
+    - Zipping: zip.md
     - Enums: enums.md
     - Functions: functions.md
     - Modules: modules.md
