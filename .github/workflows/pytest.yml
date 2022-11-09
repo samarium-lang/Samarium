@@ -5,7 +5,7 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.9' ]
         os: [ ubuntu, windows, macos ]
       fail-fast: false
 
@@ -17,9 +17,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           architecture: 'x64'
-      - name: Setup Poetry
-        uses: abatilo/actions-poetry@v2.1.6
       - name: run Pytest
         run: |
+          pip install poetry
           poetry install
           poetry run pytest tests/samarium
