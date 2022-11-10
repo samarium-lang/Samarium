@@ -28,3 +28,19 @@ x<<0>> :: Alpha
 x<<1>> :: Beta
 x<<2>> :: Gamma
 ```
+<br>
+
+```sm
+<=string.ordinal;
+
+winners: ["Jake", "Clarisse", "Matt"];
+
+... p, w ->? <</..>> >< winners {
+    "$0 place: $1" --- [ordinal(p), w];
+}
+```
+```
+1st place: Jake
+2nd place: Clarisse
+3rd place: Matt
+```
