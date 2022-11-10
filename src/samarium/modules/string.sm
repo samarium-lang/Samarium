@@ -314,3 +314,12 @@ replace string replacements count? * {
     }
     * string;
 }
+
+ordinal n * {
+    10: /\/\;
+    ords: {{/ -> "st", /\ -> "nd", // -> "rd"}};
+    ? n --- (10 ++ 10) ~~ ->? <</\\../\/\/>> && n --- 10 ->? ords {
+        * "$0$1" --- [n, ords<<n --- 10>>];
+    }
+    * "$0th" --- [n];
+}
