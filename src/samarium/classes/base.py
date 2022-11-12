@@ -5,7 +5,7 @@ from functools import lru_cache
 from inspect import signature
 from secrets import choice, randbelow
 from types import FunctionType
-from typing import Any, Iterable, Iterator as Iter, TypeVar
+from typing import Any, Iterable, Iterator as Iter
 
 from ..exceptions import (
     NotDefinedError,
@@ -20,9 +20,6 @@ from ..utils import (
     parse_integer,
     smformat,
 )
-
-
-T = TypeVar("T")
 
 
 def functype_repr(obj: Any) -> str:

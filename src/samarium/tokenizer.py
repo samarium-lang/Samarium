@@ -1,4 +1,3 @@
-from contextlib import suppress
 from string import ascii_letters, digits, whitespace
 from typing import Union
 

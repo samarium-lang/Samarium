@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import os
 import sys
-from collections import Counter
 from collections.abc import Callable
-from contextlib import contextmanager, suppress
+from contextlib import contextmanager
 from re import sub
 from string import digits, hexdigits, octdigits
-from typing import Any, Generic, Iterator, TypeVar, cast
+from typing import Any, Iterator, TypeVar, cast
 
-from .exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
+from .exceptions import SamariumTypeError, SamariumValueError
 from .tokenizer import Tokenlike
 from .tokens import CLOSE_TOKENS, OPEN_TOKENS, Token
 
@@ -40,30 +39,6 @@ class ClassProperty:
         return self.func(obj)
 
 
-class LFUCache(Generic[KT, VT]):
-    def __init__(self, maxsize: int = 1024) -> None:
-        self._cache: dict[KT, VT] = {}
-        self._maxsize = maxsize
-        self._heatmap: Counter[KT] = Counter()
-
-    def __contains__(self, item: KT) -> bool:
-        return item in self._cache
-
-    def __getitem__(self, item: KT) -> VT:
-        self._heatmap[item] -= 1
-        return self._cache[item]
-
-    def __setitem__(self, item: KT, value: VT) -> None:
-        if len(self._cache) == self._maxsize:
-            del self[self._heatmap.most_common(1)[0][0]]
-        self._cache[item] = value
-        self._heatmap[item] = 0
-
-    def __delitem__(self, item: KT) -> None:
-        del self._cache[item]
-        del self._heatmap[item]
-
-
 class Singleton:
     _instances: dict[type[Singleton], Singleton] = {}
 
@@ -92,12 +67,6 @@ def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
     if stack:
         return 1, [token]
     return 0, []
-
-
-def run_with_backup(main: Callable[..., T], backup: Callable[..., T], *args: Any) -> T:
-    with suppress(NotDefinedError):
-        return main(*args)
-    return backup(*args)
 
 
 @contextmanager

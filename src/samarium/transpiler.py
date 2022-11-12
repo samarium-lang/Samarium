@@ -77,7 +77,6 @@ class Switch(Enum):
     FUNCTION = 2
     IMPORT = 3
     BUILTIN = 4
-    SLICE = 5
 
 
 class Registry:
