@@ -1,10 +1,10 @@
-from contextlib import suppress
-from string import ascii_letters, digits
+from string import ascii_letters, digits, whitespace
 from typing import Union
 
 from . import handlers
 from .exceptions import SamariumSyntaxError, handle_exception
 from .tokens import Token
+
 
 Tokenlike = Union[Token, str, int]
 
@@ -74,7 +74,7 @@ def tokenize(program: str) -> list[Tokenlike]:
                 handle_exception(
                     SamariumSyntaxError(f"invalid token: {scroller.pointer}")
                 )
-            if out == Token.COMMENT:
+            if out is Token.COMMENT:
                 comment = True
                 scroller.shift(2)
                 continue
@@ -89,9 +89,16 @@ def tokenize(program: str) -> list[Tokenlike]:
             scroller.shift(length)
             continue
 
+        elif scroller.pointer in whitespace:
+            pass
+
         else:
-            with suppress(ValueError):
+            try:
                 tokens.append(Token(scroller.pointer))
+            except ValueError:
+                handle_exception(
+                    SamariumSyntaxError(f"invalid token: {scroller.pointer}")
+                )
 
         scroller.shift()
 
@@ -124,12 +131,12 @@ def exclude_backticks(program: str) -> str:
 
 
 def exclude_comments(tokens: list[Tokenlike]) -> list[Tokenlike]:
-    out = []
+    out: list[Tokenlike] = []
     ignore = False
     for token in tokens:
-        if token == Token.COMMENT_OPEN:
+        if token is Token.COMMENT_OPEN:
             ignore = True
-        elif token == Token.COMMENT_CLOSE:
+        elif token is Token.COMMENT_CLOSE:
             ignore = False
         elif not ignore:
             out.append(token)

@@ -108,7 +108,7 @@ code_to_char(/\\\\/)!;  == !!
 Functions can yield values instead of returning them, thus making the function behave like an iterator. Values are yielded with the `**` operator:
 
 ```sm
-<-math.is_prime;
+<=math.is_prime;
 
 prime_generator * {
     x: /\;
@@ -144,3 +144,5 @@ Iterators support special `$` and cast `%` methods.
 `Iterator%` returns the length of the iterator if available, and null otherwise.
 
 `Iterator$` yields the next value of the iterator.
+
+Iterators are always truthy.

@@ -17,7 +17,7 @@ Just like variables, class attributes can be made private by prefixing them with
 @ Foo {
     shared: [];
 
-    create var * {
+    => var * {
         'var: var;
         '#pv: var - /;
     }
@@ -65,48 +65,39 @@ These methods are as follows (where `func(...)` indicates a variable number of a
 
 Function                       | Python       | Use
 ---                            | ---          | ---
-`add(other)`                   | `add`        | Interacts with the addition operator `+`.
-`add_assign(other)`            | `iadd`       | Interacts with the addition assignment operator `+:`.<br>`x+: y` is equivalent to `x.add_assign(y)` (or `x: x + y`).
-`and(other)`                   | `and`        | Interacts with the bitwise AND operator `&`.
-`and_assign(other)`            | `iand`       | Interacts with the bitwise AND assignment operator `&:`.
-`call(...)`                    | `call`       | Called when an instance itself is "called" as a function;<br>`x(...)` roughly translates to `x?!.call(x, ...)`.
-`cast()`                       | --           | Interacts with the cast function character `%`.
-`create(...)`                  | `init`       | Initializes an instance of a class, takes any number<br>of arguments. Typically used for setting instance<br>variables based on these arguments.<br>No return value necessary.
-`divide(other)`                | `floordiv`   | Interacts with the division operator `--`.
-`divide_assign(other)`         | `ifloordiv`  | Interacts with the division assignment operator `--:`.
-`equals(other)`                | `eq`         | Implements the equality operator `::`.
-`get_item(index)`              | `getitem`    | Implements indexing an object;<br>`x<<index>>` is equivalent to `x.get_item(index)`.
-`greater_than(other)`          | `gt`         | Implements the greater than operator `>`.
-`greater_than_or_equal(other)` | `ge`         | Implements the greater than or equal operator `>:`.
-`has(item)`                    | `contains`   | Implements membership testing,<br>returns `1` (object contains `item`)<br>or `0` (object does not contain `item`).<br>Interacts with `->?` operator.
-`hash()`                       | `hash`       | Called by the built-in hash function `##`,<br>and for keys in a table.<br>Objects which compare equal<br>should have the same hash value.
-`iterate()`                    | `iter`       | Called when iterating over an object in a `foreach` loop.<br>Returns an array of objects to iterate over.
-`less_than(other)`             | `lt`         | Implements the less than operator `<`.
-`less_than_or_equal(other)`    | `le`         | Implements the less than or equal operator `<:`.
-`mod(other)`                   | `mod`        | Interacts with the modulo operator `---`.
-`mod_assign(other)`            | `imod`       | Interacts with the modulo assignment operator `---:`.
-`multiply(other)`              | `mul`        | Interacts with the multiplication operator `++`.
-`multiply_assign(other)`       | `imul`       | Interacts with the multiplication<br>assignment operator `++:`.
-`negative()`                   | `neg`        | Interacts with the negative unary operator `-`.
-`not()`                        | `invert`     | Interacts with the bitwise NOT operator `~`.
-`not_equals(other)`            | `ne`         | Implements the inequality operator `:::`.
-`or(other)`                    | `or`         | Interacts with the bitwise OR operator `\|`.
-`or_assign(other)`             | `ior`        | Interacts with the bitwise OR assignment operator `\|:`.
-`positive()`                   | `pos`        | Interacts with the positive unary operator `+`.
-`power(other)`                 | `pow`        | Interacts with the exponentiation operator `+++`.
-`power_assign(other)`          | `ipow`       | Interacts with the exponentiation<br>assignment operator `+++:`.
-`set_item(index, value)`       | `setitem`    | Implements assigning to an index of an object;<br>`x<<index>>: value` is equivalent<br>to `x.set_item(index, value)`.
-`special()`                    | --           | Interacts with the special function character `$`.
-`subtract(other)`              | `sub`        | Interacts with the subtraction operator `-`.
-`subtract_assign(other)`       | `isub`       | Interacts with the subtraction assignment operator `-:`.
-`to_bit()`                     | `bool`       | Implements boolean value testing,<br>returns `1` (truthy) or `0` (falsy).<br>Used for conditional statements and logical operators.
-`to_string()`                  | `str`        | Returns the string representation of an object.
-`xor(other)`                   | `xor`        | Interacts with the bitwise XOR operator `^`.
-`xor_assign(other)`            | `ixor`       | Interacts with the bitwise XOR assignment operator `^:`.
+`+(other)`                     | `add`        | Interacts with the addition operator `+`.
+`&(other)`                     | `and`        | Interacts with the bitwise AND operator `&`.
+`()(...)`                      | `call`       | Called when an instance itself is "called" as a function;<br>`x(...)` roughly translates to `x?!.call(x, ...)`.
+`%()`                          | --           | Interacts with the cast function character `%`.
+`=>(...)`                      | `init`       | Initializes an instance of a class, takes any number<br>of arguments. Typically used for setting instance<br>variables based on these arguments.<br>No return value necessary.
+`--(other)`                    | `floordiv`   | Interacts with the division operator `--`.
+`::(other)`                    | `eq`         | Implements the equality operator `::`.
+`<<>>(index)`                  | `getitem`    | Implements indexing an object;<br>`x<<index>>` is equivalent to `x.get_item(index)`.
+`>(other)`                     | `gt`         | Implements the greater than operator `>`.
+`>:(other)`                    | `ge`         | Implements the greater than or equal operator `>:`.
+`->?(item)`                    | `contains`   | Implements membership testing,<br>returns `1` (object contains `item`)<br>or `0` (object does not contain `item`).<br>Interacts with `->?` operator.
+`##()`                         | `hash`       | Called by the built-in hash function `##`,<br>and for keys in a table.<br>Objects which compare equal<br>should have the same hash value.
+`...()`                        | `iter`       | Called when iterating over an object in a `foreach` loop.<br>Returns an array of objects to iterate over.
+`<(other)`                     | `lt`         | Implements the less than operator `<`.
+`<:(other)`                    | `le`         | Implements the less than or equal operator `<:`.
+`---(other)`                   | `mod`        | Interacts with the modulo operator `---`.
+`++(other)`                    | `mul`        | Interacts with the multiplication operator `++`.
+`-_()`                         | `neg`        | Interacts with the negative unary operator `-`.
+`~()`                          | `invert`     | Interacts with the bitwise NOT operator `~`.
+`:::(other)`                   | `ne`         | Implements the inequality operator `:::`.
+`|(other)`                     | `or`         | Interacts with the bitwise OR operator `\|`.
+`+_()`                         | `pos`        | Interacts with the positive unary operator `+`.
+`+++(other)`                   | `pow`        | Interacts with the exponentiation operator `+++`.
+`<<>>:(index, value)`          | `setitem`    | Implements assigning to an index of an object;<br>`x<<index>>: value` is equivalent<br>to `x.set_item(index, value)`.
+`$()`                          | --           | Interacts with the special function character `$`.
+`-(other)`                     | `sub`        | Interacts with the subtraction operator `-`.
+`?()`                          | `bool`       | Implements boolean value testing,<br>returns `1` (truthy) or `0` (falsy).<br>Used for conditional statements and logical operators.
+`!()`                          | `str`        | Returns the string representation of an object.
+`^(other)`                     | `xor`        | Interacts with the bitwise XOR operator `^`.
 
 </center>
 
-Two special methods – `create` and `to_string` – have default definitions:
+Two special methods – `=>` and `!` – have default definitions:
 ```sm
 @ Foo {}
 
@@ -118,23 +109,38 @@ Two special methods – `create` and `to_string` – have default definitions:
 The above class definition is equivalent to:
 ```sm
 @ Foo {
-    create * {}
+    => * {}
 
-    to_string * {
+    ! * {
         * "<$name@$address>" --- {{"name" -> '?!, "address" -> '**}};
     }
 }
 ```
 
-Some of the comparison operators can be inferred from others, so not all of them are necessary to provide implementations for.
-The specific operators needed to infer each comparison operator are listed in the following table:
+Some of the comparison operators can be inferred from others,
+so not all of them are necessary to provide implementations for.
+The following operators infer from each other:
+- `::` and `:::`
+- `>` and `<`
+- `>:` and `<:`
 
-Operator | Inferred from
----      | ---
-`:::`    | `::`
-`<`      | `>` and `::`
-`<:`     | `>`
-`>:`     | `>` and `::`
+
+## Static Methods
+Methods can be made static by replacing the `*` keyword with the `~'*` keyword
+(where `~'` can be read as "no instance"):
+```sm
+<=calendar.date;
+
+@ Calendar {
+    is_weekend date ~'* {
+        * date.weekday > /\\;
+    }
+}
+
+=> * {
+    Calendar.is_weekend(date("2022-11-08"))!;  == 0
+}
+```
 
 
 ## Classes As Entry Points
@@ -147,7 +153,7 @@ A class named `=>` can serve as an entry point instead of a function:
 ```
 ```sm
 @ => {
-    create argv * {
+    => argv * {
         "Hello, " + argv<</>>!;
     }
 }
@@ -160,12 +166,12 @@ Decorators can also be created using classes:
 ```sm
 @ OutputStorage {
 
-    create func * {
+    => func * {
         'func: func;
         'outputs: [];
     }
 
-    call args... * {
+    () args... * {
         out: 'function(**args);
         'outputs_: [out];
         * out;

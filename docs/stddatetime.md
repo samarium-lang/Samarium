@@ -13,7 +13,7 @@ Function                    | Use
 ---                         | ---
 `sleep_seconds(seconds)`    | Pauses execution for `seconds` seconds.
 `sleep_minutes(minutes)`    | Pauses execution for `minutes` minutes.
-`is_leap_year(year)`        | Returns `1` if the year is a leap year otherwise `0`.
+`is_leap_year(year)`        | Returns `1` if the year is a leap year, `0` otherwise.
 `days_in_month(year, month)`| Returns the amount of days in a given month keeping in track leapyears.
 `month_name(n)`             | Gives the name of a numbered month where `1` is `January`.
 `weekday_name(n)`           | Gives the day of a week from a number<br>where `1` is a `Monday` and `7` is `Sunday`.
@@ -28,10 +28,8 @@ Function                    | Use
 Method                      | Use
 ---                         | ---
 `subtract(other)`           | Subtract two DateTime objects, returns a DTDiff object.
-`to_string`                 | Return the date and time in the format `Y-M-D h:m:s.z`.
-`to_timestamp`              | Returns the time in Unix Time milliseconds.
+`to_timestamp()`            | Returns the date & time as a Unix timestamp in milliseconds.
+`from_timestamp()` (static) | Returns a DateTime object from a Unix timestamp in milliseconds.
+`!`                         | Return the date and time in the format `Y-M-D h:m:s.z`.
 
 </center>
-
-
-[^1]: [Special Methods](/classes)

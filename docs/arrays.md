@@ -15,3 +15,7 @@ Items can also be removed from an array using the `-` operator, either by index 
 `["a", "b", "c"] - /` gives `["a", "c"]`
 
 `["a", "b", "c", "d"] - ["b", "d"]` gives `["a", "c"]`
+
+Arrays of Integers can be casted to Strings:
+
+`[//\/\\\, //\/\\/, ////\\/, //\\\\/]%` gives `"hiya"`

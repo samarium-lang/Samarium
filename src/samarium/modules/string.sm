@@ -31,48 +31,51 @@ center string length char? * {
 }
 
 starts_with string prefix * {
-    ? prefix$ > string$ {
-        * \;
-    }
-    ? prefix :: string {
-        * /;
-    }
+    ? prefix$ > string$ { * \; }
+    ? prefix :: string { * /; }
     * string<<..prefix$>> :: prefix;
 }
 
 ends_with string suffix * {
-    ? suffix$ > string$ {
-        * \;
-    }
-    ? suffix :: string {
-        * /;
-    }
+    ? suffix$ > string$ { * \; }
+    ? suffix :: string { * /; }
     * string<<-suffix$..>> :: suffix;
 }
 
-split string delimiter? * {
-    delimiter <> " ";
-    ? delimiter ~~ ->? string {
-        * [string];
-    }
+#split_char string separator * {
     out: [];
     temp: "";
     ... char ->? string {
-        ? char :: delimiter {
+        ? char :: separator {
             out+: [temp];
             temp: "";
         } ,, {
             temp+: char;
         }
     }
-    out+: [temp];
-    * out;
+    * out + [temp];
+}
+
+split string separator? * {
+    separator <> " ";
+    ? ~~ separator { "empty separator"!!!; }
+    ? separator ~~ ->? string { * [string]; }
+    ? separator$ :: / {
+        * #split_char(string, separator);
+    }
+    out: [];
+    <=iter.find;
+    .. {
+        idx: find(string, separator);
+        ? idx :: -/ { <- }
+        out+: [string<<..idx>>];
+        string: string<<idx+separator$..>>;
+    }
+    * out + [string];
 }
 
 capitalize string * {
-    ? string$ :: \ {
-        * string;
-    }
+    ? ~~ string { * string; }
     * to_upper(string<<\>>) + to_lower(string<</..>>);
 }
 
@@ -107,7 +110,8 @@ strip_right string suffix * {
     * string;
 }
 
-strip string chars * {
+strip string chars? * {
+    chars <> " ";
     * strip_left(strip_right(string, chars), chars);
 }
 
@@ -116,8 +120,7 @@ is_wrapped string chars * {
 }
 
 to_lower string * {
-    <-types.String;
-    ? string?! ::: String {
+    ? string?! ::: <-types.String {
         "invalid type: " + ""?!(string?!)!!!;
     }
     out: "";
@@ -132,8 +135,7 @@ to_lower string * {
 }
 
 to_upper string * {
-    <-types.String;
-    ? string?! ::: String {
+    ? string?! ::: <-types.String {
         "invalid type: " + ""?!(string?!)!!!;
     }
     out: "";
@@ -164,9 +166,7 @@ pad string length char? * {
     ? char$ > / {
         "char has to be of length 1"!!!;
     }
-    ? length < string$ {
-        * string;
-    }
+    ? length < string$ { * string; }
     * char ++ (length - string$);
 }
 
@@ -229,8 +229,6 @@ wrap string wrapper * {
 
 replace string replacements count? * {
     count <> -/;
-    <-iter.all, find;
-    <-types.String, Table;
 
     replace string from to count * {
         empty * {
@@ -266,6 +264,7 @@ replace string replacements count? * {
         replace_substring count * {
             string_copy: string;
             out: "";
+            find: <-iter.find;
             .. count && from ->? string_copy {
                 i: find(string_copy, from);
                 out+: string_copy<<..i>>;
@@ -303,15 +302,24 @@ replace string replacements count? * {
         }
     }
 
-    ? replacements?! ::: Table {
-        "invalid type for replacements: " + String(replacements?!)!!!;
+    ? replacements?! ::: <-types.Table {
+        "invalid type for replacements: " + ""?!(replacements?!)!!!;
     }
     replacements: {{k -> v ... k, v ->? replacements >< replacements$}};
-    ? ~~ all([count, replacements]) {
+    ? ~~ <-iter.all([count, replacements]) {
         * string;
     }
     ... f, t ->? replacements >< replacements$ {
         string: replace(string, f, t, count);
     }
     * string;
+}
+
+ordinal n * {
+    10: /\/\;
+    ords: {{/ -> "st", /\ -> "nd", // -> "rd"}};
+    ? n --- (10 ++ 10) ~~ ->? <</\\../\/\/>> && n --- 10 ->? ords {
+        * "$0$1" --- [n, ords<<n --- 10>>];
+    }
+    * "$0th" --- [n];
 }

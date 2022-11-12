@@ -17,6 +17,6 @@ Function              | Use
 `shl(a, b)`           | Returns `a` shifted to the left by `b` bits.
 `shr(a, b)`           | Returns `a` shifted to the right by `b` bits.
 `sqrt(n)`             | Returns the integer square root of the nonnegative integer `n`.<br>This is the floor of the exact square root of `n`.
-`sum(array)`          | Sums the items of `array` from left to right and returns the total.<br>The `array`'s items must be integers.
+`sum(array[, start])` | Sums `start` and the items of `array` from left to right<br>and returns the total. `start` defaults to `0`.
 
 </center>

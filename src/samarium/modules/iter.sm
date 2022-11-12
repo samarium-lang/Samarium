@@ -1,7 +1,6 @@
 find array target * {
-    <-types.String;
     index: \;
-    ? array?! :: String {
+    ? array?! :: <-types.String {
         .. index + target$ <: array$ {
             ? array<<index..index+target$>> :: target {
                 * index;
@@ -30,7 +29,16 @@ count array target * {
     * s;
 }
 
-filter array function * {
+cycle iter * {
+    saved: [e ... e ->? iter];
+    .. {
+        ... e ->? saved {
+            ** e;
+        }
+    }
+}
+
+filter function array * {
     ... e ->? array {
         ? function(e) {
             ** e;
@@ -38,14 +46,12 @@ filter array function * {
     }
 }
 
-filter_false array function * {
-    flip arg * {
-        * ~~ function(arg);
-    }
-    * filter(array, flip);
+filter_false function array * {
+    flip arg * { * ~~ function(arg); }
+    * filter(flip, array);
 }
 
-map array function * {
+map function array * {
     ... e ->? array {
         ** function(e);
     }
@@ -107,8 +113,7 @@ pairwise array * {
 }
 
 zip_longest fill arrays... * {
-    <-math.max;
-    longest: max([i$ ... i ->? arrays]);
+    longest: <-math.max([i$ ... i ->? arrays]);
     ... i ->? <<..longest>> {
         ... it ->? arrays {
             ?? {
@@ -121,8 +126,7 @@ zip_longest fill arrays... * {
 }
 
 find_all array target * {
-    <-types.String;
-    ? array?! :: String && target$ > / {
+    ? array?! :: <-types.String && target$ > / {
         ... i ->? <<..array$>> {
             substring: array<<i..i + target$>>;
             ? substring :: target {

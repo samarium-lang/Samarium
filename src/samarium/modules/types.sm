@@ -4,34 +4,26 @@ Null: (||)?!;
 Slice: <<>>?!;
 String: ""?!;
 Table: {{}}?!;
+Zip: ("" >< "")?!;
 
 
 @ Boolean {
-
     => value * {
         ? value?! :: ""?! {
-            <-string.to_lower;
-            'value: {{"true" -> /, "false" -> \}}<<to_lower(value)>>;
+            'value: {{"true" -> /, "false" -> \}}<<<-string.to_lower(value)>>;
         } ,, {
             'value: / ? value ,, \;
         }
     }
 
-    ! * {
-        * "true" ? 'value ,, "false";
-    }
-
-    ? * {
-        * 'value;
-    }
+    ! * { * "true" ? 'value ,, "false"; }
+    ? * { * 'value; }
 
     :: other * {
         * Boolean('value :: other.value);
     }
 
-    > other * {
-        * Boolean('value > other.value);
-    }
+    > other * { * Boolean('value > other.value); }
 
     + other * {
         out: 'value + other.value;
@@ -67,30 +59,16 @@ Table: {{}}?!;
         * Boolean('value --- other.value);
     }
 
-    & other * {
-        * Boolean('value & other.value);
-    }
+    & other * { * Boolean('value & other.value); }
+    ^ other * { * Boolean('value ^ other.value); }
+    | other * { * Boolean('value | other.value); }
 
-    ^ other * {
-        * Boolean('value ^ other.value);
-    }
-
-    | other * {
-        * Boolean('value | other.value);
-    }
-
-    ~ * {
-        * Boolean(\ ? 'value ,, /);
-    }
-
+    ~ * { * Boolean(\ ? 'value ,, /); }
 }
 
 @ UUID4 {
-
     => * {
-        <-random.choices;
-        <-string.HEXDIGITS, join;
-        hex: join(choices(HEXDIGITS, /\\\\\));
+        hex: <-string.join(<-random.choices(<-string.HEXDIGITS, /\\\\\));
         hex<<//\\>>: "4";
         hex<</\\\\>>: "89ab"??;
         'hex: hex;
@@ -98,16 +76,14 @@ Table: {{}}?!;
     }
 
     ! * {
-        <-string.join;
-        * join(
-            [
-                'hex<<../\\\>>,
-                'hex<</\\\..//\\>>,
-                'hex<<//\\../\\\\>>,
-                'hex<</\\\\../\/\\>>,
-                'hex<</\/\\..>>
-            ], "-"
+        h: 'hex;
+        8: /\\\;
+        12: //\\;
+        16: /\\\\;
+        20: /\/\\;
+        * <-string.join(
+            [h<<..8>>, h<<8..12>>, h<<12..16>>, h<<16..20>>, h<<20..>>],
+            "-"
         );
     }
-
 }

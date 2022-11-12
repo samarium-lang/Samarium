@@ -24,13 +24,6 @@ def groupnames(array: list[str]) -> list[str]:
     return grouped
 
 
-def find_next(tokens: list[Tokenlike], token: Token, *, after: int = 0) -> int:
-    for i, t in enumerate(tokens[after:]):
-        if t == token:
-            return i + after
-    return -1
-
-
 def indent(levels: int) -> str:
     return " " * levels * 4
 
@@ -58,7 +51,10 @@ class Scope:
         self._scope.append(name)
 
     def exit(self) -> None:
-        self._scope.pop()
+        try:
+            self._scope.pop()
+        except IndexError:
+            throw_syntax("invalid syntax (failed scope resolution)")
 
     def _get(self, index: int) -> str | None:
         try:
@@ -81,7 +77,6 @@ class Switch(Enum):
     FUNCTION = 2
     IMPORT = 3
     BUILTIN = 4
-    SLICE = 5
 
 
 class Registry:
@@ -137,17 +132,18 @@ class Group:
     }
     functions = {Token.FUNCTION, Token.YIELD, Token.ENTRY, Token.DEFAULT}
     multisemantic = {
-        Token.FROM,
         Token.TO,
         Token.CATCH,
         Token.WHILE,
         Token.CLASS,
         Token.TRY,
+        Token.FROM,
     }
     control_flow = {Token.IF, Token.ELSE, Token.FOR}
     core = {
         Token.ASSIGN,
         Token.END,
+        Token.IMPORT,
         Token.SEP,
         Token.ATTR,
         Token.INSTANCE,
@@ -202,11 +198,11 @@ BRACKET_MAPPING = {
 }
 
 METHOD_MAPPING = {
-    Token.SPECIAL: ".special",
-    Token.CAST: ".cast",
-    Token.HASH: ".hash",
-    Token.TYPE: ".type",
-    Token.PARENT: ".parent",
+    Token.SPECIAL: ".special()",
+    Token.CAST: ".cast()",
+    Token.HASH: ".hash()",
+    Token.TYPE: ".type()",
+    Token.PARENT: ".parent()",
 }
 
 CONTROL_FLOW_TOKENS = {
@@ -243,6 +239,8 @@ SLICE_OBJECT_TRIGGERS = {
     Token.PAREN_OPEN,
     Token.TABLE_OPEN,
     Token.IN,
+    Token.IF,
+    Token.WHILE,
     *Group.operators,
 }
 
@@ -264,10 +262,10 @@ SPECIAL_METHOD_MAPPING = {
     ">=": "ge",
     "<=": "le",
     " in ": "contains",
-    ".hash": "hsh",
-    ".special": "special",
+    ".hash()": "hsh",
+    ".special()": "special",
     "try": "random",
-    ".cast": "cast",
+    ".cast()": "cast",
     "if ": "bit",
     "!": "string",  #
     "&": "and",
@@ -277,7 +275,7 @@ SPECIAL_METHOD_MAPPING = {
     "-sm__": "neg",
     "@": "matmul",
     ".__getitem__(mkslice(t()))": "getitem",
-    ".__setitem__(mkslice(t()),": "setitem"
+    ".__setitem__(mkslice(t()),": "setitem",
 }
 
 
@@ -288,6 +286,7 @@ class Transpiler:
         self._file_token: Token | None = None
         self._indent = 0
         self._index = 0
+        self._inline_counter = 0
         self._line: list[str] = []
         self._line_tokens: list[Tokenlike] = []
         self._private = False
@@ -315,6 +314,12 @@ class Transpiler:
 
         self._reg.output = self._code
         return self._reg
+
+    def _find_next(self, token: Token) -> int:
+        for i, t in enumerate(self._tokens[self._index:]):
+            if t is token:
+                return i + self._index
+        return -1
 
     def _submit_line(self) -> None:
         # Special cases
@@ -442,7 +447,7 @@ class Transpiler:
                 self._class_indent.pop()
 
             if self._scope.current == "enum":
-                self._line.append('""")')
+                self._line.append(')')
 
             if (self._processed_tokens or self._line_tokens)[-1] is Token.BRACE_OPEN:
                 # Managing empty bodies
@@ -462,7 +467,7 @@ class Transpiler:
             prev = self._tokens[self._index - 1]
             if token is Token.TABLE_CLOSE and prev is Token.TO:
                 self._line.append("NULL")
-            if token is Token.PAREN_CLOSE and prev in Group.operators:
+            if token is Token.PAREN_CLOSE and prev in Group.operators | {Token.ELSE}:
                 self._line.append("NULL")
             self._line.append(BRACKET_MAPPING[token])
             return
@@ -486,6 +491,12 @@ class Transpiler:
             self._scope.enter("function")
             indentation = self._line[:indented]
             name = self._line[indented]
+            method = self._reg[Switch.CLASS] and self._scope.parent == "class"
+            static = self._line[-2:] == ["~", "self"]
+            if static and not method:
+                throw_syntax("cannot create a static method outside a class")
+            if static:
+                self._line = self._line[:-2]
             if name == "NULL":
                 indented += 1
                 name = self._line[indented]
@@ -510,23 +521,21 @@ class Transpiler:
                 transform_special(name, self._scope),
                 "(",
                 ",".join(
-                    groupnames(  # Making varargs and optionals work
-                        (
-                            # Adding the self parameter for class methods
-                            ["self"]
-                            if self._reg[Switch.CLASS] and self._scope.parent == "class"
-                            else []
-                        )
+                    # Making varargs and optionals work
+                    groupnames(
+                        # Adding the self parameter for class methods
+                        (["self"] if method and not static else [])
                         + self._line[indented + 1 :]
                     )
                 ),
                 ")",
             ]
+            if static:
+                self._line.insert(0, "@staticmethod\n")
+                self._line.insert(0, indentation[0] if indentation else "")
         elif token is Token.DEFAULT:
             self._line.append(
-                " = {0} if not isinstance({0}, Missing) else ".format(
-                    "".join(self._line).strip()
-                )
+                " = {0} if {0} is not MISSING else ".format("".join(self._line).strip())
             )
         elif token is Token.YIELD:
             if is_first_token(self._line):
@@ -534,22 +543,27 @@ class Transpiler:
             elif self._tokens[self._index - 1] in UNPACK_TRIGGERS:
                 self._line.append("*")
             else:
-                self._line.append(".id")
+                self._line.append(".id()")
         else:  # Token.MAIN
             self._line.append("entry ")
 
     def _multisemantic(self, token: Token) -> None:
         index = self._index
         if token is Token.TRY:
-            self._line.append("try" if is_first_token(self._line) else ".random")
+            self._line.append("try" if is_first_token(self._line) else ".random()")
         elif token is Token.TO:
             if self._tokens[index - 1] is Token.TABLE_OPEN:
                 self._line.append("NULL")
             self._line.append("continue" if is_first_token(self._line) else ":")
         elif token is Token.FROM:
-            if isinstance(self._tokens[index + 1], str):
-                self._reg[Switch.IMPORT] = True
-                self._line.append("import_module('")
+            nxt = self._tokens[index + 1: index + 4]
+            if (
+                isinstance(nxt[0], str)
+                and nxt[1] is Token.ATTR
+                and isinstance(nxt[2], str)
+            ):
+                self._inline_counter = 4
+                self._line.append("import_inline('")
             else:
                 self._line.append("break")
                 self._submit_line()
@@ -588,6 +602,8 @@ class Transpiler:
         elif token is Token.ELSE:
             self._line.append(shift + "else ")
         else:  # FOR
+            if self._tokens[self._index - 1] is Token.ELSE:
+                self._line.append("NULL")
             index = self._index
             if self._scope.current == "slice" and self._tokens[index + 1] is Token.ATTR:
                 self._tokens[index] = self._tokens[index + 1] = Token.WHILE
@@ -604,11 +620,13 @@ class Transpiler:
             }:
                 self._line.append("NULL")
             if self._scope.current == "enum":
-                self._line.append('""", """')
+                if self._tokens[index - 2] in {token, Token.BRACE_OPEN}:
+                    self._line.append("=NEXT")
+                self._line.append(',')
                 return
             if self._reg[Switch.BUILTIN]:
                 if self._line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
-                    self._line.append("Integer(0)")
+                    self._line.append("Int(0)")
                 self._line.append(")")
                 self._reg[Switch.BUILTIN] = False
             if all(i in self._line_tokens for i in (Token.ASSIGN, Token.SLICE_CLOSE)):
@@ -637,6 +655,9 @@ class Transpiler:
                 self._line.append("=")
             else:
                 self._scope.exit()
+        elif token is Token.IMPORT:
+            self._reg[Switch.IMPORT] = True
+            self._line.append("import_to_scope('")
         elif token is Token.SEP:
             if self._tokens[index - 1] in NULLABLE_TOKENS:
                 self._line.append("NULL")
@@ -649,9 +670,9 @@ class Transpiler:
             self._line.append("self")
         elif token is Token.SLICE_OPEN:
             self._scope.enter("slice")
-            assign_index = find_next(self._tokens, Token.ASSIGN, after=index)
-            end_index = find_next(self._tokens, Token.END, after=index)
-            brace_index = find_next(self._tokens, Token.BRACE_OPEN, after=index)
+            assign_index = self._find_next(Token.ASSIGN)
+            end_index = self._find_next(Token.END)
+            brace_index = self._find_next(Token.BRACE_OPEN)
             self._slice_assign = (
                 0
                 < assign_index
@@ -674,7 +695,7 @@ class Transpiler:
                 self._private = True
                 return
             name = self._line[-1]
-            self._line.append(f'=Enum(globals(), "{name}", """')
+            self._line.append(f"=Enum('{name}',")
             self._scope.enter("enum")
 
     def _builtins(self, token: Token) -> None:
@@ -689,6 +710,8 @@ class Transpiler:
                     and not self._line[-1].isspace()
                 ):
                     self._line.append(f"readline({self._line.pop()})")
+                else:
+                    raise IndexError
             except IndexError:
                 self._line.append("readline()")
         elif token is Token.THROW:
@@ -724,9 +747,13 @@ class Transpiler:
         self._index = index
         self._line_tokens.append(token)
 
+        self._inline_counter -= 1
+        if self._inline_counter == 0:
+            self._line.append("')")
+
         # Integers
         if isinstance(token, int):
-            self._line.append(f"Integer({token})")
+            self._line.append(f"Int({token})")
 
         elif isinstance(token, str):
             if token[0] == token[-1] == '"':

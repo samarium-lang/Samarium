@@ -1,47 +1,82 @@
-from os import _exit
 import sys
 from re import compile
 
-from dahlia import dahlia
+from dahlia import Dahlia
 
 from .runtime import Runtime
 
+DAHLIA = Dahlia()
 SINGLE_QUOTED_NAME = compile(r"'(\w+)'")
+BAD_OP = compile(
+    r"'(.+)' not supported between instances of '(\w+)' and '(\w+)'"
+    r"|unsupported operand type\(s\) for (.+): '(\w+)' and '(\w+)'"
+)
+BAD_UOP = compile(r"bad operand type for unary (.+): '(\w+)'")
+NOT_CALLITER = compile(r"'(\w+)' object is not (\w+)")
+OP_MAP = {
+    ">=": ">:",
+    "<=": "<:",
+    "//": "--",
+    "in?": "",
+    "%": "---",
+    "*": "++",
+    "** or pow()": "+++",
+}
+
+
+def clear_name(name: str) -> str:
+    return name.removeprefix("__").removeprefix("sm_")
 
 
 def handle_exception(exception: Exception):
     exc_type = type(exception)
-    name = exc_type.__name__
+    errmsg = str(exception)
+    name = ""
     if exc_type is NotDefinedError:
-        exception = NotDefinedError(
-            ".".join(i.removeprefix("sm_") for i in str(exception).split("."))
-        )
+        exception = NotDefinedError(".".join(map(clear_name, errmsg.split("."))))
     if (
         exc_type is TypeError
-        and "missing 1 required positional argument: 'self'" in str(exception)
+        and "missing 1 required positional argument: 'self'" in errmsg
     ):
         exception = SamariumTypeError("missing instance")
-    if exc_type is SyntaxError:
+    elif m := BAD_OP.match(errmsg):
+        op, lhs, rhs = filter(None, m.groups())
+        op = OP_MAP.get(op, op)
+        exc_type = NotDefinedError
+        exception = exc_type(f"{clear_name(lhs)} {op} {clear_name(rhs)}")
+    elif m := BAD_UOP.match(errmsg):
+        op, type_ = m.groups()
+        exc_type = NotDefinedError
+        exception = exc_type(f"{op}{clear_name(type_)}")
+    elif m := NOT_CALLITER.match(errmsg):
+        exc_type = NotDefinedError
+        type_ = clear_name(m.group(1))
+        template = "... _ ->? {}" if m.group(2) == "iterable" else "{}()"
+        exception = exc_type(template.format(type_))
+    elif exc_type is SyntaxError:
         exception = SamariumSyntaxError(
-            f"invalid syntax at {int(str(exception).split()[-1][:-1])}"
+            f"invalid syntax at {int(errmsg.split()[-1][:-1])}"
         )
     elif exc_type in {AttributeError, NameError}:
-        names = SINGLE_QUOTED_NAME.findall(str(exception))
+        names = SINGLE_QUOTED_NAME.findall(errmsg)
         if names == ["entry"]:
             names = ["no entry point defined"]
-        exception = NotDefinedError(
-            ".".join(i.removeprefix("__").removeprefix("sm_") for i in names)
+        exc_type = NotDefinedError
+        exception = exc_type(
+            f"{clear_name(names[0])}<<>>{':' * (names[1] == '__setitem__')}"
+            if len(names) >= 2 and names[1] in {"__getitem__", "__setitem__"}
+            else ".".join(map(clear_name, names))
         )
-        name = "NotDefinedError"
     elif exc_type not in {AssertionError, NotDefinedError}:
         name = exc_type.__name__
         if name.startswith("Samarium"):
             name = name.removeprefix("Samarium")
         else:
             name = f"External{name}".replace("ExternalZeroDivision", "Math")
-    sys.stderr.write(dahlia(f"&4[{name}] {exception}\n"))
+    name = name or exc_type.__name__
+    sys.stderr.write(DAHLIA.convert(f"&4[{name}] {exception}\n"))
     if Runtime.quit_on_error:
-        exit(1)
+        raise SystemExit(1)
 
 
 class SamariumError(Exception):
@@ -64,8 +99,8 @@ class SamariumImportError(SamariumError):
 
 class SamariumSyntaxError(SamariumError):
     def __init__(self, msg: str) -> None:
-        sys.stderr.write(dahlia(f"&4[SyntaxError] {msg}\n"))
-        _exit(1)
+        sys.stderr.write(DAHLIA.convert(f"&4[SyntaxError] {msg}\n"))
+        raise SystemExit(1)
 
 
 class SamariumTypeError(SamariumError):
@@ -77,4 +112,8 @@ class SamariumValueError(SamariumError):
 
 
 class SamariumIOError(SamariumError):
+    pass
+
+
+class SamariumRecursionError(SamariumError):
     pass

@@ -11,16 +11,16 @@ A stack is a collection of items that the user may "push" a new item on top of, 
 
 Method            | Use
 ---               | ---
-`create([size])`  | Initializes an empty Stack object with capacity `size`.<br>If `size` is unspecified it will default to `-1`, giving the stack unbounded capacity.
+`=>([size])`      | Initializes an empty Stack object with capacity `size`.<br>If `size` is unspecified it will default to `-1`, giving the stack unbounded capacity.
 `is_empty()`      | Returns `1` if the number of items in the stack is equal to 0, otherwise returns `0`.
 `is_full()`       | Returns `1` if the number of items in the stack is equal to the specified capacity,<br>otherwise returns `0`.[^1]
 `peek()`          | Returns the value of the item on top of the stack without popping it.<br>If the stack is empty, this will instead throw an error.
 `pop()`           | Pops/removes an item from the top of the stack, and returns it.<br>If the stack is empty, this will instead throw an error.
 `push(item)`      | Pushes `item` on top of the stack. If the stack is full,<br>i.e. its size is equal to the specified capacity, this will instead throw an error.
 `push_all(items)` | Pushes each element of `items` on top of the stack, one at a time.
-`special()`       | Returns the number of items in the stack.
-`to_bit()`        | Returns `1` if the stack is not empty, otherwise returns `0`.[^2]
-`to_string()`     | Returns some information about the stack as a string;<br>its capacity, number of items, and the value of the top item.
+`$`               | Returns the number of items in the stack.
+`?`               | Returns `1` if the stack is not empty, otherwise returns `0`.[^2]
+`!`               | Returns some information about the stack as a string;<br>its capacity, number of items, and the value of the top item.
 
 </center>
 
@@ -33,7 +33,7 @@ A queue is a collection of items that the user may "put" ("enqueue") an item at 
 
 Method           | Use
 ---              | ---
-`create([size])` | Initializes an empty Queue object with capacity `size`.<br>If `size` is unspecified it will default to `-1`, giving the queue unbounded capacity.
+`=>([size])`     | Initializes an empty Queue object with capacity `size`.<br>If `size` is unspecified it will default to `-1`, giving the queue unbounded capacity.
 `first()`        | Returns the value of the item at the front of the queue, without removing it.<br>If the queue is empty, this will instead throw an error.
 `get()`          | Gets/removes an item from the front of the queue, and returns it.<br>If the queue is empty, this will instead throw an error.
 `is_empty()`     | Returns `1` if the number of items in the queue is equal to 0, otherwise returns `0`.
@@ -41,9 +41,9 @@ Method           | Use
 `last()`         | Returns the value of the item at the back of the queue, without removing it.<br>If the queue is empty, this will instead throw an error.
 `put(item)`      | Puts `item` at the back of the queue. If the queue is full,<br>i.e. its size is equal to the specified capacity, this will instead throw an error.
 `put_all(items)` | Puts each element of `items` at the back of the queue, one at a time.
-`special()`      | Returns the number of items in the queue.
-`to_bit()`       | Returns `1` if the queue is not empty, otherwise returns `0`.[^2]
-`to_string()`    | Returns some information about the queue as a string;<br>its capacity, number of items, and the values of its items.<br>Note that if there are more than 5 items in the queue, the string will be truncated.
+`$`              | Returns the number of items in the queue.
+`?`              | Returns `1` if the queue is not empty, otherwise returns `0`.[^2]
+`!`              | Returns some information about the queue as a string;<br>its capacity, number of items, and the values of its items.<br>Note that if there are more than 5 items in the queue, the string will be truncated.
 
 </center>
 
@@ -56,8 +56,8 @@ A deque is a data structure similar to a queue, but where insertion and removal 
 
 Method                 | Use
 ---                    | ---
+`=>([size])`           | Initializes an empty Deque object with capacity `size`.<br>If `size` is unspecified it will default to `-1`, giving the deque unbounded capacity.
 `back()`               | Returns the value of the item at the back of the deque, without removing it.<br>If the deque is empty, this will instead throw an error.
-`create([size])`       | Initializes an empty Deque object with capacity `size`.<br>If `size` is unspecified it will default to `-1`, giving the deque unbounded capacity.
 `front()`              | Returns the value of the item at the front of the deque, without removing it.<br>If the deque is empty, this will instead throw an error.
 `get()`                | Gets/removes an item from the back of the deque, and returns it.<br>If the deque is empty, this will instead throw an error.
 `get_front()`          | Gets/removes an item from the front of the deque, and returns it.<br>If the deque is empty, this will instead throw an error.
@@ -67,9 +67,9 @@ Method                 | Use
 `put_all(items)`       | Puts each element of `items` at the back of the deque, one at a time.
 `put_front(item)`      | Puts `item` at the front of the deque. If the deque is full,<br>i.e. its size is equal to the specified capacity, this will instead throw an error.
 `put_front_all(items)` | Puts each element of `items` at the front of the deque, one at a time.
-`special()`            | Returns the number of items in the deque.
-`to_bit()`             | Returns `1` if the deque is not empty, otherwise returns `0`.[^2]
-`to_string()`          | Returns some information about the deque as a string;<br>its capacity, number of items, and the values of its items.<br>Note that if there are more than 5 items in the deque, the string will be truncated.
+`$`                    | Returns the number of items in the deque.
+`?`                    | Returns `1` if the deque is not empty, otherwise returns `0`.[^2]
+`!`                    | Returns some information about the deque as a string;<br>its capacity, number of items, and the values of its items.<br>Note that if there are more than 5 items in the deque, the string will be truncated.
 
 </center>
 
@@ -82,21 +82,26 @@ A set is an unordered collection of items, with no duplicates.
 
 Method                        | Use
 ---                           | ---
+`=>([items][, capacity])`     | Initializes a `Set` object, with its contents being `items` with any<br>duplicate elements removed, and its capacity being `capacity`.<br>If `items` is unspecified it will default to an empty array.<br>If `capacity` is unspecified it will default to `-1`,<br>giving the set unbounded capacity.
+`items`                       | The contents of the set as an array.
 `add(value)`                  | Adds `value` to the set, provided it doesn't already exist in the set,<br>and returns a status code (`0` or `1`) based on whether it was added.<br>If `value` isn't already in the set, and the set is full,<br>i.e. its size is equal to the specified capacity, this will instead throw an error.
 `clear()`                     | Removes every element from the set.
-`create([items], [capacity])` | Initializes a `Set` object, with its contents being `items` with any<br>duplicate elements removed, and its capacity being `capacity`.<br>If `items` is unspecified it will default to an empty array.<br>If `capacity` is unspecified it will default to `-1`,<br>giving the set unbounded capacity.
-`difference(other)`           | Returns the difference of the current set and `other`,<br>i.e. a new set containing all items that the current set contains<br>but `other` does not.
-`has(value)`                  | Returns `1` if `value` is contained in the set, otherwise returns `0`.
-`intersection(other)`         | Returns the intersection of the current set and `other`,<br>i.e. a new set containing all items that the two sets share.
+`value ->?`                   | Returns `1` if `value` is contained in the set, otherwise returns `0`.
 `is_empty()`                  | Returns `1` if the number of items in the set is equal to 0,<br>otherwise returns `0`.
 `is_full()`                   | Returns `1` if the number of items in the set<br>is equal to the specified capacity, otherwise returns `0`.[^1]
-`is_subset(other)`            | Returns `1` if the current set is a subset of `other`,<br>i.e. every element of the current set is contained in `other`.
 `remove(value)`               | Removes `value` from the set, provided it exists in the set.
-`special()`                   | Returns the number of items in the set.
-`to_bit()`                    | Returns `1` if the deque is not empty, otherwise returns `0`.[^2]
-`to_string()`                 | Returns some information about the set as a string;<br>its capacity, number of items, and the values of its items.
-`union(other)`                | Returns the union of the current set and `other`,<br>i.e. the two sets' items added together with duplicates again removed.
-`values()`                    | Returns the contents of the set as an array.
+`- other`                     | Returns the difference of the current set and `other`.
+`& other`                     | Returns the intersection of the current set and `other`.
+`:: other`                    | Returns `1` if the current set and `other` have the same elements, `0` otherwise.
+`::: other`                   | Returns `1` if the current set and `other`<br>don't have the same elements, `0` otherwise.
+`<: other`                    | Returns `1` if the current set is a subset of `other`.
+`< other`                     | Returns `1` if the current set is a strict subset of `other`.
+`>: other`                    | Returns `1` if the current set is a superset of `other`.
+`> other`                     | Returns `1` if the current set is a strict superset of `other`.
+`| other`                     | Returns the union of the current set and `other`.
+`$`                           | Returns the number of items in the set.
+`?`                           | Returns `1` if the deque is not empty, otherwise returns `0`.[^2]
+`!`                           | Returns some information about the set as a string;<br>its capacity, number of items, and the values of its items.
 
 </center>
 
@@ -109,12 +114,12 @@ A static array is like a normal array, but with a fixed size. They may also enfo
 
 Method                   | Use
 ---                      | ---
-`create(value[, type])`  | Initializes a `StaticArray` object. If `type` is specified,<br>it defines the enforced type of the static array.<br>If `value` is an integer, it defines the size of the static array.<br>If `value` is an array, its size defines the size of the static array,<br>and its elements are copied into the static array.<br>If `type` is not specified, the static array will not enforce elements<br>to be of any particular type.
-`get_item(index)`        | Returns the `index`th item in the static array.<br>If `index` is outside the bounds of the static array, an error is thrown.
-`set_item(index, value)` | Sets the `index`th item in the static array to `value`.<br>If `index` is outside the bounds of the static array,<br>or `value` is not of the correct type for the array,<br>provided it enforces a particular type, an error is thrown.
-`special()`              | Returns an array containing all items in the static array,<br>with any unassigned indices ignored.
-`to_bit()`               | Returns `1` if the static array is not empty, otherwise returns `0`.
-`to_string()`            | Returns some information about the static array as a string;<br>its size, its type ("null" if it doesn't enforce one),<br>and a table mapping each item's index to its value.
+`=>(value[, type])`      | Initializes a `StaticArray` object. If `type` is specified,<br>it defines the enforced type of the static array.<br>If `value` is an integer, it defines the size of the static array.<br>If `value` is an array, its size defines the size of the static array,<br>and its elements are copied into the static array.<br>If `type` is not specified, the static array will not enforce elements<br>to be of any particular type.
+`<<index>>`              | Returns the `index`th item in the static array.<br>If `index` is outside the bounds of the static array, an error is thrown.
+`<<index>>: value`       | Sets the `index`th item in the static array to `value`.<br>If `index` is outside the bounds of the static array,<br>or `value` is not of the correct type for the array,<br>provided it enforces a particular type, an error is thrown.
+`$`                      | Returns an array containing all items in the static array,<br>with any unassigned indices ignored.
+`?`                      | Returns `1` if the static array is not empty, otherwise returns `0`.
+`!`                      | Returns some information about the static array as a string;<br>its size, its type ("null" if it doesn't enforce one),<br>and a table mapping each item's index to its value.
 
 </center>
 
@@ -124,7 +129,7 @@ Method                   | Use
 An arithmetic array is an array which can be used with different binary operators.
 
 ```sm
-<-collections.ArithmeticArray;
+<=collections.ArithmeticArray;
 
 aa: ArithmeticArray([/\, //, /\/]);
 
@@ -149,12 +154,11 @@ ArithmeticArray allows item assignment and inherits behavior for `$`, `to_bit`, 
 You can also use your own custom operators in the form of functions by using the `apply(op, other)` method:
 
 ```sm
-<-collections.ArithmeticArray;
-<-math.shl;
+<=collections.ArithmeticArray;
 
 aa: ArithmeticArray([///, /\//, //\/]);
 aa!;
-aa.apply(shl, /\)!;
+aa.apply(<-math.shl, /\)!;
 
 
 remove_null nullable default * {

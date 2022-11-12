@@ -1,4 +1,4 @@
-<-operator;
+<=operator;
 
 
 @ Stack {
@@ -21,9 +21,7 @@
         }
     }
 
-    $ * {
-        * 'stack$;
-    }
+    $ * { * 'stack$; }
 
     pop * {
         ? 'is_empty() {
@@ -41,28 +39,18 @@
         * 'stack<<-/>>;
     }
 
-    ? * {
-        * 'stack$ > \;
-    }
-
-    is_full * {
-        * 'size :: 'stack$;
-    }
-
-    is_empty * {
-        * 'stack$ :: \;
-    }
+    ? * { * 'stack$ > \; }
+    is_full * { * 'size :: 'stack$; }
+    is_empty * { * 'stack$ :: \; }
 
     ! * {
-        <-string.wrap;
-        <-types.String;
         ?? {
             top: 'peek();
         } !! {
             top:;
         }
-        ? top?! :: String {
-            top: wrap(""?!(top), "\"");
+        ? top?! :: <-types.String {
+            top: <-string.wrap(""?!(top), "\"");
         }
         * "Stack(capacity:" + ""?!('size)
         + ", size:" + ""?!('stack$)
@@ -78,17 +66,9 @@
         'size: size;
     }
 
-    $ * {
-        * 'queue$;
-    }
-
-    is_empty * {
-        * ~~ '$;
-    }
-
-    is_full * {
-        * '$ :: 'size;
-    }
+    $ * { * 'queue$; }
+    is_empty * { * ~~ '$; }
+    is_full * { * '$ :: 'size; }
 
     throw_empty * {
         ? 'is_empty() {
@@ -116,24 +96,16 @@
         * out;
     }
 
-    first * {
-        'throw_empty(); * 'queue<<\>>;
-    }
-
-    last * {
-        'throw_empty(); * 'queue<<-/>>;
-    }
-
-    ? * {
-        * '$ > \;
-    }
+    first * { 'throw_empty(); * 'queue<<\>>; }
+    last * { 'throw_empty(); * 'queue<<-/>>; }
+    ? * { * '$ > \; }
 
     ! * {
-        <-string.wrap;
-        <-types.String;
+        <=string.wrap;
+        <=types.String;
         ? '$ <: /\/ {
-            items: ""?!('queue);
-        } ,, ? '$ > /\/ {
+            items: ""?!('queue)<</..-/>>;
+        } ,, {
             first: ""?!('first());
             last: ""?!('last());
             ? 'first()?! :: String {
@@ -142,13 +114,9 @@
             ? 'last()?! :: String {
                 last: wrap(last, "\"");
             }
-            items: "[" + ""?!(first) + ", ..., " + ""?!(last) + "]";
-        } ,, {
-            items: "[]";
+            items: ""?!(first) + ", ..., " + ""?!(last);
         }
-        * "Queue(capacity:" + ""?!('size)
-        + ", size:" + ""?!('queue$)
-        + ", items:" + items + ")";
+        * "Queue(" + items + ")";
     }
 }
 
@@ -156,17 +124,13 @@
     => items? capacity? * {
         items <> [];
         capacity <> -/;
-        <-iter.find;
-        'find: find;
         'items: [i ... i ->? items] ? items ,, [];
         'capacity: capacity;
     }
 
-    $ * {
-        * 'items$;
-    }
+    $ * { * 'items$; }
 
-    + value * {
+    add value * {
         ? value ~~ ->? ' {
             ? 'is_full() {
                 "set is full (capacity " + ""?!('capacity) + ")"!!!;
@@ -177,103 +141,97 @@
         * \;
     }
 
-    ? * {
-        * ~~ 'is_empty();
-    }
+    ? * { * ~~ 'is_empty(); }
 
     ! * {
-        * "Set(capacity:" + ""?!('capacity)
-        + ", size:" + ""?!('$)
-        + ", items:" + ""?!('items)
-        + ")";
+        * "Set(" + ""?!('items)<</..-/>> + ")";
     }
 
-    remove value * {
-        'items-: [value];
-    }
+    remove value * { 'items-: [value]; }
 
     ->? value * {
-        * 'find('items, value) >: \;
+        * <-iter.find('items, value) >: \;
     }
 
-    values * {
-        * 'items;
+    #check_type value * {
+        ? value?! ::: Set()?! {
+            "expected Set, received " + ""?!(value?!)!!!;
+        }
     }
 
-    clear * {
-        'items: [];
-    }
-
-    is_empty * {
-        * '$ :: \;
-    }
-
-    is_full * {
-        * '$ :: 'capacity;
-    }
-
-    new_set_size a b * {
+    clear * { 'items: []; }
+    is_empty * { * '$ :: \; }
+    is_full * { * '$ :: 'capacity; }
+    #new_set_size a b * {
+        ? <-math.min([a.capacity, b.capacity]) :: -/ { * -/; }
         * a$ ? a$ > b$ ,, b$;
     }
+    ::: other * { * ~~ ' :: other; }
+    :: other * {
+        sort: <-iter.sorted;
+        * sort('items) :: sort(other.items);
+    }
 
-    union other * {
-        ? other?! ::: Set()?! {
-            "expected Set, received " + ""?!(other?!)!!!;
-        }
+    | other * {
+        '#check_type(other);
 
-        union_set: Set('values(), 'new_set_size(', other) ++ /\);
+        nss: '#new_set_size(', other);
+        ? nss > \ { nss++: /\; }
+        union_set: Set('items, nss);
 
-        ... value ->? other.values() {
-            union_set+: value;
+        ... value ->? other.items {
+            union_set.add(value);
         }
 
         * union_set;
     }
 
-    intersection other * {
-        ? other?! ::: Set()?! {
-            "expected Set, received " + ""?!(other?!)!!!;
-        }
+    ^ other * {
+        '#check_type(other);
 
-        intersection_set: Set([], 'new_set_size(', other));
+        * (' - other) | (other - ');
+    }
 
-        ... value ->? 'values() {
+    & other * {
+        '#check_type(other);
+
+        intersection_set: Set([], '#new_set_size(', other));
+
+        ... value ->? 'items {
             ? value ->? other {
-                intersection_set+: value;
+                intersection_set.add(value);
             }
         }
 
         * intersection_set;
     }
 
-    difference other * {
-        ? other?! ::: Set()?! {
-            "expected Set, received " + ""?!(other?!)!!!;
-        }
+    - other * {
+        '#check_type(other);
 
-        difference_set: Set([], 'new_set_size(', other));
+        difference_set: Set([], '#new_set_size(', other));
 
-        ... value ->? 'values() {
+        ... value ->? 'items {
             ? value ~~ ->? other {
-                difference_set+: value;
+                difference_set.add(value);
             }
         }
 
         * difference_set;
     }
 
-    is_subset other * {
-        ? other?! ::: Set()?! {
-            "expected Set, received " + ""?!(other?!)!!!;
-        }
+    > other * {
+        '#check_type(other);
 
-        ? '$ > other$ { * \; }
+        ? '$ <: other$ { * \; }
 
-        ... value ->? 'values() {
-            ? ~~ other.has(value) { * \; }
+        ... value ->? other.items {
+            ? value ~~ ->? ' { * \; }
         }
         * /;
     }
+
+    >: other * { * ' :: other || ' > other; }
 }
 
 @ Deque {
@@ -284,17 +242,9 @@
         'size: size;
     }
 
-    $ * {
-        * 'deque$;
-    }
-
-    is_empty * {
-        * ~~ '$;
-    }
-
-    is_full * {
-        * '$ :: 'size;
-    }
+    $ * { * 'deque$; }
+    is_empty * { * ~~ '$; }
+    is_full * { * '$ :: 'size; }
 
     throw_empty * {
         ? 'is_empty() {
@@ -312,9 +262,7 @@
         'throw_full(); 'deque: [item] + 'deque;
     }
 
-    put item * {
-        'throw_full(); 'deque+: [item];
-    }
+    put item * { 'throw_full(); 'deque+: [item]; }
 
     put_front_all items * {
         ... item ->? items {
@@ -328,17 +276,9 @@
         }
     }
 
-    front * {
-        * 'deque<<\>>;
-    }
-
-    back * {
-        * 'deque<<-/>>;
-    }
-
-    ? * {
-        * '$ > \;
-    }
+    front * { * 'deque<<\>>; }
+    back * { * 'deque<<-/>>; }
+    ? * { * '$ > \; }
 
     get_front * {
         'throw_empty();
@@ -355,11 +295,11 @@
     }
 
     ! * {
-        <-string.wrap;
-        <-types.String;
+        <=string.wrap;
+        <=types.String;
         ? '$ <: /\/ {
-            items: ""?!('deque);
-        } ,, ? '$ > /\/ {
+            items: ""?!('deque)<</..-/>>;
+        } ,, {
             front: ""?!('front());
             back: ""?!('back());
             ? 'front()?! :: String {
@@ -368,25 +308,20 @@
             ? 'back()?! :: String {
                 back: wrap(back, "\"");
             }
-            items: "[" + ""?!(front) + ", ..., " + ""?!(back) + "]";
-        } ,, {
-            items: "[]";
+            items: ""?!(front) + ", ..., " + ""?!(back);
         }
-        * "Deque(capacity:" + ""?!('size)
-        + ", size:" + ""?!('deque$)
-        + ", items:" + items + ")";
+        * "Deque(" + items + ")";
     }
 }
 
 @ StaticArray {
     => value type? * {
         type <>;
-        <-types.Array, Integer;
-        ? value?! :: Integer {
+        ? value?! :: <-types.Integer {
             'value: {{}};
             'size: value;
             'type: type;
-        } ,, ? value?! :: Array {
+        } ,, ? value?! :: <-types.Array {
             'value: {{}};
             'size: value$;
             'type: type;
@@ -403,9 +338,7 @@
         }
     }
 
-    $ * {
-        * 'value$;
-    }
+    $ * { * 'value$; }
 
     ! * {
         * "StaticArray(size:" + ""?!('size)
@@ -414,13 +347,10 @@
         + ")";
     }
 
-    ? * {
-        * / ? 'value ,, \;
-    }
+    ? * { * / ? 'value ,, \; }
 
     throw_invalid_index arg * {
-        <-types.Integer;
-        ? arg?! ::: Integer {
+        ? arg?! ::: <-types.Integer {
             "expected Integer, received " + ""?!(arg?!)!!!;
         }
         ? ~~ (\ <: arg < 'size) {
@@ -456,88 +386,33 @@
         * ArithmeticArray([op(i, other) ... i ->? 'array]);
     }
 
-    & other * {
-        * 'apply(operator.and, other);
-    }
-
-    + other * {
-        * 'apply(operator.add, other);
-    }
-
-    -- other * {
-        * 'apply(operator.div, other);
-    }
-
-    :: other * {
-        * 'apply(operator.eq, other);
-    }
-
-    >: other * {
-        * 'apply(operator.ge, other);
-    }
-
-    > other * {
-        * 'apply(operator.gt, other);
-    }
-
-    <: other * {
-        * 'apply(operator.le, other);
-    }
-
-    < other * {
-        * 'apply(operator.lt, other);
-    }
-
-    --- other * {
-        * 'apply(operator.mod, other);
-    }
-
-    ++ other * {
-        * 'apply(operator.mul, other);
-    }
-
-    ::: other * {
-        * 'apply(operator.ne, other);
-    }
-
-    | other * {
-        * 'apply(operator.or, other);
-    }
-
-    +++ other * {
-        * 'apply(operator.pow, other);
-    }
-
-    - other * {
-        * 'apply(operator.sub, other);
-    }
-
-    ^ other * {
-        * 'apply(operator.xor, other);
-    }
+    & other * { * 'apply(operator.and, other); }
+    + other * { * 'apply(operator.add, other); }
+    -- other * { * 'apply(operator.div, other); }
+    :: other * { * 'apply(operator.eq, other); }
+    >: other * { * 'apply(operator.ge, other); }
+    > other * { * 'apply(operator.gt, other); }
+    <: other * { * 'apply(operator.le, other); }
+    < other * { * 'apply(operator.lt, other); }
+    --- other * { * 'apply(operator.mod, other); }
+    ++ other * { * 'apply(operator.mul, other); }
+    ::: other * { * 'apply(operator.ne, other); }
+    | other * { * 'apply(operator.or, other); }
+    +++ other * { * 'apply(operator.pow, other); }
+    - other * { * 'apply(operator.sub, other); }
+    ^ other * { * 'apply(operator.xor, other); }
 
     <<>> item * {
-        <-types.Array;
         out: 'array<<item>>;
-        ? out?! :: Array {
+        ? out?! :: <-types.Array {
             * ArithmeticArray(out);
         }
         * out;
     }
 
-    <<>>: item value * {
-        'array<<item>>: value;
-    }
+    <<>>: item value * { 'array<<item>>: value; }
 
-    $ * {
-        * 'array$;
-    }
-
-    ? * {
-        * / ? 'array ,, \;
-    }
-
-    ! * {
-        * ""?!('array);
-    }
+    $ * { * 'array$; }
+    ? * { * / ? 'array ,, \; }
+    ! * { * "A" + ""?!('array); }
 }

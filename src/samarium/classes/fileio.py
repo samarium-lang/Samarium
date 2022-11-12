@@ -7,7 +7,7 @@ from typing import IO, Any
 from samarium.utils import get_type_name
 
 from ..exceptions import SamariumIOError, SamariumTypeError
-from .base import NULL, Array, Attrs, Integer, Null, Slice, String
+from .base import NULL, Array, Attrs, Integer, Int, Null, Slice, String
 
 
 class Mode(Enum):
@@ -48,7 +48,7 @@ class FileManager:
             with open(path.val, mode.value + "b" * binary) as f:
                 if mode is Mode.READ:
                     if binary:
-                        return Array(map(Integer, f.read()))
+                        return Array(map(Int, f.read()))
                     return String(f.read())
                 if data is None:
                     raise SamariumIOError("missing data")
@@ -107,7 +107,7 @@ class File(Attrs):
     def __getitem__(self, index: Any) -> Array | String | Integer | Null:
         if isinstance(index, Slice):
             if index.is_empty():
-                return Integer(self.val.tell())
+                return Int(self.val.tell())
             if isinstance(index.step, Integer):
                 raise SamariumIOError("cannot use step")
             if isinstance(index.start, Integer):
@@ -120,19 +120,19 @@ class File(Attrs):
                 if self.binary:
                     if isinstance(data, bytes):
                         data = [*data]
-                    return Array(map(Integer, data))
+                    return Array(map(Int, data))
                 return String(data)
-            return self[Slice(Integer(0), slice.stop, slice.step)]
+            return self[Slice(Int(0), slice.stop, slice.step)]
         else:
             self.val.seek(index.val)
             return NULL
 
     def load(self, bytes_: Integer | None = None) -> String | Array:
         if bytes_ is None:
-            bytes_ = Integer(-1)
+            bytes_ = Int(-1)
         val = self.val.read(bytes_.val)
         if self.binary:
-            return Array(map(Integer, val))
+            return Array(map(Int, val))
         return String(val)
 
     def save(self, data: String | Array) -> Null:

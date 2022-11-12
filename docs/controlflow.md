@@ -40,7 +40,7 @@ arr: [];
 Array comprehensions are a way to create an array based on another iterable.
 Uses may include performing an operation on each item of the iterable, or creating a subsequence of those items that satisfy a certain condition.
 
-They are written similarly to foreach loops; they can come in two forms, as follows:
+They are written similarly to `foreach` loops; they can come in two forms, as follows:
 
 ```sm
 [expression ... member ->? iterable]
@@ -53,11 +53,13 @@ Here are two equivalent approaches:
 ```sm
 input: [/, /\, //, /\\, /\/];
 
+== Approach 1
 arr: [];
 ... n ->? input {
     arr+: [n ++ n];
 }
 
+== Approach 2
 arr: [n ++ n ... n ->? input];
 ```
 
@@ -69,6 +71,7 @@ There are again two equivalent approaches:
 ```sm
 arr: [/, /\\, /\\/, /\\\\, //\\/];
 
+== Approach 1
 filtered: [];
 ... n ->? arr {
     ? n --- /\ :: / {
@@ -76,6 +79,7 @@ filtered: [];
     }
 }
 
+== Approach 2
 filtered: [n ... n ->? arr ? n --- /\ :: /];
 ```
 
@@ -94,11 +98,13 @@ Table comprehensions have a similar syntax to array comprehensions:
 For example, both of the following approaches are equivalent:
 
 ```sm
+== Approach 1
 tab: {{}};
 ... x ->? [/\, /\\, //\] {
     tab<<x>>: x ++ x;
 }
 
+== Approach 2
 tab: {{x -> x ++ x ... x ->? [/\, /\\, //\]}};
 ```
 
@@ -124,7 +130,7 @@ x: \;
 ## `break`/`continue`
 
 `break` statements are written with `<-`, and terminate the enclosing loop immediately.
-They can be used in both `for` and `while` loops.
+They can be used in both `foreach` and `while` loops.
 
 ```sm
 x: \;
