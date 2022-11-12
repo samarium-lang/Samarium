@@ -10,7 +10,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-dahlia = "^2.0.0"
+dahlia = "^2.1.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
