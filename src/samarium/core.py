@@ -6,7 +6,11 @@ from time import time_ns
 from types import GeneratorType
 from typing import Any
 
+import importlib.util
+import importlib.machinery
 from dahlia import dahlia
+
+from samarium.python import PythonExport
 
 from . import exceptions as exc
 from .classes import (
@@ -38,6 +42,7 @@ MODULE_NAMES = [
     "iter",
     "math",
     "operator",
+    "python",
     "random",
     "string",
     "types",
@@ -71,18 +76,32 @@ def import_module(data: str, reg: Registry) -> None:
     except IndexError:  # REPL
         path = Path().absolute()
 
-    if f"{name}.sm" not in [e.name for e in path.iterdir()]:
+    dirs = [e.name for e in path.iterdir()]
+    if f"{name}.sm" not in dirs and f"{name}.py" not in dirs:
         if name not in MODULE_NAMES:
             raise exc.SamariumImportError(f"invalid module: {name}")
         path = Path(__file__).absolute().parent / "modules"
 
     with silence_stdout():
-        imported = run((path / f"{name}.sm").read_text(), Registry(globals()))
+        if (path / f"{name}.sm").exists():
+            imported = run(
+                (path / f"{name}.sm").read_text(), Registry(globals()))
+        else:
+
+            spec: importlib.machinery.ModuleSpec = importlib.util.spec_from_file_location(
+                name, str(path / f"{name}.py"))  # type: ignore
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[name] = module
+            spec.loader.exec_module(module)  # type: ignore
+            registry = {f"sm_{k}": v.o for k, v in vars(
+                module).items() if isinstance(v, PythonExport)}
+            imported = Registry(registry)
 
     if module_import:
         reg.vars.update({f"sm_{name}": Module(name, imported.vars)})
     elif objects == ["*"]:
-        imported.vars = {k: v for k, v in imported.vars.items() if k.startswith("sm_")}
+        imported.vars = {k: v for k,
+                         v in imported.vars.items() if k.startswith("sm_")}
         reg.vars.update(imported.vars)
     else:
         for obj in objects:
