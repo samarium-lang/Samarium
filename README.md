@@ -39,7 +39,7 @@ Short | Long | Description
 `-v` | `--version` | Prints Samarium version
 
 
-There is also a VSCode syntax highlighting extension for Samarium, which can be found here [here](https://marketplace.visualstudio.com/items?itemName=Samarium.samarium-language). The source code can be found [here](https://github.com/samarium-lang/vscode-samarium).
+There is also a VSCode syntax highlighting extension for Samarium, which can be found [here](https://marketplace.visualstudio.com/items?itemName=Samarium.samarium-language). The source code can be found [here](https://github.com/samarium-lang/vscode-samarium).
 
 
 # Credits
