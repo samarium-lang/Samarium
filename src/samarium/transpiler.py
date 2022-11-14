@@ -477,7 +477,7 @@ class Transpiler:
     def _functions(self, token: Token) -> None:
         if token is Token.FUNCTION:
             # Import all
-            if self._line_tokens[0] is Token.FROM:
+            if self._line_tokens[0] is Token.IMPORT:
                 self._line.append("*")
                 return
 
