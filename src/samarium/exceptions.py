@@ -12,12 +12,12 @@ BAD_OP = compile(
     r"|unsupported operand type\(s\) for (.+): '(\w+)' and '(\w+)'"
 )
 BAD_UOP = compile(r"bad operand type for unary (.+): '(\w+)'")
+ARG_NOT_ITER = compile(r"argument of type '(\w+)' is not iterable")
 NOT_CALLITER = compile(r"'(\w+)' object is not (\w+)")
 OP_MAP = {
     ">=": ">:",
     "<=": "<:",
     "//": "--",
-    "in?": "",
     "%": "---",
     "*": "++",
     "@": "><",
@@ -54,6 +54,10 @@ def handle_exception(exception: Exception):
         type_ = clear_name(m.group(1))
         template = "... _ ->? {}" if m.group(2) == "iterable" else "{}()"
         exception = exc_type(template.format(type_))
+    elif m := ARG_NOT_ITER.match(errmsg):
+        exc_type = NotDefinedError
+        type_ = clear_name(m.group(1))
+        exception = exc_type(f"->? {type_}")
     elif exc_type is SyntaxError:
         exception = SamariumSyntaxError(
             f"invalid syntax at {int(errmsg.split()[-1][:-1])}"
