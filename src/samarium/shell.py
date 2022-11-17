@@ -1,5 +1,4 @@
-import readline  # type: ignore
-# ^ used by input() to provide elaborate line editing and history features
+import readline  # used by input() to provide elaborate line editing & history features
 
 from .core import run
 from .tokenizer import tokenize

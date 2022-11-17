@@ -1,6 +1,6 @@
 import sys
-from pathlib import Path
 from contextlib import suppress
+from pathlib import Path
 
 from .core import run
 from .shell import run_shell

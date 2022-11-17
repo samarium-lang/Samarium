@@ -5,13 +5,10 @@ from functools import lru_cache
 from inspect import signature
 from secrets import choice, randbelow
 from types import FunctionType
-from typing import Any, Iterable, Iterator as Iter
+from typing import Any, Iterable
+from typing import Iterator as Iter
 
-from ..exceptions import (
-    NotDefinedError,
-    SamariumTypeError,
-    SamariumValueError,
-)
+from ..exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
 from ..utils import (
     ClassProperty,
     Singleton,
@@ -301,7 +298,7 @@ class Integer(Attrs):
 
     @guard("+++", default=2)
     def __pow__(self, other: Any) -> Integer:
-        return Int(self.val ** other.val)
+        return Int(self.val**other.val)
 
     @guard("---", default=2)
     def __mod__(self, other: Any) -> Integer:

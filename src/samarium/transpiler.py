@@ -316,7 +316,7 @@ class Transpiler:
         return self._reg
 
     def _find_next(self, token: Token) -> int:
-        for i, t in enumerate(self._tokens[self._index:]):
+        for i, t in enumerate(self._tokens[self._index :]):
             if t is token:
                 return i + self._index
         return -1
@@ -447,7 +447,7 @@ class Transpiler:
                 self._class_indent.pop()
 
             if self._scope.current == "enum":
-                self._line.append(')')
+                self._line.append(")")
 
             if (self._processed_tokens or self._line_tokens)[-1] is Token.BRACE_OPEN:
                 # Managing empty bodies
@@ -556,7 +556,7 @@ class Transpiler:
                 self._line.append("NULL")
             self._line.append("continue" if is_first_token(self._line) else ":")
         elif token is Token.FROM:
-            nxt = self._tokens[index + 1: index + 4]
+            nxt = self._tokens[index + 1 : index + 4]
             if (
                 isinstance(nxt[0], str)
                 and nxt[1] is Token.ATTR
@@ -622,7 +622,7 @@ class Transpiler:
             if self._scope.current == "enum":
                 if self._tokens[index - 2] in {token, Token.BRACE_OPEN}:
                     self._line.append("=NEXT")
-                self._line.append(',')
+                self._line.append(",")
                 return
             if self._reg[Switch.BUILTIN]:
                 if self._line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
