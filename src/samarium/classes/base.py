@@ -23,7 +23,6 @@ from ..utils import (
 
 
 def functype_repr(obj: Any) -> str:
-
     return (
         get_name(obj)
         if isinstance(obj, FunctionType)
