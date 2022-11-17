@@ -23,9 +23,11 @@ from ..utils import (
 
 
 def functype_repr(obj: Any) -> str:
+
     return (
         get_name(obj)
-        if isinstance(obj, FunctionType) or issubclass(obj, UserAttrs)
+        if isinstance(obj, FunctionType)
+        or (isinstance(obj, type) and issubclass(obj, UserAttrs))
         else repr(obj)
     )
 
