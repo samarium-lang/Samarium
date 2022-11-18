@@ -20,11 +20,11 @@ crossandra = Crossandra(
     ignore_whitespace=True,
     ignored_characters="`",
     rules=[
+        common.DOUBLE_QUOTED_STRING,
+        Rule(r"==[^\n]*", False, re.M | re.S),
+        Rule(r"==<.*>==", False, re.M | re.S),
         Rule(r"(?:\\|/)+", to_int),
         Rule(r"\w+"),
-        common.DOUBLE_QUOTED_STRING,
-        Rule(r"==[^\n]*", lambda _: None),
-        Rule(r"==<.*>==", lambda _: None, re.M | re.S),
     ]
 )
 
