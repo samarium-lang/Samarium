@@ -11,6 +11,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.9"
 dahlia = "^2.1.0"
+crossandra = "^1.2.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.10.0"

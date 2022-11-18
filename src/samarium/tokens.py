@@ -110,7 +110,6 @@ class Token(Enum):
     END = ";"
     SEP = ","
     SLEEP = ",.,"
-    STRING = '"'
     ZIP = "><"
 
 
