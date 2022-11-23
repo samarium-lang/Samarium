@@ -23,6 +23,7 @@ MODULE_NAMES = [
     "iter",
     "math",
     "operator",
+    "python",
     "random",
     "string",
     "types",
@@ -93,7 +94,8 @@ def resolve_path(name: str) -> Path:
         path = Path(argv[1][: argv[1].rfind("/") + 1] or ".")
     except IndexError:  # REPL
         path = Path().resolve()
-    if f"{name}.sm" not in [e.name for e in path.iterdir()]:
+    paths = [e.name for e in path.iterdir()]
+    if not (f"{name}.sm" in paths or f"{name}.py" in paths):
         if name not in MODULE_NAMES:
             raise SamariumImportError(f"invalid module: {name}")
         path = Path(__file__).resolve().parent / "modules"
