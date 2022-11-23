@@ -65,11 +65,14 @@ class SmProxy(Attrs):
     def __init__(self, v: Any) -> None:
         self.v = v
 
+    def __call__(self, *args, **kwargs):
+        return function(self.v)(*args, **kwargs)
+
     def __getattr__(self, name: str) -> Any:  # type: ignore
         if name.startswith("sm_"):
             attr = getattr(self.v, name.removeprefix("sm_"))
 
             if callable(attr):
-                return function(attr)  # type: ignore
+                return SmProxy(attr)  # type: ignore
             return to_samarium(attr)
         return self.__getattribute__(name)
