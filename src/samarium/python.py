@@ -20,7 +20,7 @@ class PythonExport(Generic[F]):
 
 
 def export(func: F) -> PythonExport[F]:
-    "Marks an object to be exported to Samarium"
+    """Marks an object to be exported to Samarium"""
     return PythonExport(func)
 
 
