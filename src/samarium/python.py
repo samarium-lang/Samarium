@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from typing import Any, Generic, TypeVar
 from functools import wraps
@@ -35,7 +37,7 @@ def to_python(obj: Attrs) -> object:
         return {to_python(k): to_python(v) for k, v in obj.val.items()}
 
 
-def to_samarium(obj: object):
+def to_samarium(obj: object) -> Attrs | type[Attrs]:
     if isinstance(obj, (int, bool)):
         return Integer(obj)
     elif isinstance(obj, str):
@@ -52,7 +54,7 @@ def function(func):
     """Wraps a Python function to be used in Samarium"""
     @wraps(func)
     def wrapper(*_args):
-        args = (to_python(arg) for arg in _args)
+        args = map(to_python, _args)
         return to_samarium(func(*args))
 
     return wrapper
@@ -63,7 +65,7 @@ class SmProxy(Attrs):
     def __init__(self, v: Any) -> None:
         self.v = v
 
-    def __getattr__(self, name: str):  # type: ignore
+    def __getattr__(self, name: str) -> Any:  # type: ignore
         if name.startswith("sm_"):
             attr = getattr(self.v, name.removeprefix("sm_"))
 
