@@ -60,7 +60,7 @@ def function(func):
 
 class SmProxy(Attrs):
 
-    def __init__(self, v: Any):
+    def __init__(self, v: Any) -> None:
         self.v = v
 
     def __getattr__(self, name: str):  # type: ignore
