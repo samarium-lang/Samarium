@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, Generic, TypeVar, Iterable as PyIterable
+from typing import Any, TypeVar, Iterable as PyIterable
 from io import BufferedIOBase, IOBase
 from functools import wraps
 from samarium.classes import (
@@ -16,19 +16,15 @@ from samarium.classes import (
     File,
     Attrs
 )
-from samarium.classes.base import Zip
+from samarium.classes.base import Int, Zip
 
 F = TypeVar("F", bound=Callable)
 
 
-class PythonExport(Generic[F]):
-    def __init__(self, o: F) -> None:
-        self.o = o
-
-
-def export(func: F) -> PythonExport[F]:
+def export(f: F) -> F:
     """Marks an object to be exported to Samarium"""
-    return PythonExport(func)
+    setattr(f, f"__export_{f}", True)
+    return f
 
 
 def to_python(obj: Attrs) -> object:
@@ -48,7 +44,7 @@ def to_python(obj: Attrs) -> object:
 
 def to_samarium(obj: object) -> Attrs | type[Attrs]:
     if isinstance(obj, (int, bool, float)):
-        return Integer(obj)
+        return Int(obj)
     elif isinstance(obj, str):
         return String(obj)
     elif obj is None:
@@ -59,15 +55,16 @@ def to_samarium(obj: object) -> Attrs | type[Attrs]:
         return Table({to_samarium(k): to_samarium(v) for k, v in obj.items()})
     elif isinstance(obj, range):
         return Slice(to_samarium(range.start), to_samarium(range.stop), to_samarium(range.step))
-    elif isinstance(obj, IOBase): 
+    elif isinstance(obj, IOBase):
         return File(obj, obj.mode, obj.name, isinstance(obj, BufferedIOBase)) # type: ignore
     elif isinstance(obj, zip):
         return Zip(*obj)
     elif isinstance(obj, PyIterable):
         return Iterator(obj)
+    raise TypeError(f"Convertion for type {type(obj)!s} not found")
 
 
-def function(func):
+def sm_function(func):
     """Wraps a Python function to be used in Samarium"""
     @wraps(func)
     def wrapper(*_args):
@@ -77,13 +74,24 @@ def function(func):
     return wrapper
 
 
+def py_function(func):
+    """Converts a Samarium function to be used in Python"""
+    @wraps(func)
+    def wrapper(*_args):
+        args = map(to_samarium, _args)
+        return to_python(func(*args))
+
+    return wrapper
+
+
 class SmProxy(Attrs):
+    """Allows the use of a Python object via Samarium"""
 
     def __init__(self, v: Any) -> None:
         self.v = v
 
     def __call__(self, *args, **kwargs):
-        return function(self.v)(*args, **kwargs)
+        return sm_function(self.v)(*args, **kwargs)
 
     def __getattr__(self, name: str) -> Any:  # type: ignore
         if name.startswith("sm_"):
@@ -93,3 +101,21 @@ class SmProxy(Attrs):
                 return SmProxy(attr)  # type: ignore
             return to_samarium(attr)
         return self.__getattribute__(name)
+
+
+class PyProxy:
+    """Allows the use of a Samarium object via Python"""
+
+    def __init__(self, v: Any) -> None:
+        self.v = v
+
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        return py_function(self.v)(*args, **kwargs)
+
+    def __getattr__(self, name: str) -> Any:
+        if name.startswith("__"):
+            return getattr(self, name)
+        attr = getattr(self.v, f"sm_{name}")
+        if callable(attr):
+            return PyProxy(attr)
+        return to_python(attr)

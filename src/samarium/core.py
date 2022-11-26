@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 
 from dahlia import dahlia
-from samarium.python import PythonExport
 
 from . import exceptions as exc
 from .builtins import (
@@ -64,9 +63,9 @@ def import_to_scope(data: str, reg: Registry) -> None:
                 sys.modules[mod.name] = module
                 spec.loader.exec_module(module)  # type: ignore
                 registry = {
-                    f"sm_{k}": v.o
+                    f"sm_{k}": v
                     for k, v in vars(module).items()
-                    if isinstance(v, PythonExport)
+                    if f'__export_{v}' in dir(v)
                 }
                 imported = Registry(registry)
 
