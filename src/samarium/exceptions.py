@@ -77,7 +77,7 @@ def handle_exception(exception: Exception) -> None:
         if name.startswith("Samarium"):
             name = name.removeprefix("Samarium")
         else:
-            name = f"External{name}".replace("ExternalZeroDivision", "Math")
+            name = f"Python{name}".replace("PythonZeroDivision", "Math")
     name = name or exc_type.__name__
     sys.stderr.write(DAHLIA.convert(f"&4[{name}] {exception}\n"))
     if Runtime.quit_on_error:
