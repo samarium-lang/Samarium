@@ -60,7 +60,7 @@ class FileManager:
                         except AssertionError:
                             raise SamariumTypeError(
                                 "some items in the array are not of type Integer"
-                            )
+                            ) from None
                     f.write(bytes_)
                 else:
                     f.write(data.val)
@@ -147,7 +147,7 @@ class File(Attrs):
                 except AssertionError:
                     raise SamariumTypeError(
                         "some items in the array are not of type Integer"
-                    )
+                    ) from None
             self.val.write(bytes_)
         else:
             self.val.write(data.val)
