@@ -23,7 +23,7 @@ def read_statement() -> str:
             statement = statement[:-1]
 
 
-def run_shell(debug: bool) -> None:
+def run_shell(*, debug: bool) -> None:
     print(f"Samarium {__version__}" + " [DEBUG]" * debug)
     main = Registry(globals())
     while True:

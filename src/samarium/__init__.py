@@ -22,7 +22,7 @@ def main(debug: bool = False) -> None:
     reg = Registry(globals())
 
     if len(sys.argv) == 1:
-        return run_shell(debug)
+        return run_shell(debug=debug)
 
     if (arg := sys.argv[1]) in OPTIONS:
         if arg in OPTIONS[:2]:

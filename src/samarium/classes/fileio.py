@@ -30,7 +30,7 @@ class FileManager:
                 "cannot open a standard stream in a read & write mode"
             )
         f = open(path.val, mode.value + "b" * binary)
-        return File(f, mode.name, path.val, binary)
+        return File(f, mode.name, path.val, binary=binary)
 
     @staticmethod
     def open_binary(path: String, mode: Mode) -> File:
@@ -87,7 +87,7 @@ class FileManager:
 class File(Attrs):
     __slots__ = ("binary", "mode", "path", "val")
 
-    def __init__(self, file: IO, mode: str, path: str | int, binary: bool) -> None:
+    def __init__(self, file: IO, mode: str, path: str | int, *, binary: bool) -> None:
         self.binary = binary
         self.mode = mode
         self.path = path
