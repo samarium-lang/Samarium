@@ -630,7 +630,7 @@ class Table(Attrs):
         try:
             return self.val[key]
         except KeyError:
-            raise SamariumValueError(f"key not found: {key}")
+            raise SamariumValueError(f"key not found: {key}") from None
 
     def __setitem__(self, key: Any, value: Any) -> None:
         self.val[key] = value
@@ -660,7 +660,7 @@ class Table(Attrs):
         try:
             del c[other]
         except KeyError:
-            raise SamariumValueError(f"key not found: {other}")
+            raise SamariumValueError(f"key not found: {other}") from None
         return Table(c)
 
     def __matmul__(self, other: Any) -> Zip:
@@ -863,7 +863,7 @@ class Enum(Attrs):
         try:
             return self.members[name]
         except KeyError:
-            raise AttributeError(f"'{self.name}''{name}'")
+            raise AttributeError(f"'{self.name}''{name}'") from None
 
     def __setattr__(self, name: str, value: Any) -> None:
         if name.startswith("sm_"):
