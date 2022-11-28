@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import sys
 from typing import Union, cast
 
 from crossandra import Crossandra, CrossandraError, Rule, common
@@ -34,4 +35,4 @@ def tokenize(code: str) -> list[Tokenlike]:
         return cast(list[Tokenlike], crossandra.tokenize(code))
     except CrossandraError as e:
         handle_exception(SamariumSyntaxError(str(e)))
-        exit()
+        sys.exit()
