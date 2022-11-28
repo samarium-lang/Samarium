@@ -56,7 +56,6 @@ class FileManager:
                     bytes_ = b""
                     for i in data.val:
                         try:
-                            assert isinstance(i, Integer)
                             bytes_ += i.val.to_bytes(1, "big")
                         except AssertionError:
                             raise SamariumTypeError(
@@ -144,7 +143,6 @@ class File(Attrs):
             bytes_ = b""
             for i in data.val:
                 try:
-                    assert isinstance(i, Integer)
                     bytes_ += i.val.to_bytes(1, "big")
                 except AssertionError:
                     raise SamariumTypeError(

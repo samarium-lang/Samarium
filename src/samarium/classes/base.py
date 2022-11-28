@@ -605,7 +605,6 @@ class Table(Attrs):
                         k, v = map(String, e.val)
                         table[k] = v
                     else:
-                        assert isinstance(e, Array)
                         k, v = e.val
                         table[k] = v
                 self.val = table
