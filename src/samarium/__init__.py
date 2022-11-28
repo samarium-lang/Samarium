@@ -17,7 +17,7 @@ options and arguments:
 file              : reads program from script file"""
 
 
-def main(debug: bool = False):
+def main(debug: bool = False) -> None:
 
     reg = Registry(globals())
 
@@ -43,5 +43,5 @@ def main(debug: bool = False):
             run(file, reg, debug)
 
 
-def main_debug():
+def main_debug() -> None:
     main(debug=True)

@@ -45,7 +45,7 @@ def guard(operator: str, *, default: int | None = None) -> Callable[..., Any]:
     return decorator
 
 
-def throw_missing(*_):
+def throw_missing(*_) -> None:
     raise SamariumTypeError("missing default parameter value(s)")
 
 

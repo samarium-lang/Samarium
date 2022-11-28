@@ -29,7 +29,7 @@ def clear_name(name: str) -> str:
     return name.removeprefix("__").removeprefix("sm_")
 
 
-def handle_exception(exception: Exception):
+def handle_exception(exception: Exception) -> None:
     exc_type = type(exception)
     errmsg = str(exception)
     name = ""
@@ -89,7 +89,7 @@ class SamariumError(Exception):
 
 
 class NotDefinedError(SamariumError):
-    def __init__(self, inp: object, message: str = ""):
+    def __init__(self, inp: object, message: str = "") -> None:
         if isinstance(inp, str):
             message = inp
             inp = ""

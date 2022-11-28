@@ -77,7 +77,7 @@ def silence_stdout() -> Iterator[None]:
     sys.stdout = stdout
 
 
-def sysexit(*args: Any):
+def sysexit(*args: Any) -> None:
     if len(args) > 1:
         raise SamariumTypeError("=>! only takes one argument")
     code = args[0].val if args else 0
