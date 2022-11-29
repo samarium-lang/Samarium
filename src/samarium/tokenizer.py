@@ -5,7 +5,6 @@ from . import handlers
 from .exceptions import SamariumSyntaxError, handle_exception
 from .tokens import Token
 
-
 Tokenlike = Union[Token, str, int]
 
 CHARSET = ascii_letters + digits + "_"

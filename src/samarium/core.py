@@ -65,7 +65,7 @@ def import_to_scope(data: str, reg: Registry) -> None:
                 registry = {
                     f"sm_{k}": v
                     for k, v in vars(module).items()
-                    if f'__export_{v}' in dir(v)
+                    if f"__export_{v}" in dir(v)
                 }
                 imported = Registry(registry)
 

@@ -3,7 +3,7 @@ import sys
 
 STDOUT = sys.stdout
 sys.stdout = open(os.devnull, "w")
-{{ CODE }}
+{{CODE}}
 if __name__ == "samarium":
     sys.stdout = STDOUT
     argc = entry.argc

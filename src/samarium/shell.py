@@ -1,10 +1,12 @@
 import readline  # type: ignore
-# ^ used by input() to provide elaborate line editing and history features
 
 from .core import run
 from .tokenizer import tokenize
 from .transpiler import Registry
 from .utils import __version__, match_brackets
+
+# ^ used by input() to provide elaborate line editing and history features
+
 
 IN = "--> "
 INDENT = "  > "

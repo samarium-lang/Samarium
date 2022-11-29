@@ -7,7 +7,7 @@ from typing import IO, Any
 from samarium.utils import get_type_name
 
 from ..exceptions import SamariumIOError, SamariumTypeError
-from .base import NULL, Array, Attrs, Integer, Int, Null, Slice, String
+from .base import NULL, Array, Attrs, Int, Integer, Null, Slice, String
 
 
 class Mode(Enum):

@@ -1,21 +1,24 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, TypeVar, Iterable as PyIterable
-from io import BufferedIOBase, IOBase
 from enum import Enum as PyEnum
 from functools import wraps
+from io import BufferedIOBase, IOBase
+from typing import Any
+from typing import Iterable as PyIterable
+from typing import TypeVar
+
 from samarium.classes import (
     NULL,
     Array,
+    Attrs,
+    File,
     Integer,
+    Iterator,
     Null,
+    Slice,
     String,
     Table,
-    Iterator,
-    Slice,
-    File,
-    Attrs
 )
 from samarium.classes.base import Enum, Int, Zip
 
@@ -56,7 +59,7 @@ def to_python(obj: Attrs) -> object:
     elif isinstance(obj, Zip):
         return obj.val
     elif isinstance(obj, Enum):
-        o = {k.removeprefix('sm_'): to_python(v) for k, v in obj.members.items()}
+        o = {k.removeprefix("sm_"): to_python(v) for k, v in obj.members.items()}
         return Enum(obj.name, *o)
     elif isinstance(obj, Iterator):
         return (to_python(i) for i in obj)
@@ -74,17 +77,19 @@ def to_samarium(obj: object) -> Attrs:
     elif isinstance(obj, dict):
         return Table({to_samarium(k): to_samarium(v) for k, v in obj.items()})
     elif isinstance(obj, (range, slice)):
-        return Slice(to_samarium(obj.start), to_samarium(obj.stop), to_samarium(obj.step))
+        return Slice(
+            to_samarium(obj.start), to_samarium(obj.stop), to_samarium(obj.step)
+        )
     elif isinstance(obj, SliceRange):
         return obj._slice
     elif isinstance(obj, IOBase):
-        return File(obj, obj.mode, obj.name, isinstance(obj, BufferedIOBase)) # type: ignore
+        return File(obj, obj.mode, obj.name, isinstance(obj, BufferedIOBase))  # type: ignore
     elif isinstance(obj, zip):
         return Zip(*obj)
     elif isinstance(obj, PyEnum):
-        o = {k: to_samarium(v) for k, v in vars(obj) if not k.startswith('_')}
-        return Enum('PyEnum', *o)
-        
+        o = {k: to_samarium(v) for k, v in vars(obj) if not k.startswith("_")}
+        return Enum("PyEnum", *o)
+
     elif isinstance(obj, PyIterable):
         return Iterator(obj)
     raise TypeError(f"Conversion for type {type(obj)} not found")
@@ -92,6 +97,7 @@ def to_samarium(obj: object) -> Attrs:
 
 def sm_function(func):
     """Wraps a Python function to be used in Samarium"""
+
     @wraps(func)
     def wrapper(*_args):
         args = map(to_python, _args)
@@ -102,6 +108,7 @@ def sm_function(func):
 
 def py_function(func):
     """Converts a Samarium function to be used in Python"""
+
     @wraps(func)
     def wrapper(*_args):
         args = map(to_samarium, _args)

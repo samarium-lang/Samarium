@@ -1,5 +1,6 @@
 from __future__ import annotations
-from .exceptions import handle_exception, SamariumSyntaxError
+
+from .exceptions import SamariumSyntaxError, handle_exception
 from .tokens import Token
 
 
@@ -13,7 +14,7 @@ class Scroller:
         return self.program[:1]
 
     def next(self, offset: int = 1) -> str:
-        return self.program[offset:offset + 1]
+        return self.program[offset : offset + 1]
 
     def shift(self, units: int = 1) -> None:
         self.prev = self.program[:units][-1]
