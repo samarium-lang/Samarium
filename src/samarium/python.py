@@ -18,6 +18,19 @@ from samarium.classes import (
 )
 from samarium.classes.base import Int, Zip
 
+class SliceRange:
+    def __init__(self, slice_: Slice) -> None:
+        self._slice = slice_
+
+    @property
+    def slice(self) -> slice:
+        return self._slice.val
+
+    @property
+    def range(self) -> range:
+        return self._slice.range
+
+
 F = TypeVar("F", bound=Callable)
 
 
@@ -37,7 +50,7 @@ def to_python(obj: Attrs) -> object:
     elif isinstance(obj, Table):
         return {to_python(k): to_python(v) for k, v in obj.val.items()}
     elif isinstance(obj, Slice):
-        return range(obj.start.val, obj.stop.val, obj.step.val)
+        return SliceRange(obj)
     elif isinstance(obj, Iterator):
         return (to_python(i) for i in obj)
 
@@ -53,8 +66,10 @@ def to_samarium(obj: object) -> Attrs | type[Attrs]:
         return Array([to_samarium(i) for i in obj])
     elif isinstance(obj, dict):
         return Table({to_samarium(k): to_samarium(v) for k, v in obj.items()})
-    elif isinstance(obj, range):
-        return Slice(to_samarium(range.start), to_samarium(range.stop), to_samarium(range.step))
+    elif isinstance(obj, (range, slice)):
+        return Slice(to_samarium(obj.start), to_samarium(obj.stop), to_samarium(obj.step))
+    elif isinstance(obj, SliceRange):
+        return obj._slice
     elif isinstance(obj, IOBase):
         return File(obj, obj.mode, obj.name, isinstance(obj, BufferedIOBase)) # type: ignore
     elif isinstance(obj, zip):
