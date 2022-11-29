@@ -62,7 +62,7 @@ def to_python(obj: Attrs) -> object:
         return (to_python(i) for i in obj)
 
 
-def to_samarium(obj: object) -> Attrs | type[Attrs]:
+def to_samarium(obj: object) -> Attrs:
     if isinstance(obj, (int, bool, float)):
         return Int(obj)
     elif isinstance(obj, str):
@@ -87,7 +87,7 @@ def to_samarium(obj: object) -> Attrs | type[Attrs]:
         
     elif isinstance(obj, PyIterable):
         return Iterator(obj)
-    raise TypeError(f"Convertion for type {type(obj)!s} not found")
+    raise TypeError(f"Conversion for type {type(obj)} not found")
 
 
 def sm_function(func):
