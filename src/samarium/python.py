@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any, TypeVar, Iterable as PyIterable
 from io import BufferedIOBase, IOBase
+from enum import Enum as PyEnum
 from functools import wraps
 from samarium.classes import (
     NULL,
@@ -16,7 +17,8 @@ from samarium.classes import (
     File,
     Attrs
 )
-from samarium.classes.base import Int, Zip
+from samarium.classes.base import Enum, Int, Zip
+
 
 class SliceRange:
     def __init__(self, slice_: Slice) -> None:
@@ -51,6 +53,11 @@ def to_python(obj: Attrs) -> object:
         return {to_python(k): to_python(v) for k, v in obj.val.items()}
     elif isinstance(obj, Slice):
         return SliceRange(obj)
+    elif isinstance(obj, Zip):
+        return obj.val
+    elif isinstance(obj, Enum):
+        o = {k.removeprefix('sm_'): to_python(v) for k, v in obj.members.items()}
+        return Enum(obj.name, *o)
     elif isinstance(obj, Iterator):
         return (to_python(i) for i in obj)
 
@@ -74,6 +81,10 @@ def to_samarium(obj: object) -> Attrs | type[Attrs]:
         return File(obj, obj.mode, obj.name, isinstance(obj, BufferedIOBase)) # type: ignore
     elif isinstance(obj, zip):
         return Zip(*obj)
+    elif isinstance(obj, PyEnum):
+        o = {k: to_samarium(v) for k, v in vars(obj) if not k.startswith('_')}
+        return Enum('PyEnum', *o)
+        
     elif isinstance(obj, PyIterable):
         return Iterator(obj)
     raise TypeError(f"Convertion for type {type(obj)!s} not found")
