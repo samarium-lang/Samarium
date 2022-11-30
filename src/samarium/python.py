@@ -60,7 +60,7 @@ def to_python(obj: Attrs) -> object:
         return obj.val
     elif isinstance(obj, Enum):
         o = {k.removeprefix("sm_"): to_python(v) for k, v in obj.members.items()}
-        return PyEnum(obj.name, *o)
+        return PyEnum(obj.name, **o)
     elif isinstance(obj, Iterator):
         return (to_python(i) for i in obj)
 
@@ -88,7 +88,7 @@ def to_samarium(obj: object) -> Attrs:
         return Zip(*obj)
     elif isinstance(obj, PyEnum):
         o = {k: to_samarium(v) for k, v in obj.__members__.items()}
-        return Enum("PyEnum", *o)
+        return Enum("PyEnum", **o)
 
     elif isinstance(obj, PyIterable):
         return Iterator(obj)
