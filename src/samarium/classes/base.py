@@ -298,7 +298,7 @@ class Integer(Attrs):
 
     @guard("+++", default=2)
     def __pow__(self, other: Any) -> Integer:
-        return Int(self.val**other.val)
+        return Int(self.val ** other.val)
 
     @guard("---", default=2)
     def __mod__(self, other: Any) -> Integer:

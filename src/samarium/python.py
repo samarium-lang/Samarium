@@ -96,7 +96,6 @@ def to_samarium(obj: object) -> Attrs:
         return Enum(f"sm_{obj.__name__}", **o)
     elif isinstance(obj, PyEnum):
         return to_samarium(obj.value)
-
     elif isinstance(obj, PyIterable):
         return Iterator(obj)
     raise TypeError(f"Conversion for type {type(obj)} not found")
