@@ -80,7 +80,9 @@ def to_samarium(obj: object) -> Attrs:
         return Table({to_samarium(k): to_samarium(v) for k, v in obj.items()})
     elif isinstance(obj, (range, slice)):
         return Slice(
-            to_samarium(obj.start), to_samarium(obj.stop), to_samarium(obj.step)
+            to_samarium(None if obj.start == 0 else obj.start),
+            to_samarium(obj.stop),
+            to_samarium(None if obj.step == 1 else obj.step),
         )
     elif isinstance(obj, SliceRange):
         return obj._slice
