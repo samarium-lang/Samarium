@@ -87,7 +87,7 @@ def to_samarium(obj: object) -> Attrs:
     elif isinstance(obj, zip):
         return Zip(*obj)
     elif isinstance(obj, PyEnum):
-        o = {k: to_samarium(v) for k, v in vars(obj) if not k.startswith("_")}
+        o = {k: to_samarium(v) for k, v in obj.__members__.items()}
         return Enum("PyEnum", *o)
 
     elif isinstance(obj, PyIterable):
