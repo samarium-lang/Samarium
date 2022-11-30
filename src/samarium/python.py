@@ -86,9 +86,11 @@ def to_samarium(obj: object) -> Attrs:
         return File(obj, obj.mode, obj.name, isinstance(obj, BufferedIOBase))  # type: ignore
     elif isinstance(obj, zip):
         return Zip(*obj)
+    elif isinstance(obj, type) and issubclass(obj, PyEnum):
+        o = {f"sm_{k}": to_samarium(v) for k, v in obj.__members__.items()}
+        return Enum(f"sm_{obj.__name__}", **o)
     elif isinstance(obj, PyEnum):
-        o = {k: to_samarium(v) for k, v in obj.__members__.items()}
-        return Enum("PyEnum", **o)
+        return to_samarium(obj.value)
 
     elif isinstance(obj, PyIterable):
         return Iterator(obj)
