@@ -12,7 +12,9 @@ from samarium.classes import (
     NULL,
     Array,
     Attrs,
+    Enum,
     File,
+    Int,
     Integer,
     Iterator,
     Null,
@@ -20,7 +22,7 @@ from samarium.classes import (
     String,
     Table,
 )
-from samarium.classes.base import Enum, Int, Zip
+from samarium.classes.base import Zip
 
 
 class SliceRange:
