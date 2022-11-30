@@ -21,8 +21,8 @@ from samarium.classes import (
     Slice,
     String,
     Table,
+    Zip,
 )
-from samarium.classes.base import Zip
 
 
 class SliceRange:
