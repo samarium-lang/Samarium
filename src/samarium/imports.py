@@ -23,7 +23,6 @@ MODULE_NAMES = [
     "iter",
     "math",
     "operator",
-    "python",
     "random",
     "string",
     "types",
