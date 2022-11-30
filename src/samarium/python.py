@@ -60,7 +60,7 @@ def to_python(obj: Attrs) -> object:
         return obj.val
     elif isinstance(obj, Enum):
         o = {k.removeprefix("sm_"): to_python(v) for k, v in obj.members.items()}
-        return Enum(obj.name, *o)
+        return PyEnum(obj.name, *o)
     elif isinstance(obj, Iterator):
         return (to_python(i) for i in obj)
 
