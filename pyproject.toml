@@ -11,9 +11,11 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.9"
 dahlia = "^2.1.0"
+crossandra = "^1.2.2"
 
 [tool.poetry.dev-dependencies]
-flake8 = "^4.0.1"
+black = "^22.10.0"
+isort = "^5.10.1"
 
 [tool.poetry.scripts]
 samarium = "samarium.__main__:main"

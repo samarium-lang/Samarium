@@ -17,12 +17,12 @@ options and arguments:
 file              : reads program from script file"""
 
 
-def main(debug: bool = False):
+def main(debug: bool = False) -> None:
 
     reg = Registry(globals())
 
     if len(sys.argv) == 1:
-        return run_shell(debug)
+        return run_shell(debug=debug)
 
     if (arg := sys.argv[1]) in OPTIONS:
         if arg in OPTIONS[:2]:
@@ -43,5 +43,5 @@ def main(debug: bool = False):
             run(file, reg, debug)
 
 
-def main_debug():
+def main_debug() -> None:
     main(debug=True)

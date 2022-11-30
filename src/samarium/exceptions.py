@@ -12,14 +12,15 @@ BAD_OP = compile(
     r"|unsupported operand type\(s\) for (.+): '(\w+)' and '(\w+)'"
 )
 BAD_UOP = compile(r"bad operand type for unary (.+): '(\w+)'")
+ARG_NOT_ITER = compile(r"argument of type '(\w+)' is not iterable")
 NOT_CALLITER = compile(r"'(\w+)' object is not (\w+)")
 OP_MAP = {
     ">=": ">:",
     "<=": "<:",
     "//": "--",
-    "in?": "",
     "%": "---",
     "*": "++",
+    "@": "><",
     "** or pow()": "+++",
 }
 
@@ -28,7 +29,7 @@ def clear_name(name: str) -> str:
     return name.removeprefix("__").removeprefix("sm_")
 
 
-def handle_exception(exception: Exception):
+def handle_exception(exception: Exception) -> None:
     exc_type = type(exception)
     errmsg = str(exception)
     name = ""
@@ -53,6 +54,10 @@ def handle_exception(exception: Exception):
         type_ = clear_name(m.group(1))
         template = "... _ ->? {}" if m.group(2) == "iterable" else "{}()"
         exception = exc_type(template.format(type_))
+    elif m := ARG_NOT_ITER.match(errmsg):
+        exc_type = NotDefinedError
+        type_ = clear_name(m.group(1))
+        exception = exc_type(f"->? {type_}")
     elif exc_type is SyntaxError:
         exception = SamariumSyntaxError(
             f"invalid syntax at {int(errmsg.split()[-1][:-1])}"
@@ -72,7 +77,7 @@ def handle_exception(exception: Exception):
         if name.startswith("Samarium"):
             name = name.removeprefix("Samarium")
         else:
-            name = f"External{name}".replace("ExternalZeroDivision", "Math")
+            name = f"Python{name}".replace("PythonZeroDivision", "Math")
     name = name or exc_type.__name__
     sys.stderr.write(DAHLIA.convert(f"&4[{name}] {exception}\n"))
     if Runtime.quit_on_error:
@@ -84,7 +89,7 @@ class SamariumError(Exception):
 
 
 class NotDefinedError(SamariumError):
-    def __init__(self, inp: object, message: str = ""):
+    def __init__(self, inp: object, message: str = "") -> None:
         if isinstance(inp, str):
             message = inp
             inp = ""

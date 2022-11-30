@@ -68,21 +68,20 @@ def format_string(string: str) -> str:
 
 
 def merge_objects(reg: Registry, imported: Registry, module: Mod) -> dict[str, Attrs]:
-    vars = reg.vars.copy()
+    vars_ = reg.vars.copy()
     if module.objects is False:
-        vars[f"sm_{module.alias}"] = Module(module.name, imported.vars)
+        vars_[f"sm_{module.alias}"] = Module(module.name, imported.vars)
     elif module.objects is True:
-        vars |= {k: v for k, v in imported.vars.items() if k.startswith("sm_")}
+        vars_ |= {k: v for k, v in imported.vars.items() if k.startswith("sm_")}
     else:
         for obj in module.objects:
             try:
-                assert obj.alias
-                vars[f"sm_{obj.alias}"] = imported.vars[f"sm_{obj.name}"]
+                vars_[f"sm_{obj.alias}"] = imported.vars[f"sm_{obj.name}"]
             except KeyError:
                 raise SamariumImportError(
                     f"{obj.name} is not a member of the {module.name} module"
-                )
-    return vars
+                ) from None
+    return vars_
 
 
 def regex(string: str) -> Pattern:

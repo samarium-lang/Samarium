@@ -57,11 +57,6 @@ class Token(Enum):
     TRY = "??"
     WHILE = ".."
 
-    # Comments
-    COMMENT = "=="
-    COMMENT_OPEN = "==<"
-    COMMENT_CLOSE = ">=="
-
     # OOP / Functions
     CLASS = "@"
     DEFAULT = "<>"
@@ -110,7 +105,6 @@ class Token(Enum):
     END = ";"
     SEP = ","
     SLEEP = ",.,"
-    STRING = '"'
     ZIP = "><"
 
 

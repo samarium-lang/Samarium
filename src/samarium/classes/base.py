@@ -22,7 +22,8 @@ from ..utils import (
 def functype_repr(obj: Any) -> str:
     return (
         get_name(obj)
-        if isinstance(obj, FunctionType) or issubclass(obj, UserAttrs)
+        if isinstance(obj, FunctionType)
+        or (isinstance(obj, type) and issubclass(obj, UserAttrs))
         else repr(obj)
     )
 
@@ -44,7 +45,7 @@ def guard(operator: str, *, default: int | None = None) -> Callable[..., Any]:
     return decorator
 
 
-def throw_missing(*_):
+def throw_missing(*_) -> None:
     raise SamariumTypeError("missing default parameter value(s)")
 
 
@@ -604,7 +605,6 @@ class Table(Attrs):
                         k, v = map(String, e.val)
                         table[k] = v
                     else:
-                        assert isinstance(e, Array)
                         k, v = e.val
                         table[k] = v
                 self.val = table
@@ -629,7 +629,7 @@ class Table(Attrs):
         try:
             return self.val[key]
         except KeyError:
-            raise SamariumValueError(f"key not found: {key}")
+            raise SamariumValueError(f"key not found: {key}") from None
 
     def __setitem__(self, key: Any, value: Any) -> None:
         self.val[key] = value
@@ -659,7 +659,7 @@ class Table(Attrs):
         try:
             del c[other]
         except KeyError:
-            raise SamariumValueError(f"key not found: {other}")
+            raise SamariumValueError(f"key not found: {other}") from None
         return Table(c)
 
     def __matmul__(self, other: Any) -> Zip:
@@ -862,7 +862,7 @@ class Enum(Attrs):
         try:
             return self.members[name]
         except KeyError:
-            raise AttributeError(f"'{self.name}''{name}'")
+            raise AttributeError(f"'{self.name}''{name}'") from None
 
     def __setattr__(self, name: str, value: Any) -> None:
         if name.startswith("sm_"):
