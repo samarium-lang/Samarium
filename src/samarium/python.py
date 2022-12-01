@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from enum import Enum as PyEnum
 from functools import wraps
 from io import BufferedIOBase, IOBase
-from typing import Any
+from types import FunctionType
 from typing import Iterable as PyIterable
-from typing import TypeVar
 
 from samarium.classes import (
     NULL,
@@ -39,15 +37,6 @@ class SliceRange:
         return self._slice.range
 
 
-F = TypeVar("F", bound=Callable)
-
-
-def export(f: F) -> F:
-    """Marks an object to be exported to Samarium"""
-    setattr(f, f"__export_{f}", True)
-    return f
-
-
 def to_python(obj: Attrs) -> object:
     if isinstance(obj, (String, Integer, Zip, File)):
         return obj.val
@@ -65,7 +54,8 @@ def to_python(obj: Attrs) -> object:
         o = {k.removeprefix("sm_"): to_python(v) for k, v in obj.members.items()}
         return PyEnum(obj.name, o)
     elif isinstance(obj, Iterator):
-        return (to_python(i) for i in obj)
+        return map(to_python, obj)
+    raise TypeError(f"Conversion for type {type(obj).__name__!r} not found")
 
 
 def to_samarium(obj: object) -> Attrs:
@@ -98,10 +88,10 @@ def to_samarium(obj: object) -> Attrs:
         return to_samarium(obj.value)
     elif isinstance(obj, PyIterable):
         return Iterator(obj)
-    raise TypeError(f"Conversion for type {type(obj)} not found")
+    raise TypeError(f"Conversion for type {type(obj).__name__!r} not found")
 
 
-def sm_function(func):
+def export(func):
     """Wraps a Python function to be used in Samarium"""
 
     @wraps(func)
@@ -109,52 +99,10 @@ def sm_function(func):
         args = map(to_python, _args)
         return to_samarium(func(*args))
 
-    return wrapper
-
-
-def py_function(func):
-    """Converts a Samarium function to be used in Python"""
-
-    @wraps(func)
-    def wrapper(*_args):
-        args = map(to_samarium, _args)
-        return to_python(func(*args))
+    if not isinstance(func, FunctionType):
+        raise TypeError(
+            f"cannot export a non-function type {type(func).__name__!r}"
+        )
+    setattr(wrapper, f"__export_{wrapper}", True)
 
     return wrapper
-
-
-class SmProxy(Attrs):
-    """Allows the use of a Python object via Samarium"""
-
-    def __init__(self, v: Any) -> None:
-        self.v = v
-
-    def __call__(self, *args, **kwargs):
-        return sm_function(self.v)(*args, **kwargs)
-
-    def __getattr__(self, name: str) -> Any:  # type: ignore
-        if name.startswith("sm_"):
-            attr = getattr(self.v, name.removeprefix("sm_"))
-
-            if callable(attr):
-                return SmProxy(attr)  # type: ignore
-            return to_samarium(attr)
-        return self.__getattribute__(name)
-
-
-class PyProxy:
-    """Allows the use of a Samarium object via Python"""
-
-    def __init__(self, v: Any) -> None:
-        self.v = v
-
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        return py_function(self.v)(*args, **kwargs)
-
-    def __getattr__(self, name: str) -> Any:
-        if name.startswith("__"):
-            return getattr(self, name)
-        attr = getattr(self.v, f"sm_{name}")
-        if callable(attr):
-            return PyProxy(attr)
-        return to_python(attr)
