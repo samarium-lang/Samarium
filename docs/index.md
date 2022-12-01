@@ -17,12 +17,17 @@ Here's a `Hello, World!` program written in Samarium:
 
 ## [pip](https://pypi.org/project/pip/)
 
-`pip install samarium`
+```sh
+pip install samarium
+```
 
 
 ## [AUR](https://aur.archlinux.org/)
 
-`git clone https://aur.archlinux.org/samarium.git; cd samarium; makepkg -sirc` or use your favorite [AUR helper](https://wiki.archlinux.org/title/AUR_helpers).
+```sh
+git clone https://aur.archlinux.org/samarium.git && cd samarium && makepkg -sirc
+```
+or use your favorite [AUR helper](https://wiki.archlinux.org/title/AUR_helpers).
 
 
 ## Using Samarium
