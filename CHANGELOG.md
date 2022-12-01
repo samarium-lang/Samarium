@@ -5,6 +5,79 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2022-12-01
+
+### Added
+- `Array%`
+- `Enum%`
+- `io` module:
+  - `io.Bytes`
+  - `io.inputcast`
+  - `io.read_until`
+- `iter.cycle` by [@Lunarmagpie](https://github.com/Lunarmagpie)
+- New import system, including:
+  - import aliases
+  - inline imports
+- New special method syntax
+- Partial Python Interoperability by [@Endercheif](https://github.com/Endercheif)
+- `start` parameter for `math.sum`, thus allowing to sum non-Integers
+- Static methods (`~'*` keyword)
+- `string.split()` now supports separators of length greater than 1, and also handles empty separators
+- Strings of length greater than 1 can now be cast into Arrays of Integers
+- Subtracting strings
+- Support for `^L`, `^[[A`, `^[[B`, `^[[C`, `^[[D` in the REPL
+- `to_bit` methods for:
+  - `Enum`
+  - `File`
+  - `Iterator`
+  - `Module`
+- `Type`s and functions are now hashable
+- Zip `><` operator
+- `Zip` type
+
+### Changed
+- Flipped argument order for:
+  - `iter.map`
+  - `iter.filter`
+  - `iter.filter_false`
+- Greatly improved error messages
+- Improved `collections.Set` methods:
+  - Replaced `union` with `|`
+  - Replaced `intersection` with `&`
+  - Replaced `difference` with `-`
+  - Removed `is_subset` in place of `::`, `:::`, `>`, `<`, `>:`, `<:` operator support
+- Improved function to string conversion
+- Improved implicit null detection
+- Improved readline error handling
+- Improved slice object detection
+- Improved string integer parsing
+- Improved variable type verification
+- Rewrote the objects (should be 10–50% faster than Samarium 0.3.1 🚀)
+- Replaced the native tokenizer with a [crossandra](https://github.com/trag1c/crossandra) tokenizer (~3x faster tokenization 🚀)
+- Updated `to_string` methods of:
+  - `collections.ArithmeticArray`
+  - `collections.Deque`
+  - `collections.Queue`
+  - `collections.Set`
+
+### Fixed
+- `collections.Set.#new_set_size` now takes unsized sets into consideration
+- Constructing `Slice`s from `Type` now correctly works
+- Error message shown when trying to run an unknown file is now written to stderr, not stdout
+- Syntax errors now cannot be caught
+
+### Removed
+- `collections.Set.values()` (use `collections.Set.items`)
+- English special method names
+- `iter.zip` (use the `><` operator)
+- `iter.enumerate` (use the `><` operator with `<<>>`)
+- Some dead code :)
+- `string.format` (use `String`'s `---` operator)
+
+---
+
+Also big thanks to [@qexat](https://github.com/qexat) & [@Celeo](https://github.com/Celeo) for code improvements! ❤️
+
 ## [0.3.1] - 2022-09-23
 
 ### Fixed
@@ -221,3 +294,4 @@ Initial release 🚀
 [0.2.3]: https://github.com/samarium-lang/Samarium/compare/0.2.2...0.2.3
 [0.3.0]: https://github.com/samarium-lang/Samarium/compare/0.2.3...0.3.0
 [0.3.1]: https://github.com/samarium-lang/Samarium/compare/0.3.0...0.3.1
+[0.4.0]: https://github.com/samarium-lang/Samarium/compare/0.3.1...0.4.0

@@ -57,6 +57,6 @@ Special thanks to:
 - [tetraxile](https://github.com/tetraxile) for helping with design choices and writing the docs
 - [MithicSpirit](https://github.com/MithicSpirit) for making an AUR package for Samarium
 - [DarviL82](https://github.com/DarviL82) for fixing some issues
-- [Endercheif](https://github.com/Endercheif) for making the documentation look fancy and helping with design choices
+- [Endercheif](https://github.com/Endercheif) for making the documentation look fancy, helping with design choices, and adding partial Python Interoperability
 
 If you have any questions, or would like to get in touch, join the [Discord server](https://discord.gg/C8QE5tVQEq)!

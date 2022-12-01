@@ -23,6 +23,7 @@ nav:
     - Modules: modules.md
     - Classes: classes.md
     - File I/O: fileio.md
+    - Python Interop: interop.md
   - Standard Library:
     - collections module: stdcollections.md
     - datetime module: stddatetime.md
