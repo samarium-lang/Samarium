@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+import importlib.machinery
+import importlib.util
+import sys
 from pathlib import Path
+
+from dahlia import dahlia
 
 from . import exceptions as exc
 from .builtins import (
@@ -46,7 +51,24 @@ def import_to_scope(data: str, reg: Registry) -> None:
             raise exc.SamariumRecursionError
         path = resolve_path(mod.name)
         with silence_stdout():
-            imported = run((path / f"{mod.name}.sm").read_text(), Registry({}))
+            if (path / f"{mod.name}.sm").exists():
+                imported = run((path / f"{mod.name}.sm").read_text(), Registry({}))
+            else:
+                spec: importlib.machinery.ModuleSpec = (
+                    importlib.util.spec_from_file_location(
+                        mod.name, str(path / f"{mod.name}.py")
+                    )
+                )  # type: ignore
+                module = importlib.util.module_from_spec(spec)
+                sys.modules[mod.name] = module
+                spec.loader.exec_module(module)  # type: ignore
+                registry = {
+                    f"sm_{k}": v
+                    for k, v in vars(module).items()
+                    if f"__export_{v}" in dir(v)
+                }
+                imported = Registry(registry)
+
         reg.vars.update(merge_objects(reg, imported, mod))
 
 

@@ -26,7 +26,7 @@ crossandra = Crossandra(
         Rule(r"==<.*>==", False, re.M | re.S),
         Rule(r"(?:\\|/)+", to_int),
         Rule(r"\w+"),
-    ]
+    ],
 )
 
 

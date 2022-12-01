@@ -17,6 +17,7 @@ from .base import (
     Table,
     Type,
     UserAttrs,
+    Zip,
     to_string,
 )
 from .fileio import File, FileManager, Mode
@@ -41,5 +42,6 @@ __all__ = (
     "FileManager",
     "Mode",
     "UserAttrs",
+    "Zip",
     "to_string",
 )
