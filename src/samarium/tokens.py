@@ -51,15 +51,11 @@ class Token(Enum):
     FOR = "..."
     FROM = "<-"
     IF = "?"
+    IMPORT = "<="
     THROW = "!!!"
     TO = "->"
     TRY = "??"
     WHILE = ".."
-
-    # Comments
-    COMMENT = "=="
-    COMMENT_OPEN = "==<"
-    COMMENT_CLOSE = ">=="
 
     # OOP / Functions
     CLASS = "@"
@@ -109,7 +105,7 @@ class Token(Enum):
     END = ";"
     SEP = ","
     SLEEP = ",.,"
-    STRING = '"'
+    ZIP = "><"
 
 
 FILE_IO_TOKENS = [

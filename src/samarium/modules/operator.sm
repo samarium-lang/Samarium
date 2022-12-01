@@ -10,19 +10,19 @@ cast x * {
     * x%;
 }
 
-divide x y * {
+div x y * {
     * x -- y;
 }
 
-equals x y * {
+eq x y * {
     * x :: y;
 }
 
-greater_than_or_equal x y * {
+ge x y * {
     * x >: y;
 }
 
-greater_than x y * {
+gt x y * {
     * x > y;
 }
 
@@ -34,11 +34,11 @@ hash x * {
     * x##;
 }
 
-less_than_or_equal x y * {
+le x y * {
     * x <: y;
 }
 
-less_than x y * {
+lt x y * {
     * x < y;
 }
 
@@ -46,7 +46,7 @@ mod x y * {
     * x --- y;
 }
 
-multiply x y * {
+mul x y * {
     * x ++ y;
 }
 
@@ -54,7 +54,7 @@ not x * {
     * ~x;
 }
 
-not_equals x y * {
+ne x y * {
     * x ::: y;
 }
 
@@ -62,7 +62,7 @@ or x y * {
     * x | y;
 }
 
-power x y * {
+pow x y * {
     * x +++ y;
 }
 
@@ -74,16 +74,16 @@ special x * {
     * x$;
 }
 
-subtract x y * {
+sub x y * {
     * x - y;
 }
 
 to_bit x * {
-    * x.to_bit();
+    * / ? x ,, \;
 }
 
 to_string x * {
-    * x.to_string();
+    * ""?!(x);
 }
 
 xor x y * {

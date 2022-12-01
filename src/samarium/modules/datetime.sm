@@ -1,4 +1,4 @@
-<-types.String, Table;
+<=types.String;
 
 MONTHS: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 WEEKDAYS: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -57,15 +57,17 @@ weekday_name n * {
 }
 
 timestamp_utc ts? * {
+    60_000: ///\/\/\\//\\\\\;
+    3_600_000: //\//\///\///\/\\\\\\\;
     ts <> @@;
     dtnow: @@@;
     tz: dtnow<<-/\..>>;
-    offset: tz<<\>> ++ //\//\///\///\/\\\\\\\ + tz<</>> ++ ///\/\/\\//\\\\\;
+    offset: tz<<\>> ++ 3_600_000 + tz<</>> ++ 60_000;
     * ts - offset;
 }
 
 @ DateTime {
-    create Y? M? D? h? m? s? ms? tz? * {
+    => Y? M? D? h? m? s? ms? tz? * {
         Y <>;
         ? :: Y {
             'array: @@@;
@@ -98,7 +100,7 @@ timestamp_utc ts? * {
         }
     }
 
-    subtract other * {
+    - other * {
         diff: 'to_timestamp() - other.to_timestamp();
         1000: /\/\ +++ //;
         60: ////\\;
@@ -111,31 +113,25 @@ timestamp_utc ts? * {
         * DTDiff([diff, h, m, s, ms]);
     }
 
-    to_string * {
-        <-string.format, leftpad;
-        add0s n c * { * leftpad(String(n), c, "0"); }
-        * format(
-            "$Y-$M-$D $h:$m:$s.$z",
-            {{
-                "Y" -> 'year,
-                "M" -> add0s('month, /\),
-                "D" -> add0s('day, /\),
-                "h" -> add0s('hour + 'timezone<<\>>, /\),
-                "m" -> add0s('minute + 'timezone<</>>, /\),
-                "s" -> add0s('second, /\),
-                "z" -> add0s('millisecond, //)
-            }}
-        );
+    ! * {
+        add0s n c * { * <-string.leftpad(String(n), c, "0"); }
+        * "$Y-$M-$D $h:$m:$s.$z" --- {{
+            "Y" -> 'year,
+            "M" -> add0s('month, /\),
+            "D" -> add0s('day, /\),
+            "h" -> add0s('hour + 'timezone<<\>>, /\),
+            "m" -> add0s('minute + 'timezone<</>>, /\),
+            "s" -> add0s('second, /\),
+            "z" -> add0s('millisecond, //)
+        }};
     }
 
     to_timestamp * {
-        <-collections.ArithmeticArray;
-
         1000: /\/\ +++ //;
         60: ////\\;
 
         mod_array: 'array<<..-/\..>>;
-        array: ArithmeticArray(mod_array<<....-/>>);
+        array: <-collections.ArithmeticArray(mod_array<<....-/>>);
         total: \;
 
         month_days: days_in_month('year, 'month);
@@ -152,30 +148,27 @@ timestamp_utc ts? * {
 
         * total;
     }
-
 }
 
 @ DTDiff {
-
-    create data * {
+    => data * {
         'data: data;
     }
 
-    to_string * {
-        <-string.leftpad, strip_left;
-        add0s n c * { * leftpad(String(n), c, "0"); }
+    ! * {
+        add0s n c * { * <-string.leftpad(String(n), c, "0"); }
         D: 'data<<\>>;
         h: 'data<</>>;
         m: 'data<</\>>;
         s: 'data<<//>>;
         ms: 'data<</\\>>;
         out: "";
-        ? D { out+: D.to_string() + " days"; }
+        ? D { out+: ""?!(D) + " days"; }
         ? D && (~~ (h || m || s || ms)) { out+: ", "; }
         ? h { out+: add0s(h, /\) + ":"; }
         ? h || m { out+: add0s(m, /\) + ":"; }
         ? h || m || s { out+: add0s(s, /\); }
         ? ms { out+: "." + add0s(ms, //); }
-        * strip_left(out, "0") || "0";
+        * <-string.strip_left(out, "0") || "0";
     }
 }

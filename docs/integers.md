@@ -31,3 +31,9 @@ Or in base 10:
 ```py
 99999999999999999999999999999999999999999999999999999999999999999999999999999999
 ```
+
+Integers can be casted to characters represented by that integer's unicode code point:
+
+`/\\\\/%` returns `"!"`.
+
+`//////%` returns `"?"`.

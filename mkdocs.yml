@@ -17,14 +17,17 @@ nav:
     - Control Flow: controlflow.md
     - Null: null.md
     - Slices: slices.md
+    - Zipping: zip.md
     - Enums: enums.md
     - Functions: functions.md
     - Modules: modules.md
     - Classes: classes.md
     - File I/O: fileio.md
+    - Python Interop: interop.md
   - Standard Library:
     - collections module: stdcollections.md
     - datetime module: stddatetime.md
+    - io module: stdio.md
     - iter module: stditer.md
     - math module: stdmath.md
     - operator module: stdoperator.md

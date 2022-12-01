@@ -1,13 +1,12 @@
-from dahlia import dahlia, dprint
+import readline  # used by input() to provide elaborate line editing & history features
 
 from .core import run
 from .tokenizer import tokenize
 from .transpiler import Registry
-from .utils import match_brackets, __version__
+from .utils import __version__, match_brackets
 
-
-IN = dahlia("&3==> ")
-INDENT = dahlia("&3  > ")
+IN = "--> "
+INDENT = "  > "
 
 
 def read_statement() -> str:
@@ -24,13 +23,13 @@ def read_statement() -> str:
             statement = statement[:-1]
 
 
-def run_shell(debug: bool):
-    dprint(f"&3Samarium {__version__}")
-    MAIN = Registry(globals())
+def run_shell(*, debug: bool) -> None:
+    print(f"Samarium {__version__}" + " [DEBUG]" * debug)
+    main = Registry(globals())
     while True:
         try:
-            run(read_statement(), MAIN, debug, load_template=False, quit_on_error=False)
-            MAIN.output *= 0
+            run(read_statement(), main, debug, load_template=False)
+            main.output = ""
         except KeyboardInterrupt:
             print()
         except EOFError:

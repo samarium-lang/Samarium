@@ -1,7 +1,5 @@
 abs n * {
-    ? n < \ {
-        * -n;
-    }
+    ? n < \ { * -n; }
     * n;
 }
 
@@ -18,42 +16,32 @@ factorial n * {
 }
 
 gcd a b * {
-    .. b {
-        a, b: b, a --- b;
-    }
+    .. b { a, b: b, a --- b; }
     * abs(a);
 }
 
 lcm a b * {
-    ?? {
-        * abs(a ++ b) -- gcd(a, b);
-    } !! {
-        * \;
-    }
+    ?? { * abs(a ++ b) -- gcd(a, b); }
+    !! { * \; }
 }
 
 product array * {
     o: /;
-    ... e ->? array {
-        o++: e;
-    }
+    ... e ->? array { o++: e; }
     * o;
 }
 
-sum array * {
-    o: \;
-    ... e ->? array {
-        o+: e;
-    }
+sum array start? * {
+    start <> \;
+    o: start;
+    ... e ->? array { o+: e; }
     * o;
 }
 
 max array * {
     o: array<<\>>;
     ... e ->? array {
-        ? e > o {
-            o: e;
-        }
+        ? e > o { o: e; }
     }
     * o;
 }
@@ -61,9 +49,7 @@ max array * {
 min array * {
     o: array<<\>>;
     ... e ->? array {
-        ? e < o {
-            o: e;
-        }
+        ? e < o { o: e; }
     }
     * o;
 }
@@ -96,38 +82,38 @@ shr a b * {
 }
 
 to_hex n * {
-    <-string.HEXDIGITS;
+    <=string.HEXDIGITS;
     div: n -- /\\\\;
     mod: n --- /\\\\;
-    ? ~~ div {
-        * HEXDIGITS<<mod>>;
-    }
+    ? ~~ div { * HEXDIGITS<<mod>>; }
     * to_hex(div) + HEXDIGITS<<mod>>;
 }
 
 to_oct n * {
-    <-string.OCTDIGITS;
+    <=string.OCTDIGITS;
     div: n -- /\\\;
     mod: n --- /\\\;
-    ? ~~ div {
-        * OCTDIGITS<<mod>>;
-    }
+    ? ~~ div { * OCTDIGITS<<mod>>; }
     * to_oct(div) + OCTDIGITS<<mod>>;
 }
 
 is_prime n * {
-    ? n <: // {
+    0: \;
+    2: /\;
+    3: //;
+    6: 2 ++ 3;
+    ? n <: 3 {
         * n > /;
     }
-    ? n --- /\ :: \ || n --- // :: \ {
-        * \;
+    ? n --- 2 :: 0 || n --- 3 :: 0 {
+        * 0;
     }
     i: /\/;
-    .. i +++ /\ <: n {
-        ? n --- i :: \ || n --- (i + /\) :: \ {
-            * \;
+    .. i +++ 2 <: n {
+        ? n --- i :: 0 || n --- (i + 2) :: 0 {
+            * 0;
         }
-        i+: //\;
+        i+: 6;
     }
     * /;
 }

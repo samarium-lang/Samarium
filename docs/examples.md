@@ -29,9 +29,8 @@
 
 ```sm
 dropsort array * {
-    <-iter.enumerate;
     out: [];
-    ... i, v ->? enumerate(array) {
+    ... i, v ->? <<>> >< array {
         ? ~~ out || v >: out<<-/>> {
             out+: [v];
         }
@@ -58,9 +57,7 @@ factorial n * {
 
 ```sm
 point coords... * {
-    <-string.join;
-    <-types.String;
-    * "(" + join(coords, ", ") + ") is a " + String(coords$) + "D point";
+    * "(" + <-string.join(coords, ", ") + ") is a " + ""?!(coords$) + "D point";
 }
 
 => * {
@@ -77,8 +74,7 @@ point coords... * {
 
 ```sm
 => * {
-    <-iter.range;
-    nums: range(/, /\//)!;
+    nums: <</../\//>>!;
     ... n ->? nums {
         ? n --- /\ :: \ { -> }
         ? n :: /\\/ { <- }
@@ -100,18 +96,14 @@ point coords... * {
 
 ```sm
 random_hex_color * {
-    <-iter.range;
-    <-string.hexdigits, join;
-    * "#" + join([hexdigits?? ... i ->? range(/\\)]);
+    * "#" + <-string.join([<-string.hexdigits?? ... i ->? <<../\\>>]);
 }
 
 == could alternatively define that as
 
 random_hex_color * {
     max: /\ +++ //\\\;
-    <-string.leftpad;
-    <-math.to_hex;
-    * "#" + leftpad(to_hex(max??), //\, "0");
+    * "#" + <-string.leftpad(<-math.to_hex(max??), //\, "0");
 }
 
 => * {
@@ -131,8 +123,7 @@ roll_dice q? * {
     ? q :: / {
         * roll1();
     } ,, {
-        <-iter.range;
-        * [roll1() ... i ->? range(q)];
+        * [roll1() ... i ->? <<..q>>];
     }
 }
 
@@ -154,8 +145,7 @@ roll_dice q? * {
     }
 
     to_string * {
-        <-types.String;
-        * "Rectangle[" + String('a) + ", " + String('b) + "]";
+        * "Rectangle[" + ""?!('a) + ", " + ""?!('b) + "]";
     }
 
     circumference * {

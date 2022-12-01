@@ -17,12 +17,17 @@ Here's a `Hello, World!` program written in Samarium:
 
 ## [pip](https://pypi.org/project/pip/)
 
-`pip install samarium`
+```sh
+pip install samarium
+```
 
 
 ## [AUR](https://aur.archlinux.org/)
 
-`git clone https://aur.archlinux.org/samarium.git; cd samarium; makepkg -sirc` or use your favorite [AUR helper](https://wiki.archlinux.org/title/AUR_helpers).
+```sh
+git clone https://aur.archlinux.org/samarium.git && cd samarium && makepkg -sirc
+```
+or use your favorite [AUR helper](https://wiki.archlinux.org/title/AUR_helpers).
 
 
 ## Using Samarium
@@ -52,6 +57,6 @@ Special thanks to:
 - [tetraxile](https://github.com/tetraxile) for helping with design choices and writing the docs
 - [MithicSpirit](https://github.com/MithicSpirit) for making an AUR package for Samarium
 - [DarviL82](https://github.com/DarviL82) for fixing some issues
-- [Endercheif](https://github.com/Endercheif) for making the documentation look fancy and helping with design choices
+- [Endercheif](https://github.com/Endercheif) for making the documentation look fancy, helping with design choices, and adding partial Python Interoperability
 
 If you have any questions, or would like to get in touch, join the [Discord server](https://discord.gg/C8QE5tVQEq)!

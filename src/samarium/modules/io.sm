@@ -1,0 +1,82 @@
+<=math.to_hex;
+<=iter.[any, map];
+<=string.[join, split, strip];
+<=types.[Array, Integer, Slice];
+
+
+@ Bytes {
+    => value * {
+        '#value: '#to_bytes(value);
+    }
+
+    #to_bytes v * {
+        ? v?! :: ""?! {
+            * [i% ... i ->? v];
+        }
+        ? v?! :: []?! {
+            ? any([i?! ::: /?! ... i ->? v]) {
+                "non-int found in the list"!!!;
+            }
+            * v;
+        } ,, {
+            "invalid type: " + ""?!(v?!)!!!;
+        }
+    }
+
+    + other * {
+        ? other?! :: Bytes {
+            * Bytes('#value + other.export());
+        }
+        * Bytes('#value + '#to_bytes(other));
+    }
+
+    ! * {
+        * join([to_hex(i) ... i ->? '#value], " ");
+    }
+
+    export * { * '#value; }
+
+    export_string * {
+        * join([i% ... i ->? '#value]);
+    }
+}
+
+read_until target? * {
+    target <> "";
+    s: "";
+    .. {
+        i: ???;
+        s+: i;
+        ? i :: target { <- }
+        s+: "\n";
+    }
+    * s;
+}
+
+#autocast value * {
+    value: strip(value);
+    ? ~~ value { *; }
+    ? ".." ->? value {
+        bits: [Integer(i) ? i ,, ... i ->? split(value, "..")];
+        ? bits$ > // {
+            "too many arguments for slice"!!!;
+        }
+        * Slice(**bits);
+    }
+    ? "=" ->? value {
+        items: [split(i, "=") ... i ->? split(value, ",")];
+        * {{strip(k) -> #autocast(v) ... k, v ->? items}};
+    }
+    ... sep ->? ", " {
+        ? sep ->? value {
+            * Array(map(#autocast, split(value, sep)));
+        }
+    }
+    ?? { * Integer(value); }
+    !! { * value; }
+}
+
+inputcast prompt? * {
+    prompt <> "";
+    * #autocast(prompt???);
+}

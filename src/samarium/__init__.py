@@ -1,15 +1,13 @@
 import sys
-
 from contextlib import suppress
+from pathlib import Path
 
-from .core import run, readfile
+from .core import run
 from .shell import run_shell
 from .transpiler import Registry
 from .utils import __version__
 
-MAIN = Registry(globals())
-
-OPTIONS = ["-v", "--version", "-c", "--command", "-h", "--help"]
+OPTIONS = ("-v", "--version", "-c", "--command", "-h", "--help")
 
 HELP = """samarium [option] [-c cmd | file]
 options and arguments:
@@ -19,29 +17,31 @@ options and arguments:
 file              : reads program from script file"""
 
 
-def main(debug: bool = False):
+def main(debug: bool = False) -> None:
+
+    reg = Registry(globals())
 
     if len(sys.argv) == 1:
-        return run_shell(debug)
+        return run_shell(debug=debug)
 
     if (arg := sys.argv[1]) in OPTIONS:
         if arg in OPTIONS[:2]:
             print(f"Samarium {__version__}")
         elif arg in OPTIONS[2:4]:
-            run(f"=> argv * {{\n\t{sys.argv[2]} !;\n}}", MAIN, debug)
+            run(f"=> argv * {{ {sys.argv[2]} !; }}", reg, debug)
         elif arg in OPTIONS[4:]:
             print(HELP)
         sys.exit()
 
     try:
-        file = readfile(arg)
+        file = Path(arg).read_text()
     except IOError:
-        print(f"file not found: {arg}")
+        print(f"file not found: {arg}", file=sys.stderr)
     else:
         with suppress(Exception, KeyboardInterrupt):
             file = "\n".join(file.splitlines()[file.startswith("#!") :])
-            run(file, MAIN, debug)
+            run(file, reg, debug)
 
 
-def main_debug():
+def main_debug() -> None:
     main(debug=True)

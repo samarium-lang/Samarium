@@ -14,11 +14,7 @@ shuffle array * {
 }
 
 choices array k * {
-    o: [];
-    .. o$ < k {
-        o+: [array??];
-    }
-    * o;
+    * [array?? ... _ ->? <<..k>>];
 }
 
 sample array k * {

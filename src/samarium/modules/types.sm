@@ -1,40 +1,31 @@
 Array: []?!;
 Integer: \?!;
-Iterator: [].iterate()?!;
 Null: (||)?!;
 Slice: <<>>?!;
 String: ""?!;
 Table: {{}}?!;
+Zip: ("" >< "")?!;
 
 
 @ Boolean {
-
-    create value * {
+    => value * {
         ? value?! :: ""?! {
-            <-string.to_lower;
-            'value: {{"true" -> /, "false" -> \}}<<to_lower(value)>>;
+            'value: {{"true" -> /, "false" -> \}}<<<-string.to_lower(value)>>;
         } ,, {
-            'value: value.to_bit();
+            'value: / ? value ,, \;
         }
     }
 
-    to_string * {
-        * "true" ? 'value ,, "false";
-    }
+    ! * { * "true" ? 'value ,, "false"; }
+    ? * { * 'value; }
 
-    to_bit * {
-        * 'value;
-    }
-
-    equals other * {
+    :: other * {
         * Boolean('value :: other.value);
     }
 
-    greater_than other * {
-        * Boolean('value > other.value);
-    }
+    > other * { * Boolean('value > other.value); }
 
-    add other * {
+    + other * {
         out: 'value + other.value;
         ? out > / {
             * out;
@@ -43,7 +34,7 @@ Table: {{}}?!;
         }
     }
 
-    subtract other * {
+    - other * {
         out: 'value - other.value;
         ? out < \ {
             * out;
@@ -52,63 +43,47 @@ Table: {{}}?!;
         }
     }
 
-    multiply other * {
+    ++ other * {
         * Boolean('value ++ other.value);
     }
 
-    divide other * {
+    -- other * {
         * Boolean('value -- other.value);
     }
 
-    power other * {
+    +++ other * {
         * Boolean('value +++ other.value);
     }
 
-    mod other * {
+    --- other * {
         * Boolean('value --- other.value);
     }
 
-    and other * {
-        * Boolean('value & other.value);
-    }
+    & other * { * Boolean('value & other.value); }
+    ^ other * { * Boolean('value ^ other.value); }
+    | other * { * Boolean('value | other.value); }
 
-    xor other * {
-        * Boolean('value ^ other.value);
-    }
-
-    or other * {
-        * Boolean('value | other.value);
-    }
-
-    not * {
-        * Boolean(\ ? 'value ,, /);
-    }
-
+    ~ * { * Boolean(\ ? 'value ,, /); }
 }
 
 @ UUID4 {
-
-    create * {
-        <-random.choices;
-        <-string.HEXDIGITS, join;
-        hex: join(choices(HEXDIGITS, /\\\\\));
+    => * {
+        hex: <-string.join(<-random.choices(<-string.HEXDIGITS, /\\\\\));
         hex<<//\\>>: "4";
         hex<</\\\\>>: "89ab"??;
         'hex: hex;
         'dec: Integer("x:" + hex);
     }
 
-    to_string * {
-        <-string.join;
-        * join(
-            [
-                'hex<<../\\\>>,
-                'hex<</\\\..//\\>>,
-                'hex<<//\\../\\\\>>,
-                'hex<</\\\\../\/\\>>,
-                'hex<</\/\\..>>
-            ], "-"
+    ! * {
+        h: 'hex;
+        8: /\\\;
+        12: //\\;
+        16: /\\\\;
+        20: /\/\\;
+        * <-string.join(
+            [h<<..8>>, h<<8..12>>, h<<12..16>>, h<<16..20>>, h<<20..>>],
+            "-"
         );
     }
-
 }
