@@ -48,8 +48,6 @@ def to_python(obj: Attrs) -> object:
         return {to_python(k): to_python(v) for k, v in obj.val.items()}
     elif isinstance(obj, Slice):
         return SliceRange(obj)
-    elif isinstance(obj, Zip):
-        return obj.val
     elif isinstance(obj, Enum):
         o = {k.removeprefix("sm_"): to_python(v) for k, v in obj.members.items()}
         return PyEnum(obj.name, o)
