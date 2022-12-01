@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Partial Python Interoperability by [@Endercheif](https://github.com/Endercheif)
 - `start` parameter for `math.sum`, thus allowing to sum non-Integers
 - Static methods (`~'*` keyword)
+- `string.ordinal`
 - `string.split()` now supports separators of length greater than 1, and also handles empty separators
 - Strings of length greater than 1 can now be cast into Arrays of Integers
 - Subtracting strings
