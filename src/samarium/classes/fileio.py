@@ -97,7 +97,7 @@ class File(Attrs):
         return not self.val.closed
 
     def __str__(self) -> str:
-        return f"File(path:{self.path}, mode:{self.mode})"
+        return f'File(path:"{self.path}", mode:{self.mode})'
 
     def __invert__(self) -> Null:
         self.val.close()
