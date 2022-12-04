@@ -5,8 +5,9 @@ from functools import lru_cache
 from inspect import signature
 from secrets import choice, randbelow
 from types import FunctionType
-from typing import Any, Iterable
-from typing import Iterator as Iter
+from typing import Any, Generic, Iterable
+from typing import Iterator as PyIterator
+from typing import TypeVar, cast
 
 from ..exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
 from ..utils import (
@@ -17,6 +18,10 @@ from ..utils import (
     parse_integer,
     smformat,
 )
+
+T = TypeVar("T")
+KT = TypeVar("KT")
+VT = TypeVar("VT")
 
 
 def functype_repr(obj: Any) -> str:
@@ -384,7 +389,7 @@ class String(Attrs):
     def __contains__(self, element: String) -> bool:
         return element.val in self.val
 
-    def __iter__(self) -> Iter[String]:
+    def __iter__(self) -> PyIterator[String]:
         yield from map(String, self.val)
 
     def __bool__(self) -> bool:
@@ -469,7 +474,7 @@ class String(Attrs):
         return Int(len(self.val))
 
 
-class Array(Attrs):
+class Array(Generic[T], Attrs):
     __slots__ = ("val",)
 
     def __init__(self, value: Any = None) -> None:
@@ -499,10 +504,10 @@ class Array(Attrs):
     def __bool__(self) -> bool:
         return self.val != []
 
-    def __iter__(self) -> Iter[Any]:
+    def __iter__(self) -> PyIterator[T]:
         yield from self.val
 
-    def __contains__(self, element: Any) -> bool:
+    def __contains__(self, element: T) -> bool:
         return element in self.val
 
     def __eq__(self, other: Any) -> Integer:
@@ -531,7 +536,7 @@ class Array(Attrs):
     def __le__(self, other: Any) -> Integer:
         return Int(self.val <= other.val)
 
-    def __getitem__(self, index: Any) -> Any:
+    def __getitem__(self, index: Any) -> T | Array[T]:
         if isinstance(index, Integer):
             if not (0 <= index < len(self.val)):
                 raise SamariumValueError("index out of range")
@@ -540,7 +545,7 @@ class Array(Attrs):
             return Array(self.val[index.val])
         raise SamariumTypeError(f"invalid index: {index}")
 
-    def __setitem__(self, index: Any, value: Any) -> None:
+    def __setitem__(self, index: Any, value: T | Array[T]) -> None:
         if not isinstance(index, (Integer, Slice)):
             raise SamariumTypeError(f"invalid index: {index}")
         if isinstance(index, Integer):
@@ -552,10 +557,10 @@ class Array(Attrs):
             self.val[index.val] = cast(Array[T], value)
 
     @guard("+")
-    def __add__(self, other: Any) -> Array:
+    def __add__(self, other: Any) -> Array[T]:
         return Array(self.val + other.val)
 
-    def __sub__(self, other: Any) -> Any:
+    def __sub__(self, other: Any) -> Array[T]:
         new_array = self.val.copy()
         if isinstance(other, Array):
             for i in other:
@@ -568,7 +573,7 @@ class Array(Attrs):
             raise NotDefinedError(f"Array - {get_type_name(other)}")
         return Array(new_array)
 
-    def __mul__(self, other: Any) -> Array:
+    def __mul__(self, other: Any) -> Array[T]:
         if isinstance(other, Integer):
             return Array(self.val * other.val)
         raise NotDefinedError(f"Array ++ {get_type_name(other)}")
@@ -585,7 +590,7 @@ class Array(Attrs):
                 raise SamariumTypeError("array contains non-integers")
         return String(s)
 
-    def random(self) -> Any:
+    def random(self) -> T:
         if not self.val:
             raise SamariumValueError("array is empty")
         return choice(self.val)
@@ -594,7 +599,7 @@ class Array(Attrs):
         return Int(len(self.val))
 
 
-class Table(Attrs):
+class Table(Generic[KT, VT], Attrs):
     __slots__ = ("val",)
 
     def __init__(self, value: Any = None) -> None:
@@ -633,16 +638,16 @@ class Table(Attrs):
     def __bool__(self) -> bool:
         return self.val != {}
 
-    def __getitem__(self, key: Any) -> Any:
+    def __getitem__(self, key: KT) -> VT:
         try:
             return self.val[key]
         except KeyError:
             raise SamariumValueError(f"key not found: {key}") from None
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: KT, value: VT) -> None:
         self.val[key] = value
 
-    def __iter__(self) -> Iter[Any]:
+    def __iter__(self) -> PyIterator[KT]:
         yield from self.val.keys()
 
     def __contains__(self, element: Any) -> bool:
@@ -659,10 +664,10 @@ class Table(Attrs):
         return Int(True)
 
     @guard("+")
-    def __add__(self, other: Any) -> Table:
+    def __add__(self, other: Any) -> Table[KT, VT]:
         return Table(self.val | other.val)
 
-    def __sub__(self, other: Any) -> Table:
+    def __sub__(self, other: Any) -> Table[KT, VT]:
         c = self.val.copy()
         try:
             del c[other]
@@ -678,7 +683,7 @@ class Table(Attrs):
             raise SamariumValueError("table is empty")
         return choice(list(self.val.keys()))
 
-    def special(self) -> Array:
+    def special(self) -> Array[VT]:
         return Array(self.val.values())
 
 
@@ -733,7 +738,7 @@ class Slice(Attrs):
     def __bool__(self) -> bool:
         return bool(self.range)
 
-    def __iter__(self) -> Iter[Integer]:
+    def __iter__(self) -> PyIterator[Integer]:
         yield from map(Int, self.range)
 
     def __contains__(self, value: Integer) -> bool:
@@ -799,7 +804,7 @@ class Zip(Attrs):
     def __bool__(self) -> bool:
         return True
 
-    def __iter__(self) -> Iter[Array]:
+    def __iter__(self) -> PyIterator[Array]:
         yield from map(Array, self.val)
 
     def __matmul__(self, other: Any) -> Zip:
@@ -812,7 +817,7 @@ class Zip(Attrs):
         return Int(len(self.iters))
 
 
-class Iterator(Attrs):
+class Iterator(Generic[T], Attrs):
     __slots__ = ("val", "length")
 
     def __init__(self, value: Any) -> None:
@@ -827,10 +832,10 @@ class Iterator(Attrs):
     def __bool__(self) -> bool:
         return True
 
-    def __iter__(self) -> Iter[Any]:
+    def __iter__(self) -> PyIterator[T]:
         yield from self.val
 
-    def __next__(self) -> Any:
+    def __next__(self) -> T:
         return next(self.val)
 
     def __str__(self) -> str:
@@ -839,7 +844,7 @@ class Iterator(Attrs):
     def cast(self) -> Integer | Null:
         return self.length
 
-    def special(self) -> Any:
+    def special(self) -> T:
         return next(self)
 
 
