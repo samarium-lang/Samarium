@@ -533,6 +533,8 @@ class Array(Attrs):
 
     def __getitem__(self, index: Any) -> Any:
         if isinstance(index, Integer):
+            if not (0 <= index < len(self.val)):
+                raise SamariumValueError("index out of range")
             return self.val[index.val]
         if isinstance(index, Slice):
             return Array(self.val[index.val])
@@ -541,7 +543,13 @@ class Array(Attrs):
     def __setitem__(self, index: Any, value: Any) -> None:
         if not isinstance(index, (Integer, Slice)):
             raise SamariumTypeError(f"invalid index: {index}")
-        self.val[index.val] = value
+        if isinstance(index, Integer):
+            if 0 <= index < len(self.val):
+                self.val[index.val] = value
+            else:
+                raise SamariumValueError("index out of range")
+        else:
+            self.val[index.val] = cast(Array[T], value)
 
     @guard("+")
     def __add__(self, other: Any) -> Array:
