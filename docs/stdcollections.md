@@ -1,6 +1,6 @@
 # `collections` module
 
-The `collections` module implements a few different data structure classes: [Stack](#stack), [Queue](#queue), [Set](#set), [Deque](#deque) and [StaticArray](#staticarray).
+The `collections` module implements a few different data structure classes: [Stack](#stack), [Queue](#queue), [Set](#set), [Deque](#deque), and [ArithmeticArray](#arithmeticarray).
 
 
 ## Stack
@@ -102,24 +102,6 @@ Method                        | Use
 `$`                           | Returns the number of items in the set.
 `?`                           | Returns `1` if the deque is not empty, otherwise returns `0`.[^2]
 `!`                           | Returns some information about the set as a string;<br>its capacity, number of items, and the values of its items.
-
-</center>
-
-
-## StaticArray
-
-A static array is like a normal array, but with a fixed size. They may also enforce all elements to be of a certain type.
-
-<center>
-
-Method                   | Use
----                      | ---
-`=>(value[, type])`      | Initializes a `StaticArray` object. If `type` is specified,<br>it defines the enforced type of the static array.<br>If `value` is an integer, it defines the size of the static array.<br>If `value` is an array, its size defines the size of the static array,<br>and its elements are copied into the static array.<br>If `type` is not specified, the static array will not enforce elements<br>to be of any particular type.
-`<<index>>`              | Returns the `index`th item in the static array.<br>If `index` is outside the bounds of the static array, an error is thrown.
-`<<index>>: value`       | Sets the `index`th item in the static array to `value`.<br>If `index` is outside the bounds of the static array,<br>or `value` is not of the correct type for the array,<br>provided it enforces a particular type, an error is thrown.
-`$`                      | Returns an array containing all items in the static array,<br>with any unassigned indices ignored.
-`?`                      | Returns `1` if the static array is not empty, otherwise returns `0`.
-`!`                      | Returns some information about the static array as a string;<br>its size, its type ("null" if it doesn't enforce one),<br>and a table mapping each item's index to its value.
 
 </center>
 

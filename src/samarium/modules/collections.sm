@@ -314,69 +314,6 @@
     }
 }
 
-@ StaticArray {
-    => value type? * {
-        type <>;
-        ? value?! :: <-types.Integer {
-            'value: {{}};
-            'size: value;
-            'type: type;
-        } ,, ? value?! :: <-types.Array {
-            'value: {{}};
-            'size: value$;
-            'type: type;
-            i: \;
-            ... e ->? value {
-                ? e?! ::: type ::: {
-                    "expected " + ""?!(type) + ", found " + ""?!(e?!)!!!;
-                }
-                'value<<i>>: e;
-                i+: /;
-            }
-        } ,, {
-            "expected Integer or Array, found " + ""?!(value?!)!!!;
-        }
-    }
-
-    $ * { * 'value$; }
-
-    ! * {
-        * "StaticArray(size:" + ""?!('size)
-        + ", type:" + ""?!('type)
-        + ", items:" + ""?!('value)
-        + ")";
-    }
-
-    ? * { * / ? 'value ,, \; }
-
-    throw_invalid_index arg * {
-        ? arg?! ::: <-types.Integer {
-            "expected Integer, received " + ""?!(arg?!)!!!;
-        }
-        ? ~~ (\ <: arg < 'size) {
-            "index " + ""?!(arg) + " is out of bounds (size " + ""?!('size) + ")"!!!;
-        }
-    }
-
-    throw_invalid_type type * {
-        ? type ::: 'type ::: {
-            "expected " + ""?!('type) + ", received " + ""?!(type)!!!;
-        }
-    }
-
-    <<>> index * {
-        'throw_invalid_index(index);
-        * 'value<<index>>;
-    }
-
-    <<>>: index value * {
-        'throw_invalid_index(index);
-        'throw_invalid_type(value?!);
-        'value<<index>>: value;
-    }
-
-}
-
 @ ArithmeticArray {
     => array * {
         'array: array;
