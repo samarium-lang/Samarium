@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from os import write
-from typing import IO, Any
+from typing import IO, Any, Iterator
 
 from samarium.utils import get_type_name
 
@@ -102,6 +102,14 @@ class File(Attrs):
     def __invert__(self) -> Null:
         self.val.close()
         return NULL
+
+    def __iter__(self) -> Iterator[String] | Iterator[Array[Integer]]:
+        if self.binary:
+            for line in self.val:
+                yield Array(map(Int, list(line)))
+        else:
+            for line in self.val:
+                yield String(line)
 
     def __getitem__(self, index: Any) -> Array | String | Integer | Null:
         if isinstance(index, Slice):
