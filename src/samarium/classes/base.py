@@ -399,7 +399,7 @@ class String(Attrs):
         return self.val
 
     def __repr__(self) -> str:
-        return f'"{self}"'
+        return f'"{repr(self.val)[1:-1]}"'
 
     @guard("+")
     def __add__(self, other: Any) -> String:
