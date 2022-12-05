@@ -410,9 +410,12 @@ class String(Attrs):
             )
         raise SamariumTypeError(f"String + {get_type_name(other)}")
 
-    @guard("-")
     def __sub__(self, other: Any) -> String:
-        return String(self.val.replace(other.val, ""))
+        if isinstance(other, String):
+            return String(self.val.replace(other.val, ""))
+        elif isinstance(other, Integer):
+            return self + (-other)
+        raise SamariumTypeError(f"String - {get_type_name(other)}")
 
     def __mul__(self, other: Any) -> String:
         if isinstance(other, Integer):
