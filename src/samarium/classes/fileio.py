@@ -108,8 +108,7 @@ class File(Attrs):
             for line in self.val:
                 yield Array(map(Int, list(line)))
         else:
-            for line in self.val:
-                yield String(line)
+            yield from map(String, self.val)
 
     def __getitem__(self, index: Any) -> Array | String | Integer | Null:
         if isinstance(index, Slice):
