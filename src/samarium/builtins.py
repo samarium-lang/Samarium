@@ -55,13 +55,17 @@ def check_type(obj: Any) -> None:
         raise SamariumSyntaxError("invalid syntax")
 
 
-def correct_type(obj: T) -> T | Integer | Iterator | Null:
+def correct_type(obj: T, *objs: T) -> T | Array | Integer | Iterator | Null:
+    if objs:
+        return Array(map(correct_type, (obj, *objs)))
     if obj is None:
         return NULL
     elif isinstance(obj, bool):
         return Int(obj)
     elif isinstance(obj, GeneratorType):
         return Iterator(obj)
+    elif isinstance(obj, tuple):
+        return Array(obj)
     else:
         check_type(obj)
     return obj
