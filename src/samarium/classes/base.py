@@ -401,9 +401,14 @@ class String(Attrs):
     def __repr__(self) -> str:
         return f'"{repr(self.val)[1:-1]}"'
 
-    @guard("+")
     def __add__(self, other: Any) -> String:
-        return String(self.val + other.val)
+        if isinstance(other, String):
+            return String(self.val + other.val)
+        elif isinstance(other, Integer):
+            return String(
+                "".join(chr((ord(i) + other.val) % 0x10ffff) for i in self.val)
+            )
+        raise SamariumTypeError(f"String + {get_type_name(other)}")
 
     @guard("-")
     def __sub__(self, other: Any) -> String:
