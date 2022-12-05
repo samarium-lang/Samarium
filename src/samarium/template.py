@@ -1,11 +1,10 @@
-import os
 import sys
-
-STDOUT = sys.stdout
-sys.stdout = open(os.devnull, "w")
 {{ CODE }}
 if __name__ == "samarium":
-    sys.stdout = STDOUT
+    try:
+        entry
+    except NameError:
+        sys.exit()
     argc = entry.argc
     is_class = isinstance(entry, type)
     if is_class:

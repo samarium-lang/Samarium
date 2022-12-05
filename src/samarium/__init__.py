@@ -28,7 +28,7 @@ def main(debug: bool = False) -> None:
         if arg in OPTIONS[:2]:
             print(f"Samarium {__version__}")
         elif arg in OPTIONS[2:4]:
-            run(f"=> argv * {{ {sys.argv[2]} !; }}", reg, debug)
+            run(sys.argv[2] + "!", reg, debug)
         elif arg in OPTIONS[4:]:
             print(HELP)
         sys.exit()

@@ -41,7 +41,7 @@ from .imports import merge_objects, parse_string, resolve_path
 from .runtime import Runtime
 from .tokenizer import tokenize
 from .transpiler import Registry, Transpiler
-from .utils import silence_stdout, sysexit
+from .utils import sysexit
 
 
 def import_to_scope(data: str, reg: Registry) -> None:
@@ -50,24 +50,23 @@ def import_to_scope(data: str, reg: Registry) -> None:
         if mod.name == "samarium":
             raise exc.SamariumRecursionError
         path = resolve_path(mod.name)
-        with silence_stdout():
-            if (path / f"{mod.name}.sm").exists():
-                imported = run((path / f"{mod.name}.sm").read_text(), Registry({}))
-            else:
-                spec: importlib.machinery.ModuleSpec = (
-                    importlib.util.spec_from_file_location(
-                        mod.name, str(path / f"{mod.name}.py")
-                    )
-                )  # type: ignore
-                module = importlib.util.module_from_spec(spec)
-                sys.modules[mod.name] = module
-                spec.loader.exec_module(module)  # type: ignore
-                registry = {
-                    f"sm_{k}": v
-                    for k, v in vars(module).items()
-                    if f"__export_{v}" in dir(v)
-                }
-                imported = Registry(registry)
+        if (path / f"{mod.name}.sm").exists():
+            imported = run((path / f"{mod.name}.sm").read_text(), Registry({}))
+        else:
+            spec: importlib.machinery.ModuleSpec = (
+                importlib.util.spec_from_file_location(
+                    mod.name, str(path / f"{mod.name}.py")
+                )
+            )  # type: ignore
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[mod.name] = module
+            spec.loader.exec_module(module)  # type: ignore
+            registry = {
+                f"sm_{k}": v
+                for k, v in vars(module).items()
+                if f"__export_{v}" in dir(v)
+            }
+            imported = Registry(registry)
 
         reg.vars.update(merge_objects(reg, imported, mod))
 

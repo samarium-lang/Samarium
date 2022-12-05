@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import os
-import sys
 from collections.abc import Callable
-from contextlib import contextmanager
 from re import sub
 from string import digits, hexdigits, octdigits
-from typing import Any, Iterator, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from .exceptions import SamariumTypeError, SamariumValueError
 from .tokenizer import Tokenlike
@@ -67,14 +64,6 @@ def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
     if stack:
         return 1, [token]
     return 0, []
-
-
-@contextmanager
-def silence_stdout() -> Iterator[None]:
-    stdout = sys.stdout
-    sys.stdout = open(os.devnull, "w")
-    yield
-    sys.stdout = stdout
 
 
 def sysexit(*args: Any) -> None:
