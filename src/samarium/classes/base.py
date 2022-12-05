@@ -303,7 +303,7 @@ class Integer(Attrs):
 
     @guard("+++", default=2)
     def __pow__(self, other: Any) -> Integer:
-        return Int(self.val ** other.val)
+        return Int(self.val**other.val)
 
     @guard("---", default=2)
     def __mod__(self, other: Any) -> Integer:
@@ -406,7 +406,7 @@ class String(Attrs):
             return String(self.val + other.val)
         elif isinstance(other, Integer):
             return String(
-                "".join(chr((ord(i) + other.val) % 0x10ffff) for i in self.val)
+                "".join(chr((ord(i) + other.val) % 0x10FFFF) for i in self.val)
             )
         raise SamariumTypeError(f"String + {get_type_name(other)}")
 
