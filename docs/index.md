@@ -50,7 +50,7 @@ There is also a VSCode syntax highlighting extension for Samarium, which can be 
 
 # Credits
 
-Samarium was inspired by several languages, including [brainfuck](https://esolangs.org/wiki/Brainfuck), [Rust](https://www.rust-lang.org/), [Python](https://www.python.org/) and [Java](https://www.java.com/).
+Samarium was inspired by several languages, including [brainfuck](https://esolangs.org/wiki/Brainfuck), [Rust](https://www.rust-lang.org/), and [Python](https://www.python.org/).
 
 Special thanks to:
 
