@@ -500,12 +500,12 @@ class Array(Generic[T], Attrs):
             self.val = list(map(Array, value.val.items()))
         elif isinstance(value, Slice):
             if value.stop is NULL:
-                raise SamariumValueError("cannot convert an infinite Slice to Array")
+                raise SamariumValueError("cannot convert an infinite Slice to an Array")
             self.val = list(value.range)
         elif isinstance(value, Iterable):
             self.val = [*value]
         else:
-            raise SamariumTypeError(f"cannot cast {get_type_name(value)} to Array")
+            raise SamariumTypeError(f"cannot cast {get_type_name(value)} to an Array")
 
     def __str__(self) -> str:
         return "[{}]".format(", ".join(map(functype_repr, self.val)))
@@ -640,7 +640,7 @@ class Table(Generic[KT, VT], Attrs):
                     "not all elements of the array are of length 2"
                 )
         else:
-            raise SamariumTypeError(f"cannot cast {get_type_name(value)} to Table")
+            raise SamariumTypeError(f"cannot cast {get_type_name(value)} to a Table")
 
     def __str__(self) -> str:
         return (
