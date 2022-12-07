@@ -3,6 +3,7 @@ from contextlib import suppress
 from pathlib import Path
 
 from .core import run
+from .exceptions import DAHLIA
 from .shell import run_shell
 from .transpiler import Registry
 from .utils import __version__
@@ -30,6 +31,7 @@ def main(debug: bool = False) -> None:
         elif arg in OPTIONS[2:4]:
             if len(sys.argv) > 2:
                 run(sys.argv[2] + "!", reg, debug)
+            DAHLIA.print("&4missing code to execute", file=sys.stderr)
         elif arg in OPTIONS[4:]:
             print(HELP)
         sys.exit()
@@ -37,7 +39,7 @@ def main(debug: bool = False) -> None:
     try:
         file = Path(arg).read_text()
     except IOError:
-        print(f"file not found: {arg}", file=sys.stderr)
+        DAHLIA.print(f"&4file not found: {arg}", file=sys.stderr)
     else:
         with suppress(Exception, KeyboardInterrupt):
             file = "\n".join(file.splitlines()[file.startswith("#!") :])
