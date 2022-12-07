@@ -123,22 +123,15 @@
 @ Set {
     => items? capacity? * {
         items <> [];
-        capacity <> -/;
-        'items: [i ... i ->? items] ? items ,, [];
-        'capacity: capacity;
+        'items: -items;
     }
 
     $ * { * 'items$; }
 
     add value * {
-        ? value ~~ ->? ' {
-            ? 'is_full() {
-                "set is full (capacity " + ""?!('capacity) + ")"!!!;
-            }
-            'items+: [value];
-            * /;
-        }
-        * \;
+        x: value ~~ ->? ';
+        'items|: [value];
+        * x;
     }
 
     ? * { * ~~ 'is_empty(); }
@@ -161,11 +154,6 @@
 
     clear * { 'items: []; }
     is_empty * { * '$ :: \; }
-    is_full * { * '$ :: 'capacity; }
-    #new_set_size a b * {
-        ? <-math.min([a.capacity, b.capacity]) :: -/ { * -/; }
-        * a$ ? a$ > b$ ,, b$;
-    }
     ::: other * { * ~~ ' :: other; }
     :: other * {
         sort: <-iter.sorted;
@@ -174,50 +162,22 @@
 
     | other * {
         '#check_type(other);
-
-        nss: '#new_set_size(', other);
-        ? nss > \ { nss++: /\; }
-        union_set: Set('items, nss);
-
-        ... value ->? other.items {
-            union_set.add(value);
-        }
-
-        * union_set;
+        * Set('items | other.items);
     }
 
     ^ other * {
         '#check_type(other);
-
-        * (' - other) | (other - ');
+        * Set('items ^ other.items);
     }
 
     & other * {
         '#check_type(other);
-
-        intersection_set: Set([], '#new_set_size(', other));
-
-        ... value ->? 'items {
-            ? value ->? other {
-                intersection_set.add(value);
-            }
-        }
-
-        * intersection_set;
+        * Set('items & 'other.items);
     }
 
     - other * {
         '#check_type(other);
-
-        difference_set: Set([], '#new_set_size(', other));
-
-        ... value ->? 'items {
-            ? value ~~ ->? other {
-                difference_set.add(value);
-            }
-        }
-
-        * difference_set;
+        * Set('items -- other.items);
     }
 
     > other * {

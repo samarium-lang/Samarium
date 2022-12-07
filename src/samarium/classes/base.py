@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from contextlib import suppress
 from functools import lru_cache
 from inspect import signature
 from secrets import choice, randbelow
@@ -586,6 +587,44 @@ class Array(Generic[T], Attrs):
         else:
             raise NotDefinedError(f"Array - {get_type_name(other)}")
         return Array(new_array)
+
+    def __neg__(self) -> Array[T]:
+        new_array = []
+        for i in self.val:
+            if i not in new_array:
+                new_array.append(i)
+        return Array(new_array)
+
+    def __mod__(self, other: Any) -> Array[T]:
+        indexes = [i for i, v in enumerate(self.val) if v == other]
+        new_array = self.val.copy()
+        for i in indexes[1:][::-1]:
+            new_array.pop(i)
+        return Array(new_array)
+
+    @guard("--")
+    def __floordiv__(self, other: Any) -> Array[T]:
+        new_array = self.val.copy()
+        for i in other.val:
+            with suppress(ValueError):
+                new_array.remove(i)
+        return Array(new_array)
+
+    @guard("|")
+    def __or__(self, other: Any) -> Array[T]:
+        new_array = self.val.copy()
+        for i in other.val:
+            if i not in new_array:
+                new_array.append(i)
+        return Array(new_array)
+
+    @guard("&")
+    def __and__(self, other: Any) -> Array[T]:
+        return Array([i for i in other.val if i in self.val])
+
+    @guard("^")
+    def __xor__(self, other: Any) -> Array[T]:
+        return (self | other) // (self & other)
 
     def __mul__(self, other: Any) -> Array[T]:
         if isinstance(other, Integer):
