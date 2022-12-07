@@ -85,6 +85,9 @@ class Attrs:
     def id(cls) -> String:
         return String(f"{id(cls):x}")
 
+    def __repr__(self) -> str:
+        return str(self)
+
     @classmethod
     def type(cls) -> Type:
         return Type(cls)
