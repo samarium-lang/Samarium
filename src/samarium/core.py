@@ -5,8 +5,6 @@ import importlib.util
 import sys
 from pathlib import Path
 
-from dahlia import dahlia
-
 from . import exceptions as exc
 from .builtins import (
     correct_type,
