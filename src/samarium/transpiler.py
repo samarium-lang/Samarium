@@ -293,8 +293,7 @@ class Transpiler:
         self._processed_tokens: list[Tokenlike] = []
         self._reg = registry
         self._scope = Scope()
-        self._slice_assign = False
-        self._slice_object = False
+        self._slice_object = []
         self._tokens = tokens
 
     def transpile(self) -> Registry:
@@ -314,12 +313,6 @@ class Transpiler:
 
         self._reg.output = self._code
         return self._reg
-
-    def _find_next(self, token: Token) -> int:
-        for i, t in enumerate(self._tokens[self._index :]):
-            if t is token:
-                return i + self._index
-        return -1
 
     def _submit_line(self) -> None:
         # Special cases
@@ -510,7 +503,6 @@ class Transpiler:
                     indented += 1
                     name += self._line[indented]
                 if self._line[indented + 1] == ",":
-                    self._slice_assign = False
                     indented += 1
                     name += self._line[indented]
             self._line = [
@@ -629,16 +621,6 @@ class Transpiler:
                     self._line.append("Int(0)")
                 self._line.append(")")
                 self._reg[Switch.BUILTIN] = False
-            if all(i in self._line_tokens for i in (Token.ASSIGN, Token.SLICE_CLOSE)):
-                if (
-                    self._line_tokens[self._line_tokens.index(Token.ASSIGN) - 1]
-                    is Token.SLICE_CLOSE
-                    and self._line_tokens[-2] is Token.SLICE_CLOSE
-                ):
-                    self._line.append(")")
-            if self._slice_assign:
-                self._line.append(")")
-                self._slice_assign = False
             if "=" in self._line:
                 start = self._indent > 0
                 assign_idx = self._line.index("=")
@@ -651,10 +633,7 @@ class Transpiler:
         elif token is Token.ASSIGN:
             if self._line_tokens.count(token) > 1 and self._scope.current != "enum":
                 throw_syntax("cannot use multiple assignment")
-            elif self._scope.current != "slice":
-                self._line.append("=")
-            else:
-                self._scope.exit()
+            self._line.append("=")
         elif token is Token.IMPORT:
             self._reg[Switch.IMPORT] = True
             self._line.append("import_to_scope('")
@@ -670,24 +649,14 @@ class Transpiler:
             self._line.append("self")
         elif token is Token.SLICE_OPEN:
             self._scope.enter("slice")
-            assign_index = self._find_next(Token.ASSIGN)
-            end_index = self._find_next(Token.END)
-            brace_index = self._find_next(Token.BRACE_OPEN)
-            self._slice_assign = (
-                0
-                < assign_index
-                < min(filter(lambda x: x >= 0, (brace_index, end_index)))
-            )
-            self._slice_object = self._tokens[index - 1] in SLICE_OBJECT_TRIGGERS
-            if not self._slice_object:
-                self._line.append(f".__{'gs'[self._slice_assign]}etitem__(")
+            self._slice_object.append(self._tokens[index - 1] in SLICE_OBJECT_TRIGGERS)
+            if not self._slice_object[-1]:
+                self._line.append("[")
             self._line.append("mkslice(t(")
         elif token is Token.SLICE_CLOSE:
-            if not self._slice_assign:
-                self._scope.exit()
-            self._line.append(")" * (3 - self._slice_object - self._slice_assign))
-            if self._slice_assign:
-                self._line.append(",")
+            self._line.append("))")
+            if not self._slice_object.pop():
+                self._line.append("]")
         else:  # ENUM
             if isinstance(self._tokens[index + 1], str):
                 if self._tokens[index - 1] is Token.INSTANCE:
