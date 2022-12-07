@@ -908,9 +908,9 @@ class Enum(Attrs):
 
 
 def to_chr(code: int) -> str:
-    if code >= 0x110000:
-        raise SamariumValueError("invalid Unicode code point")
-    return chr(code)
+    if code in range(0x110000):
+        return chr(code)
+    raise SamariumValueError("invalid Unicode code point")
 
 
 def to_string(obj: Attrs | Callable) -> str:
