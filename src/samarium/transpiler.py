@@ -267,7 +267,7 @@ SPECIAL_METHOD_MAPPING = {
     "try": "random",
     ".cast()": "cast",
     "if ": "bit",
-    "!": "string",  #
+    "!": "string",
     "&": "and",
     "|": "or",
     "^": "xor",
