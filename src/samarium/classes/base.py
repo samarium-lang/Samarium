@@ -640,10 +640,12 @@ class Table(Generic[KT, VT], Attrs):
             raise SamariumTypeError(f"cannot cast {get_type_name(value)} to Table")
 
     def __str__(self) -> str:
-        return "{{{{{}}}}}".format(
-            ", ".join(
-                f"{functype_repr(k)} -> {functype_repr(v)}" for k, v in self.val.items()
+        return (
+            "{{"
+            + ", ".join(
+                "{} -> {}".format(*map(functype_repr, i)) for i in self.val.items()
             )
+            + "}}"
         )
 
     def __bool__(self) -> bool:
