@@ -1,3 +1,5 @@
+<=std_py2sm.math_is_prime -> is_prime;
+
 abs n * {
     ? n < \ { * -n; }
     * n;
@@ -95,25 +97,4 @@ to_oct n * {
     mod: n --- /\\\;
     ? ~~ div { * OCTDIGITS<<mod>>; }
     * to_oct(div) + OCTDIGITS<<mod>>;
-}
-
-is_prime n * {
-    0: \;
-    2: /\;
-    3: //;
-    6: 2 ++ 3;
-    ? n <: 3 {
-        * n > /;
-    }
-    ? n --- 2 :: 0 || n --- 3 :: 0 {
-        * 0;
-    }
-    i: /\/;
-    .. i +++ 2 <: n {
-        ? n --- i :: 0 || n --- (i + 2) :: 0 {
-            * 0;
-        }
-        i+: 6;
-    }
-    * /;
 }

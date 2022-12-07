@@ -94,7 +94,7 @@ def resolve_path(name: str) -> Path:
         path = Path().resolve()
     paths = [e.name for e in path.iterdir()]
     if not (f"{name}.sm" in paths or f"{name}.py" in paths):
-        if name not in MODULE_NAMES:
+        if name not in MODULE_NAMES + ["std_py2sm"]:
             raise SamariumImportError(f"invalid module: {name}")
         path = Path(__file__).resolve().parent / "modules"
     return path
