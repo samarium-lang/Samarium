@@ -272,8 +272,8 @@ SPECIAL_METHOD_MAPPING = {
     "+sm__": "pos",
     "-sm__": "neg",
     "@": "matmul",
-    ".__getitem__(mkslice(t()))": "getitem",
-    ".__setitem__(mkslice(t()),": "setitem",
+    "mkslice(t())": "getitem",
+    "mkslice(t())=": "setitem",
 }
 
 
@@ -484,9 +484,9 @@ class Transpiler:
             name = self._line[indented]
             method = self._reg[Switch.CLASS] and self._scope.parent == "class"
             static = self._line[-2:] == ["~", "self"]
-            if static and not method:
-                throw_syntax("cannot create a static method outside a class")
             if static:
+                if not method:
+                    throw_syntax("cannot create a static method outside a class")
                 self._line = self._line[:-2]
             if name == "NULL":
                 indented += 1
@@ -494,15 +494,12 @@ class Transpiler:
             if name in "+-" and self._line[indented + 1] == "sm__":
                 name += "sm__"
                 indented += 1
-            if name in {"(", ".__getitem__(", ".__setitem__("}:
+            if name in {"(", "mkslice(t("}:
                 indented += 1
                 name += self._line[indented]
-                if self._line[indented + 1] in {")))", "))"}:
+                if self._line[indented + 1] == "=":
                     indented += 1
-                    name += self._line[indented]
-                if self._line[indented + 1] == ",":
-                    indented += 1
-                    name += self._line[indented]
+                    name += "="
             self._line = [
                 *indentation,
                 "@function\n",
@@ -655,6 +652,7 @@ class Transpiler:
             self._line.append("))")
             if not self._slice_object.pop():
                 self._line.append("]")
+            self._scope.exit()
         else:  # ENUM
             if isinstance(self._tokens[index + 1], str):
                 if self._tokens[index - 1] is Token.INSTANCE:
