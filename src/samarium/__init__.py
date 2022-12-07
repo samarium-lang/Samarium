@@ -28,7 +28,8 @@ def main(debug: bool = False) -> None:
         if arg in OPTIONS[:2]:
             print(f"Samarium {__version__}")
         elif arg in OPTIONS[2:4]:
-            run(sys.argv[2] + "!", reg, debug)
+            if len(sys.argv) > 2:
+                run(sys.argv[2] + "!", reg, debug)
         elif arg in OPTIONS[4:]:
             print(HELP)
         sys.exit()
