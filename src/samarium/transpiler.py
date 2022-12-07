@@ -57,10 +57,8 @@ class Scope:
             throw_syntax("invalid syntax (failed scope resolution)")
 
     def _get(self, index: int) -> str | None:
-        try:
+        with suppress(IndexError):
             return self._scope[index]
-        except IndexError:
-            return None
 
     @property
     def parent(self) -> str | None:
