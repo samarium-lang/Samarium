@@ -572,7 +572,10 @@ class Array(Generic[T], Attrs):
         new_array = self.val.copy()
         if isinstance(other, Array):
             for i in other:
-                new_array.remove(i)
+                try:
+                    new_array.remove(i)
+                except ValueError:
+                    raise SamariumValueError(f"{i!r} not in array") from None
         elif isinstance(other, Integer):
             new_array.pop(other.val)
         elif other is NULL:
