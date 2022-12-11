@@ -80,6 +80,13 @@ split string separator? * {
     * out + [string];
 }
 
+split_lines string * {
+    * split(
+        replace(string, {{"\r\n" -> "\n"}}),
+        []?!("\r\n\v\f\x1c\x1d\x1e\x85\u2028\u2029")
+    );
+}
+
 capitalize string * {
     ? ~~ string { * string; }
     * to_upper(string<<\>>) + to_lower(string<</..>>);
