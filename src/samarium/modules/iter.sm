@@ -22,9 +22,7 @@ count array target * {
     ? target ~~ ->? array { * \; }
     s: \;
     ... e ->? array {
-        ? e :: target {
-            s+: /;
-        }
+        s+: e :: target;
     }
     * s;
 }
