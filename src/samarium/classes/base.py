@@ -502,7 +502,7 @@ class Array(Generic[T], Attrs):
         elif isinstance(value, Slice):
             if value.stop is NULL:
                 raise SamariumValueError("cannot convert an infinite Slice to an Array")
-            self.val = list(value.range)
+            self.val = list(value)
         elif isinstance(value, Iterable):
             self.val = [*value]
         else:
