@@ -458,7 +458,7 @@ class Transpiler:
             prev = self._tokens[self._index - 1]
             if token is Token.TABLE_CLOSE and prev is Token.TO:
                 self._line.append("NULL")
-            if token is Token.PAREN_CLOSE and prev in Group.operators | {Token.ELSE}:
+            if token in (Token.PAREN_CLOSE, Token.BRACKET_CLOSE) and prev in Group.operators | {Token.ELSE}:
                 self._line.append("NULL")
             self._line.append(BRACKET_MAPPING[token])
             return
@@ -633,7 +633,7 @@ class Transpiler:
             self._reg[Switch.IMPORT] = True
             self._line.append("import_to_scope('")
         elif token is Token.SEP:
-            if self._tokens[index - 1] in NULLABLE_TOKENS:
+            if self._tokens[index - 1] in NULLABLE_TOKENS | Group.operators | {Token.ELSE}:
                 self._line.append("NULL")
             self._line.append(",")
         elif token is Token.ATTR:
