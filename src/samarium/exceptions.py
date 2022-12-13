@@ -23,6 +23,7 @@ OP_MAP = {
     "@": "><",
     "** or pow()": "+++",
 }
+NDE_TYPES = {AttributeError, NameError, UnboundLocalError}
 
 
 def clear_name(name: str) -> str:
@@ -62,7 +63,7 @@ def handle_exception(exception: Exception) -> None:
         exception = SamariumSyntaxError(
             f"invalid syntax at {int(errmsg.split()[-1][:-1])}"
         )
-    elif exc_type in {AttributeError, NameError}:
+    elif exc_type in NDE_TYPES:
         names = SINGLE_QUOTED_NAME.findall(errmsg)
         if names == ["entry"]:
             names = ["no entry point defined"]
