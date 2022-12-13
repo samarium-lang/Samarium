@@ -274,7 +274,7 @@ class Integer(Attrs):
             self.val = int(v)
         elif isinstance(v, Integer):
             self.val = v.val
-        elif v is None:
+        elif v in (None, NULL):
             self.val = 0
         elif isinstance(v, String):
             self.val = parse_integer(v.val) if v else 0
