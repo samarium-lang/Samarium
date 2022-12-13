@@ -589,7 +589,7 @@ class Transpiler:
         elif token is Token.ELSE:
             self._line.append(shift + "else ")
         else:  # FOR
-            if self._tokens[self._index - 1] is Token.ELSE:
+            if self._tokens[self._index - 1] in {Token.ELSE} | Group.operators:
                 self._line.append("NULL")
             index = self._index
             if self._scope.current == "slice" and self._tokens[index + 1] is Token.ATTR:
