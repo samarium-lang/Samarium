@@ -1,4 +1,8 @@
-import readline  # used by input() to provide elaborate line editing & history features
+from sys import platform
+
+if platform not in ("win32", "cygwin"):
+    import readline
+    # used by input() to provide elaborate line editing & history features
 
 from .core import run
 from .tokenizer import tokenize
