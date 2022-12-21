@@ -34,5 +34,8 @@ def tokenize(code: str) -> list[Tokenlike]:
     try:
         return cast(list[Tokenlike], crossandra.tokenize(code))
     except CrossandraError as e:
-        handle_exception(SamariumSyntaxError(str(e)))
+        errmsg = str(e)
+        if '"' in errmsg:
+            errmsg = "unclosed string literal"
+        handle_exception(SamariumSyntaxError(errmsg))
         sys.exit()
