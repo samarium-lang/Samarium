@@ -12,11 +12,11 @@ from samarium.classes import (
     Attrs,
     Enum,
     File,
-    Int,
-    Integer,
     Iterator,
     Mode,
     Null,
+    Num,
+    Number,
     Slice,
     String,
     Table,
@@ -38,7 +38,7 @@ class SliceRange:
 
 
 def to_python(obj: Attrs) -> object:
-    if isinstance(obj, (String, Integer, Zip, File)):
+    if isinstance(obj, (String, Number, Zip, File)):
         return obj.val
     elif isinstance(obj, Null):
         return None
@@ -58,7 +58,7 @@ def to_python(obj: Attrs) -> object:
 
 def to_samarium(obj: object) -> Attrs:
     if isinstance(obj, (int, bool, float)):
-        return Int(obj)
+        return Num(obj)
     elif isinstance(obj, str):
         return String(obj)
     elif obj is None:
@@ -98,9 +98,7 @@ def export(func):
         return to_samarium(func(*args))
 
     if not isinstance(func, FunctionType):
-        raise TypeError(
-            f"cannot export a non-function type {type(func).__name__!r}"
-        )
+        raise TypeError(f"cannot export a non-function type {type(func).__name__!r}")
     setattr(wrapper, f"__export_{wrapper}", True)
 
     return wrapper

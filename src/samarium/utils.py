@@ -2,24 +2,13 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from re import sub
-from string import digits, hexdigits, octdigits
-from typing import Any, TypeVar, cast
+from typing import Any, TypeVar
 
 from .exceptions import SamariumTypeError, SamariumValueError
-from .tokenizer import Tokenlike
-from .tokens import CLOSE_TOKENS, OPEN_TOKENS, Token
 
 __version__ = "0.5.0"
 
 T = TypeVar("T")
-
-OPEN_TO_CLOSE = {
-    Token.BRACKET_OPEN: Token.BRACKET_CLOSE,
-    Token.BRACE_OPEN: Token.BRACE_CLOSE,
-    Token.PAREN_OPEN: Token.PAREN_CLOSE,
-    Token.TABLE_OPEN: Token.TABLE_CLOSE,
-    Token.SLICE_OPEN: Token.SLICE_CLOSE,
-}
 
 
 KT = TypeVar("KT")
@@ -45,27 +34,6 @@ class Singleton:
         return cls._instances[cls]
 
 
-def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
-    stack: list[Token] = []
-    token = Token.END
-    tokens: list[Token] = [
-        cast(Token, t) for t in tokens_ if t in OPEN_TOKENS + CLOSE_TOKENS
-    ]
-    for token in tokens:
-        if token in OPEN_TOKENS:
-            stack.append(token)
-        elif stack:
-            if OPEN_TO_CLOSE[stack[-1]] == token:
-                stack.pop()
-            else:
-                return -1, [stack[-1], token]
-        else:
-            return -1, [Token.END, token]
-    if stack:
-        return 1, [token]
-    return 0, []
-
-
 def sysexit(*args: Any) -> None:
     if len(args) > 1:
         raise SamariumTypeError("=>! only takes one argument")
@@ -75,26 +43,34 @@ def sysexit(*args: Any) -> None:
     raise SystemExit(code)
 
 
-def parse_integer(string: str) -> int:
+def convert_float(string: str, *, base: int, sep: str = ".") -> int | float:
+    int_, _, dec = string.partition(sep)
+    return int(int_ or "0", base) + sum(
+        int(v, base) * 2**~i for i, v in enumerate(dec)
+    )
+
+
+def parse_number(string: str) -> tuple[int | float, bool]:
     string = string.strip()
     orig = string
     neg = len(string)
     b = "d"
     if ":" in string:
-        b, string = string.split(":", 1)
+        b, _, string = string.partition(":")
         if b not in "box":
             raise SamariumValueError(f"{b} is not a valid base")
     base = {"b": 2, "o": 8, "x": 16, "d": 10}[b]
     string = string.lstrip("-")
-    digitset = {2: "01", 8: octdigits, 10: digits, 16: hexdigits}[base]
-    neg -= len(string)
-    neg %= 2
-    if string and all(i in digitset for i in string.lower()):
-        return int("-" * neg + string, base)
-    no_prefix = orig[2:] if orig[1] == ":" else orig
-    raise SamariumValueError(
-        f'invalid string for Integer with base {base}: "{no_prefix}"'
-    )
+    neg = -2 * ((neg - len(string)) % 2) + 1
+
+    try:
+        num = neg * convert_float(string, base=base)
+        return num, isinstance(num, int)
+    except ValueError:
+        no_prefix = orig[2:] if orig[1] == ":" else orig
+        raise SamariumValueError(
+            f'invalid string for Number with base {base}: "{no_prefix}"'
+        ) from None
 
 
 def smformat(string: str, fields: str | list[Any] | dict[Any, Any]) -> str:

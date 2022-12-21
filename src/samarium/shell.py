@@ -1,13 +1,13 @@
 from sys import platform
 
 if platform not in ("win32", "cygwin"):
-    import readline
     # used by input() to provide elaborate line editing & history features
+    import readline
 
 from .core import run
 from .tokenizer import tokenize
-from .transpiler import Registry
-from .utils import __version__, match_brackets
+from .transpiler import Registry, match_brackets
+from .utils import __version__
 
 IN = "--> "
 INDENT = "  > "

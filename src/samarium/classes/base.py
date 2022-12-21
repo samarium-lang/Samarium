@@ -4,7 +4,7 @@ from collections.abc import Callable
 from contextlib import suppress
 from functools import lru_cache
 from inspect import signature
-from secrets import choice, randbelow
+from random import choice, randrange, uniform
 from types import FunctionType
 from typing import Any, Generic, Iterable
 from typing import Iterator as PyIterator
@@ -16,7 +16,7 @@ from ..utils import (
     Singleton,
     get_name,
     get_type_name,
-    parse_integer,
+    parse_number,
     smformat,
 )
 
@@ -43,7 +43,7 @@ def guard(operator: str, *, default: int | None = None) -> Callable[..., Any]:
             if isinstance(other, Ts):
                 return function(self, other)
             if use_default:
-                return function(self, Int(default))
+                return function(self, Num(default))
             raise NotDefinedError(f"{Ts.__name__} {operator} {To.__name__}")
 
         return wrapper
@@ -70,7 +70,7 @@ class Missing:
 
 
 METHODS = (
-    "getattr add str sub mul floordiv pow mod and or xor neg pos invert getitem "
+    "getattr add str sub mul truediv pow mod and or xor neg pos invert getitem "
     "setitem eq ne ge gt le lt contains hash call iter"
 )
 
@@ -119,7 +119,7 @@ class UserAttrs(Attrs):
             return v
         raise SamariumTypeError(f"{get_type_name(self)}! returned a non-string")
 
-    def __bit__(self) -> Integer:
+    def __bit__(self) -> Number:
         raise NotDefinedError(f"? {get_type_name(self)}")
 
     __bit__.argc = 1
@@ -136,7 +136,7 @@ class UserAttrs(Attrs):
         raise SamariumTypeError(f"? {get_type_name(self)} returned a non-bit")
 
     def __hash__(self) -> int:
-        return self.hash().val
+        return cast(int, self.hash().val)
 
     def __special__(self) -> Any:
         raise NotDefinedError(f"{get_type_name(self)}$")
@@ -151,19 +151,19 @@ class UserAttrs(Attrs):
             )
         return special()
 
-    def __hsh__(self) -> Integer:
+    def __hsh__(self) -> Number:
         raise NotDefinedError(f"{get_type_name(self)}##")
 
     __hsh__.argc = 1
 
-    def hash(self) -> Integer:
+    def hash(self) -> Number:
         hsh = self.__hsh__
         if hsh.argc != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}## should only take one argument"
             )
         v = hsh()
-        if isinstance(v, Integer):
+        if isinstance(v, Number):
             return v
         raise SamariumTypeError(f"{get_type_name(self)}## returned a non-integer")
 
@@ -180,7 +180,7 @@ class UserAttrs(Attrs):
             )
         return cast()
 
-    def __random__(self) -> Integer:
+    def __random__(self) -> Number:
         raise NotDefinedError(f"{get_type_name(self)}??")
 
     __random__.argc = 1
@@ -214,15 +214,15 @@ class Type(Attrs):
     def __init__(self, type_: type) -> None:
         self.val = type_
 
-    def __eq__(self, other: Any) -> Integer:
+    def __eq__(self, other: Any) -> Number:
         if isinstance(other, Type):
-            return Int(self.val == other.val)
-        return Int(self.val == other)
+            return Num(self.val == other.val)
+        return Num(self.val == other)
 
-    def __ne__(self, other: Any) -> Integer:
+    def __ne__(self, other: Any) -> Number:
         if isinstance(other, Type):
-            return Int(self.val != other.val)
-        return Int(True)
+            return Num(self.val != other.val)
+        return Num(True)
 
     def __str__(self) -> str:
         if self.val is FunctionType:
@@ -266,23 +266,31 @@ class Module(Attrs):
         return self.objects[key]
 
 
-class Integer(Attrs):
-    __slots__ = ("val",)
+class Number(Attrs):
+    __slots__ = ("is_int", "val")
 
     def __init__(self, v: Any = None) -> None:
-        if isinstance(v, (float, int, bool)):
+        self.val: int | float
+        t = type(v)
+        if t in (int, bool):
+            self.is_int = True
             self.val = int(v)
-        elif isinstance(v, Integer):
+        elif t is float:
+            self.is_int = is_int = v.is_integer()
+            self.val = int(v) if is_int else v
+        elif t is Number:
             self.val = v.val
+            self.is_int = v.is_int
         elif v in (None, NULL):
             self.val = 0
-        elif isinstance(v, String):
-            self.val = parse_integer(v.val) if v else 0
+            self.is_int = True
+        elif t is String:
+            self.val, self.is_int = parse_number(v.val) if v else (0, True)
         else:
-            raise SamariumTypeError(f"cannot cast {get_type_name(v)} to Integer")
+            raise SamariumTypeError(f"cannot cast {get_name(t)} to Number")
 
     def __bool__(self) -> bool:
-        return self.val != 0
+        return self.val != 0.0
 
     def __str__(self) -> str:
         return str(self.val)
@@ -290,98 +298,115 @@ class Integer(Attrs):
     __repr__ = __str__
 
     @guard("+", default=1)
-    def __add__(self, other: Any) -> Integer:
-        return Int(self.val + other.val)
+    def __add__(self, other: Any) -> Number:
+        return Num(self.val + other.val)
 
     @guard("-", default=1)
-    def __sub__(self, other: Any) -> Integer:
-        return Int(self.val - other.val)
+    def __sub__(self, other: Any) -> Number:
+        return Num(self.val - other.val)
 
     @guard("++", default=2)
-    def __mul__(self, other: Any) -> Integer:
-        return Int(self.val * other.val)
+    def __mul__(self, other: Any) -> Number:
+        return Num(self.val * other.val)
 
     @guard("--", default=2)
-    def __floordiv__(self, other: Any) -> Integer:
-        return Int(self.val // other.val)
+    def __truediv__(self, other: Any) -> Number:
+        return Num(self.val / other.val)
 
     @guard("+++", default=2)
-    def __pow__(self, other: Any) -> Integer:
-        return Int(self.val**other.val)
+    def __pow__(self, other: Any) -> Number:
+        return Num(self.val**other.val)
 
     @guard("---", default=2)
-    def __mod__(self, other: Any) -> Integer:
-        return Int(self.val % other.val)
+    def __mod__(self, other: Any) -> Number:
+        return Num(self.val % other.val)
 
     @guard("&")
-    def __and__(self, other: Any) -> Integer:
-        return Int(self.val & other.val)
+    def __and__(self, other: Any) -> Number:
+        if self.is_int and other.is_int:
+            return Num(self.val & other.val)
+        raise SamariumValueError("cannot use & with non-integer numbers")
 
     @guard("|")
-    def __or__(self, other: Any) -> Integer:
-        return Int(self.val | other.val)
+    def __or__(self, other: Any) -> Number:
+        if self.is_int and other.is_int:
+            return Num(self.val | other.val)
+        raise SamariumValueError("cannot use | with non-integer numbers")
 
     @guard("^")
-    def __xor__(self, other: Any) -> Integer:
-        return Int(self.val ^ other.val)
+    def __xor__(self, other: Any) -> Number:
+        if self.is_int and other.is_int:
+            return Num(self.val ^ other.val)
+        raise SamariumValueError("cannot use ^ with non-integer numbers")
 
-    def __invert__(self) -> Integer:
-        return Int(~self.val)
+    def __invert__(self) -> Number:
+        if self.is_int:
+            return Num(~cast(int, self.val))
+        raise SamariumValueError("cannot invert a non-integer number")
 
-    def __pos__(self) -> Integer:
+    def __pos__(self) -> Number:
         return self
 
-    def __neg__(self) -> Integer:
-        return Int(-self.val)
+    def __neg__(self) -> Number:
+        return Num(-self.val)
 
-    def __eq__(self, other: Any) -> Integer:
-        if isinstance(other, Integer):
-            return Int(self.val == other.val)
-        return Int(False)
+    def __eq__(self, other: Any) -> Number:
+        if isinstance(other, Number):
+            return Num(self.val == other.val)
+        return Num(0.0)
 
-    def __ne__(self, other: Any) -> Integer:
-        if isinstance(other, Integer):
-            return Int(self.val != other.val)
-        return Int(True)
+    def __ne__(self, other: Any) -> Number:
+        if isinstance(other, Number):
+            return Num(self.val != other.val)
+        return Num(1.0)
 
     @guard(">", default=0)
-    def __gt__(self, other: Any) -> Integer:
-        return Int(self.val > other.val)
+    def __gt__(self, other: Any) -> Number:
+        return Num(self.val > other.val)
 
     @guard(">:", default=0)
-    def __ge__(self, other: Any) -> Integer:
-        return Int(self.val >= other.val)
+    def __ge__(self, other: Any) -> Number:
+        return Num(self.val >= other.val)
 
     @guard("<", default=0)
-    def __lt__(self, other: Any) -> Integer:
-        return Int(self.val < other.val)
+    def __lt__(self, other: Any) -> Number:
+        return Num(self.val < other.val)
 
     @guard("<:", default=0)
-    def __le__(self, other: Any) -> Integer:
-        return Int(self.val <= other.val)
+    def __le__(self, other: Any) -> Number:
+        return Num(self.val <= other.val)
 
-    def __hash__(self) -> int:
+    def __hash__(self) -> float:
         return self.hash().val
 
     def cast(self) -> String:
-        return String(to_chr(self.val))
+        if self.is_int:
+            return String(to_chr(cast(int, self.val)))
+        raise SamariumValueError("cannot cast a non-integer number")
 
-    def hash(self) -> Integer:
-        return Int(hash(self.val))
+    def hash(self) -> Number:
+        return Num(hash(self.val))
 
-    def random(self) -> Integer:
-        v = self.val
-        if not v:
+    def random(self) -> Number:
+        if not self:
             return self
-        elif v > 0:
-            return Int(randbelow(v))
-        return Int(-randbelow(v) - 1)
+        if self.is_int:
+            v = cast(int, self.val)
+            r = randrange(v)
+            if v > 0:
+                return Num(r)
+            return Num(~r)
+        v = self.val
+        u = uniform(0, v)
+        if v > 0.0:
+            return Num(u)
+        return Num(-u - 1)
 
-    def special(self) -> String:
-        return String(f"{self.val:b}")
+    def special(self) -> Number:
+        return Number(int(self.val))
 
 
-Int = lru_cache(1024)(Integer)
+Num = lru_cache(1024)(Number)
 
 
 class String(Attrs):
@@ -408,22 +433,25 @@ class String(Attrs):
     def __add__(self, other: Any) -> String:
         if isinstance(other, String):
             return String(self.val + other.val)
-        elif isinstance(other, Integer):
-            return String(
-                "".join(chr((ord(i) + other.val) % 0x10FFFF) for i in self.val)
-            )
+        elif isinstance(other, Number):
+            if other.is_int:
+                return String(
+                    "".join(chr((ord(i) + cast(int, other.val)) % 0x10FFFF) for i in self.val)
+                )
+            raise SamariumTypeError(f"cannot shift using non-integers")
         raise SamariumTypeError(f"String + {get_type_name(other)}")
 
     def __sub__(self, other: Any) -> String:
         if isinstance(other, String):
             return String(self.val.replace(other.val, ""))
-        elif isinstance(other, Integer):
+        elif isinstance(other, Number):
             return self + (-other)
         raise SamariumTypeError(f"String - {get_type_name(other)}")
 
     def __mul__(self, other: Any) -> String:
-        if isinstance(other, Integer):
-            return String(self.val * other.val)
+        if isinstance(other, Number):
+            i, d = int(other.val // 1), other.val % 1
+            return String(self.val * i + self.val[:round(d * len(self.val))])
         raise NotDefinedError(f"String ++ {get_type_name(other)}")
 
     def __mod__(self, other: Any) -> String:
@@ -431,59 +459,69 @@ class String(Attrs):
             return String(smformat(self.val, other.val))
         raise NotDefinedError(f"String --- {get_type_name(other)}")
 
-    def __eq__(self, other: Any) -> Integer:
-        return Int(self.val == other.val)
+    def __eq__(self, other: Any) -> Number:
+        return Num(self.val == other.val)
 
-    def __ne__(self, other: Any) -> Integer:
-        return Int(self.val != other.val)
+    def __ne__(self, other: Any) -> Number:
+        return Num(self.val != other.val)
 
     @guard(">")
-    def __gt__(self, other: Any) -> Integer:
-        return Int(self.val > other.val)
+    def __gt__(self, other: Any) -> Number:
+        return Num(self.val > other.val)
 
     @guard(">:")
-    def __ge__(self, other: Any) -> Integer:
-        return Int(self.val >= other.val)
+    def __ge__(self, other: Any) -> Number:
+        return Num(self.val >= other.val)
 
     @guard("<")
-    def __lt__(self, other: Any) -> Integer:
-        return Int(self.val < other.val)
+    def __lt__(self, other: Any) -> Number:
+        return Num(self.val < other.val)
 
     @guard("<:")
-    def __le__(self, other: Any) -> Integer:
-        return Int(self.val <= other.val)
+    def __le__(self, other: Any) -> Number:
+        return Num(self.val <= other.val)
 
-    def __getitem__(self, index: Integer | Slice) -> String:
-        if isinstance(index, (Integer, Slice)):
+    def __getitem__(self, index: Number | Slice) -> String:
+        if isinstance(index, Number):
+            if not index.is_int:
+                raise SamariumTypeError(f"invalid index: {index}")
+            return String(self.val[cast(int, index.val)])
+        if isinstance(index, Slice):
             return String(self.val[index.val])
         raise SamariumTypeError(f"invalid index: {index}")
 
-    def __setitem__(self, index: Integer | Slice, value: String) -> None:
-        if not isinstance(index, (Integer, Slice)):
+    def __setitem__(self, index: Number | Slice, value: String) -> None:
+        if not isinstance(index, (Number, Slice)):
             raise SamariumTypeError(f"invalid index: {index}")
+        if isinstance(index, Number):
+            if not index.is_int:
+                raise SamariumTypeError(f"invalid index: {index}")
+            i = cast(int, index.val)
+        else:
+            i = index.val
         string = [*self.val]
-        string[index.val] = value.val
+        string[i] = value.val
         self.val = "".join(string)
 
     def __hash__(self) -> int:
-        return self.hash().val
+        return cast(int, self.hash().val)
 
     def __matmul__(self, other: Any) -> Zip:
         return Zip(self, other)
 
-    def cast(self) -> Array | Integer:
+    def cast(self) -> Array | Number:
         if len(self.val) == 1:
-            return Int(ord(self.val))
-        return Array(Int(ord(i)) for i in self.val)
+            return Num(ord(self.val))
+        return Array(Num(ord(i)) for i in self.val)
 
-    def hash(self) -> Integer:
-        return Int(hash(self.val))
+    def hash(self) -> Number:
+        return Num(hash(self.val))
 
     def random(self) -> String:
         return String(choice(self.val))
 
-    def special(self) -> Integer:
-        return Int(len(self.val))
+    def special(self) -> Number:
+        return Num(len(self.val))
 
 
 class Array(Generic[T], Attrs):
@@ -522,47 +560,47 @@ class Array(Generic[T], Attrs):
     def __contains__(self, element: T) -> bool:
         return element in self.val
 
-    def __eq__(self, other: Any) -> Integer:
+    def __eq__(self, other: Any) -> Number:
         if isinstance(other, Array):
-            return Int(self.val == other.val)
-        return Int(False)
+            return Num(self.val == other.val)
+        return Num(False)
 
-    def __ne__(self, other: Any) -> Integer:
+    def __ne__(self, other: Any) -> Number:
         if isinstance(other, Array):
-            return Int(self.val != other.val)
-        return Int(True)
+            return Num(self.val != other.val)
+        return Num(True)
 
     @guard(">")
-    def __gt__(self, other: Any) -> Integer:
-        return Int(self.val > other.val)
+    def __gt__(self, other: Any) -> Number:
+        return Num(self.val > other.val)
 
     @guard(">:")
-    def __ge__(self, other: Any) -> Integer:
-        return Int(self.val >= other.val)
+    def __ge__(self, other: Any) -> Number:
+        return Num(self.val >= other.val)
 
     @guard("<")
-    def __lt__(self, other: Any) -> Integer:
-        return Int(self.val < other.val)
+    def __lt__(self, other: Any) -> Number:
+        return Num(self.val < other.val)
 
     @guard("<:")
-    def __le__(self, other: Any) -> Integer:
-        return Int(self.val <= other.val)
+    def __le__(self, other: Any) -> Number:
+        return Num(self.val <= other.val)
 
     def __getitem__(self, index: Any) -> T | Array[T]:
-        if isinstance(index, Integer):
-            if not (0 <= index.val < len(self.val)):
+        if isinstance(index, Number):
+            if not (0 <= index.val < len(self.val)) or not index.is_int:
                 raise SamariumValueError("index out of range")
-            return self.val[index.val]
+            return self.val[cast(int, index.val)]
         if isinstance(index, Slice):
             return Array(self.val[index.val])
         raise SamariumTypeError(f"invalid index: {index}")
 
     def __setitem__(self, index: Any, value: T | Array[T]) -> None:
-        if not isinstance(index, (Integer, Slice)):
+        if not isinstance(index, (Number, Slice)):
             raise SamariumTypeError(f"invalid index: {index}")
-        if isinstance(index, Integer):
-            if 0 <= index.val < len(self.val):
-                self.val[index.val] = value
+        if isinstance(index, Number):
+            if 0 <= index.val < len(self.val) or not index.is_int:
+                self.val[cast(int, index.val)] = value
             else:
                 raise SamariumValueError("index out of range")
         else:
@@ -580,8 +618,10 @@ class Array(Generic[T], Attrs):
                     new_array.remove(i)
                 except ValueError:
                     raise SamariumValueError(f"{i!r} not in array") from None
-        elif isinstance(other, Integer):
-            new_array.pop(other.val)
+        elif isinstance(other, Number):
+            if not other.is_int:
+                raise SamariumValueError(f"invalid index: {other}")
+            new_array.pop(cast(int, other.val))
         elif other is NULL:
             return self.val.pop()
         else:
@@ -603,7 +643,7 @@ class Array(Generic[T], Attrs):
         return Array(new_array)
 
     @guard("--")
-    def __floordiv__(self, other: Any) -> Array[T]:
+    def __truediv__(self, other: Any) -> Array[T]:
         new_array = self.val.copy()
         for i in other.val:
             with suppress(ValueError):
@@ -627,8 +667,9 @@ class Array(Generic[T], Attrs):
         return (self | other) // (self & other)
 
     def __mul__(self, other: Any) -> Array[T]:
-        if isinstance(other, Integer):
-            return Array(self.val * other.val)
+        if isinstance(other, Number):
+            i, d = int(other.val // 1), other.val % 1
+            return Array(self.val * i + self.val[:round(d * len(self.val))])
         raise NotDefinedError(f"Array ++ {get_type_name(other)}")
 
     def __matmul__(self, other: Any) -> Zip:
@@ -637,8 +678,8 @@ class Array(Generic[T], Attrs):
     def cast(self) -> String:
         s = ""
         for i in self.val:
-            if isinstance(i, Integer):
-                s += to_chr(i.val)
+            if isinstance(i, Number) and i.is_int:
+                s += to_chr(cast(int, i.val))
             else:
                 raise SamariumTypeError("array contains non-integers")
         return String(s)
@@ -648,8 +689,8 @@ class Array(Generic[T], Attrs):
             raise SamariumValueError("array is empty")
         return choice(self.val)
 
-    def special(self) -> Integer:
-        return Int(len(self.val))
+    def special(self) -> Number:
+        return Num(len(self.val))
 
 
 class Table(Generic[KT, VT], Attrs):
@@ -708,15 +749,15 @@ class Table(Generic[KT, VT], Attrs):
     def __contains__(self, element: Any) -> bool:
         return element in self.val
 
-    def __eq__(self, other: Any) -> Integer:
+    def __eq__(self, other: Any) -> Number:
         if isinstance(other, Table):
-            return Int(self.val == other.val)
-        return Int(False)
+            return Num(self.val == other.val)
+        return Num(False)
 
-    def __ne__(self, other: Any) -> Integer:
+    def __ne__(self, other: Any) -> Number:
         if isinstance(other, Table):
-            return Int(self.val != other.val)
-        return Int(True)
+            return Num(self.val != other.val)
+        return Num(True)
 
     @guard("+")
     def __add__(self, other: Any) -> Table[KT, VT]:
@@ -763,10 +804,10 @@ class Null(Singleton, Attrs):
         return self is not other
 
     def __hash__(self) -> int:
-        return self.hash().val
+        return cast(int, self.hash().val)
 
-    def hash(self) -> Integer:
-        return Int(hash(self.val))
+    def hash(self) -> Number:
+        return Num(hash(self.val))
 
 
 I64_MAX = 9223372036854775807
@@ -793,14 +834,16 @@ class Slice(Attrs):
     def __bool__(self) -> bool:
         return bool(self.range)
 
-    def __iter__(self) -> PyIterator[Integer]:
-        yield from map(Int, self.range)
+    def __iter__(self) -> PyIterator[Number]:
+        yield from map(Num, self.range)
 
-    def __contains__(self, value: Integer) -> bool:
-        return value.val in self.range
+    def __contains__(self, value: Number) -> Number:
+        return Num(value.val in self.range)
 
-    def __getitem__(self, index: Integer) -> Integer:
-        return Int(self.range[index.val])
+    def __getitem__(self, index: Number) -> Number:
+        if isinstance(index, Number) and index.is_int:
+            return Num(self.range[cast(int, index.val)])
+        raise SamariumValueError(f"invalid index: {index}")
 
     def __str__(self) -> str:
         start, stop, step = self.tup
@@ -824,21 +867,21 @@ class Slice(Attrs):
 
     __repr__ = __str__
 
-    def __eq__(self, other: Any) -> Integer:
+    def __eq__(self, other: Any) -> Number:
         if isinstance(other, Slice):
-            return Int(self.tup == other.tup)
-        return Int(False)
+            return Num(self.tup == other.tup)
+        return Num(False)
 
-    def __ne__(self, other: Any) -> Integer:
+    def __ne__(self, other: Any) -> Number:
         if isinstance(other, Slice):
-            return Int(self.tup != other.tup)
-        return Int(True)
+            return Num(self.tup != other.tup)
+        return Num(True)
 
-    def random(self) -> Integer:
-        return Int(choice(self.range))
+    def random(self) -> Number:
+        return Num(choice(self.range))
 
-    def special(self) -> Integer:
-        return Int(len(self.range))
+    def special(self) -> Number:
+        return Num(len(self.range))
 
     def is_empty(self) -> bool:
         return self.start is self.stop is self.step is NULL
@@ -868,8 +911,8 @@ class Zip(Attrs):
     def __str__(self) -> str:
         return f"<Zip@{id(self):x}>"
 
-    def special(self) -> Integer:
-        return Int(len(self.iters))
+    def special(self) -> Number:
+        return Num(len(self.iters))
 
 
 class Iterator(Generic[T], Attrs):
@@ -880,7 +923,7 @@ class Iterator(Generic[T], Attrs):
             raise SamariumTypeError("cannot create an Iterator from a non-iterable")
         self.val = iter(value)
         try:
-            self.length = Int(len(value.val))
+            self.length = Num(len(value.val))
         except (TypeError, AttributeError):
             self.length = NULL
 
@@ -896,7 +939,7 @@ class Iterator(Generic[T], Attrs):
     def __str__(self) -> str:
         return f"<Iterator@{id(self):x}>"
 
-    def cast(self) -> Integer | Null:
+    def cast(self) -> Number | Null:
         return self.length
 
     def special(self) -> T:
@@ -916,11 +959,11 @@ class Enum(Attrs):
         i = 0
         for k, v in members.items():
             if v is NEXT:
-                self.members[k] = Int(i)
+                self.members[k] = Num(i)
                 i += 1
             else:
                 self.members[k] = v
-                if isinstance(v, Integer):
+                if isinstance(v, Number):
                     i = v.val + 1
 
     def __str__(self) -> str:

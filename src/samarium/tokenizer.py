@@ -8,23 +8,28 @@ from crossandra import Crossandra, CrossandraError, Rule, common
 
 from .exceptions import SamariumSyntaxError, handle_exception
 from .tokens import Token
+from .utils import convert_float
 
 
-def to_int(string: str) -> int:
-    return int(string.replace("/", "1").replace("\\", "0"), 2)
+def to_number(string: str) -> int | float:
+    string = string.replace("/", "1").replace("\\", "0")
+    if string == ".":
+        string = "0."
+    return convert_float(string, base=2, sep="`")
 
 
 Tokenlike = Union[Token, str, int]
 
+SM_BIT = r"[\\\/]"
+
 crossandra = Crossandra(
     Token,
     ignore_whitespace=True,
-    ignored_characters="`",
     rules=[
         Rule(r"==<.*>==", False, re.M | re.S),
         Rule(r"==[^\n]*", False, re.M | re.S),
         common.DOUBLE_QUOTED_STRING,
-        Rule(r"(?:\\|/)+", to_int),
+        Rule(rf"{SM_BIT}+`?{SM_BIT}*|`{SM_BIT}*", to_number),
         Rule(r"\w+"),
     ],
 )

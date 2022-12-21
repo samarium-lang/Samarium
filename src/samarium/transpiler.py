@@ -6,8 +6,7 @@ from typing import Any, cast
 
 from .exceptions import SamariumSyntaxError, handle_exception
 from .tokenizer import Tokenlike
-from .tokens import FILE_IO_TOKENS, Token
-from .utils import match_brackets
+from .tokens import CLOSE_TOKENS, FILE_IO_TOKENS, OPEN_TOKENS, Token
 
 
 def groupnames(array: list[str]) -> list[str]:
@@ -30,6 +29,27 @@ def indent(levels: int) -> str:
 
 def is_first_token(line: list[str]) -> bool:
     return not line or (len(line) == 1 and line[0].isspace())
+
+
+def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
+    stack: list[Token] = []
+    token = Token.END
+    tokens: list[Token] = [
+        cast(Token, t) for t in tokens_ if t in OPEN_TOKENS + CLOSE_TOKENS
+    ]
+    for token in tokens:
+        if token in OPEN_TOKENS:
+            stack.append(token)
+        elif stack:
+            if OPEN_TO_CLOSE[stack[-1]] == token:
+                stack.pop()
+            else:
+                return -1, [stack[-1], token]
+        else:
+            return -1, [Token.END, token]
+    if stack:
+        return 1, [token]
+    return 0, []
 
 
 def throw_syntax(message: str) -> None:
@@ -161,11 +181,20 @@ class Group:
     methods = {Token.SPECIAL, Token.HASH, Token.TYPE, Token.PARENT, Token.CAST}
 
 
+OPEN_TO_CLOSE = {
+    Token.BRACKET_OPEN: Token.BRACKET_CLOSE,
+    Token.BRACE_OPEN: Token.BRACE_CLOSE,
+    Token.PAREN_OPEN: Token.PAREN_CLOSE,
+    Token.TABLE_OPEN: Token.TABLE_CLOSE,
+    Token.SLICE_OPEN: Token.SLICE_CLOSE,
+}
+
+
 OPERATOR_MAPPING = {
     Token.ADD: "+",
     Token.SUB: "-",
     Token.MUL: "*",
-    Token.DIV: "//",
+    Token.DIV: "/",
     Token.MOD: "%",
     Token.POW: "**",
     Token.EQ: "==",
@@ -247,7 +276,7 @@ FILE_OPEN_KEYWORDS = {"READ", "WRITE", "READ_WRITE", "APPEND"}
 SPECIAL_METHOD_MAPPING = {
     "+": "add",
     "*": "mul",
-    "//": "floordiv",
+    "/": "truediv",
     "**": "pow",
     "%": "mod",
     "-": "sub",
@@ -458,7 +487,10 @@ class Transpiler:
             prev = self._tokens[self._index - 1]
             if token is Token.TABLE_CLOSE and prev is Token.TO:
                 self._line.append("NULL")
-            if token in (Token.PAREN_CLOSE, Token.BRACKET_CLOSE) and prev in Group.operators | {Token.ELSE}:
+            if token in (
+                Token.PAREN_CLOSE,
+                Token.BRACKET_CLOSE,
+            ) and prev in Group.operators | {Token.ELSE}:
                 self._line.append("NULL")
             self._line.append(BRACKET_MAPPING[token])
             return
@@ -613,14 +645,14 @@ class Transpiler:
                 return
             if self._reg[Switch.BUILTIN]:
                 if self._line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
-                    self._line.append("Int(0)")
+                    self._line.append("Num(0)")
                 self._line.append(")")
                 self._reg[Switch.BUILTIN] = False
             if "=" in self._line:
                 start = self._indent > 0
                 assign_idx = self._line.index("=")
                 stop = assign_idx - (
-                    self._line[assign_idx - 1] in {*"+-*%&|^@", "**", "//"}
+                    self._line[assign_idx - 1] in {*"+-*%&|/^@", "**"}
                 )
                 variable = "".join(self._line[start:stop])
                 self._line.append(f";{variable}=correct_type({variable})")
@@ -633,7 +665,9 @@ class Transpiler:
             self._reg[Switch.IMPORT] = True
             self._line.append("import_to_scope('")
         elif token is Token.SEP:
-            if self._tokens[index - 1] in NULLABLE_TOKENS | Group.operators | {Token.ELSE}:
+            if self._tokens[index - 1] in NULLABLE_TOKENS | Group.operators | {
+                Token.ELSE
+            }:
                 self._line.append("NULL")
             self._line.append(",")
         elif token is Token.ATTR:
@@ -716,9 +750,9 @@ class Transpiler:
         if self._inline_counter == 0:
             self._line.append("')")
 
-        # Integers
-        if isinstance(token, int):
-            self._line.append(f"Int({token})")
+        # Numbers
+        if isinstance(token, (int, float)):
+            self._line.append(f"Num({token})")
 
         elif isinstance(token, str):
             if token[0] == token[-1] == '"':

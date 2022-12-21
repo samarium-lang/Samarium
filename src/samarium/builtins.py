@@ -17,10 +17,10 @@ from .classes import (
     NULL,
     Array,
     Attrs,
-    Int,
-    Integer,
     Iterator,
     Null,
+    Num,
+    Number,
     Slice,
     String,
     Type,
@@ -55,16 +55,16 @@ def check_type(obj: Any) -> None:
         raise SamariumSyntaxError("invalid syntax")
 
 
-def correct_type(obj: T, *objs: T) -> T | Array | Integer | Iterator | Null:
+def correct_type(obj: T, *objs: T) -> T | Array | Number | Iterator | Null:
     if objs:
         return Array(map(correct_type, (obj, *objs)))
     if obj is None:
         return NULL
     elif isinstance(obj, bool):
-        return Int(obj)
+        return Num(obj)
     elif isinstance(obj, GeneratorType):
         return Iterator(obj)
-    elif isinstance(obj, tuple):
+    elif isinstance(obj, (list, tuple)):
         return Array(obj)
     else:
         check_type(obj)
@@ -77,7 +77,7 @@ def dtnow() -> Array:
     utcnow_tt = utcnow.timetuple()
     tz = now[3] - utcnow_tt[3], now[4] - utcnow_tt[4]
     utcnow_tpl = utcnow_tt[:-3] + (utcnow.microsecond // 1000,) + tz
-    return Array(map(Int, utcnow_tpl))
+    return Array(map(Num, utcnow_tpl))
 
 
 def function(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -109,11 +109,11 @@ def function(func: Callable[..., Any]) -> Callable[..., Any]:
     argc = len(signature(func).parameters)
 
     wrapper.__str__ = lambda: get_name(func)
-    wrapper.special = lambda: Int(argc)
+    wrapper.special = lambda: Num(argc)
     wrapper.argc = argc
     wrapper.parent = lambda: Type(FunctionType)
     wrapper.type = lambda: Type(FunctionType)
-    wrapper.hash = lambda: Int(hash(func))
+    wrapper.hash = lambda: Num(hash(func))
 
     return wrapper
 
@@ -173,12 +173,12 @@ def readline(prompt: String = NULL_STRING) -> String:
     raise SamariumIOError(msg)
 
 
-def sleep(*args: Integer) -> None:
+def sleep(*args: Number) -> None:
     if not args:
         raise SamariumTypeError("no argument provided for ,.,")
     if len(args) > 1:
         raise SamariumTypeError(",., only takes one argument")
-    if not isinstance((time := args[0]), Integer):
+    if not isinstance((time := args[0]), Number):
         raise SamariumTypeError(",., only accepts integers")
     _sleep(time.val / 1000)
 
@@ -191,5 +191,5 @@ def throw(message: String = NULL_STRING) -> None:
     raise SamariumError(message.val)
 
 
-def timestamp() -> Integer:
-    return Int(time_ns() // 1_000_000)
+def timestamp() -> Number:
+    return Num(time_ns() // 1_000_000)

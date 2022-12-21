@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from enum import Enum
 from os import write
-from typing import IO, Any, Iterator
+from typing import IO, Any, Iterator, cast
 
 from samarium.utils import get_type_name
 
-from ..exceptions import SamariumIOError, SamariumTypeError
-from .base import NULL, Array, Attrs, Int, Integer, Null, Slice, String
+from ..exceptions import SamariumIOError, SamariumTypeError, SamariumValueError
+from .base import NULL, Array, Attrs, Null, Num, Number, Slice, String
 
 
 class Mode(Enum):
@@ -24,13 +24,17 @@ class FileManager:
         return NULL
 
     @staticmethod
-    def open(path: String | Integer, mode: Mode, *, binary: bool = False) -> File:
-        if isinstance(path, Integer) and mode is Mode.READ_WRITE:
-            raise SamariumIOError(
-                "cannot open a standard stream in a read & write mode"
-            )
-        f = open(path.val, mode.value + "b" * binary)
-        return File(f, mode.name, path.val, binary=binary)
+    def open(path: String | Number, mode: Mode, *, binary: bool = False) -> File:
+        if isinstance(path, Number):
+            if mode is Mode.READ_WRITE:
+                raise SamariumIOError(
+                    "cannot open a standard stream in a read & write mode"
+                )
+            if not path.is_int:
+                raise SamariumValueError("cannot use non-integers")
+        pth = cast(int, path.val) if isinstance(path, Number) else path.val
+        f = open(pth, mode.value + "b" * binary)
+        return File(f, mode.name, pth, binary=binary)
 
     @staticmethod
     def open_binary(path: String, mode: Mode) -> File:
@@ -38,7 +42,7 @@ class FileManager:
 
     @staticmethod
     def quick(
-        path: String | File | Integer,
+        path: String | File | Number,
         mode: Mode,
         *,
         data: String | Array | None = None,
@@ -48,7 +52,7 @@ class FileManager:
             with open(path.val, mode.value + "b" * binary) as f:
                 if mode is Mode.READ:
                     if binary:
-                        return Array(map(Int, f.read()))
+                        return Array(map(Num, f.read()))
                     return String(f.read())
                 if data is None:
                     raise SamariumIOError("missing data")
@@ -64,9 +68,11 @@ class FileManager:
                     f.write(bytes_)
                 else:
                     f.write(data.val)
-        elif isinstance(path, Integer):
+        elif isinstance(path, Number):
+            if not path.is_int:
+                raise SamariumValueError("cannot use non-integers")
             if mode in {Mode.APPEND, Mode.WRITE}:
-                fd = path.val
+                fd = cast(int, path.val)
                 write(fd, str(data).encode())
             else:
                 raise SamariumIOError(
@@ -103,42 +109,48 @@ class File(Attrs):
         self.val.close()
         return NULL
 
-    def __iter__(self) -> Iterator[String] | Iterator[Array[Integer]]:
+    def __iter__(self) -> Iterator[String] | Iterator[Array[Number]]:
         if self.binary:
             for line in self.val:
-                yield Array(map(Int, list(line)))
+                yield Array(map(Num, list(line)))
         else:
             yield from map(String, self.val)
 
-    def __getitem__(self, index: Any) -> Array | String | Integer | Null:
+    def __getitem__(self, index: Any) -> Array | String | Number | Null:
         if isinstance(index, Slice):
             if index.is_empty():
-                return Int(self.val.tell())
-            if isinstance(index.step, Integer):
+                return Num(self.val.tell())
+            if isinstance(index.step, Number):
                 raise SamariumIOError("cannot use step")
-            if isinstance(index.start, Integer):
-                if not isinstance(index.stop, Integer):
+            if isinstance(index.start, Number):
+                if not isinstance(index.stop, Number):
                     return self.load(index.start)
+                if not (index.start.is_int or index.stop.is_int):
+                    raise SamariumValueError(f"invalid index: {index}")
+                start = cast(int, index.start.val)
+                stop = cast(int, index.stop.val)
                 current_pos = self.val.tell()
-                self.val.seek(index.start.val)
-                data = self.val.read(index.stop.val - index.start.val)
+                self.val.seek(start)
+                data = self.val.read(stop - start)
                 self.val.seek(current_pos)
                 if self.binary:
                     if isinstance(data, bytes):
                         data = [*data]
-                    return Array(map(Int, data))
+                    return Array(map(Num, data))
                 return String(data)
-            return self[Slice(Int(0), slice.stop, slice.step)]
+            return self[Slice(Num(0), slice.stop, slice.step)]
         else:
             self.val.seek(index.val)
             return NULL
 
-    def load(self, bytes_: Integer | None = None) -> String | Array:
+    def load(self, bytes_: Number | None = None) -> String | Array:
         if bytes_ is None:
-            bytes_ = Int(-1)
-        val = self.val.read(bytes_.val)
+            bytes_ = Num(-1)
+        if not bytes_.is_int:
+            raise SamariumValueError("cannot use non-integers")
+        val = self.val.read(cast(int, bytes_.val))
         if self.binary:
-            return Array(map(Int, val))
+            return Array(map(Num, val))
         return String(val)
 
     def save(self, data: String | Array) -> Null:
