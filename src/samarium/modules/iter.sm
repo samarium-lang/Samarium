@@ -1,142 +1,9 @@
-find array target * {
-    index: \;
-    ? array?! :: <-types.String {
-        .. index + target$ <: array$ {
-            ? array<<index..index+target$>> :: target {
-                * index;
-            }
-            index+: /;
-        }
-    } ,, {
-        ... e ->? array {
-            ? e :: target {
-                * index;
-            }
-            index+: /;
-        }
-    }
-    * -/;
-}
-
-count array target * {
-    ? target ~~ ->? array { * \; }
-    s: \;
-    ... e ->? array {
-        s+: e :: target;
-    }
-    * s;
-}
-
-cycle iter * {
-    saved: [e ... e ->? iter];
-    .. {
-        ... e ->? saved {
-            ** e;
-        }
-    }
-}
-
-filter function array * {
-    ... e ->? array {
-        ? function(e) {
-            ** e;
-        }
-    }
-}
-
-filter_false function array * {
-    flip arg * { * ~~ function(arg); }
-    * filter(flip, array);
-}
-
-map function array * {
-    ... e ->? array {
-        ** function(e);
-    }
-}
-
-reverse array * {
-    i: array$ - /;
-    .. i >: \ {
-        ** array<<i>>;
-        i-: /;
-    }
-}
-
-take_while array function * {
-    ... e ->? array {
-        ? function(e) {
-            ** e;
-            ->
-        }
-        <-
-    }
-}
-
-drop_while array function * {
-    i: \;
-    ... e ->? array {
-        i+: /;
-        ? ~~ function(e) {
-            ** e;
-            <-
-        }
-    }
-    ... e ->? array<<i..array$>> {
-        ** e;
-    }
-}
-
 accumulate array function * {
     prev: array<<\>>;
     ** prev;
     ... e ->? array<</..>> {
         prev: function(prev, e);
         ** prev;
-    }
-}
-
-reduce array function * {
-    prev: array<<\>>;
-    ... e ->? array<</..>> {
-        prev: function(prev, e);
-    }
-    * prev;
-}
-
-pairwise array * {
-    ... i ->? <<..array$ - />> {
-        ** array<<i..i+/\>>;
-    }
-}
-
-zip_longest fill arrays... * {
-    longest: <-math.max([i$ ... i ->? arrays]);
-    ... i ->? <<..longest>> {
-        ... it ->? arrays {
-            ?? {
-                ** it<<i>>;
-            } !! {
-                ** fill;
-            }
-        }
-    }
-}
-
-find_all array target * {
-    ? array?! :: <-types.String && target$ > / {
-        ... i ->? <<..array$>> {
-            substring: array<<i..i + target$>>;
-            ? substring :: target {
-                ** i;
-            }
-        }
-    } ,, {
-        ... i, v ->? <<>> >< array {
-            ? v :: target {
-                ** i;
-            }
-        }
     }
 }
 
@@ -164,34 +31,87 @@ chunks array size * {
     }
 }
 
-#quicksort array * {
-    x: [i ... i ->? array];
-    ? x$ < /\ { * x; }
-    pivot: x<<\>>;
-    less: [i ... i ->? x<</..>> ? i <: pivot];
-    greater: [i ... i ->? x<</..>> ? i > pivot];
-    * #quicksort(less) + [pivot] + #quicksort(greater);
+count array target * {
+    ? target ~~ ->? array { * \; }
+    s: \;
+    ... e ->? array {
+        s+: e :: target;
+    }
+    * s;
 }
 
-#dummy x * { * x; }
-
-sorted array key? * {
-    key <> #dummy;
-    decorated: [[key(v), v] ... v ->? array];
-    d_sorted: #quicksort(decorated);
-    * [v ... _, v ->? d_sorted];
-}
-
-#flatten array * {
-    flattened: [];
-    ... i ->? array {
-        ? i?! :: []?! {
-            flattened+: i;
-        } ,, {
-            flattened+: [i];
+cycle iter * {
+    saved: [e ... e ->? iter];
+    .. {
+        ... e ->? saved {
+            ** e;
         }
     }
-    * flattened;
+}
+
+drop_while array function * {
+    i: \;
+    ... e ->? array {
+        i+: /;
+        ? ~~ function(e) {
+            ** e;
+            <-
+        }
+    }
+    ... e ->? array<<i..array$>> {
+        ** e;
+    }
+}
+
+filter function array * {
+    ... e ->? array {
+        ? function(e) {
+            ** e;
+        }
+    }
+}
+
+filter_false function array * {
+    flip arg * { * ~~ function(arg); }
+    * filter(flip, array);
+}
+
+find array target * {
+    index: \;
+    ? array?! :: <-types.String {
+        .. index + target$ <: array$ {
+            ? array<<index..index+target$>> :: target {
+                * index;
+            }
+            index+: /;
+        }
+    } ,, {
+        ... e ->? array {
+            ? e :: target {
+                * index;
+            }
+            index+: /;
+        }
+    }
+    * -/;
+}
+
+
+find_all array target * {
+    ? array?! :: <-types.String && target$ > / {
+        ... i ->? <<..array$>> {
+            substring: array<<i..i + target$>>;
+            ? substring :: target {
+                ** i;
+            }
+        }
+    } ,, {
+        ... i, v ->? <<>> >< array {
+            ? v :: target {
+                ** i;
+            }
+        }
+    }
 }
 
 flatten array depth? * {
@@ -219,5 +139,86 @@ flatten array depth? * {
             flattened: #flatten(flattened);
         }
         * flattened;
+    }
+}
+
+#flatten array * {
+    flattened: [];
+    ... i ->? array {
+        ? i?! :: []?! {
+            flattened+: i;
+        } ,, {
+            flattened+: [i];
+        }
+    }
+    * flattened;
+}
+
+map function array * {
+    ... e ->? array {
+        ** function(e);
+    }
+}
+
+pairwise array * {
+    ... i ->? <<..array$ - />> {
+        ** array<<i..i+/\>>;
+    }
+}
+
+reduce array function * {
+    prev: array<<\>>;
+    ... e ->? array<</..>> {
+        prev: function(prev, e);
+    }
+    * prev;
+}
+
+reverse array * {
+    i: array$ - /;
+    .. i >: \ {
+        ** array<<i>>;
+        i-: /;
+    }
+}
+
+sorted array key? * {
+    key <> #dummy;
+    decorated: [[key(v), v] ... v ->? array];
+    d_sorted: #quicksort(decorated);
+    * [v ... _, v ->? d_sorted];
+}
+
+#dummy x * { * x; }
+
+#quicksort array * {
+    x: [i ... i ->? array];
+    ? x$ < /\ { * x; }
+    pivot: x<<\>>;
+    less: [i ... i ->? x<</..>> ? i <: pivot];
+    greater: [i ... i ->? x<</..>> ? i > pivot];
+    * #quicksort(less) + [pivot] + #quicksort(greater);
+}
+
+take_while array function * {
+    ... e ->? array {
+        ? function(e) {
+            ** e;
+            ->
+        }
+        <-
+    }
+}
+
+zip_longest fill arrays... * {
+    longest: <-math.max([i$ ... i ->? arrays]);
+    ... i ->? <<..longest>> {
+        ... it ->? arrays {
+            ?? {
+                ** it<<i>>;
+            } !! {
+                ** fill;
+            }
+        }
     }
 }

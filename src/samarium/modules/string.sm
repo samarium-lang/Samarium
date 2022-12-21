@@ -11,6 +11,10 @@ WHITESPACE: " \t\n\r\f\v";
 
 PRINTABLE: LETTERS + DIGITS + PUNCTUATION + WHITESPACE;
 
+capitalize string * {
+    ? ~~ string { * string; }
+    * to_upper(string<<\>>) + to_lower(string<</..>>);
+}
 
 center string length char? * {
     char <> " ";
@@ -30,70 +34,57 @@ center string length char? * {
     * string;
 }
 
-starts_with string prefix * {
-    ? prefix$ > string$ { * \; }
-    ? prefix :: string { * /; }
-    * string<<..prefix$>> :: prefix;
-}
-
 ends_with string suffix * {
     ? suffix$ > string$ { * \; }
     ? suffix :: string { * /; }
     * string<<-suffix$..>> :: suffix;
 }
 
-#split_char string separator * {
-    out: [];
-    temp: "";
+is_alphabetic string * {
+    * is_in_group(string, LETTERS);
+}
+
+is_alphanumeric string * {
+    * is_in_group(string, LETTERS + DIGITS);
+}
+
+is_capitalized string * {
+    * string :: capitalize(string);
+}
+
+is_decimal string * {
+    * is_in_group(string, DIGITS);
+}
+
+is_hexadecimal string * {
+    * is_in_group(string, HEXDIGITS);
+}
+
+is_in_group string group * {
     ... char ->? string {
-        ? char :: separator {
-            out+: [temp];
-            temp: "";
-        } ,, {
-            temp+: char;
-        }
+        ? char ~~ ->? group { * \; }
     }
-    * out + [temp];
+    * /;
 }
 
-split string separator? * {
-    separator <> " ";
-    ? ~~ separator { "empty separator"!!!; }
-    ? separator?! :: []?! {
-        first: separator<<\>>;
-        rest: separator<</..>>;
-        string: replace(string, {{i -> first ... i ->? rest}});
-        separator: first;
-    }
-    ? separator ~~ ->? string { * [string]; }
-    ? separator$ :: / {
-        * #split_char(string, separator);
-    }
-    out: [];
-    <=iter.find;
-    .. {
-        idx: find(string, separator);
-        ? idx :: -/ { <- }
-        out+: [string<<..idx>>];
-        string: string<<idx+separator$..>>;
-    }
-    * out + [string];
+is_lower string * {
+    * string :: to_lower(string);
 }
 
-split_lines string * {
-    * split(
-        replace(string, {{"\r\n" -> "\n"}}),
-        []?!("\r\n\v\f\x1c\x1d\x1e\x85\u2028\u2029")
-    );
+is_octal string * {
+    * is_in_group(string, OCTDIGITS);
 }
 
-capitalize string * {
-    ? ~~ string { * string; }
-    * to_upper(string<<\>>) + to_lower(string<</..>>);
+is_title string * {
+    * string :: title(string);
 }
 
-title string * {
-    * join([capitalize(w) ... w ->? split(string)], " ");
+is_upper string * {
+    * string :: to_upper(string);
+}
+
+is_wrapped string chars * {
+    * starts_with(string, chars) && ends_with(string, chars);
 }
 
 join iterable delimiter? * {
@@ -109,69 +100,18 @@ join iterable delimiter? * {
     * o;
 }
 
-strip_left string prefix * {
-    .. starts_with(string, prefix) {
-        string: string<<prefix$..>>;
-    }
-    * string;
+leftpad string length char? * {
+    char <> " ";
+    * pad(string, length, char) + string;
 }
 
-strip_right string suffix * {
-    .. ends_with(string, suffix) {
-        string: string<<..-suffix$>>;
+ordinal n * {
+    10: /\/\;
+    ords: {{/ -> "st", /\ -> "nd", // -> "rd"}};
+    ? n --- (10 ++ 10) ~~ ->? <</\\../\/\/>> && n --- 10 ->? ords {
+        * "$0$1" --- [n, ords<<n --- 10>>];
     }
-    * string;
-}
-
-strip string chars? * {
-    chars <> " ";
-    * strip_left(strip_right(string, chars), chars);
-}
-
-is_wrapped string chars * {
-    * starts_with(string, chars) && ends_with(string, chars);
-}
-
-to_lower string * {
-    ? string?! ::: <-types.String {
-        "invalid type: " + ""?!(string?!)!!!;
-    }
-    out: "";
-    ... char ->? string {
-        ? char% ->? <</\\\\\/../\//\/\>> {
-            out+: (char% + /\\\\\)%;
-        } ,, {
-            out+: char;
-        }
-    }
-    * out;
-}
-
-to_upper string * {
-    ? string?! ::: <-types.String {
-        "invalid type: " + ""?!(string?!)!!!;
-    }
-    out: "";
-    ... char ->? string {
-        ? char% ->? <<//\\\\/..////\/\>> {
-            out+: (char% - /\\\\\)%;
-        } ,, {
-            out+: char;
-        }
-    }
-    * out;
-}
-
-swapcase string * {
-    out: "";
-    ... char ->? string {
-        ? is_upper(char) {
-            out+: to_lower(char);
-        } ,, {
-            out+: to_upper(char);
-        }
-    }
-    * out;
+    * "$0th" --- [n];
 }
 
 pad string length char? * {
@@ -181,63 +121,6 @@ pad string length char? * {
     }
     ? length < string$ { * string; }
     * char ++ (length - string$);
-}
-
-leftpad string length char? * {
-    char <> " ";
-    * pad(string, length, char) + string;
-}
-
-rightpad string length char? * {
-    char <> " ";
-    * string + pad(string, length, char);
-}
-
-is_upper string * {
-    * string :: to_upper(string);
-}
-
-is_lower string * {
-    * string :: to_lower(string);
-}
-
-is_title string * {
-    * string :: title(string);
-}
-
-is_capitalized string * {
-    * string :: capitalize(string);
-}
-
-is_in_group string group * {
-    ... char ->? string {
-        ? char ~~ ->? group { * \; }
-    }
-    * /;
-}
-
-is_alphabetic string * {
-    * is_in_group(string, LETTERS);
-}
-
-is_alphanumeric string * {
-    * is_in_group(string, LETTERS + DIGITS);
-}
-
-is_decimal string * {
-    * is_in_group(string, DIGITS);
-}
-
-is_octal string * {
-    * is_in_group(string, OCTDIGITS);
-}
-
-is_hexadecimal string * {
-    * is_in_group(string, HEXDIGITS);
-}
-
-wrap string wrapper * {
-    * wrapper + string + wrapper;
 }
 
 replace string replacements count? * {
@@ -328,11 +211,127 @@ replace string replacements count? * {
     * string;
 }
 
-ordinal n * {
-    10: /\/\;
-    ords: {{/ -> "st", /\ -> "nd", // -> "rd"}};
-    ? n --- (10 ++ 10) ~~ ->? <</\\../\/\/>> && n --- 10 ->? ords {
-        * "$0$1" --- [n, ords<<n --- 10>>];
+rightpad string length char? * {
+    char <> " ";
+    * string + pad(string, length, char);
+}
+
+split string separator? * {
+    separator <> " ";
+    ? ~~ separator { "empty separator"!!!; }
+    ? separator?! :: []?! {
+        first: separator<<\>>;
+        rest: separator<</..>>;
+        string: replace(string, {{i -> first ... i ->? rest}});
+        separator: first;
     }
-    * "$0th" --- [n];
+    ? separator ~~ ->? string { * [string]; }
+    ? separator$ :: / {
+        * #split_char(string, separator);
+    }
+    out: [];
+    <=iter.find;
+    .. {
+        idx: find(string, separator);
+        ? idx :: -/ { <- }
+        out+: [string<<..idx>>];
+        string: string<<idx+separator$..>>;
+    }
+    * out + [string];
+}
+
+#split_char string separator * {
+    out: [];
+    temp: "";
+    ... char ->? string {
+        ? char :: separator {
+            out+: [temp];
+            temp: "";
+        } ,, {
+            temp+: char;
+        }
+    }
+    * out + [temp];
+}
+
+split_lines string * {
+    * split(
+        replace(string, {{"\r\n" -> "\n"}}),
+        []?!("\r\n\v\f\x1c\x1d\x1e\x85\u2028\u2029")
+    );
+}
+
+starts_with string prefix * {
+    ? prefix$ > string$ { * \; }
+    ? prefix :: string { * /; }
+    * string<<..prefix$>> :: prefix;
+}
+
+strip string chars? * {
+    chars <> " ";
+    * strip_left(strip_right(string, chars), chars);
+}
+
+strip_left string prefix * {
+    .. starts_with(string, prefix) {
+        string: string<<prefix$..>>;
+    }
+    * string;
+}
+
+strip_right string suffix * {
+    .. ends_with(string, suffix) {
+        string: string<<..-suffix$>>;
+    }
+    * string;
+}
+
+swapcase string * {
+    out: "";
+    ... char ->? string {
+        ? is_upper(char) {
+            out+: to_lower(char);
+        } ,, {
+            out+: to_upper(char);
+        }
+    }
+    * out;
+}
+
+title string * {
+    * join([capitalize(w) ... w ->? split(string)], " ");
+}
+
+to_lower string * {
+    ? string?! ::: <-types.String {
+        "invalid type: " + ""?!(string?!)!!!;
+    }
+    out: "";
+    ... char ->? string {
+        ? char% ->? <</\\\\\/../\//\/\>> {
+            out+: (char% + /\\\\\)%;
+        } ,, {
+            out+: char;
+        }
+    }
+    * out;
+}
+
+to_upper string * {
+    ? string?! ::: <-types.String {
+        "invalid type: " + ""?!(string?!)!!!;
+    }
+    out: "";
+    ... char ->? string {
+        ? char% ->? <<//\\\\/..////\/\>> {
+            out+: (char% - /\\\\\)%;
+        } ,, {
+            out+: char;
+        }
+    }
+    * out;
+}
+
+wrap string wrapper * {
+    * wrapper + string + wrapper;
 }

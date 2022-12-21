@@ -1,61 +1,122 @@
 <=operator;
 
-
-@ Stack {
-    => size? * {
-        size <> -/;
-        'stack: [];
-        'size: size;
+@ ArithmeticArray {
+    => array * {
+        'array: array;
     }
 
-    push item * {
-        ? 'is_full() {
-            "stack is full (size " + ""?!('size) + ")"!!!;
-        }
-        'stack+: [item];
+    apply op other * {
+        * ArithmeticArray([op(i, other) ... i ->? 'array]);
     }
 
-    push_all items * {
-        ... element ->? items {
-            'push(element);
-        }
-    }
+    & other * { * 'apply(operator.and, other); }
+    + other * { * 'apply(operator.add, other); }
+    -- other * { * 'apply(operator.div, other); }
+    :: other * { * 'apply(operator.eq, other); }
+    >: other * { * 'apply(operator.ge, other); }
+    > other * { * 'apply(operator.gt, other); }
+    <: other * { * 'apply(operator.le, other); }
+    < other * { * 'apply(operator.lt, other); }
+    --- other * { * 'apply(operator.mod, other); }
+    ++ other * { * 'apply(operator.mul, other); }
+    ::: other * { * 'apply(operator.ne, other); }
+    | other * { * 'apply(operator.or, other); }
+    +++ other * { * 'apply(operator.pow, other); }
+    - other * { * 'apply(operator.sub, other); }
+    ^ other * { * 'apply(operator.xor, other); }
 
-    $ * { * 'stack$; }
-
-    pop * {
-        ? 'is_empty() {
-            "stack is empty"!!!;
+    <<>> item * {
+        out: 'array<<item>>;
+        ? out?! :: <-types.Array {
+            * ArithmeticArray(out);
         }
-        out: 'stack<<-/>>;
-        'stack-: 'stack$ - /;
         * out;
     }
 
-    peek * {
-        ? 'is_empty() {
-            "stack is empty"!!!;
-        }
-        * 'stack<<-/>>;
+    <<>>: item value * { 'array<<item>>: value; }
+
+    $ * { * 'array$; }
+    ? * { * / ? 'array ,, \; }
+    ! * { * "A" + ""?!('array); }
+}
+
+@ Deque {
+
+    => size? * {
+        size <> -/;
+        'deque: [];
+        'size: size;
     }
 
-    ? * { * 'stack$ > \; }
-    is_full * { * 'size :: 'stack$; }
-    is_empty * { * 'stack$ :: \; }
+    $ * { * 'deque$; }
+    is_empty * { * ~~ '$; }
+    is_full * { * '$ :: 'size; }
+
+    throw_empty * {
+        ? 'is_empty() {
+            "deque is empty"!!!;
+        }
+    }
+
+    throw_full * {
+        ? 'is_full() {
+            "deque is full (size " + ""?!('size) + ")"!!!;
+        }
+    }
+
+    put_front item * {
+        'throw_full(); 'deque: [item] + 'deque;
+    }
+
+    put item * { 'throw_full(); 'deque+: [item]; }
+
+    put_front_all items * {
+        ... item ->? items {
+            'put_front(item);
+        }
+    }
+
+    put_all items * {
+        ... item ->? items {
+            'put(item);
+        }
+    }
+
+    front * { * 'deque<<\>>; }
+    back * { * 'deque<<-/>>; }
+    ? * { * '$ > \; }
+
+    get_front * {
+        'throw_empty();
+        out: 'deque<<\>>;
+        'deque-: \;
+        * out;
+    }
+
+    get * {
+        'throw_empty();
+        out: 'deque<<-/>>;
+        'deque-: 'deque$ - /;
+        * out;
+    }
 
     ! * {
-        ?? {
-            top: 'peek();
-        } !! {
-            top:;
+        <=string.wrap;
+        <=types.String;
+        ? '$ <: /\/ {
+            items: ""?!('deque)<</..-/>>;
+        } ,, {
+            front: ""?!('front());
+            back: ""?!('back());
+            ? 'front()?! :: String {
+                front: wrap(front, "\"");
+            }
+            ? 'back()?! :: String {
+                back: wrap(back, "\"");
+            }
+            items: ""?!(front) + ", ..., " + ""?!(back);
         }
-        ? top?! :: <-types.String {
-            top: <-string.wrap(""?!(top), "\"");
-        }
-        * "Stack(capacity:" + ""?!('size)
-        + ", size:" + ""?!('stack$)
-        + ", top:" + ""?!(top)
-        + ")";
+        * "Deque(" + items + ")";
     }
 }
 
@@ -195,122 +256,60 @@
     >: other * { * ' :: other || ' > other; }
 }
 
-@ Deque {
-
+@ Stack {
     => size? * {
         size <> -/;
-        'deque: [];
+        'stack: [];
         'size: size;
     }
 
-    $ * { * 'deque$; }
-    is_empty * { * ~~ '$; }
-    is_full * { * '$ :: 'size; }
-
-    throw_empty * {
-        ? 'is_empty() {
-            "deque is empty"!!!;
-        }
-    }
-
-    throw_full * {
+    push item * {
         ? 'is_full() {
-            "deque is full (size " + ""?!('size) + ")"!!!;
+            "stack is full (size " + ""?!('size) + ")"!!!;
+        }
+        'stack+: [item];
+    }
+
+    push_all items * {
+        ... element ->? items {
+            'push(element);
         }
     }
 
-    put_front item * {
-        'throw_full(); 'deque: [item] + 'deque;
-    }
+    $ * { * 'stack$; }
 
-    put item * { 'throw_full(); 'deque+: [item]; }
-
-    put_front_all items * {
-        ... item ->? items {
-            'put_front(item);
+    pop * {
+        ? 'is_empty() {
+            "stack is empty"!!!;
         }
-    }
-
-    put_all items * {
-        ... item ->? items {
-            'put(item);
-        }
-    }
-
-    front * { * 'deque<<\>>; }
-    back * { * 'deque<<-/>>; }
-    ? * { * '$ > \; }
-
-    get_front * {
-        'throw_empty();
-        out: 'deque<<\>>;
-        'deque-: \;
+        out: 'stack<<-/>>;
+        'stack-: 'stack$ - /;
         * out;
     }
 
-    get * {
-        'throw_empty();
-        out: 'deque<<-/>>;
-        'deque-: 'deque$ - /;
-        * out;
+    peek * {
+        ? 'is_empty() {
+            "stack is empty"!!!;
+        }
+        * 'stack<<-/>>;
     }
+
+    ? * { * 'stack$ > \; }
+    is_full * { * 'size :: 'stack$; }
+    is_empty * { * 'stack$ :: \; }
 
     ! * {
-        <=string.wrap;
-        <=types.String;
-        ? '$ <: /\/ {
-            items: ""?!('deque)<</..-/>>;
-        } ,, {
-            front: ""?!('front());
-            back: ""?!('back());
-            ? 'front()?! :: String {
-                front: wrap(front, "\"");
-            }
-            ? 'back()?! :: String {
-                back: wrap(back, "\"");
-            }
-            items: ""?!(front) + ", ..., " + ""?!(back);
+        ?? {
+            top: 'peek();
+        } !! {
+            top:;
         }
-        * "Deque(" + items + ")";
-    }
-}
-
-@ ArithmeticArray {
-    => array * {
-        'array: array;
-    }
-
-    apply op other * {
-        * ArithmeticArray([op(i, other) ... i ->? 'array]);
-    }
-
-    & other * { * 'apply(operator.and, other); }
-    + other * { * 'apply(operator.add, other); }
-    -- other * { * 'apply(operator.div, other); }
-    :: other * { * 'apply(operator.eq, other); }
-    >: other * { * 'apply(operator.ge, other); }
-    > other * { * 'apply(operator.gt, other); }
-    <: other * { * 'apply(operator.le, other); }
-    < other * { * 'apply(operator.lt, other); }
-    --- other * { * 'apply(operator.mod, other); }
-    ++ other * { * 'apply(operator.mul, other); }
-    ::: other * { * 'apply(operator.ne, other); }
-    | other * { * 'apply(operator.or, other); }
-    +++ other * { * 'apply(operator.pow, other); }
-    - other * { * 'apply(operator.sub, other); }
-    ^ other * { * 'apply(operator.xor, other); }
-
-    <<>> item * {
-        out: 'array<<item>>;
-        ? out?! :: <-types.Array {
-            * ArithmeticArray(out);
+        ? top?! :: <-types.String {
+            top: <-string.wrap(""?!(top), "\"");
         }
-        * out;
+        * "Stack(capacity:" + ""?!('size)
+        + ", size:" + ""?!('stack$)
+        + ", top:" + ""?!(top)
+        + ")";
     }
-
-    <<>>: item value * { 'array<<item>>: value; }
-
-    $ * { * 'array$; }
-    ? * { * / ? 'array ,, \; }
-    ! * { * "A" + ""?!('array); }
 }
