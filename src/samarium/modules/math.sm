@@ -26,6 +26,10 @@ gcd a b * {
     * abs(a);
 }
 
+is_int n * {
+    * n :: n$;
+}
+
 lcm a b * {
     ?? { * abs(a ++ b) -- gcd(a, b); }
     !! { * \; }
