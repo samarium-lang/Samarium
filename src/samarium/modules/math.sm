@@ -21,6 +21,10 @@ factorial n * {
     * o;
 }
 
+floor n * {
+    * n$;
+}
+
 gcd a b * {
     .. b { a, b: b, a --- b; }
     * abs(a);
