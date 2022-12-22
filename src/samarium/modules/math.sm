@@ -98,6 +98,10 @@ sum array start? * {
     * #to_base(div, base, base_name, charset) + charset<<mod>>;
 }
 
+to_bin n * {
+    * #to_base(n, /\, "bin", "01");
+}
+
 to_hex n * {
     * #to_base(n, /\\\\, "hex", <-string.HEXDIGITS);
 }
