@@ -88,18 +88,20 @@ sum array start? * {
     * o;
 }
 
+#to_base n base base_name charset * {
+    ? ~~ is_int(n) {
+        "cannot convert a non-integer to $0" --- base_name!!!;
+    }
+    div: (n -- base)$;
+    mod: n --- base;
+    ? ~~ div { * charset<<mod>>; }
+    * #to_base(div, base, base_name, charset) + charset<<mod>>;
+}
+
 to_hex n * {
-    <=string.HEXDIGITS;
-    div: n -- /\\\\;
-    mod: n --- /\\\\;
-    ? ~~ div { * HEXDIGITS<<mod>>; }
-    * to_hex(div) + HEXDIGITS<<mod>>;
+    * #to_base(n, /\\\\, "hex", <-string.HEXDIGITS);
 }
 
 to_oct n * {
-    <=string.OCTDIGITS;
-    div: n -- /\\\;
-    mod: n --- /\\\;
-    ? ~~ div { * OCTDIGITS<<mod>>; }
-    * to_oct(div) + OCTDIGITS<<mod>>;
+    * #to_base(n, /\\\, "oct", <-string.OCTDIGITS);
 }
