@@ -78,19 +78,7 @@ sqrt n * {
     ? n < \ {
         "sqrt is defined only for non-negative numbers"!!!;
     }
-    root: \;
-    rmdr: \;
-    s: n$$ - (/ ? n$$ --- /\ ,, /\);
-    .. s >: \ {
-        bits: shr(n, s) & //;
-        rmdr: shl(rmdr, /\) | bits;
-        cand: shl(root, /\) | /;
-        bitnext: rmdr >: cand;
-        root: shl(root, /) | bitnext;
-        rmdr-: cand ++ bitnext;
-        s-: /\;
-    }
-    * root;
+    * n +++ `/;
 }
 
 sum array start? * {
