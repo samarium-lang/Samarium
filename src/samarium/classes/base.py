@@ -281,11 +281,11 @@ class Number(Attrs):
         elif t is Number:
             self.val = v.val
             self.is_int = v.is_int
+        elif t is String:
+            self.val, self.is_int = parse_number(v.val) if v else (0, True)
         elif v in (None, NULL):
             self.val = 0
             self.is_int = True
-        elif t is String:
-            self.val, self.is_int = parse_number(v.val) if v else (0, True)
         else:
             raise SamariumTypeError(f"cannot cast {get_name(t)} to Number")
 
