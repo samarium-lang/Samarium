@@ -651,9 +651,7 @@ class Transpiler:
             if "=" in self._line:
                 start = self._indent > 0
                 assign_idx = self._line.index("=")
-                stop = assign_idx - (
-                    self._line[assign_idx - 1] in {*"+-*%&|/^@", "**"}
-                )
+                stop = assign_idx - (self._line[assign_idx - 1] in {*"+-*%&|/^@", "**"})
                 variable = "".join(self._line[start:stop])
                 self._line.append(f";{variable}=correct_type({variable})")
             self._submit_line()

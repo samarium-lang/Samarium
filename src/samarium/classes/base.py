@@ -314,7 +314,7 @@ class Number(Attrs):
 
     @guard("+++", default=2)
     def __pow__(self, other: Any) -> Number:
-        return Num(self.val**other.val)
+        return Num(self.val ** other.val)
 
     @guard("---", default=2)
     def __mod__(self, other: Any) -> Number:
@@ -435,9 +435,12 @@ class String(Attrs):
         elif isinstance(other, Number):
             if other.is_int:
                 return String(
-                    "".join(chr((ord(i) + cast(int, other.val)) % 0x10FFFF) for i in self.val)
+                    "".join(
+                        chr((ord(i) + cast(int, other.val)) % 0x10FFFF)
+                        for i in self.val
+                    )
                 )
-            raise SamariumTypeError(f"cannot shift using non-integers")
+            raise SamariumTypeError("cannot shift using non-integers")
         raise SamariumTypeError(f"String + {get_type_name(other)}")
 
     def __sub__(self, other: Any) -> String:
@@ -450,7 +453,7 @@ class String(Attrs):
     def __mul__(self, other: Any) -> String:
         if isinstance(other, Number):
             i, d = int(other.val // 1), other.val % 1
-            return String(self.val * i + self.val[:round(d * len(self.val))])
+            return String(self.val * i + self.val[: round(d * len(self.val))])
         raise NotDefinedError(f"String ++ {get_type_name(other)}")
 
     def __mod__(self, other: Any) -> String:
@@ -668,7 +671,7 @@ class Array(Generic[T], Attrs):
     def __mul__(self, other: Any) -> Array[T]:
         if isinstance(other, Number):
             i, d = int(other.val // 1), other.val % 1
-            return Array(self.val * i + self.val[:round(d * len(self.val))])
+            return Array(self.val * i + self.val[: round(d * len(self.val))])
         raise NotDefinedError(f"Array ++ {get_type_name(other)}")
 
     def __matmul__(self, other: Any) -> Zip:

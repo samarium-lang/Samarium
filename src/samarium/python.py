@@ -76,7 +76,9 @@ def to_samarium(obj: object) -> Attrs:
     elif isinstance(obj, SliceRange):
         return obj._slice
     elif isinstance(obj, IOBase):
-        return File(obj, Mode(obj.mode).name, obj.name, binary=isinstance(obj, BufferedIOBase))  # type: ignore
+        return File(
+            obj, Mode(obj.mode).name, obj.name, binary=isinstance(obj, BufferedIOBase)  # type: ignore
+        )
     elif isinstance(obj, zip):
         return Zip(*obj)
     elif isinstance(obj, type) and issubclass(obj, PyEnum):

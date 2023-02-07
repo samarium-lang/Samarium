@@ -46,7 +46,7 @@ def sysexit(*args: Any) -> None:
 def convert_float(string: str, *, base: int, sep: str = ".") -> int | float:
     int_, _, dec = string.partition(sep)
     return int(int_ or "0", base) + sum(
-        int(v, base) * 2**~i for i, v in enumerate(dec)
+        int(v, base) * 2 ** ~i for i, v in enumerate(dec)
     )
 
 
