@@ -18,7 +18,7 @@ options and arguments:
 file              : reads program from script file"""
 
 
-def main(debug: bool = False) -> None:
+def main(*, debug: bool = False) -> None:
 
     reg = Registry(globals())
 
