@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable as PyIterable
 from enum import Enum as PyEnum
 from functools import wraps
 from io import BufferedIOBase, IOBase
 from types import FunctionType
-from typing import Iterable as PyIterable
 
 from samarium.classes import (
     NULL,

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from enum import Enum
 from os import write
-from typing import IO, Any, Iterator, cast
+from typing import IO, Any, cast
 
 from samarium.utils import get_type_name
 

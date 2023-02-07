@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable, Iterator as PyIterator
 from contextlib import suppress
 from functools import lru_cache
 from inspect import signature
 from random import choice, randrange, uniform
 from types import FunctionType
-from typing import Any, Generic, Iterable
-from typing import Iterator as PyIterator
+from typing import Any, Generic
 from typing import TypeVar, cast
 
 from ..exceptions import NotDefinedError, SamariumTypeError, SamariumValueError

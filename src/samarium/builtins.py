@@ -8,9 +8,8 @@ from re import compile
 from time import sleep as _sleep
 from time import time_ns
 from types import FunctionType, GeneratorType
-from typing import Any, Callable
-from typing import Iterator as Iter
-from typing import TypeVar
+from collections.abc import Callable, Iterator as PyIterator
+from typing import Any, TypeVar
 
 from .classes import (
     MISSING,
@@ -121,7 +120,7 @@ def function(func: Callable[..., Any]) -> Callable[..., Any]:
 @contextmanager
 def modify(
     func: Callable[..., Any], args: list[Any], argc: int
-) -> Iter[tuple[Callable[..., Any], list[Any]]]:
+) -> PyIterator[tuple[Callable[..., Any], list[Any]]]:
     flag = func.__code__.co_flags
     if flag & 4 == 0:
         yield func, args
