@@ -89,11 +89,11 @@ def to_samarium(obj: object) -> Attrs:
     raise TypeError(f"Conversion for type {type(obj).__name__!r} not found")
 
 
-def export(func):
+def export(func: Callable) -> Callable[[Attrs], Attrs]:
     """Wraps a Python function to be used in Samarium"""
 
     @wraps(func)
-    def wrapper(*_args):
+    def wrapper(*_args: Attrs) -> Attrs:
         args = map(to_python, _args)
         return to_samarium(func(*args))
 

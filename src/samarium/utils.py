@@ -28,7 +28,7 @@ class ClassProperty:
 class Singleton:
     _instances: dict[type[Singleton], Singleton] = {}
 
-    def __new__(cls, *args: Any, **kwargs: Any):
+    def __new__(cls, *args: Any, **kwargs: Any) -> Singleton:
         if cls not in cls._instances:
             cls._instances[cls] = super().__new__(cls, *args, **kwargs)
         return cls._instances[cls]
