@@ -432,7 +432,7 @@ class String(Attrs):
     def __add__(self, other: Any) -> String:
         if isinstance(other, String):
             return String(self.val + other.val)
-        elif isinstance(other, Number):
+        if isinstance(other, Number):
             if other.is_int:
                 return String(
                     "".join(
@@ -446,7 +446,7 @@ class String(Attrs):
     def __sub__(self, other: Any) -> String:
         if isinstance(other, String):
             return String(self.val.replace(other.val, ""))
-        elif isinstance(other, Number):
+        if isinstance(other, Number):
             return self + (-other)
         raise SamariumTypeError(f"String - {get_type_name(other)}")
 

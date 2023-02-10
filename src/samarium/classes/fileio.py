@@ -140,9 +140,9 @@ class File(Attrs):
                     return Array(map(Num, data))
                 return String(data)
             return self[Slice(Num(0), slice.stop, slice.step)]
-        else:
-            self.val.seek(index.val)
-            return NULL
+
+        self.val.seek(index.val)
+        return NULL
 
     def load(self, bytes_: Number | None = None) -> String | Array:
         if bytes_ is None:

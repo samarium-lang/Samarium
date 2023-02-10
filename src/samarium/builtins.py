@@ -59,14 +59,13 @@ def correct_type(obj: T, *objs: T) -> T | Array | Number | Iterator | Null:
         return Array(map(correct_type, (obj, *objs)))
     if obj is None:
         return NULL
-    elif isinstance(obj, bool):
+    if isinstance(obj, bool):
         return Num(obj)
-    elif isinstance(obj, GeneratorType):
+    if isinstance(obj, GeneratorType):
         return Iterator(obj)
-    elif isinstance(obj, (list, tuple)):
+    if isinstance(obj, (list, tuple)):
         return Array(obj)
-    else:
-        check_type(obj)
+    check_type(obj)
     return obj
 
 
@@ -157,7 +156,7 @@ def print_safe(*args: Attrs | Callable[..., Any] | bool | None) -> Attrs:
     print(*strs)
     if len(return_args) > 1:
         return Array(return_args)
-    elif not return_args or types[0] is Null:
+    if not return_args or types[0] is Null:
         return NULL
     return return_args[0]
 

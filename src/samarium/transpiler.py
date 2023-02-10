@@ -449,9 +449,11 @@ class Transpiler:
                 self._line.append("NULL")
 
             # Getting UserAttrs
-            if self._reg[Switch.CLASS_DEF]:
-                if not isinstance(self._line_tokens[-3], str):
-                    self._line.append("(UserAttrs)")
+            if (
+                self._reg[Switch.CLASS_DEF]
+                and not isinstance(self._line_tokens[-3], str)
+            ):
+                self._line.append("(UserAttrs)")
             self._reg[Switch.CLASS_DEF] = False
 
             self._indent += 1
@@ -727,10 +729,7 @@ class Transpiler:
             with suppress(IndexError):
                 if self._line_tokens[-2] in Group.operators:
                     self._line.append("NULL")
-            if "=" in self._line:
-                hook = self._line.index("=") + 1
-            else:
-                hook = self._indent > 0
+            hook = self._line.index("=") + 1 if "=" in self._line else self._indent > 0
             self._line = [*self._line[:hook], "print_safe(", *self._line[hook:], ")"]
         else:  # SLEEP or EXIT
             func = "sysexit" if token is Token.EXIT else "sleep"

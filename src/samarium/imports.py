@@ -44,20 +44,19 @@ def parse_string(string: str) -> list[Mod]:
             name, alias = m.split(":") if ":" in m else (m, None)
             out.append(Mod(name, alias))
         return out
-    elif imptype is Import.STAR:
+    if imptype is Import.STAR:
         return [Mod(string.split(".")[0], None, True)]
-    elif imptype is Import.OBJECT:
+    if imptype is Import.OBJECT:
         mod, obj = string.split(".")
         obj, alias = obj.split(":") if ":" in obj else (obj, None)
         return [Mod(mod, None, [Obj(obj, alias)])]
-    else:
-        mod, objects_ = string.split(".")
-        objects = objects_.strip("[]").split(",")
-        objs = []
-        for o in objects:
-            name, alias = o.split(":") if ":" in o else (o, None)
-            objs.append(Obj(name, alias))
-        return [Mod(mod, None, objs)]
+    mod, objects_ = string.split(".")
+    objects = objects_.strip("[]").split(",")
+    objs = []
+    for o in objects:
+        name, alias = o.split(":") if ":" in o else (o, None)
+        objs.append(Obj(name, alias))
+    return [Mod(mod, None, objs)]
 
 
 def format_string(string: str) -> str:
