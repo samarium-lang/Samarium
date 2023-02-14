@@ -52,6 +52,17 @@ def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
     return 0, []
 
 
+def remove_stars(code: str) -> str:
+    stack = 0
+    new_str = ""
+    for c in code:
+        stack += c in "([{"
+        stack -= c in ")]}"
+        if c != "*" or stack:
+            new_str += c
+    return new_str
+
+
 def throw_syntax(message: str) -> None:
     handle_exception(SamariumSyntaxError(message))
 
@@ -560,7 +571,11 @@ class Transpiler:
             )
         elif token is Token.YIELD:
             if is_first_token(self._line):
-                self._line.append("yield ")
+                toks = self._tokens[self._index + 1 :]
+                if toks.index(Token.ASSIGN) < toks.index(Token.END):
+                    self._line.append("*")
+                else:
+                    self._line.append("yield ")
             elif self._tokens[self._index - 1] in UNPACK_TRIGGERS:
                 self._line.append("*")
             else:
@@ -654,7 +669,7 @@ class Transpiler:
                 start = self._indent > 0
                 assign_idx = self._line.index("=")
                 stop = assign_idx - (self._line[assign_idx - 1] in {*"+-*%&|/^@", "**"})
-                variable = "".join(self._line[start:stop])
+                variable = remove_stars("".join(self._line[start:stop]))
                 self._line.append(f";{variable}=correct_type({variable})")
             self._submit_line()
         elif token is Token.ASSIGN:
