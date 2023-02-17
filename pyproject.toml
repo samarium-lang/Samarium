@@ -17,6 +17,9 @@ crossandra = "^1.2.2"
 black = "^22.10.0"
 isort = "^5.10.1"
 
+[tool.isort]
+profile = "black"
+
 [tool.poetry.scripts]
 samarium = "samarium.__main__:main"
 samarium-debug = "samarium.__main__:main_debug"
