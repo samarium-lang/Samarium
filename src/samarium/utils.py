@@ -44,9 +44,11 @@ def sysexit(*args: Any) -> None:
 
 
 def convert_float(string: str, *, base: int, sep: str = ".") -> int | float:
+    if base == 10:
+        return float(string) if "." in string else int(string)
     int_, _, dec = string.partition(sep)
     return int(int_ or "0", base) + sum(
-        int(v, base) * 2 ** ~i for i, v in enumerate(dec)
+        int(v, base) * base ** ~i for i, v in enumerate(dec)
     )
 
 
@@ -65,12 +67,13 @@ def parse_number(string: str) -> tuple[int | float, bool]:
 
     try:
         num = neg * convert_float(string, base=base)
-        return num, isinstance(num, int)
     except ValueError:
         no_prefix = orig[2:] if orig[1] == ":" else orig
         raise SamariumValueError(
             f'invalid string for Number with base {base}: "{no_prefix}"'
         ) from None
+    else:
+        return num, isinstance(num, int)
 
 
 def smformat(string: str, fields: str | list[Any] | dict[Any, Any]) -> str:
