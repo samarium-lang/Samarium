@@ -106,7 +106,7 @@ def function(func: Callable[..., Any]) -> Callable[..., Any]:
 
     argc = len(signature(func).parameters)
 
-    wrapper.__str__ = lambda: get_name(func)
+    wrapper.__str__ = wrapper.__repr__ = lambda: get_name(func)
     wrapper.special = lambda: Num(argc)
     wrapper.argc = argc
     wrapper.parent = lambda: Type(FunctionType)
