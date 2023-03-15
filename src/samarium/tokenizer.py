@@ -28,7 +28,9 @@ crossandra = Crossandra(
     rules=[
         Rule(r"==<.*>==", False, re.M | re.S),
         Rule(r"==[^\n]*", False, re.M | re.S),
-        common.DOUBLE_QUOTED_STRING,
+        Rule(
+            common.DOUBLE_QUOTED_STRING.pattern, lambda x: x.replace("\n", r"\n"), re.S,
+        ),
         Rule(rf"{SM_BIT}+`?{SM_BIT}*|`{SM_BIT}*", to_number),
         Rule(r"\w+"),
     ],
