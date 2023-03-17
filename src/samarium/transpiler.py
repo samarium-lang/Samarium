@@ -620,17 +620,16 @@ class Transpiler:
                 self._line.append("),t(")
             else:
                 self._line.append("while ")
-        else:  # CLASS
-            if is_first_token(self._line):
-                self._reg[Switch.CLASS] = True
-                self._reg[Switch.CLASS_DEF] = True
-                self._scope.enter("class")
-                self._class_indent.append(self._indent)
-                self._line.append("class ")
-            else:
-                indented = self._indent > 0
-                self._line = [*self._line[:indented], "@", *self._line[indented:]]
-                self._submit_line()
+        elif is_first_token(self._line):
+            self._reg[Switch.CLASS] = True
+            self._reg[Switch.CLASS_DEF] = True
+            self._scope.enter("class")
+            self._class_indent.append(self._indent)
+            self._line.append("class ")
+        else:
+            indented = self._indent > 0
+            self._line = [*self._line[:indented], "@", *self._line[indented:]]
+            self._submit_line()
 
     def _control_flow(self, token: Token) -> None:
         shift = " " * (not is_first_token(self._line))
