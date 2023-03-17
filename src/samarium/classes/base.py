@@ -203,6 +203,8 @@ class UserAttrs(Attrs):
             parent = parents[0]
             if parent is object:
                 return Type(cls)
+            if parent is UserAttrs:
+                return Type(Type)
             return Type(parent)
         return Array(map(Type, parents))
 
