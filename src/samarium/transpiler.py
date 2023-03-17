@@ -460,11 +460,13 @@ class Transpiler:
                 self._line.append("NULL")
 
             # Getting UserAttrs
+            # fmt: off
             if (
                 self._reg[Switch.CLASS_DEF]
                 and not isinstance(self._line_tokens[-3], str)
             ):
                 self._line.append("(UserAttrs)")
+            # fmt: on
             self._reg[Switch.CLASS_DEF] = False
 
             self._indent += 1
@@ -572,8 +574,13 @@ class Transpiler:
         elif token is Token.YIELD:
             if is_first_token(self._line):
                 toks = self._tokens[self._index + 1 :]
-                if toks.index(Token.ASSIGN) < toks.index(Token.END):
+                # fmt: off
+                if (
+                    Token.ASSIGN in toks
+                    and toks.index(Token.ASSIGN) < toks.index(Token.END)
+                ):
                     self._line.append("*")
+                # fmt: on
                 else:
                     self._line.append("yield ")
             elif self._tokens[self._index - 1] in UNPACK_TRIGGERS:
