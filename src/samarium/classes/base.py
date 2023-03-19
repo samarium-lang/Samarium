@@ -452,6 +452,10 @@ class String(Attrs):
             return self + (-other)
         raise SamariumTypeError(f"String - {get_type_name(other)}")
 
+    @guard("--")
+    def __truediv__(self, other: Any) -> String:
+        return String(self.val.replace(other.val, ""))
+
     def __mul__(self, other: Any) -> String:
         if isinstance(other, Number):
             i, d = int(other.val // 1), other.val % 1
