@@ -447,7 +447,7 @@ class String(Attrs):
 
     def __sub__(self, other: Any) -> String:
         if isinstance(other, String):
-            return String(self.val.replace(other.val, ""))
+            return String(self.val.replace(other.val, "", 1))
         if isinstance(other, Number):
             return self + (-other)
         raise SamariumTypeError(f"String - {get_type_name(other)}")
