@@ -1,6 +1,7 @@
 # Shebang
 
-You can easily use your Samarium scripts on Unix by putting an appropriate shebang line at the top of your program, for instance
+You can easily use your Samarium scripts on Unix by putting an appropriate
+shebang line at the top of your program, for instance
 ```sm
 #!/usr/bin/env samarium
 
@@ -16,7 +17,9 @@ $ chmod +x script
 
 # Samarium REPL
 
-If you run the `samarium` command without any other arguments, you'll launch the REPL, an interactive shell that will read and evaluate any Samarium code you enter.
+If you run the `samarium` command without any other arguments,
+you'll launch the REPL, an interactive shell that will read
+and evaluate any Samarium code you enter.
 ```txt
 $ samarium
 Samarium 0.5.0

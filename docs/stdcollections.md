@@ -1,11 +1,15 @@
 # `collections` module
 
-The `collections` module implements a few different data structure classes: [Stack](#stack), [Queue](#queue), [Set](#set), [Deque](#deque), and [ArithmeticArray](#arithmeticarray).
+The `collections` module implements a few different data structure classes:
+[Stack](#stack), [Queue](#queue), [Set](#set), [Deque](#deque),
+and [ArithmeticArray](#arithmeticarray).
 
 
 ## Stack
 
-A stack is a collection of items that the user may "push" a new item on top of, or "pop" the most recently added/top item from, following a last in first out order (LIFO).
+A stack is a collection of items that the user may "push" a new item on top of,
+or "pop" the most recently added/top item from, following a last in first out
+order (LIFO).
 
 <center>
 
@@ -27,7 +31,9 @@ Method            | Use
 
 ## Queue
 
-A queue is a collection of items that the user may "put" ("enqueue") an item at the back of, or "get" ("dequeue") an item from the front of, following a first in first out order (FIFO).
+A queue is a collection of items that the user may "put" ("enqueue") an item at
+the back of, or "get" ("dequeue") an item from the front of, following a first
+in first out order (FIFO).
 
 <center>
 
@@ -50,7 +56,8 @@ Method           | Use
 
 ## Deque
 
-A deque is a data structure similar to a queue, but where insertion and removal of elements can be performed from both the front and the back.
+A deque is a data structure similar to a queue, but where insertion and removal
+of elements can be performed from both the front and the back.
 
 <center>
 
@@ -108,7 +115,8 @@ Method                        | Use
 
 ## ArithmeticArray
 
-An arithmetic array is an array which can be used with different binary operators.
+An arithmetic array is an array which can be used with different binary
+operators.
 
 ```sm
 <=collections.ArithmeticArray;
@@ -131,9 +139,11 @@ Binary operators supported by ArithmeticArray:
 - bitwise: `&`, `|`, `^`
 - comparison: `::`, `>:`, `>`, `<:`, `<`, `:::`
 
-ArithmeticArray allows item assignment and inherits behavior for `$`, `to_bit`, and `to_string` from the `Array` class.
+ArithmeticArray allows item assignment and inherits behavior for `$`, `to_bit`,
+and `to_string` from the `Array` class.
 
-You can also use your own custom operators in the form of functions by using the `apply(op, other)` method:
+You can also use your own custom operators in the form of functions by using the
+`apply(op, other)` method:
 
 ```sm
 <=collections.ArithmeticArray;
@@ -153,6 +163,7 @@ aa.apply(remove_null, \)!;  == [0, 2, 3, 0, 5, 0, 7]
 ```
 
 
-[^1]: Note that this will always return `0` if the specified capacity is negative, or if the user does not provide a capacity.
+[^1]: Note that this will always return `0` if the specified capacity is
+negative, or if the user does not provide a capacity.
 
 [^2]: `to_bit()` is functionally the opposite of `is_empty()`.

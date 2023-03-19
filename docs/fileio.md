@@ -1,8 +1,9 @@
 # File I/O
 
-Files are handled through file I/O objects, which can be in one of several modes: read, write, read & write, append, and as either text or binary for each of these.
-File I/O objects have a cursor, which is updated whenever data is written to/read from the object.
-File objects are truthy when they are open.
+Files are handled through file I/O objects, which can be in one of several
+modes: read, write, read & write, append, and as either text or binary for each
+of these. File I/O objects have a cursor, which is updated whenever data is
+written to/read from the object. File objects are truthy when they are open.
 The current cursor position can be gotten like so:
 
 ```sm
@@ -14,7 +15,8 @@ pos: f<<>>;
 ## Creating
 
 Files can be created with the unary `?~>` operator.
-`?~> "file.txt"` will create an empty file called `file.txt` in the program directory.
+`?~> "file.txt"` will create an empty file called `file.txt` in the program
+directory.
 
 !!! note
     Files will also be created if they are opened in write or append mode.
@@ -34,7 +36,8 @@ f <~% "file.bin";
 == and stores the file I/O object in `f`.
 ```
 
-These file I/O objects can be read into a variable (a string for text mode, and an array of integers for binary mode) for use in the program.
+These file I/O objects can be read into a variable (a string for text mode, and
+an array of integers for binary mode) for use in the program.
 
 ```sm
 string <~ f;
@@ -61,7 +64,8 @@ f %~> "file.bin";
 == mode, and stores the file I/O object in `f`.
 ```
 
-These file I/O objects can be written to from a variable (a string for text mode, and an array of integers for binary mode).
+These file I/O objects can be written to from a variable (a string for text
+mode, and an array of integers for binary mode).
 
 ```sm
 string ~> f;
@@ -88,7 +92,8 @@ f &%~> "file.bin";
 == mode, and stores the file I/O object in `f`.
 ```
 
-The contents of these file I/O objects can be added to from a variable (a string for text mode, and an array of integers for binary mode).
+The contents of these file I/O objects can be added to from a variable (a string
+for text mode, and an array of integers for binary mode).
 
 ```sm
 string &~> f;
@@ -104,8 +109,9 @@ array &%> f;
 ## Closing
 
 Files can be closed with the `~` operator.
-If files are not closed manually by the user, they will be automatically closed once the program terminates.
-Note that the file I/O object will not be released from memory, but it still cannot be used.
+If files are not closed manually by the user, they will be automatically closed
+once the program terminates. Note that the file I/O object will not be released
+from memory, but it still cannot be used.
 
 ```sm
 ~f;
@@ -115,8 +121,9 @@ Note that the file I/O object will not be released from memory, but it still can
 
 ## Quick Operations
 
-Files can be read from, written to or appended to directly using the filename, with quick operations.
-These will open the file in the relevant mode, perform the operation, and close it, all in one.
+Files can be read from, written to or appended to directly using the filename,
+with quick operations. These will open the file in the relevant mode, perform
+the operation, and close it, all in one.
 
 Mode          | Operator
 ---           | ---
@@ -139,7 +146,8 @@ array <% "file.bin";
 
 
 ## File Descriptors
-You can also use file descriptors instead of file paths in order to access standard I/O streams.
+You can also use file descriptors instead of file paths in order to access
+standard I/O streams.
 
 Integer value | Name
 :---:         | :---:

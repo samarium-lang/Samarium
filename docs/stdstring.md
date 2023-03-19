@@ -1,6 +1,7 @@
 # `string` module
 
-The `string` module contains several useful functions for string manipulation, as well as some variables containing groups of similar characters.
+The `string` module contains several useful functions for string manipulation,
+as well as some variables containing groups of similar characters.
 
 <center>
 
@@ -50,6 +51,8 @@ Function                                 | Use
 
 </center>
 
-[^1]: An argument in `[square brackets]` means that it has a default value, and so it isn't necessary to give it a value.
+[^1]: An argument in `[square brackets]` means that it has a default value,
+and so it isn't necessary to give it a value.
 
-[^2]: Cased characters are alphabetic characters in either uppercase or lowercase; `LETTERS` is a string of all cased characters.
+[^2]: Cased characters are alphabetic characters in either uppercase
+or lowercase; `LETTERS` is a string of all cased characters.

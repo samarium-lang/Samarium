@@ -1,6 +1,7 @@
 # `random` module
 
-The `random` module implements functions that make use of the [random method `??`](builtins.md#RANDOM).
+The `random` module implements functions that make use of the
+[random method `??`](builtins.md#RANDOM).
 
 Function           | Use
 ---                | ---

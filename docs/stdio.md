@@ -10,7 +10,7 @@ Allows for easier working with files in binary mode:
 => * {
     b: Bytes("ball");
     b!;  == 62 61 6c 6c
-    b+: "!";  == supports Strings, Integers, Arrays of Integers, and other Bytes objects
+    b+: "!";  == supports Strings, Integers, Arrays of Integers, and other Bytes
     b.export_string()!;  == ball!
     b.export()!;  == [98, 97, 108, 108, 33]
 }

@@ -30,7 +30,8 @@ of itself from the 1st operand)
 
 ## Formatting
 
-Strings can be formatted using the `---` operator. The 2nd operand can be a String, Array, or a Table.
+Strings can be formatted using the `---` operator.
+The 2nd operand can be a String, Array, or a Table.
 ```sm
 "Hi $0!" --- "Bob"!;
 == Hi Bob!

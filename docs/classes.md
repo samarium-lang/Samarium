@@ -1,17 +1,24 @@
 # Classes
 
-Classes are defined with the `@` character.
-Any inherited classes can follow the name of the class in parentheses, separated by commas[^1].
+Classes are defined with the `@` character. Any inherited classes can follow the
+name of the class in parentheses, separated by commas[^1].
 Class variables and methods are defined inside curly braces.
 
-Inside a class' methods, the `'` character can be used to reference its instance variables and methods.
-Class variables are those that are shared between all instances of a class, and instance variables are for data unique to each instance.
+Inside a class' methods, the `'` character can be used to reference its instance
+variables and methods. Class variables are those that are shared between all
+instances of a class, and instance variables are for data unique to each
+instance.
 
-Class variables, instance variables and methods can be accessed with the `.` operator on an instance of the class.
-In this case, class methods will implicitly be given a reference to the instance as the first argument of the method; `x.method(arg1, arg2, ...)` is equivalent to `x?!.method(x, arg1, arg2, ...)`.
-Class variables and methods can also be accessed in the same way directly from the class itself, though note that in this case methods will not implicitly have an instance as the first argument, so it must be provided.
+Class variables, instance variables and methods can be accessed with the `.`
+operator on an instance of the class. In this case, class methods will
+implicitly be given a reference to the instance as the first argument of the
+method; `x.method(arg1, arg2, ...)` is equivalent to `x?!.method(x, arg1, arg2, ...)`.
+Class variables and methods can also be accessed in the same way directly from
+the class itself, though note that in this case methods will not implicitly have
+an instance as the first argument, so it must be provided.
 
-Just like variables, class attributes can be made private by prefixing them with `#`, making them inaccessible outside the class.
+Just like variables, class attributes can be made private by prefixing them with
+`#`, making them inaccessible outside the class.
 
 ```sm
 @ Foo {
@@ -38,7 +45,9 @@ Just like variables, class attributes can be made private by prefixing them with
 }
 ```
 
-Parent classes are inherited from right to left, i.e. the first class in the inheritance takes priority and will overwrite any functions/variables defined by the following classes:
+Parent classes are inherited from right to left, i.e. the first class in the
+inheritance takes priority and will overwrite any functions/variables defined
+by the following classes:
 
 ```sm
 @ A {
@@ -58,8 +67,10 @@ Parent classes are inherited from right to left, i.e. the first class in the inh
 ```
 
 
-There are a number of special methods that the user can implement to override certain functionality of a class, such as how it's initialized (with the `create` method), or how it interacts with different operators.
-These methods are as follows (where `func(...)` indicates a variable number of arguments):
+There are a number of special methods that the user can implement to override
+certain functionality of a class, such as how it's initialized (with the
+`create` method), or how it interacts with different operators. These methods
+are as follows (where `func(...)` indicates a variable number of arguments):
 
 <center>
 
@@ -190,4 +201,6 @@ multiply(/\\/, //\\)!;  == 108
 multiply.outputs!;  == [10, 21, 108]
 ```
 
-[^1]: Note that order will be preserved here — if both class `A` and class `B` implement a function `f`, and class `C` inherits them in the order `(A, B)`, then `C` will inherit `f` from class `A`, as it is inherited later.
+[^1]: Note that order will be preserved here — if both class `A` and class `B`
+implement a function `f`, and class `C` inherits them in the order `(A, B)`,
+then `C` will inherit `f` from class `A`, as it is inherited later.

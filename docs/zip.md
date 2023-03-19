@@ -1,6 +1,7 @@
 # Zipping
 
-Samarium's zip operator `><` allow for easy zipping, that is, iterating through multiple iterables at once:
+Samarium's zip operator `><` allow for easy zipping, that is, iterating through
+multiple iterables at once:
 ```sm
 names: ["Alice", "Bob", "Charlie"];
 ages: [/\\\\, /\\\/, ////];

@@ -1,6 +1,7 @@
 # `math` module
 
-The `math` module provides access to a set of commonly used mathematical functions.
+The `math` module provides access to a set of commonly used mathematical
+functions.
 
 <center>
 

@@ -1,6 +1,7 @@
 # Null
 
-The null value in Samarium is not represented by any symbol—in fact, it's represented by the lack of it:
+The null value in Samarium is not represented by any symbol—in fact, it's
+represented by the lack of it:
 ```sm
 x: /;
 y:;
@@ -8,7 +9,8 @@ z: [-/, , /];
 ```
 The above code sets `x` to `1`, `y` to `null`, and `z` to `[-1, null, 1]`.
 
-The following code prints `1` if `y` is equal to `null` and `null` is present in `z`, and `0` otherwise.
+The following code prints `1` if `y` is equal to `null` and `null` is present in
+`z`, and `0` otherwise.
 ```sm
 y :: && ->? z!;
 ```

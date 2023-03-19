@@ -6,9 +6,11 @@
 Standard input can be read from with `???`.
 It will read until it receives a newline character.
 
-`x: ???` will assign to `x` as a string what it reads from standard input, stopping at a newline character.
+`x: ???;` will assign to `x` as a string what it reads from standard input,
+stopping at a newline character.
 
-A prompt can be given by preceding the `???` with a string, for example `"input: "???`.
+A prompt can be given by preceding the `???` with a string,
+for example `x: "input: "???;`.
 
 > Related library: [`io`](stdio.md)
 
@@ -22,7 +24,8 @@ Note that they won't be written exactly as they would appear in Samarium.
 
 `//\/!` will write `13` to standard output.
 
-This function will return what it writes to stdout (though not necessarily as a string), and can thus be used in an assignment statement for example.
+This function will return what it writes to stdout (though not necessarily as
+a string), and can thus be used in an assignment statement for example.
 
 ```sm
 x: //\!;
@@ -48,15 +51,17 @@ If a particular exit code is desired, it may be put after the exclamation mark:
 
 ## HASH
 
-The hash function `##` returns as a integer the hash value of an object if it has one (arrays and tables do not).
-The value it returns will remain consistent for the life of the program, but may vary if the program is run multiple times.
+The hash function `##` returns as a integer the hash value of an object if it
+has one (arrays and tables do not). The value it returns will remain consistent
+for the life of the program, but may vary if the program is run multiple times.
 
 `"hash"##` will return the hash value of the string `"hash"`.
 
 
 ## TYPEOF
 
-The typeof function `?!` returns the type of an object, as an instance of the `Type` class.
+The typeof function `?!` returns the type of an object,
+as an instance of the `Type` class.
 
 `/?!` returns `Integer`.
 
@@ -64,7 +69,8 @@ The typeof function `?!` returns the type of an object, as an instance of the `T
 
 `/?!?!` returns `Type`.
 
-These instances are callable and can be used to convert values into that type, like so:
+These instances are callable and can be used to convert values into that type,
+like so:
 
 ```sm
 \?!("123") + /\!;
@@ -76,7 +82,8 @@ These instances are callable and can be used to convert values into that type, l
 
 ## SPECIAL
 
-The special method `$` has different uses depending on the type of object it's used on.
+The special method `$` has different uses depending on the type of object it's
+used on.
 
 Object   | Use
 ---      | ---
@@ -107,13 +114,16 @@ The timestamp function `@@` returns the time in milliseconds since the epoch.
 
 ## DTNOW
 
-The dtnow function `@@@` gets the system's current date and time as an array of integers, in the format `[year, month, day, hour, minute, second, millisecond, utc_hour_offset, utc_minute_offset]`.
+The dtnow function `@@@` gets the system's current date and time as an array of
+integers, in the format `[year, month, day, hour, minute, second, millisecond,
+utc_hour_offset, utc_minute_offset]`.
 
 > Related library: [`datetime`](stddatetime.md)
 
 ## SLEEP
 
-The sleep function `,.,` pauses execution for the specified number of milliseconds.
+The sleep function `,.,` pauses execution for the specified number of
+milliseconds.
 
 ```sm
 ,., /////\/\\\;
@@ -126,7 +136,8 @@ The sleep function `,.,` pauses execution for the specified number of millisecon
 ## ASSERT
 
 The assert function `!!` is used as a debugging tool.
-If the input to this function is falsy (i.e. empty iterable, null, or just false), an `AssertionError` will be raised, otherwise, nothing will happen.
+If the input to this function is falsy (i.e. empty iterable, null, or just
+false), an `AssertionError` will be raised, otherwise, nothing will happen.
 A custom error message can be provided by putting it after a `,`.
 
 ```sm
@@ -140,14 +151,18 @@ will raise `[AssertionError] error message`.
 
 The parent function `!?` gets the parent/inherited classes of the input class.
 If a class only has one parent, it will be returned directly.
-If a class has multiple parents, they will be returned in an array, in the same order as in the class definition.
+If a class has multiple parents, they will be returned in an array, in the same
+order as in the class definition.
 
-Note that this will only go one layer deep, i.e. if class `A` has parent `B` and class `B` has parent `C`, `A!?` will only return `B`, and `A!?!?` will return `C`.
+Note that this will only go one layer deep, i.e. if class `A` has parent `B`
+and class `B` has parent `C`, `A!?` will only return `B`, and `A!?!?` will
+return `C`.
 
 
 ## RANDOM
 
-The special method `??` has different uses depending on the type of object it's used on.
+The special method `??` has different uses depending on the type of object it's
+used on.
 
 Object  | Use
 ---     | ---

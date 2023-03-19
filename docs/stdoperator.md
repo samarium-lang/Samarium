@@ -1,6 +1,8 @@
 # `operator` module
 
-This module contains a set of functions corresponding to the native operators of Samarium. For instance, `operator.mul(a, b)` is equivalent to `a ++ b`. Each of the function names can be used for defining special methods in classes.
+This module contains a set of functions corresponding to the native operators
+of Samarium. For instance, `operator.mul(a, b)` is equivalent to `a ++ b`.
+Each of the function names can be used for defining special methods in classes.
 
 <center>
 

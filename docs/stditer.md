@@ -1,6 +1,7 @@
 # `iter` module
 
-The `iter` module contains several functions that interact with iterable objects, like strings or arrays.
+The `iter` module contains several functions that interact with iterable
+objects, like strings or arrays.
 
 <center>
 
@@ -28,6 +29,8 @@ Function                        | Use
 
 </center>
 
-[^1]: Note that `function` must take only one argument (excluding optional parameters).
+[^1]: Note that `function` must take only one argument (excluding optional
+parameters).
 
-[^2]: Note that `function` must take exactly two arguments (excluding optional parameters).
+[^2]: Note that `function` must take exactly two arguments (excluding optional
+parameters).

@@ -1,6 +1,8 @@
 # `datetime` module
 
-The `datetime` module consists of several functions that assist with date and time related tasks. Additionally, it includes two classes (`DateTime` and `DTDiff`).
+The `datetime` module consists of several functions that assist with date and
+time related tasks.
+Additionally, it includes two classes (`DateTime` and `DTDiff`).
 
 <center>
 
