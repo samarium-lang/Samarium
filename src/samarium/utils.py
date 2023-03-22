@@ -44,12 +44,21 @@ def sysexit(*args: Any) -> None:
 
 
 def convert_float(string: str, *, base: int, sep: str = ".") -> int | float:
-    if base == 10:
-        return float(string) if "." in string else int(string)
-    int_, _, dec = string.partition(sep)
-    return int(int_ or "0", base) + sum(
+    exp_sep = "p" if base == 16 else "e"
+    if not (sep in string or exp_sep in string):
+        return int(string, base)
+    float_part, _, exp_part = string.partition(exp_sep)
+    int_, _, dec = float_part.partition(sep)
+    out = int(int_ or "0", base) + sum(
         int(v, base) * base ** ~i for i, v in enumerate(dec)
     )
+    if exp_part:
+        try:
+            exponent = int(exp_part, 10 if base == 16 else base)
+        except ValueError:
+            raise SamariumValueError(f"invalid exponent: {exp_part}") from None
+        out *= (2 if base == 16 else base) ** exponent
+    return out
 
 
 def parse_number(string: str) -> tuple[int | float, bool]:
