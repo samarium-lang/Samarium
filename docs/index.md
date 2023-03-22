@@ -68,4 +68,4 @@ Special thanks to:
 - [Endercheif](https://github.com/Endercheif) for making the documentation look
   fancy, helping with design choices, and adding partial Python Interoperability
 
-If you have any questions, or would like to get in touch, join the [Discord server](https://discord.gg/C8QE5tVQEq)!
+If you have any questions, or would like to get in touch, join my [Discord server](https://discord.gg/C8QE5tVQEq)!
