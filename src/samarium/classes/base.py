@@ -669,7 +669,7 @@ class Array(Generic[T], Attrs):
 
     @guard("^")
     def __xor__(self, other: Any) -> Array[T]:
-        return (self | other) // (self & other)
+        return (self | other) / (self & other)
 
     def __mul__(self, other: Any) -> Array[T]:
         if isinstance(other, Number):
