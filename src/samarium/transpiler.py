@@ -273,6 +273,7 @@ SLICE_OBJECT_TRIGGERS = {
     Token.SEP,
     Token.TO,
     Token.BRACE_OPEN,
+    Token.BRACE_CLOSE,
     Token.BRACKET_OPEN,
     Token.PAREN_OPEN,
     Token.TABLE_OPEN,
