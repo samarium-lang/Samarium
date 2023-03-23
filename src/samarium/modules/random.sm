@@ -11,7 +11,11 @@ sample array k * {
         "the sample cannot be bigger than the array"!!!;
     }
     o: [];
-    old_array: array<<>>;
+    ? array?! :: <-types.Slice {
+        old_array: []?!(array);
+    } ,, {
+        old_array: array<<>>;
+    }
     .. o$ < k {
         e: old_array??;
         o+: [e];
