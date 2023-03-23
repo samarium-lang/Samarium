@@ -166,7 +166,7 @@ pairwise array * {
     }
 }
 
-reduce array function * {
+reduce function array * {
     prev: array<<\>>;
     ... e ->? array<</..>> {
         prev: function(prev, e);
