@@ -113,8 +113,7 @@ class UserAttrs(Attrs):
             raise SamariumTypeError(
                 f"{get_type_name(self)}! should only take one argument"
             )
-        v = string().val
-        if isinstance(v, str):
+        if isinstance(v := string().val, str):
             return v
         raise SamariumTypeError(f"{get_type_name(self)}! returned a non-string")
 
@@ -129,8 +128,7 @@ class UserAttrs(Attrs):
             raise SamariumTypeError(
                 f"? {get_type_name(self)} should only take one argument"
             )
-        v = bit().val
-        if v in (0, 1):
+        if (v := bit().val) in (0, 1):
             return bool(v)
         raise SamariumTypeError(f"? {get_type_name(self)} returned a non-bit")
 
@@ -161,8 +159,7 @@ class UserAttrs(Attrs):
             raise SamariumTypeError(
                 f"{get_type_name(self)}## should only take one argument"
             )
-        v = hsh()
-        if isinstance(v, Number):
+        if isinstance(v := hsh(), Number):
             return v
         raise SamariumTypeError(f"{get_type_name(self)}## returned a non-integer")
 
