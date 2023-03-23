@@ -234,7 +234,7 @@
 
     & other * {
         '#check_type(other);
-        * Set('items & 'other.items);
+        * Set('items & other.items);
     }
 
     - other * {
