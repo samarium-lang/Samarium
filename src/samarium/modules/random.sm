@@ -21,6 +21,9 @@ sample array k * {
 }
 
 shuffle array * {
+    ? array?! :: <-types.Slice {
+        "cannot shuffle slices"!!!;
+    }
     shuffled_array: [];
     old_array: array<<>>;
     .. old_array$ > \ {
