@@ -457,6 +457,8 @@ class String(Attrs):
         return String(self.val.replace(other.val, ""))
 
     def __mul__(self, other: Any) -> String:
+        if other is NULL:
+            other = Num(2)
         if isinstance(other, Number):
             i, d = int(other.val // 1), other.val % 1
             return String(self.val * i + self.val[: round(d * len(self.val))])
