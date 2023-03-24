@@ -303,8 +303,11 @@ class Number(Attrs):
     def __sub__(self, other: Any) -> Number:
         return Num(self.val - other.val)
 
-    @guard("++", default=2)
-    def __mul__(self, other: Any) -> Number:
+    def __mul__(self, other: Any) -> String | Number:
+        if isinstance(other, String):
+            return other * self
+        if other is NULL:
+            other = Num(2)
         return Num(self.val * other.val)
 
     @guard("--", default=2)
