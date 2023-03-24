@@ -887,6 +887,12 @@ class Slice(Attrs):
             return Num(self.tup != other.tup)
         return Num(True)
 
+    def __hash__(self) -> int:
+        return cast(int, self.hash().val)
+
+    def hash(self) -> Number:
+        return Num(hash(self.tup))
+
     def random(self) -> Number:
         return Num(choice(self.range))
 
