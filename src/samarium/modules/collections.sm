@@ -96,7 +96,7 @@
     get * {
         'throw_empty();
         out: 'deque<<-/>>;
-        'deque-: 'deque$ - /;
+        'deque-: 'deque$-;
         * out;
     }
 
@@ -160,7 +160,7 @@
 
     first * { 'throw_empty(); * 'queue<<\>>; }
     last * { 'throw_empty(); * 'queue<<-/>>; }
-    ? * { * '$ > \; }
+    ? * { * '$>; }
 
     ! * {
         <=string.wrap;
@@ -205,7 +205,7 @@
     remove value * { 'items-: [value]; }
 
     ->? value * {
-        * <-iter.find('items, value) >: \;
+        * <-iter.find('items, value)>:;
     }
 
     #check_type value * {
@@ -283,7 +283,7 @@
             "stack is empty"!!!;
         }
         out: 'stack<<-/>>;
-        'stack-: 'stack$ - /;
+        'stack-: 'stack$-;
         * out;
     }
 

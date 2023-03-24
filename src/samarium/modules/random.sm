@@ -3,7 +3,7 @@ choices array k * {
 }
 
 randint start end * {
-    * (end - start + /)?? + start;
+    * (end - start+)?? + start;
 }
 
 sample array k * {
@@ -30,7 +30,7 @@ shuffle array * {
     }
     shuffled_array: [];
     old_array: array<<>>;
-    .. old_array$ > \ {
+    .. old_array$> {
         e: old_array??;
         shuffled_array+: [e];
         old_array-: [e];

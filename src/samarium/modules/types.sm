@@ -36,7 +36,7 @@ Zip: ("" >< "")?!;
 
     - other * {
         out: 'value - other.value;
-        ? out < \ {
+        ? out< {
             * out;
         } ,, {
             * Boolean(out);

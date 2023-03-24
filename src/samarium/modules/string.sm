@@ -28,8 +28,8 @@ center string length char? * {
         } ,, {
             string+: char;
         }
-        index+: /;
-        index---: /\;
+        index+:;
+        index---:;
     }
     * string;
 }
@@ -134,12 +134,12 @@ replace string replacements count? * {
 
         interleave count * {
             out: to;
-            count-: /;
+            count-:;
             ... i ->? string {
                 out+: i;
                 ? count {
                     out+: to;
-                    count-: /;
+                    count-:;
                 }
             }
             * out;
@@ -149,7 +149,7 @@ replace string replacements count? * {
             out: "";
             ... i ->? string {
                 ? count && i :: from {
-                    count-: /;
+                    count-:;
                 } ,, {
                     out+: i;
                 }
@@ -166,7 +166,7 @@ replace string replacements count? * {
                 out+: string_copy<<..i>>;
                 out+: to;
                 string_copy: string_copy<<i + from$..>>;
-                count-: /;
+                count-:;
             }
             * out + string_copy;
         }
@@ -176,7 +176,7 @@ replace string replacements count? * {
             ... i ->? string {
                 ? i :: from && count {
                     out+: to;
-                    count-: /;
+                    count-:;
                 } ,, {
                     out+: i;
                 }

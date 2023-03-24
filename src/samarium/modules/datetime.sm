@@ -31,10 +31,10 @@ is_leap_year year * {
 month_name n * {
     ? n >: MONTHS$ {
         * "";
-    } ,, ? n < \ {
+    } ,, ? n< {
         * "";
     } ,, {
-        * MONTHS<<n + />>;
+        * MONTHS<<n+>>;
     }
 }
 
@@ -59,7 +59,7 @@ timestamp_utc ts? * {
 weekday_name n * {
     ? n >: WEEKDAYS$ {
         * "";
-    } ,, ? n < \ {
+    } ,, ? n< {
         * "";
     } ,, {
         * WEEKDAYS<<n>>;

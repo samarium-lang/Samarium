@@ -52,7 +52,7 @@ cycle iter * {
 drop_while array function * {
     i: \;
     ... e ->? array {
-        i+: /;
+        i+:;
         ? ~~ function(e) {
             ** e;
             <-
@@ -83,14 +83,14 @@ find array target * {
             ? array<<index..index+target$>> :: target {
                 * index;
             }
-            index+: /;
+            index+:;
         }
     } ,, {
         ... e ->? array {
             ? e :: target {
                 * index;
             }
-            index+: /;
+            index+:;
         }
     }
     * -/;
@@ -116,7 +116,7 @@ find_all array target * {
 
 flatten array depth? * {
     depth <>;
-    ? depth ::: && depth < \ {
+    ? depth ::: && depth< {
         "depth cannot be negative"!!!;
     }
     x: [i ... i ->? array];
@@ -175,10 +175,10 @@ reduce function array * {
 }
 
 reverse array * {
-    i: array$ - /;
-    .. i >: \ {
+    i: array$-;
+    .. i>: {
         ** array<<i>>;
-        i-: /;
+        i-:;
     }
 }
 
