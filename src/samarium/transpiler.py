@@ -658,8 +658,9 @@ class Transpiler:
 
     def _core(self, token: Token) -> None:
         index = self._index
+        prev_token = self._tokens[index - 1]
         if token is Token.END:
-            if self._tokens[index - 1] in Group.operators | {
+            if prev_token in Group.operators | {
                 Token.DEFAULT,
                 Token.CATCH,
             }:
@@ -710,6 +711,8 @@ class Transpiler:
                 self._line.append("[")
             self._line.append("mkslice(t(")
         elif token is Token.SLICE_CLOSE:
+            if prev_token in Group.operators:
+                self._line.append("NULL")
             self._line.append("))")
             if not self._slice_object.pop():
                 self._line.append("]")
