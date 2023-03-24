@@ -300,6 +300,7 @@ SPECIAL_METHOD_MAPPING = {
     "<": "lt",
     ">=": "ge",
     "<=": "le",
+    "for ": "iter",
     " in ": "contains",
     ".hash()": "hsh",
     ".special()": "special",
