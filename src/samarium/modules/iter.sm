@@ -64,8 +64,11 @@ drop_while array function * {
 }
 
 filter function array * {
+    ? function$ :: / {
+        array: [[**e] ... e ->? array];
+    }
     ... e ->? array {
-        ? function(e) {
+        ? function(**e) {
             ** e;
         }
     }
@@ -155,8 +158,11 @@ flatten array depth? * {
 }
 
 map function array * {
+    ? function$ :: / {
+        array: [[e] ... e ->? array];
+    }
     ... e ->? array {
-        ** function(e);
+        ** function(**e);
     }
 }
 
