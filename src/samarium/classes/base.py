@@ -819,6 +819,9 @@ class Null(Singleton, Attrs):
     def hash(self) -> Number:
         return Num(hash(self.val))
 
+    def __floordiv__(self, other: Any) -> Number:
+        return Num(not other)
+
 
 I64_MAX = 9223372036854775807
 NULL = Null()

@@ -217,7 +217,7 @@ OPERATOR_MAPPING = {
     Token.AND: " and ",
     Token.OR: " or ",
     Token.XOR: "!=",  # TODO: implement this properly (before 2025)
-    Token.NOT: " not ",
+    Token.NOT: " NULL// ",
     Token.BAND: "&",
     Token.BOR: "|",
     Token.BXOR: "^",
@@ -447,6 +447,11 @@ class Transpiler:
             and token not in {Token.ADD, Token.SUB, Token.NOT, Token.BNOT}
         ):
             self._line.append("NULL")
+        if token is prev_token is Token.NOT:
+            throw_syntax("cannot have two or more consecutive `~~`s")
+        if token is Token.NOT and self._tokens[self._index + 1] is Token.IN:
+            self._line.append(" not ")
+            return
         self._line.append(OPERATOR_MAPPING[token])
 
     def _brackets(self, token: Token) -> None:
