@@ -70,7 +70,7 @@ class Missing:
 
 METHODS = (
     "getattr add str sub mul truediv pow mod and or xor neg pos invert getitem "
-    "setitem eq ne ge gt le lt contains hash call iter"
+    "setitem eq ne ge gt le lt contains hash call iter matmul"
 )
 
 for m in METHODS.split():
