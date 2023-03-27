@@ -87,3 +87,27 @@ Zip: ("" >< "")?!;
         );
     }
 }
+
+@ Frozen {
+    => val * {
+        t: val?!;
+        ? t ~~ ->? [[]?!, {{}}?!] {
+            "type $0 is already frozen" --- [t]!!!;
+        }
+        ? t :: []?! {
+            '#val: val<<>>;
+        } ,, {
+            '#val: {{k -> v ... k, v ->? val >< val$}};
+        }
+        '#t: t;
+    }
+
+    ## * { * <-iter.reduce(<-operator.xor, [//\/\\/\\\/\\\\/\\\\\/] + '#val); }
+    ! * { * "Frozen($0)" --- ""?!('#val); }
+    ->? element * { * element ->? '#val; }
+    ... * { ... i ->? '#val { ** i; } }
+    <<>> index * { * '#val<<index>>; }
+    >< other * { * '#val >< other; }
+    ? * { * / ? '#val ,, \; }
+    $ * { * '#val$; }
+}
