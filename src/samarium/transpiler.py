@@ -63,8 +63,10 @@ def remove_stars(code: str) -> str:
     return new_str
 
 
-def throw_syntax(message: str) -> None:
-    handle_exception(SamariumSyntaxError(message))
+def throw_syntax(message: str, *, note: str = "") -> None:
+    if note:
+        note = f"\n&1[Note] {note}"
+    handle_exception(SamariumSyntaxError(f"{message}{note}"))
 
 
 def transform_special(op: str, scope: Scope) -> str:
@@ -448,7 +450,10 @@ class Transpiler:
         ):
             self._line.append("NULL")
         if token is prev_token is Token.NOT:
-            throw_syntax("cannot have two or more consecutive `~~`s")
+            throw_syntax(
+                "cannot have two or more consecutive `~~`s",
+                note="try using parentheses: ~~ ~~x -> ~~(~~x)"
+            )
         if token is Token.NOT and self._tokens[self._index + 1] is Token.IN:
             self._line.append(" not ")
             return
