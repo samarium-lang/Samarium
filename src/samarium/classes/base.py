@@ -220,7 +220,7 @@ class Type(Attrs):
     def __ne__(self, other: Any) -> Number:
         if isinstance(other, Type):
             return Num(self.val != other.val)
-        return Num(True)
+        return Num(self.val != other)
 
     def __str__(self) -> str:
         if self.val is FunctionType:
