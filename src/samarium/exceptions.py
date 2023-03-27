@@ -14,6 +14,7 @@ BAD_OP = compile(
     r"|unsupported operand type\(s\) for (.+): '(\w+)' and '(\w+)'"
 )
 BAD_UOP = compile(r"bad operand type for unary (.+): '(\w+)'")
+NO_GETITEM = compile(r"'(\w+)' object is not subscriptable")
 NO_SETITEM = compile(r"'(\w+)' object does not support item assignment")
 NOT_CALLITER = compile(r"'(\w+)' object is not (\w+)")
 OP_MAP = {
@@ -61,6 +62,10 @@ def handle_exception(exception: Exception) -> None:
         exc_type = NotDefinedError
         type_ = clear_name(m.group(1))
         exception = exc_type(f"->? {type_}")
+    elif m := NO_GETITEM.match(errmsg):
+        exc_type = NotDefinedError
+        type_ = clear_name(m.group(1))
+        exception = exc_type(f"{type_}<<>>")
     elif m := NO_SETITEM.match(errmsg):
         exc_type = NotDefinedError
         type_ = clear_name(m.group(1))
