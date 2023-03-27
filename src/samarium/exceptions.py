@@ -53,11 +53,6 @@ def handle_exception(exception: Exception) -> None:
         op, type_ = m.groups()
         exc_type = NotDefinedError
         exception = exc_type(f"{op}{clear_name(type_)}")
-    elif m := NOT_CALLITER.match(errmsg):
-        exc_type = NotDefinedError
-        type_ = clear_name(m.group(1))
-        template = "... _ ->? {}" if m.group(2) == "iterable" else "{}()"
-        exception = exc_type(template.format(type_))
     elif m := ARG_NOT_ITER.match(errmsg):
         exc_type = NotDefinedError
         type_ = clear_name(m.group(1))
@@ -70,6 +65,11 @@ def handle_exception(exception: Exception) -> None:
         exc_type = NotDefinedError
         type_ = clear_name(m.group(1))
         exception = exc_type(f"{type_}<<>>:")
+    elif m := NOT_CALLITER.match(errmsg):
+        exc_type = NotDefinedError
+        type_ = clear_name(m.group(1))
+        template = "... _ ->? {}" if m.group(2) == "iterable" else "{}()"
+        exception = exc_type(template.format(type_))
     elif exc_type is SyntaxError:
         exception = SamariumSyntaxError(
             f"invalid syntax at {int(errmsg.split()[-1][:-1])}"
