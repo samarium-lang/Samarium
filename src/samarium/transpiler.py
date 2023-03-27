@@ -662,9 +662,8 @@ class Transpiler:
             if self._tokens[self._index - 1] in {Token.ELSE} | Group.operators:
                 self._line.append("NULL")
             index = self._index
-            next_token = self._tokens[index + 1]
-            if self._scope.current == "slice" and next_token is Token.ATTR:
-                self._tokens[index] = next_token = Token.WHILE
+            if self._scope.current == "slice" and self._tokens[index + 1] is Token.ATTR:
+                self._tokens[index] = self._tokens[index + 1] = Token.WHILE
                 self._process_token(index, Token.WHILE)
             else:
                 self._line.append(shift + "for ")
