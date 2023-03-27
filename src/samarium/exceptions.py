@@ -6,13 +6,14 @@ from dahlia import Dahlia
 from .runtime import Runtime
 
 DAHLIA = Dahlia()
-SINGLE_QUOTED_NAME = compile(r"'(\w+)'")
+NDE_TYPES = {AttributeError, NameError, UnboundLocalError}
+
+ARG_NOT_ITER = compile(r"argument of type '(\w+)' is not iterable")
 BAD_OP = compile(
     r"'(.+)' not supported between instances of '(\w+)' and '(\w+)'"
     r"|unsupported operand type\(s\) for (.+): '(\w+)' and '(\w+)'"
 )
 BAD_UOP = compile(r"bad operand type for unary (.+): '(\w+)'")
-ARG_NOT_ITER = compile(r"argument of type '(\w+)' is not iterable")
 NOT_CALLITER = compile(r"'(\w+)' object is not (\w+)")
 OP_MAP = {
     ">=": ">:",
@@ -23,7 +24,7 @@ OP_MAP = {
     "@": "><",
     "** or pow()": "+++",
 }
-NDE_TYPES = {AttributeError, NameError, UnboundLocalError}
+SINGLE_QUOTED_NAME = compile(r"'(\w+)'")
 
 
 def clear_name(name: str) -> str:
