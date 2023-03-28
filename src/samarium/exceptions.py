@@ -76,8 +76,6 @@ def handle_exception(exception: Exception) -> None:
         )
     elif exc_type in NDE_TYPES:
         names = SINGLE_QUOTED_NAME.findall(errmsg)
-        if names == ["entry"]:
-            names = ["no entry point defined"]
         exc_type = NotDefinedError
         exception = exc_type(
             f"{clear_name(names[0])}<<>>{':' * (names[1] == '__setitem__')}"
