@@ -91,10 +91,10 @@ Zip: ("" >< "")?!;
 @ Frozen {
     => val * {
         t: val?!;
-        ? t ~~ ->? [[]?!, {{}}?!] {
+        ? t ~~ ->? [Array, Table] {
             "type $0 is already frozen" --- [t]!!!;
         }
-        ? t :: []?! {
+        ? t :: Array {
             '#val: val<<>>;
         } ,, {
             '#val: {{k -> v ... k, v ->? val >< val$}};
