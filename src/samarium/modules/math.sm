@@ -118,3 +118,5 @@ is_prime n * {
     }
     * /;
 }
+
+round: <-pystd.round_;
