@@ -209,7 +209,7 @@
     }
 
     #check_type value * {
-        ? value?! ::: Set()?! {
+        ? value?! ::: Set {
             "expected Set, received " + ""?!(value?!)!!!;
         }
     }
