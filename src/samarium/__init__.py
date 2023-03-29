@@ -30,7 +30,7 @@ def main(*, debug: bool = False) -> None:
             print(f"Samarium {__version__}")
         elif arg in OPTIONS[2:4]:
             if len(sys.argv) > 2:
-                run(sys.argv[2] + " !;", reg, debug)
+                run(sys.argv[2] + " !;", reg, arg, debug)
             DAHLIA.print("&4missing code to execute", file=sys.stderr)
         elif arg in OPTIONS[4:]:
             print(HELP)
@@ -43,7 +43,7 @@ def main(*, debug: bool = False) -> None:
     else:
         with suppress(Exception, KeyboardInterrupt):
             file = "\n".join(file.splitlines()[file.startswith("#!") :])
-            run(file, reg, debug)
+            run(file, reg, arg, debug)
 
 
 def main_debug() -> None:

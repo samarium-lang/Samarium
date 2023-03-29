@@ -787,7 +787,7 @@ class Transpiler:
 
         self._inline_counter -= 1
         if self._inline_counter == 0:
-            self._line.append("')")
+            self._line.append("', __file__)")
 
         # Numbers
         if isinstance(token, (int, float)):

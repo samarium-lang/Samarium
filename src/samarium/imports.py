@@ -86,9 +86,9 @@ def regex(string: str) -> Pattern:
     return compile("^" + string.replace("W", r"\w+") + "$")
 
 
-def resolve_path(name: str) -> Path:
+def resolve_path(name: str, source: str) -> Path:
     try:
-        path = Path(argv[1][: argv[1].rfind("/") + 1] or ".")
+        path = Path(source).parent
     except IndexError:  # REPL
         path = Path().resolve()
     paths = [e.name for e in path.iterdir()]

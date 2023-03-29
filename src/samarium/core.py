@@ -42,14 +42,15 @@ from .transpiler import Registry, Transpiler
 from .utils import sysexit
 
 
-def import_to_scope(data: str, reg: Registry) -> None:
+def import_to_scope(data: str, reg: Registry, source: str) -> None:
     modules = parse_string(data)
     for mod in modules:
         if mod.name == "samarium":
             raise exc.SamariumRecursionError
-        path = resolve_path(mod.name)
-        if (path / f"{mod.name}.sm").exists():
-            imported = run((path / f"{mod.name}.sm").read_text(), Registry({}))
+        path = resolve_path(mod.name, source)
+        mod_path = (path / f"{mod.name}.sm").resolve()
+        if mod_path.exists():
+            imported = run(mod_path.read_text(), Registry({}), mod_path)
         else:
             spec: importlib.machinery.ModuleSpec = (
                 importlib.util.spec_from_file_location(
@@ -69,15 +70,16 @@ def import_to_scope(data: str, reg: Registry) -> None:
         reg.vars.update(merge_objects(reg, imported, mod))
 
 
-def import_inline(data: str) -> Attrs:
+def import_inline(data: str, source: str) -> Attrs:
     reg = Registry({})
-    import_to_scope(data, reg)
+    import_to_scope(data, reg, source)
     return reg.vars.popitem()[1]
 
 
 def run(
     code: str,
     reg: Registry,
+    source: Path | str,
     debug: bool = False,
     *,
     load_template: bool = True,
@@ -91,6 +93,10 @@ def run(
             (Path(__file__).resolve().parent / "template.py")
             .read_text()
             .replace("{{ CODE }}", code)
+            .replace(
+                "{{ SOURCE }}",
+                str(Path(source).resolve() if isinstance(source, str) else source),
+            )
         )
     try:
         if debug:

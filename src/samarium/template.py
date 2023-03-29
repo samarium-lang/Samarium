@@ -1,4 +1,5 @@
 import sys
+__file__ = "{{ SOURCE }}"
 {{ CODE }}
 if __name__ == "samarium":
     try:
