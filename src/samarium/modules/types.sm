@@ -108,6 +108,7 @@ Zip: ("" >< "")?!;
     ... * { ... i ->? '#val { ** i; } }
     <<>> index * { * '#val<<index>>; }
     >< other * { * '#val >< other; }
+    :: other * { * '#val :: other.#val; }
     ? * { * / ? '#val ,, \; }
     $ * { * '#val$; }
 }
