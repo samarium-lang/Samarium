@@ -26,8 +26,8 @@ crossandra = Crossandra(
     Token,
     ignore_whitespace=True,
     rules=[
-        Rule(r"==<.*>==", False, re.M | re.S),
-        Rule(r"==[^\n]*", False, re.M | re.S),
+        Rule(r"==<.*>==", converter=False, flags=re.M | re.S),
+        Rule(r"==[^\n]*", converter=False, flags=re.M | re.S),
         Rule(
             common.DOUBLE_QUOTED_STRING.pattern, lambda x: x.replace("\n", r"\n"), re.S,
         ),

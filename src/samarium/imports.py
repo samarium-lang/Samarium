@@ -48,7 +48,7 @@ def parse_string(string: str) -> list[Mod]:
             out.append(Mod(name, alias))
         return out
     if imptype is Import.STAR:
-        return [Mod(string.split(".")[0], None, True)]
+        return [Mod(string.split(".")[0], None, objects=True)]
     if imptype is Import.OBJECT:
         mod, obj = string.split(".")
         obj, alias = obj.split(":") if ":" in obj else (obj, None)

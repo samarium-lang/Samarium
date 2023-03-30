@@ -587,12 +587,12 @@ class Array(Generic[T], Attrs):
     def __eq__(self, other: Any) -> Number:
         if isinstance(other, Array):
             return Num(self.val == other.val)
-        return Num(False)
+        return Num(0)
 
     def __ne__(self, other: Any) -> Number:
         if isinstance(other, Array):
             return Num(self.val != other.val)
-        return Num(True)
+        return Num(1)
 
     @guard(">")
     def __gt__(self, other: Any) -> Number:
@@ -780,12 +780,12 @@ class Table(Generic[KT, VT], Attrs):
     def __eq__(self, other: Any) -> Number:
         if isinstance(other, Table):
             return Num(self.val == other.val)
-        return Num(False)
+        return Num(0)
 
     def __ne__(self, other: Any) -> Number:
         if isinstance(other, Table):
             return Num(self.val != other.val)
-        return Num(True)
+        return Num(1)
 
     @guard("+")
     def __add__(self, other: Any) -> Table[KT, VT]:
@@ -901,12 +901,12 @@ class Slice(Attrs):
     def __eq__(self, other: Any) -> Number:
         if isinstance(other, Slice):
             return Num(self.tup == other.tup)
-        return Num(False)
+        return Num(0)
 
     def __ne__(self, other: Any) -> Number:
         if isinstance(other, Slice):
             return Num(self.tup != other.tup)
-        return Num(True)
+        return Num(1)
 
     def __hash__(self) -> int:
         return cast(int, self.hash().val)
