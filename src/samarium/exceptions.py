@@ -89,7 +89,7 @@ def handle_exception(exception: Exception) -> None:
         else:
             name = f"Python{name}".replace("PythonZeroDivision", "Math")
     name = name or exc_type.__name__
-    sys.stderr.write(DAHLIA.convert(f"&4[{name}] {exception}\n"))
+    DAHLIA.print(f"&4[{name}] {exception}", file=sys.stderr)
     if Runtime.quit_on_error:
         raise SystemExit(1)
 
@@ -114,7 +114,7 @@ class SamariumImportError(SamariumError):
 
 class SamariumSyntaxError(SamariumError):
     def __init__(self, msg: str) -> None:
-        sys.stderr.write(DAHLIA.convert(f"&4[SyntaxError] {msg}\n"))
+        DAHLIA.print(f"&4[SyntaxError] {msg}", file=sys.stderr)
         raise SystemExit(1)
 
 
