@@ -775,8 +775,7 @@ class Transpiler:
                 ):
                     push(f"readline({self._line.pop()})")
                 else:
-                    raise IndexError
-                    # push("readline()")
+                    push("readline()")
             except IndexError:
                 push("readline()")
         elif token is Token.THROW:
