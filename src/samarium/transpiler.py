@@ -31,6 +31,12 @@ def is_first_token(line: list[str]) -> bool:
     return not line or (len(line) == 1 and line[0].isspace())
 
 
+def is_quoted(string: Tokenlike) -> bool:
+    if isinstance(string, str):
+        return string[0] == string[-1] == '"'
+    return False
+
+
 def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
     stack: list[Token] = []
     token = Token.END
@@ -794,21 +800,35 @@ class Transpiler:
             self._line.append(f"Num({token})")
 
         elif isinstance(token, str):
-            if token[0] == token[-1] == '"':
+            if is_quoted(token):
                 # Strings
                 # token = token.replace("\n", "\\n")  # TODO: Understand why?
                 self._line.append(f"String({token})")
-            else:
-                # [self varname] -> [self.varname]
-                with suppress(IndexError):
-                    if self._line_tokens[-2] is Token.INSTANCE:
-                        self._line.append(".")
-                # Identifiers
-                varname = f"sm_{token}"
-                if self._private:
-                    varname = "__" + varname
-                    self._private = False
-                self._line.append(varname)
+                return
+            # [self varname] -> [self.varname]
+            with suppress(IndexError):
+                if self._line_tokens[-2] is Token.INSTANCE:
+                    self._line.append(".")
+            # Identifiers
+            prev_token = self._tokens[self._index - 1]
+            if isinstance(prev_token, str):
+                throw_syntax(
+                    "spaces are not allowed in variable names",
+                    note=f"{prev_token} {token} -> {prev_token}{token}"
+                )
+            pprev_token = self._tokens[self._index - 2]
+            if prev_token is Token.ENUM and isinstance(pprev_token, str):
+                if is_quoted(pprev_token):
+                    throw_syntax("cannot use # after a string")
+                throw_syntax(
+                    "# must be put before the variable name",
+                    note=f"{pprev_token}#{token} -> #{pprev_token}{token}"
+                )
+            varname = f"sm_{token}"
+            if self._private:
+                varname = "__" + varname
+                self._private = False
+            self._line.append(varname)
 
         elif token in FILE_IO_TOKENS:
             if self._file_token is not None:
