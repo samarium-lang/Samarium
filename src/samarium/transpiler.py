@@ -455,7 +455,7 @@ class Transpiler:
         if token is Token.IN and self._prev is Token.NOT:
             pass
         elif (
-            token in Group.operators - {Token.NOT, Token.IN}
+            token in Group.operators - {Token.NOT, Token.IN, Token.SUB, Token.ADD}
             and self._prev in Group.operators
             or (
                 self._prev
