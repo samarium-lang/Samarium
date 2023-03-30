@@ -1047,13 +1047,6 @@ class Function(Attrs):
         return get_name(self.func)
 
     def __call__(self, *args: Any) -> Any:
-        # print(
-        #     "Function.__call__\n"
-        #     f"\t{self.func = }\n"
-        #     f"\tsignature = {signature(self.func).parameters.keys()}\n"
-        #     f"\t{args = }\n"
-        #     f"\tinst type = {type(self.inst)}"
-        # )
         for arg in args:
             check_type(arg)
         supplied = len(args)
