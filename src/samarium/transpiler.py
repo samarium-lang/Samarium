@@ -344,6 +344,23 @@ class Transpiler:
         self._slice_object = []
         self._tokens = tokens
 
+    @property
+    def _prev(self) -> Tokenlike:
+        return self._tokens[self._index - 1]
+
+    @_prev.setter
+    def _prev(self, value: Tokenlike) -> None:
+        self._tokens[self._index - 1] = value
+
+    @property
+    def _next(self) -> Tokenlike:
+        return self._tokens[self._index + 1]
+
+    @_next.setter
+    def _next(self, value: Tokenlike) -> None:
+        self._tokens[self._index + 1] = value
+
+
     def transpile(self) -> Registry:
         # Matching brackets
         error, data = match_brackets(self._tokens)
@@ -433,14 +450,13 @@ class Transpiler:
             ]
 
     def _operators(self, token: Token) -> None:
-        prev_token = self._tokens[self._index - 1]
-        if token is Token.IN and prev_token is Token.NOT:
+        if token is Token.IN and self._prev is Token.NOT:
             pass
         elif (
             token in Group.operators - {Token.NOT, Token.IN}
-            and prev_token in Group.operators
+            and self._prev in Group.operators
             or (
-                prev_token
+                self._prev
                 in Group.operators
                 | {
                     Token.PAREN_OPEN,
@@ -455,12 +471,12 @@ class Transpiler:
             and token not in {Token.ADD, Token.SUB, Token.NOT, Token.BNOT}
         ):
             self._line.append("NULL")
-        if token is prev_token is Token.NOT:
+        if token is self._prev is Token.NOT:
             throw_syntax(
                 "cannot have two or more consecutive `~~`s",
                 note="try using parentheses: ~~ ~~x -> ~~(~~x)"
             )
-        if token is Token.NOT and self._tokens[self._index + 1] is Token.IN:
+        if token is Token.NOT and self._next is Token.IN:
             self._line.append(" not ")
             return
         self._line.append(OPERATOR_MAPPING[token])
@@ -523,13 +539,12 @@ class Transpiler:
             self._scope.exit()
 
         else:
-            prev = self._tokens[self._index - 1]
-            if token is Token.TABLE_CLOSE and prev is Token.TO:
+            if token is Token.TABLE_CLOSE and self._prev is Token.TO:
                 self._line.append("NULL")
             if token in (
                 Token.PAREN_CLOSE,
                 Token.BRACKET_CLOSE,
-            ) and prev in Group.operators | {Token.ELSE}:
+            ) and self._prev in Group.operators | {Token.ELSE}:
                 self._line.append("NULL")
             self._line.append(BRACKET_MAPPING[token])
             return
@@ -604,7 +619,7 @@ class Transpiler:
                 # fmt: on
                 else:
                     self._line.append("yield ")
-            elif self._tokens[self._index - 1] in UNPACK_TRIGGERS:
+            elif self._prev in UNPACK_TRIGGERS:
                 self._line.append("*")
             else:
                 self._line.append(".id()")
@@ -616,7 +631,7 @@ class Transpiler:
         if token is Token.TRY:
             self._line.append("try" if is_first_token(self._line) else ".random()")
         elif token is Token.TO:
-            if self._tokens[index - 1] is Token.TABLE_OPEN:
+            if self._prev is Token.TABLE_OPEN:
                 self._line.append("NULL")
             self._line.append("continue" if is_first_token(self._line) else ":")
         elif token is Token.FROM:
@@ -632,7 +647,7 @@ class Transpiler:
                 self._line.append("break")
                 self._submit_line()
         elif token is Token.CATCH:
-            if self._tokens[index + 1] is Token.BRACE_OPEN:
+            if self._next is Token.BRACE_OPEN:
                 self._line.append("except Exception")
             else:
                 self._line.append("assert ")
@@ -665,20 +680,19 @@ class Transpiler:
         elif token is Token.ELSE:
             self._line.append(shift + "else ")
         else:  # FOR
-            if self._tokens[self._index - 1] in {Token.ELSE} | Group.operators:
+            if self._prev in {Token.ELSE} | Group.operators:
                 self._line.append("NULL")
             index = self._index
-            if self._scope.current == "slice" and self._tokens[index + 1] is Token.ATTR:
-                self._tokens[index] = self._tokens[index + 1] = Token.WHILE
+            if self._scope.current == "slice" and self._next is Token.ATTR:
+                self._next = self._tokens[index] = Token.WHILE
                 self._process_token(index, Token.WHILE)
             else:
                 self._line.append(shift + "for ")
 
     def _core(self, token: Token) -> None:
         index = self._index
-        prev_token = self._tokens[index - 1]
         if token is Token.END:
-            if prev_token in Group.operators | {
+            if self._prev in Group.operators | {
                 Token.DEFAULT,
                 Token.CATCH,
             }:
@@ -710,7 +724,7 @@ class Transpiler:
         elif token is Token.SEP:
             # fmt: off
             if (
-                self._tokens[index - 1] in
+                self._prev in
                 NULLABLE_TOKENS | Group.operators | {Token.ELSE}
             ):
                 self._line.append("NULL")
@@ -724,20 +738,20 @@ class Transpiler:
             self._line.append("self")
         elif token is Token.SLICE_OPEN:
             self._scope.enter("slice")
-            self._slice_object.append(self._tokens[index - 1] in SLICE_OBJECT_TRIGGERS)
+            self._slice_object.append(self._prev in SLICE_OBJECT_TRIGGERS)
             if not self._slice_object[-1]:
                 self._line.append("[")
             self._line.append("mkslice(t(")
         elif token is Token.SLICE_CLOSE:
-            if prev_token in Group.operators:
+            if self._prev in Group.operators:
                 self._line.append("NULL")
             self._line.append("))")
             if not self._slice_object.pop():
                 self._line.append("]")
             self._scope.exit()
         else:  # ENUM
-            if isinstance(self._tokens[index + 1], str):
-                if self._tokens[index - 1] is Token.INSTANCE:
+            if isinstance(self._next, str):
+                if self._prev is Token.INSTANCE:
                     self._line.append(".")
                 self._private = True
                 return
@@ -770,7 +784,7 @@ class Transpiler:
             if (
                 self._scope.current == "class"
                 and is_first_token(self._line)
-                and self._tokens[self._index + 1] is not Token.END
+                and self._next is not Token.END
             ):
                 self._line.append("!")
                 return
@@ -810,14 +824,17 @@ class Transpiler:
                 if self._line_tokens[-2] is Token.INSTANCE:
                     self._line.append(".")
             # Identifiers
-            prev_token = self._tokens[self._index - 1]
-            if isinstance(prev_token, str):
-                throw_syntax(
-                    "spaces are not allowed in variable names",
-                    note=f"{prev_token} {token} -> {prev_token}{token}"
-                )
+            if isinstance(self._prev, str):
+                offset = 0
+                while isinstance(tok := self._tokens[index + offset], str) or tok in (Token.FOR, Token.IF):
+                    offset += 1
+                if tok is not Token.FUNCTION:
+                    throw_syntax(
+                        "spaces are not allowed in variable names",
+                        note=f"{self._prev} {token} -> {self._prev}{token}"
+                    )
             pprev_token = self._tokens[self._index - 2]
-            if prev_token is Token.ENUM and isinstance(pprev_token, str):
+            if self._prev is Token.ENUM and isinstance(pprev_token, str):
                 if is_quoted(pprev_token):
                     throw_syntax("cannot use # after a string")
                 throw_syntax(
