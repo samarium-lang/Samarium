@@ -44,21 +44,21 @@ def parse_string(string: str) -> list[Mod]:
         mods = string.split(",")
         out = []
         for m in mods:
-            name, alias = m.split(":") if ":" in m else (m, None)
-            out.append(Mod(name, alias))
+            name, _, alias = m.partition(":")
+            out.append(Mod(name, alias or None))
         return out
     if imptype is Import.STAR:
         return [Mod(string.split(".")[0], None, objects=True)]
     if imptype is Import.OBJECT:
         mod, obj = string.split(".")
-        obj, alias = obj.split(":") if ":" in obj else (obj, None)
-        return [Mod(mod, None, [Obj(obj, alias)])]
+        obj, _, alias = obj.partition(":")
+        return [Mod(mod, None, [Obj(obj, alias or None)])]
     mod, objects_ = string.split(".")
     objects = objects_.strip("[]").split(",")
     objs = []
     for o in objects:
-        name, alias = o.split(":") if ":" in o else (o, None)
-        objs.append(Obj(name, alias))
+        name, _, alias = o.partition(":")
+        objs.append(Obj(name, alias or None))
     return [Mod(mod, None, objs)]
 
 
