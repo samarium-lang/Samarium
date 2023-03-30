@@ -250,12 +250,8 @@ class Type(Attrs):
         return hash(self.val)
 
     def __call__(self, *args: Any) -> Any:
-        if self.val is Function:
-            raise SamariumTypeError("cannot instantiate a function")
-        if self.val is Module:
-            raise SamariumTypeError("cannot instantiate a module")
-        if self.val is Type:
-            raise SamariumTypeError("cannot instantiate a type")
+        if self.val in (Function, Module, Type):
+            raise SamariumTypeError(f"cannot instantiate a {self.val.__name__.lower()}")
         return self.val(*args)
 
 
