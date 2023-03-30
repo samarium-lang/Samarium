@@ -6,7 +6,7 @@ if __name__ == "samarium":
         entry
     except NameError:
         sys.exit()
-    argc = entry.argc
+    argc = param_count(entry)
     is_class = isinstance(entry, type)
     if is_class:
         argc -= 1

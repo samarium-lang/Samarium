@@ -5,11 +5,11 @@ from contextlib import suppress
 from functools import lru_cache
 from inspect import signature
 from random import choice, randrange, uniform
-from types import FunctionType
+from types import FunctionType, GeneratorType, MethodType
 from typing import Any, Generic
 from typing import TypeVar, cast
 
-from ..exceptions import NotDefinedError, SamariumTypeError, SamariumValueError
+from ..exceptions import NotDefinedError, SamariumTypeError, SamariumValueError, SamariumSyntaxError
 from ..utils import (
     ClassProperty,
     Singleton,
@@ -54,6 +54,14 @@ def throw_missing(*_: Any) -> None:
     raise SamariumTypeError("missing default parameter value(s)")
 
 
+# ```py
+# @classmethod
+# def foo(cls) -> None:
+#     ball()
+# ``````py
+# foo = classmethod(ball)
+# ```
+
 class Missing:
     @classmethod
     def type(cls) -> None:
@@ -81,6 +89,12 @@ NEXT = object()
 
 
 class Attrs:
+    def __getattribute__(self, name: str) -> Any:
+        attr = object.__getattribute__(self, name)
+        if isinstance(attr, Function) and "self" in signature(attr.func).parameters:
+            return Function(attr.func, self)
+        return attr
+
     @classmethod
     def id(cls) -> String:
         return String(f"{id(cls):x}")
@@ -105,11 +119,11 @@ class UserAttrs(Attrs):
     def __string__(self) -> String:
         return String(f"<{get_type_name(self)}@{self.id()}>")
 
-    __string__.argc = 1
+    __string__.param_count = 1
 
     def __str__(self) -> str:
         string = self.__string__
-        if string.argc != 1:
+        if param_count(string) != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}! should only take one argument"
             )
@@ -120,11 +134,11 @@ class UserAttrs(Attrs):
     def __bit__(self) -> Number:
         raise NotDefinedError(f"? {get_type_name(self)}")
 
-    __bit__.argc = 1
+    __bit__.param_count = 1
 
     def __bool__(self) -> bool:
         bit = self.__bit__
-        if bit.argc != 1:
+        if param_count(bit) != 1:
             raise SamariumTypeError(
                 f"? {get_type_name(self)} should only take one argument"
             )
@@ -138,11 +152,11 @@ class UserAttrs(Attrs):
     def __special__(self) -> Any:
         raise NotDefinedError(f"{get_type_name(self)}$")
 
-    __special__.argc = 1
+    __special__.param_count = 1
 
     def special(self) -> Any:
         special = self.__special__
-        if special.argc != 1:
+        if param_count(special) != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}$ should only take one argument"
             )
@@ -151,11 +165,11 @@ class UserAttrs(Attrs):
     def __hsh__(self) -> Number:
         raise NotDefinedError(f"{get_type_name(self)}##")
 
-    __hsh__.argc = 1
+    __hsh__.param_count = 1
 
     def hash(self) -> Number:
         hsh = self.__hsh__
-        if hsh.argc != 1:
+        if param_count(hsh) != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}## should only take one argument"
             )
@@ -166,11 +180,11 @@ class UserAttrs(Attrs):
     def __cast__(self) -> Any:
         raise NotDefinedError(f"{get_type_name(self)}%")
 
-    __cast__.argc = 1
+    __cast__.param_count = 1
 
     def cast(self) -> Any:
         cast = self.__cast__
-        if cast.argc != 1:
+        if param_count(cast) != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}% should only take one argument"
             )
@@ -179,18 +193,18 @@ class UserAttrs(Attrs):
     def __random__(self) -> Number:
         raise NotDefinedError(f"{get_type_name(self)}??")
 
-    __random__.argc = 1
+    __random__.param_count = 1
 
     def random(self) -> Any:
         random = self.__random__
-        if random.argc != 1:
+        if param_count(random) != 1:
             raise SamariumTypeError(
                 f"{get_type_name(self)}?? should only take one argument"
             )
         return random()
 
     @ClassProperty
-    def argc(self) -> int:
+    def param_count(self) -> int:
         return len(signature(self.__init__).parameters)
 
     @classmethod
@@ -751,12 +765,16 @@ class Table(Generic[KT, VT], Attrs):
             raise SamariumValueError(f"key not found: {key}") from None
 
     def __setitem__(self, key: KT, value: VT) -> None:
+        # print(key, hash(key))
+        # print(value, hash(value))
         self.val[key] = value
 
     def __iter__(self) -> PyIterator[KT]:
         yield from self.val.keys()
 
     def __contains__(self, element: Any) -> bool:
+        # print("Table.__contains__", self.val, element, type(element))
+        # print("hsh", hash(element))
         return element in self.val
 
     def __eq__(self, other: Any) -> Number:
@@ -1006,6 +1024,99 @@ class Enum(Attrs):
                 for k, v in self.members.items()
             }
         )
+
+
+class Function(Attrs):
+    def __init__(
+        self,
+        func: Callable[..., Any],
+        inst: Any | None = None,
+    ) -> None:
+        code = func.__code__
+        flags = code.co_flags
+        self.varargs = bool(flags & 4)
+        func.__code__ = func.__code__.replace(
+            co_flags=flags & ~4,
+            co_argcount=code.co_argcount + self.varargs
+        )
+        self.func = func
+        self.param_count = len(signature(func).parameters) - self.varargs
+        self.inst = inst
+
+    def __str__(self) -> str:
+        return get_name(self.func)
+
+    def __call__(self, *args: Any) -> Any:
+        # print(
+        #     "Function.__call__\n"
+        #     f"\t{self.func = }\n"
+        #     f"\tsignature = {signature(self.func).parameters.keys()}\n"
+        #     f"\t{args = }\n"
+        #     f"\tinst type = {type(self.inst)}"
+        # )
+        for arg in args:
+            check_type(arg)
+        supplied = len(args)
+        posargs, args = args[:self.param_count], args[self.param_count:]
+        if self.inst is not None:
+            posargs = (self.inst, *posargs)
+        if not self.varargs and args:
+            raise SamariumTypeError(
+                f"too many arguments ({supplied}/{self.param_count})"
+            )
+        if len(posargs) < self.param_count:
+            raise SamariumTypeError(
+                f"not enough arguments ({supplied}/{self.param_count})"
+            )
+        try:
+            out = correct_type(
+                self.func(*posargs, Array(args))
+                if self.varargs
+                else self.func(*posargs)
+            )
+        except TypeError as e:
+            errmsg = str(e)
+            if "positional argument: 'self'" in errmsg:
+                raise SamariumTypeError("missing instance") from None
+            raise
+        return out
+
+    def __hash__(self) -> int:
+        return cast(int, self.hash().val)
+
+    def hash(self) -> Number:
+        return Num(hash(self.func))
+
+    def special(self) -> Number:
+        return Num(self.param_count + self.varargs)
+
+
+def check_type(obj: Any) -> None:
+    if isinstance(obj, property):
+        raise SamariumTypeError("cannot use a special method on a type")
+    if isinstance(obj, (tuple, GeneratorType)):
+        raise SamariumSyntaxError("invalid syntax")
+
+
+def correct_type(obj: T, *objs: T) -> T | Array | Number | Iterator | Null:
+    if objs:
+        return Array(map(correct_type, (obj, *objs)))
+    if obj is None:
+        return NULL
+    if isinstance(obj, bool):
+        return Num(obj)
+    if isinstance(obj, GeneratorType):
+        return Iterator(obj)
+    if isinstance(obj, (list, tuple)):
+        return Array(obj)
+    check_type(obj)
+    return obj
+
+
+def param_count(func: Callable) -> int:
+    with suppress(AttributeError):
+        return func.param_count
+    return len(signature(func).parameters) + isinstance(func, MethodType)
 
 
 def to_chr(code: int) -> str:

@@ -9,7 +9,6 @@ from . import exceptions as exc
 from .builtins import (
     correct_type,
     dtnow,
-    function,
     mkslice,
     print_safe,
     readline,
@@ -26,6 +25,7 @@ from .classes import (
     Attrs,
     Enum,
     FileManager,
+    Function,
     Mode,
     Module,
     Null,

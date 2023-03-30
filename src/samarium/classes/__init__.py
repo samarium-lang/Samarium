@@ -7,6 +7,7 @@ from .base import (
     Array,
     Attrs,
     Enum,
+    Function,
     Iterator,
     Module,
     Null,
@@ -18,6 +19,7 @@ from .base import (
     Type,
     UserAttrs,
     Zip,
+    correct_type,
     to_string,
 )
 from .fileio import File, FileManager, Mode
@@ -27,6 +29,7 @@ __all__ = (
     "Attrs",
     "Enum",
     "File",
+    "Function",
     "Iterator",
     "Slice",
     "Table",
@@ -43,5 +46,6 @@ __all__ = (
     "Mode",
     "UserAttrs",
     "Zip",
+    "correct_type",
     "to_string",
 )

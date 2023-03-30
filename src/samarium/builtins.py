@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from contextlib import contextmanager
 from datetime import datetime
-from functools import wraps
-from inspect import signature
 from re import compile
 from time import sleep as _sleep
 from time import time_ns
-from types import FunctionType, GeneratorType
-from collections.abc import Callable, Iterator as PyIterator
+from types import GeneratorType
+from collections.abc import Callable
 from typing import Any, TypeVar
 
 from .classes import (
@@ -16,13 +13,12 @@ from .classes import (
     NULL,
     Array,
     Attrs,
-    Iterator,
     Null,
     Num,
     Number,
     Slice,
     String,
-    Type,
+    correct_type,
     to_string,
 )
 from .exceptions import (
@@ -31,7 +27,6 @@ from .exceptions import (
     SamariumSyntaxError,
     SamariumTypeError,
 )
-from .utils import get_name
 
 MISSING_ARGS_PATTERN = compile(
     r"\w+\(\) takes exactly one argument \(0 given\)"
@@ -47,28 +42,6 @@ TOO_MANY_ARGS_PATTERN = compile(
 )
 
 
-def check_type(obj: Any) -> None:
-    if isinstance(obj, property):
-        raise SamariumTypeError("cannot use a special method on a type")
-    if isinstance(obj, (tuple, GeneratorType)):
-        raise SamariumSyntaxError("invalid syntax")
-
-
-def correct_type(obj: T, *objs: T) -> T | Array | Number | Iterator | Null:
-    if objs:
-        return Array(map(correct_type, (obj, *objs)))
-    if obj is None:
-        return NULL
-    if isinstance(obj, bool):
-        return Num(obj)
-    if isinstance(obj, GeneratorType):
-        return Iterator(obj)
-    if isinstance(obj, (list, tuple)):
-        return Array(obj)
-    check_type(obj)
-    return obj
-
-
 def dtnow() -> Array:
     utcnow = datetime.utcnow()
     now = datetime.now().timetuple()
@@ -76,61 +49,6 @@ def dtnow() -> Array:
     tz = now[3] - utcnow_tt[3], now[4] - utcnow_tt[4]
     utcnow_tpl = utcnow_tt[:-3] + (utcnow.microsecond // 1000,) + tz
     return Array(map(Num, utcnow_tpl))
-
-
-def function(func: Callable[..., Any]) -> Callable[..., Any]:
-    @wraps(func)
-    def wrapper(*args: Any) -> Any:
-        for arg in args:
-            check_type(arg)
-        with modify(func, list(args), argc) as (f, checked_args):
-            try:
-                result = correct_type(f(*checked_args))
-            except TypeError as e:
-                errmsg = str(e)
-                if "positional argument: 'self'" in errmsg:
-                    raise SamariumTypeError("missing instance") from None
-                missing_args = MISSING_ARGS_PATTERN.search(errmsg)
-                if missing_args:
-                    given = argc - (int(missing_args.group(1)) or 1)
-                    raise SamariumTypeError(
-                        f"not enough arguments ({given}/{argc})"
-                    ) from None
-                too_many_args = TOO_MANY_ARGS_PATTERN.search(errmsg)
-                if too_many_args:
-                    raise SamariumTypeError(
-                        f"too many arguments ({too_many_args.group(2)}/{argc})"
-                    ) from None
-                raise e
-        return result
-
-    argc = len(signature(func).parameters)
-
-    wrapper.__str__ = wrapper.__repr__ = lambda: get_name(func)
-    wrapper.special = lambda: Num(argc)
-    wrapper.argc = argc
-    wrapper.parent = lambda: Type(FunctionType)
-    wrapper.type = lambda: Type(FunctionType)
-    wrapper.hash = lambda: Num(hash(func))
-
-    return wrapper
-
-
-@contextmanager
-def modify(
-    func: Callable[..., Any], args: list[Any], argc: int
-) -> PyIterator[tuple[Callable[..., Any], list[Any]]]:
-    flag = func.__code__.co_flags
-    if flag & 4 == 0:
-        yield func, args
-        return
-    x = argc - 1
-    args = [*args[:x], Array(args[x:])]
-    func.__code__ = func.__code__.replace(co_flags=flag - 4, co_argcount=argc)
-    if not argc:
-        args = []
-    yield func, args
-    func.__code__ = func.__code__.replace(co_flags=flag, co_argcount=argc - 1)
 
 
 def mkslice(start: Any = None, stop: Any = MISSING, step: Any = None) -> Any:

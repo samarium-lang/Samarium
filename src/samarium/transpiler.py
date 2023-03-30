@@ -359,7 +359,7 @@ class Transpiler:
     def _submit_line(self) -> None:
         # Special cases
         if self._reg[Switch.IMPORT]:
-            self._line.append("', Registry(globals()))")
+            self._line.append("', Registry(globals()), __file__)")
             self._reg[Switch.IMPORT] = False
 
         if len(self._line) > 1 and self._line[-2] == "=":
@@ -488,6 +488,9 @@ class Transpiler:
             if self._scope.current == "enum":
                 return
             self._line.append(":")
+            if self._scope.current == "class":
+                self._line.append("\n" + indent(self._indent))
+                self._line.append("def __hash__(self): return super().__hash__()")
 
         elif token is Token.BRACE_CLOSE:
             self._indent -= 1
@@ -562,9 +565,9 @@ class Transpiler:
                 if self._line[indented + 1] == "=":
                     indented += 1
                     name += "="
-            self._line = [
-                *indentation,
-                "@function\n",
+            new_name = transform_special(name, self._scope)
+            special = new_name != name
+            self._line = [*indentation, "@Function\n"] * (not special) + [
                 *indentation,
                 "def ",
                 transform_special(name, self._scope),
@@ -579,9 +582,6 @@ class Transpiler:
                 ),
                 ")",
             ]
-            if static:
-                self._line.insert(0, "@staticmethod\n")
-                self._line.insert(0, indentation[0] if indentation else "")
         elif token is Token.DEFAULT:
             self._line.append(
                 " = {0} if {0} is not MISSING else ".format("".join(self._line).strip())
