@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from contextlib import suppress
 from enum import Enum
 from typing import Any, cast, TYPE_CHECKING
@@ -451,7 +452,7 @@ class Transpiler:
                 "".join(quick_template).format(token_name.split("_")[-1]),
             ]
 
-    def _operators(self, token: Token) -> None:
+    def _operators(self, token: Token, push: Callable) -> None:
         if token is Token.IN and self._prev is Token.NOT:
             pass
         elif (
@@ -472,18 +473,18 @@ class Transpiler:
             )
             and token not in {Token.ADD, Token.SUB, Token.NOT, Token.BNOT}
         ):
-            self._line.append("NULL")
+            push("NULL")
         if token is self._prev is Token.NOT:
             throw_syntax(
                 "cannot have two or more consecutive `~~`s",
                 note="try using parentheses: ~~ ~~x -> ~~(~~x)"
             )
         if token is Token.NOT and self._next is Token.IN:
-            self._line.append(" not ")
+            push(" not ")
             return
-        self._line.append(OPERATOR_MAPPING[token])
+        push(OPERATOR_MAPPING[token])
 
-    def _brackets(self, token: Token) -> None:
+    def _brackets(self, token: Token, push: Callable) -> None:
         if token is Token.BRACE_OPEN:
             if (
                 self._line_tokens[0] in CONTROL_FLOW_TOKENS
@@ -493,10 +494,10 @@ class Transpiler:
 
             # Implicit infinite loop
             if self._line_tokens[-2] is Token.WHILE:
-                self._line.append("True")
+                push("True")
 
             if self._line_tokens[-2] in Group.operators:
-                self._line.append("NULL")
+                push("NULL")
 
             # Getting UserAttrs
             # fmt: off
@@ -504,17 +505,17 @@ class Transpiler:
                 self._reg[Switch.CLASS_DEF]
                 and not isinstance(self._line_tokens[-3], str)
             ):
-                self._line.append("(UserAttrs)")
+                push("(UserAttrs)")
             # fmt: on
             self._reg[Switch.CLASS_DEF] = False
 
             self._indent += 1
             if self._scope.current == "enum":
                 return
-            self._line.append(":")
+            push(":")
             if self._scope.current == "class":
-                self._line.append("\n" + indent(self._indent))
-                self._line.append("def __hash__(self): return super().__hash__()")
+                push("\n" + indent(self._indent))
+                push("def __hash__(self): return super().__hash__()")
 
         elif token is Token.BRACE_CLOSE:
             self._indent -= 1
@@ -524,12 +525,12 @@ class Transpiler:
                 self._class_indent.pop()
 
             if self._scope.current == "enum":
-                self._line.append(")")
+                push(")")
 
             if (self._processed_tokens or self._line_tokens)[-1] is Token.BRACE_OPEN:
                 # Managing empty bodies
                 if self._line_tokens == [token]:
-                    self._line.append("pass")
+                    push("pass")
                 elif (
                     len(self._line_tokens) == 2
                     and self._line_tokens[0] in {Token.FROM, Token.TO}
@@ -542,22 +543,22 @@ class Transpiler:
 
         else:
             if token is Token.TABLE_CLOSE and self._prev is Token.TO:
-                self._line.append("NULL")
+                push("NULL")
             if token in (
                 Token.PAREN_CLOSE,
                 Token.BRACKET_CLOSE,
             ) and self._prev in Group.operators | {Token.ELSE}:
-                self._line.append("NULL")
-            self._line.append(BRACKET_MAPPING[token])
+                push("NULL")
+            push(BRACKET_MAPPING[token])
             return
 
         self._submit_line()
 
-    def _functions(self, token: Token) -> None:
+    def _functions(self, token: Token, push: Callable) -> None:
         if token is Token.FUNCTION:
             # Import all
             if self._line_tokens[0] is Token.IMPORT:
-                self._line.append("*")
+                push("*")
                 return
 
             # Return
@@ -606,7 +607,7 @@ class Transpiler:
                 ")",
             ]
         elif token is Token.DEFAULT:
-            self._line.append(
+            push(
                 " = {0} if {0} is not MISSING else ".format("".join(self._line).strip())
             )
         elif token is Token.YIELD:
@@ -617,25 +618,25 @@ class Transpiler:
                     Token.ASSIGN in toks
                     and toks.index(Token.ASSIGN) < toks.index(Token.END)
                 ):
-                    self._line.append("*")
+                    push("*")
                 # fmt: on
                 else:
-                    self._line.append("yield ")
+                    push("yield ")
             elif self._prev in UNPACK_TRIGGERS:
-                self._line.append("*")
+                push("*")
             else:
-                self._line.append(".id()")
+                push(".id()")
         else:  # Token.MAIN
-            self._line.append("entry ")
+            push("entry ")
 
-    def _multisemantic(self, token: Token) -> None:
+    def _multisemantic(self, token: Token, push: Callable) -> None:
         index = self._index
         if token is Token.TRY:
-            self._line.append("try" if is_first_token(self._line) else ".random()")
+            push("try" if is_first_token(self._line) else ".random()")
         elif token is Token.TO:
             if self._prev is Token.TABLE_OPEN:
-                self._line.append("NULL")
-            self._line.append("continue" if is_first_token(self._line) else ":")
+                push("NULL")
+            push("continue" if is_first_token(self._line) else ":")
         elif token is Token.FROM:
             nxt = self._tokens[index + 1 : index + 4]
             if (
@@ -644,142 +645,143 @@ class Transpiler:
                 and isinstance(nxt[2], str)
             ):
                 self._inline_counter = 4
-                self._line.append("import_inline('")
+                push("import_inline('")
             else:
-                self._line.append("break")
+                push("break")
                 self._submit_line()
         elif token is Token.CATCH:
             if self._next is Token.BRACE_OPEN:
-                self._line.append("except Exception")
+                push("except Exception")
             else:
-                self._line.append("assert ")
+                push("assert ")
         elif token is Token.WHILE:
             if self._scope.current == "slice":
-                self._line.append("),t(")
+                push("),t(")
             else:
-                self._line.append("while ")
+                push("while ")
         elif is_first_token(self._line):
             self._reg[Switch.CLASS] = True
             self._reg[Switch.CLASS_DEF] = True
             self._scope.enter("class")
             self._class_indent.append(self._indent)
-            self._line.append("class ")
+            push("class ")
         else:
             indented = self._indent > 0
             self._line = [*self._line[:indented], "@", *self._line[indented:]]
             self._submit_line()
 
-    def _control_flow(self, token: Token) -> None:
+    def _control_flow(self, token: Token, push: Callable) -> None:
         shift = " " * (not is_first_token(self._line))
         if token is Token.IF:
             try:
                 if self._line_tokens[-2] is Token.ELSE:
                     self._line[-1] = "elif "
                 else:
-                    self._line.append(" if ")
+                    push(" if ")
             except IndexError:
-                self._line.append(shift + "if ")
+                push(shift + "if ")
         elif token is Token.ELSE:
-            self._line.append(shift + "else ")
+            push(shift + "else ")
         else:  # FOR
             if self._prev in {Token.ELSE} | Group.operators:
-                self._line.append("NULL")
+                push("NULL")
             index = self._index
             if self._scope.current == "slice" and self._next is Token.ATTR:
                 self._next = self._tokens[index] = Token.WHILE
                 self._process_token(index, Token.WHILE)
             else:
-                self._line.append(shift + "for ")
+                push(shift + "for ")
 
-    def _core(self, token: Token) -> None:
+    def _core(self, token: Token, push: Callable) -> None:
         index = self._index
         if token is Token.END:
             if self._prev in Group.operators | {
                 Token.DEFAULT,
                 Token.CATCH,
             }:
-                self._line.append("NULL")
+                push("NULL")
             if self._scope.current == "enum":
                 if self._tokens[index - 2] in {token, Token.BRACE_OPEN}:
-                    self._line.append("=NEXT")
-                self._line.append(",")
+                    push("=NEXT")
+                push(",")
                 return
             if self._reg[Switch.BUILTIN]:
                 if self._line_tokens[-2] in {Token.EXIT, Token.SLEEP}:
-                    self._line.append("Num(0)")
-                self._line.append(")")
+                    push("Num(0)")
+                push(")")
                 self._reg[Switch.BUILTIN] = False
             if "=" in self._line:
                 start = self._indent > 0
                 assign_idx = self._line.index("=")
                 stop = assign_idx - (self._line[assign_idx - 1] in {*"+-*%&|/^@", "**"})
                 variable = remove_stars("".join(self._line[start:stop]))
-                self._line.append(f";{variable}=correct_type({variable})")
+                push(f";{variable}=correct_type({variable})")
             self._submit_line()
         elif token is Token.ASSIGN:
             if self._line_tokens.count(token) > 1 and self._scope.current != "enum":
                 throw_syntax("cannot use multiple assignment")
-            self._line.append("=")
+            push("=")
         elif token is Token.IMPORT:
             self._reg[Switch.IMPORT] = True
-            self._line.append("import_to_scope('")
+            push("import_to_scope('")
         elif token is Token.SEP:
             # fmt: off
             if (
                 self._prev in
                 NULLABLE_TOKENS | Group.operators | {Token.ELSE}
             ):
-                self._line.append("NULL")
+                push("NULL")
             # fmt: on
-            self._line.append(",")
+            push(",")
         elif token is Token.ATTR:
-            self._line.append(".")
+            push(".")
         elif token is Token.INSTANCE:
             if not self._reg[Switch.CLASS]:
                 throw_syntax("instance operator cannot be used outside a class")
-            self._line.append("self")
+            push("self")
         elif token is Token.SLICE_OPEN:
             self._scope.enter("slice")
             self._slice_object.append(self._prev in SLICE_OBJECT_TRIGGERS)
             if not self._slice_object[-1]:
-                self._line.append("[")
-            self._line.append("mkslice(t(")
+                push("[")
+            push("mkslice(t(")
         elif token is Token.SLICE_CLOSE:
             if self._prev in Group.operators:
-                self._line.append("NULL")
-            self._line.append("))")
+                push("NULL")
+            push("))")
             if not self._slice_object.pop():
-                self._line.append("]")
+                push("]")
             self._scope.exit()
         else:  # ENUM
             if isinstance(self._next, str):
                 if self._prev is Token.INSTANCE:
-                    self._line.append(".")
+                    push(".")
                 self._private = True
                 return
             name = self._line[-1]
-            self._line.append(f"=Enum('{name}',")
+            push(f"=Enum('{name}',")
             self._scope.enter("enum")
 
-    def _builtins(self, token: Token) -> None:
+    def _builtins(self, token: Token, push: Callable) -> None:
         if token is Token.ARR_STMP:
-            self._line.append("dtnow()")
+            push("dtnow()")
         elif token is Token.UNIX_STMP:
-            self._line.append("timestamp()")
+            push("timestamp()")
         elif token is Token.READLINE:
             try:
                 if (
                     isinstance(self._line_tokens[-2], str)
                     and not self._line[-1].isspace()
                 ):
-                    self._line.append(f"readline({self._line.pop()})")
+                    push(f"readline({self._line.pop()})")
                 else:
                     raise IndexError
+                    # push("readline()")
             except IndexError:
-                self._line.append("readline()")
+                push("readline()")
         elif token is Token.THROW:
             if self._line_tokens[-2] in Group.operators:
-                self._line.append("NULL")
+                push("NULL")
             indented = self._indent > 0
             self._line = [*self._line[:indented], "throw(", *self._line[indented:], ")"]
         elif token is Token.PRINT:
@@ -788,43 +790,45 @@ class Transpiler:
                 and is_first_token(self._line)
                 and self._next is not Token.END
             ):
-                self._line.append("!")
+                push("!")
                 return
             with suppress(IndexError):
                 if self._line_tokens[-2] in Group.operators:
-                    self._line.append("NULL")
+                    push("NULL")
             hook = self._line.index("=") + 1 if "=" in self._line else self._indent > 0
             self._line = [*self._line[:hook], "print_safe(", *self._line[hook:], ")"]
         else:  # SLEEP or EXIT
             func = "sysexit" if token is Token.EXIT else "sleep"
-            self._line.append(f"{func}(")
+            push(f"{func}(")
             self._reg[Switch.BUILTIN] = True
 
-    def _methods(self, token: Token) -> None:
-        self._line.append(METHOD_MAPPING[token])
+    def _methods(self, token: Token, push: Callable) -> None:
+        push(METHOD_MAPPING[token])
 
     def _process_token(self, index: int, token: Tokenlike) -> None:
         self._index = index
         self._line_tokens.append(token)
 
+        push = self._line.append
+
         self._inline_counter -= 1
         if self._inline_counter == 0:
-            self._line.append("', __file__)")
+            push("', __file__)")
 
         # Numbers
         if isinstance(token, (int, float)):
-            self._line.append(f"Num({token})")
+            push(f"Num({token})")
 
         elif isinstance(token, str):
             if is_quoted(token):
                 # Strings
                 # token = token.replace("\n", "\\n")  # TODO: Understand why?
-                self._line.append(f"String({token})")
+                push(f"String({token})")
                 return
             # [self varname] -> [self.varname]
             with suppress(IndexError):
                 if self._line_tokens[-2] is Token.INSTANCE:
-                    self._line.append(".")
+                    push(".")
             # Identifiers
             if isinstance(self._prev, str):
                 offset = 0
@@ -858,7 +862,7 @@ class Transpiler:
         else:
             for group, func in GROUPS:
                 if token in group:
-                    func(self, token)
+                    func(self, token, push)
                     break
 
 
