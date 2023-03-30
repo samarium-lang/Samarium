@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from re import Pattern, compile, sub
-from sys import argv
 
 from .classes import Attrs, Module
 from .exceptions import SamariumImportError, SamariumSyntaxError
