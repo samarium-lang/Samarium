@@ -1091,17 +1091,21 @@ def check_type(obj: Any) -> None:
         raise SamariumSyntaxError("invalid syntax")
 
 
-def correct_type(obj: T, *objs: T) -> T | Array | Number | Iterator | Null:
+def correct_type(obj: T, *objs: T) -> T | Array | Number | Iterator | Table | Null:
     if objs:
         return Array(map(correct_type, (obj, *objs)))
+    if isinstance(obj, (Null, Number, String, Slice, Enum, Type, Module, Zip, Function)):
+        return obj
     if obj is None:
         return NULL
     if isinstance(obj, bool):
         return Num(obj)
     if isinstance(obj, GeneratorType):
         return Iterator(obj)
-    if isinstance(obj, (list, tuple)):
-        return Array(obj)
+    if isinstance(obj, (list, tuple, Array)):
+        return Array(map(correct_type, obj))
+    if isinstance(obj, Table):
+        return Table({correct_type(k): correct_type(v) for k, v in obj.items()})
     check_type(obj)
     return obj
 
