@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Callable, Iterable, Iterator as PyIterator
 from contextlib import suppress
 from functools import lru_cache
@@ -22,6 +23,8 @@ from ..utils import (
 T = TypeVar("T")
 KT = TypeVar("KT")
 VT = TypeVar("VT")
+
+MISSING_POSARG = re.compile(r"missing (\d+) required positional argument")
 
 
 def functype_repr(obj: Any) -> str:
@@ -1057,10 +1060,6 @@ class Function(Attrs):
             raise SamariumTypeError(
                 f"too many arguments ({supplied}/{self.param_count})"
             )
-        if len(posargs) < self.param_count:
-            raise SamariumTypeError(
-                f"not enough arguments ({supplied}/{self.param_count})"
-            )
         try:
             out = correct_type(
                 self.func(*posargs, Array(args))
@@ -1069,6 +1068,10 @@ class Function(Attrs):
             )
         except TypeError as e:
             errmsg = str(e)
+            if m := MISSING_POSARG.search(errmsg):
+                raise SamariumTypeError(
+                    f"not enough arguments ({supplied}/{supplied + int(m.group(1))})"
+                ) from None
             if "positional argument: 'self'" in errmsg:
                 raise SamariumTypeError("missing instance") from None
             raise
