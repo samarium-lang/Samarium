@@ -83,8 +83,8 @@ def run(
     code: str,
     reg: Registry,
     source: Path | str,
-    debug: bool = False,
     *,
+    debug: bool = False,
     load_template: bool = True,
     quit_on_error: bool = True,
 ) -> Registry:
