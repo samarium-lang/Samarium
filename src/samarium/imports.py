@@ -4,10 +4,14 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from re import Pattern, compile, sub
+from typing import TYPE_CHECKING
 
 from .classes import Attrs, Module
 from .exceptions import SamariumImportError, SamariumSyntaxError
-from .transpiler import Registry
+
+if TYPE_CHECKING:
+    from .transpiler import Registry
+
 
 FORMATTERS = {
     r"\bsm_(\w+)\b": r"\g<1>",

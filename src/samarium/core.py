@@ -4,6 +4,7 @@ import importlib.machinery
 import importlib.util
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from . import exceptions as exc
 from .builtins import (
@@ -22,7 +23,6 @@ from .classes import (
     NEXT,
     NULL,
     Array,
-    Attrs,
     Enum,
     FileManager,
     Function,
@@ -40,6 +40,9 @@ from .runtime import Runtime
 from .tokenizer import tokenize
 from .transpiler import Registry, Transpiler
 from .utils import sysexit
+
+if TYPE_CHECKING:
+    from .classes import Attrs
 
 
 def import_to_scope(data: str, reg: Registry, source: str) -> None:

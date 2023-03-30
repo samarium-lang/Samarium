@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from contextlib import suppress
 from enum import Enum
-from typing import Any, cast
+from typing import Any, cast, TYPE_CHECKING
 
 from .exceptions import SamariumSyntaxError, handle_exception
-from .tokenizer import Tokenlike
 from .tokens import CLOSE_TOKENS, FILE_IO_TOKENS, OPEN_TOKENS, Token
+
+if TYPE_CHECKING:
+    from .tokenizer import Tokenlike
 
 
 def groupnames(array: list[str]) -> list[str]:
