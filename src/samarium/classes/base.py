@@ -56,14 +56,6 @@ def throw_missing(*_: Any) -> None:
     raise SamariumTypeError("missing default parameter value(s)")
 
 
-# ```py
-# @classmethod
-# def foo(cls) -> None:
-#     ball()
-# ``````py
-# foo = classmethod(ball)
-# ```
-
 class Missing:
     @classmethod
     def type(cls) -> None:
