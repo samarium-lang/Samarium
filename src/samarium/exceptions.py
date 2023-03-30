@@ -91,7 +91,7 @@ def handle_exception(exception: Exception) -> None:
     name = name or exc_type.__name__
     DAHLIA.print(f"&4[{name}] {exception}", file=sys.stderr)
     if Runtime.quit_on_error:
-        raise SystemExit(1)
+        sys.exit(1)
 
 
 class SamariumError(Exception):
@@ -115,7 +115,7 @@ class SamariumImportError(SamariumError):
 class SamariumSyntaxError(SamariumError):
     def __init__(self, msg: str) -> None:
         DAHLIA.print(f"&4[SyntaxError] {msg}", file=sys.stderr)
-        raise SystemExit(1)
+        sys.exit(1)
 
 
 class SamariumTypeError(SamariumError):
