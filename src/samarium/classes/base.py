@@ -6,7 +6,7 @@ from contextlib import suppress
 from functools import lru_cache
 from inspect import signature
 from random import choice, randrange, uniform
-from types import FunctionType, GeneratorType, MethodType
+from types import GeneratorType, MethodType
 from typing import Any, Generic
 from typing import TypeVar, cast
 
@@ -30,8 +30,7 @@ MISSING_POSARG = re.compile(r"missing (\d+) required positional argument")
 def functype_repr(obj: Any) -> str:
     return (
         get_name(obj)
-        if isinstance(obj, FunctionType)
-        or (isinstance(obj, type) and issubclass(obj, UserAttrs))
+        if isinstance(obj, type) and issubclass(obj, UserAttrs)
         else repr(obj)
     )
 
@@ -240,8 +239,6 @@ class Type(Attrs):
         return Num(self.val != other)
 
     def __str__(self) -> str:
-        if self.val is FunctionType:
-            return "Function"
         return get_name(self.val)
 
     __repr__ = __str__
@@ -253,7 +250,7 @@ class Type(Attrs):
         return hash(self.val)
 
     def __call__(self, *args: Any) -> Any:
-        if self.val is FunctionType:
+        if self.val is Function:
             raise SamariumTypeError("cannot instantiate a function")
         if self.val is Module:
             raise SamariumTypeError("cannot instantiate a module")
@@ -1122,6 +1119,4 @@ def to_chr(code: int) -> str:
 
 
 def to_string(obj: Attrs | Callable) -> str:
-    if isinstance(obj, FunctionType):
-        return ".".join(i.removeprefix("sm_") for i in obj.__qualname__.split("."))
     return str(obj)
