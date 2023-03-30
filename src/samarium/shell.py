@@ -32,7 +32,14 @@ def run_shell(*, debug: bool) -> None:
     main = Registry(globals())
     while True:
         try:
-            run(read_statement(), main, "", debug=debug, load_template=False, quit_on_error=False)
+            run(
+                read_statement(),
+                main,
+                "",
+                debug=debug,
+                load_template=False,
+                quit_on_error=False,
+            )
             main.output = ""
         except KeyboardInterrupt:
             print()

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable as PyIterable
+from collections.abc import Callable
+from collections.abc import Iterable as PyIterable
 from enum import Enum as PyEnum
 from functools import wraps
 from io import BufferedIOBase, IOBase

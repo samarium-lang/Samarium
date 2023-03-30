@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from contextlib import suppress
 from enum import Enum
-from typing import Any, cast, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 from .exceptions import SamariumSyntaxError, handle_exception
 from .tokens import CLOSE_TOKENS, FILE_IO_TOKENS, OPEN_TOKENS, Token
@@ -363,7 +363,6 @@ class Transpiler:
     def _next(self, value: Tokenlike) -> None:
         self._tokens[self._index + 1] = value
 
-
     def transpile(self) -> Registry:
         # Matching brackets
         error, data = match_brackets(self._tokens)
@@ -477,7 +476,7 @@ class Transpiler:
         if token is self._prev is Token.NOT:
             throw_syntax(
                 "cannot have two or more consecutive `~~`s",
-                note="try using parentheses: ~~ ~~x -> ~~(~~x)"
+                note="try using parentheses: ~~ ~~x -> ~~(~~x)",
             )
         if token is Token.NOT and self._next is Token.IN:
             push(" not ")
@@ -831,12 +830,15 @@ class Transpiler:
             # Identifiers
             if isinstance(self._prev, str):
                 offset = 0
-                while isinstance(tok := self._tokens[index + offset], str) or tok in (Token.FOR, Token.IF):
+                while isinstance(tok := self._tokens[index + offset], str) or tok in (
+                    Token.FOR,
+                    Token.IF,
+                ):
                     offset += 1
                 if tok is not Token.FUNCTION:
                     throw_syntax(
                         "spaces are not allowed in variable names",
-                        note=f"{self._prev} {token} -> {self._prev}{token}"
+                        note=f"{self._prev} {token} -> {self._prev}{token}",
                     )
             pprev_token = self._tokens[self._index - 2]
             if self._prev is Token.ENUM and isinstance(pprev_token, str):
@@ -844,7 +846,7 @@ class Transpiler:
                     throw_syntax("cannot use # after a string")
                 throw_syntax(
                     "# must be put before the variable name",
-                    note=f"{pprev_token}#{token} -> #{pprev_token}{token}"
+                    note=f"{pprev_token}#{token} -> #{pprev_token}{token}",
                 )
             varname = f"sm_{token}"
             if self._private:

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import datetime
 from re import compile
 from time import sleep as _sleep
 from time import time_ns
 from types import GeneratorType
-from collections.abc import Callable
 from typing import Any, TypeVar
 
 from .classes import (

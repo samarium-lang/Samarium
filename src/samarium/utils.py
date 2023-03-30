@@ -50,7 +50,7 @@ def convert_float(string: str, *, base: int, sep: str = ".") -> int | float:
     float_part, _, exp_part = string.partition(exp_sep)
     int_, _, dec = float_part.partition(sep)
     out = int(int_ or "0", base) + sum(
-        int(v, base) * base ** ~i for i, v in enumerate(dec)
+        int(v, base) * base**~i for i, v in enumerate(dec)
     )
     if exp_part:
         try:

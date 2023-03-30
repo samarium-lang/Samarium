@@ -1,16 +1,21 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Callable, Iterable, Iterator as PyIterator
+from collections.abc import Callable, Iterable
+from collections.abc import Iterator as PyIterator
 from contextlib import suppress
 from functools import lru_cache
 from inspect import signature
 from random import choice, randrange, uniform
 from types import GeneratorType, MethodType
-from typing import Any, Generic
-from typing import TypeVar, cast
+from typing import Any, Generic, TypeVar, cast
 
-from ..exceptions import NotDefinedError, SamariumTypeError, SamariumValueError, SamariumSyntaxError
+from ..exceptions import (
+    NotDefinedError,
+    SamariumSyntaxError,
+    SamariumTypeError,
+    SamariumValueError,
+)
 from ..utils import (
     ClassProperty,
     Singleton,
@@ -318,7 +323,7 @@ class Number(Attrs):
 
     @guard("+++", default=2)
     def __pow__(self, other: Any) -> Number:
-        return Num(self.val ** other.val)
+        return Num(self.val**other.val)
 
     @guard("---", default=2)
     def __mod__(self, other: Any) -> Number:
@@ -1024,8 +1029,7 @@ class Function(Attrs):
         flags = code.co_flags
         self.varargs = bool(flags & 4)
         func.__code__ = func.__code__.replace(
-            co_flags=flags & ~4,
-            co_argcount=code.co_argcount + self.varargs
+            co_flags=flags & ~4, co_argcount=code.co_argcount + self.varargs
         )
         self.func = func
         self.param_count = len(signature(func).parameters) - self.varargs
@@ -1038,7 +1042,7 @@ class Function(Attrs):
         for arg in args:
             check_type(arg)
         supplied = len(args)
-        posargs, args = args[:self.param_count], args[self.param_count:]
+        posargs, args = args[: self.param_count], args[self.param_count :]
         if self.inst is not None:
             posargs = (self.inst, *posargs)
         if not self.varargs and args:
@@ -1082,7 +1086,9 @@ def check_type(obj: Any) -> None:
 def correct_type(obj: T, *objs: T) -> T | Array | Number | Iterator | Table | Null:
     if objs:
         return Array(map(correct_type, (obj, *objs)))
-    if isinstance(obj, (Null, Number, String, Slice, Enum, Type, Module, Zip, Function)):
+    if isinstance(
+        obj, (Null, Number, String, Slice, Enum, Type, Module, Zip, Function)
+    ):
         return obj
     if obj is None:
         return NULL
