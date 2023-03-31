@@ -49,6 +49,27 @@ array <% f;
 == into `array` (assuming `f` is in binary read mode)
 ```
 
+File objects are also iterable, yielding one line per iteration:
+```sm
+path: "hello_world.rs";
+f <~~ path;
+
+"File:", path!;
+"-" ++ (//\ + path$)!;
+... lineno, line ->? <</..>> >< f {
+    lineno, "|", <-string.strip(line, "\n")!;
+}
+
+~f;
+```
+```
+File: hello_world.rs
+--------------------
+1 | fn main() {
+2 |     println!("Hello, World!");
+3 | }
+```
+
 
 ## Writing
 
