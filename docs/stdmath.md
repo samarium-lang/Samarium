@@ -24,7 +24,7 @@ Function                             | Use
 `max(array)`                         | Returns the largest integer in `array`.
 `min(array)`                         | Returns the smallest integer in `array`.
 `product(array)`                     | Multiplies the items of `array` from left to right and returns the total.<br>The `array`'s items must be integers.
-`round(n[, ndigits])`                | 
+`round(x[, ndigits])`                | Returns `x` rounded to `ndigits` precision after the decimal point.<br>Works exactly like Python's [`round()`](https://docs.python.org/3/library/functions.html#round).
 `shl(a, b)`                          | Returns `a` shifted to the left by `b` bits.
 `shr(a, b)`                          | Returns `a` shifted to the right by `b` bits.
 `sqrt(x)`                            | Returns the integer square root of the nonnegative integer `n`.<br>This is the floor of the exact square root of `n`.
