@@ -16,6 +16,9 @@ factorial n * {
     ? n < \ {
         "factorial is defined only for non-negative numbers"!!!;
     }
+    ? ~~is_int(n) {
+        "n has to be an integer"!!!;
+    }
     o: /;
     .. n > \ {
         o++: n;
