@@ -24,6 +24,21 @@ c: add(a, b);
 ```
 
 
+## Main Function
+
+The main function/entrypoint of the program is denoted by `=>`.
+This function will be implicitly called on execution of the program.
+The return value of the main function indicates the exit code of the program
+(optional, defaults to 0). Command line arguments can be gotten
+as an array with an optional parameter in this function.
+
+```sm
+=> argv * {
+    == program here
+}
+```
+
+
 ## Optional Parameters
 
 Parameters can be made optional by adding a `?` character after the parameter's
