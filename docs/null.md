@@ -33,3 +33,5 @@ or – without introducing any variables – as
 ```sm
 V: (||).to_bit();
 ```
+
+Converting null to a number yields the value `0`.
