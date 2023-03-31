@@ -79,7 +79,7 @@ Function                       | Python       | Use
 `+(other)`                     | `add`        | Interacts with the addition operator `+`.
 `&(other)`                     | `and`        | Interacts with the bitwise AND operator `&`.
 `()(...)`                      | `call`       | Called when an instance itself is "called" as a function;<br>`x(...)` roughly translates to `x?!.call(x, ...)`.
-`%()`                          | --           | Interacts with the cast function character `%`.
+`%()`                          | --           | Interacts with the cast function operator `%`.
 `=>(...)`                      | `init`       | Initializes an instance of a class, takes any number<br>of arguments. Typically used for setting instance<br>variables based on these arguments.<br>No return value necessary.
 `--(other)`                    | `floordiv`   | Interacts with the division operator `--`.
 `::(other)`                    | `eq`         | Implements the equality operator `::`.
@@ -99,8 +99,9 @@ Function                       | Python       | Use
 `|(other)`                     | `or`         | Interacts with the bitwise OR operator `\|`.
 `+_()`                         | `pos`        | Interacts with the positive unary operator `+`.
 `+++(other)`                   | `pow`        | Interacts with the exponentiation operator `+++`.
+`??()`                         | --           | Interacts with the random function operator `??`.
 `<<>>:(index, value)`          | `setitem`    | Implements assigning to an index of an object;<br>`x<<index>>: value` is equivalent<br>to `x.set_item(index, value)`.
-`$()`                          | --           | Interacts with the special function character `$`.
+`$()`                          | --           | Interacts with the special function operator `$`.
 `-(other)`                     | `sub`        | Interacts with the subtraction operator `-`.
 `?()`                          | `bool`       | Implements boolean value testing,<br>returns `1` (truthy) or `0` (falsy).<br>Used for conditional statements and logical operators.
 `!()`                          | `str`        | Returns the string representation of an object.
