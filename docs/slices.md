@@ -6,7 +6,7 @@ Slices have three optional parameters delimited by `..`
 — `start`, `stop`, and `step`.
 
 Slices can be either applied to indexable objects (like `String` or `Array`)
-or serve as stand-alone objects.
+or serve as stand-alone objects. Slice objects are hashable.
 
 Iterating over a slice object generates integers from `start` (inclusive)
 to `stop` (exclusive) separated by gaps of size `step`.
