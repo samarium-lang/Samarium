@@ -94,7 +94,9 @@ weekday_name n * {
             'array: [Y, M, D, h, m, s, ms, tz<<\>>, tz<</>>];
         }
         ? 'timezone ::: [\, \] {
-            'utc: DateTime('year, 'month, 'day, 'hour, 'minute, 'second, 'millisecond);
+            'utc: DateTime(
+                'year, 'month, 'day, 'hour, 'minute, 'second, 'millisecond
+            );
         } ,, {
             'utc: ';
         }
