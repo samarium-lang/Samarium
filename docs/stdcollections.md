@@ -47,6 +47,7 @@ Method           | Use
 `last()`         | Returns the value of the item at the back of the queue, without removing it.<br>If the queue is empty, this will instead throw an error.
 `put(item)`      | Puts `item` at the back of the queue. If the queue is full,<br>i.e. its size is equal to the specified capacity, this will instead throw an error.
 `put_all(items)` | Puts each element of `items` at the back of the queue, one at a time.
+`->?(item)`      | Returns `1` if `item` is present in the queue, `0` otherwise.
 `$`              | Returns the number of items in the queue.
 `?`              | Returns `1` if the queue is not empty, otherwise returns `0`.[^2]
 `!`              | Returns some information about the queue as a string;<br>its capacity, number of items, and the values of its items.<br>Note that if there are more than 5 items in the queue, the string will be truncated.
@@ -166,4 +167,4 @@ aa.apply(remove_null, \)!;  == [0, 2, 3, 0, 5, 0, 7]
 [^1]: Note that this will always return `0` if the specified capacity is
 negative, or if the user does not provide a capacity.
 
-[^2]: `to_bit()` is functionally the opposite of `is_empty()`.
+[^2]: `?` is functionally the opposite of `is_empty()`.
