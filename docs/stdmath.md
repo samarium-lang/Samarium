@@ -14,7 +14,7 @@ Constants:
 Function                             | Use
 ---                                  | ---
 `abs(n)`                             | Returns the absolute value of `n`.
-`ceil(n)`                            | Returns the least integer ≥ `x`.
+`ceil(x)`                            | Returns the least integer ≥ `x`.
 `factorial(n)`                       | Returns `n` factorial.
 `floor(x)`                           | Returns the greatest integer ≤ `x`.
 `gcd(a, b)`                          | Returns the greatest common divisor of `a` and `b`.<br>If either argument is zero, the absolute value of the other argument will be returned.
@@ -26,7 +26,7 @@ Function                             | Use
 `round(n[, ndigits])`                | 
 `shl(a, b)`                          | Returns `a` shifted to the left by `b` bits.
 `shr(a, b)`                          | Returns `a` shifted to the right by `b` bits.
-`sqrt(n)`                            | Returns the integer square root of the nonnegative integer `n`.<br>This is the floor of the exact square root of `n`.
+`sqrt(x)`                            | Returns the integer square root of the nonnegative integer `n`.<br>This is the floor of the exact square root of `n`.
 `sum(array[, start])`                | Sums `start` and the items of `array` from left to right and returns the total.<br>`start` defaults to `0`.
 `to_bin(n)`                          | Returns the binary representation of `n` as a string.
 `to_oct(n)`                          | Returns the octal representation of `n` as a string.
