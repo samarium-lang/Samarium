@@ -14,6 +14,7 @@ Constants:
 Function              | Use
 ---                   | ---
 `abs(n)`              | Returns the absolute value of `n`.
+`ceil(n)`             | Returns the least integer ≥ `x`.
 `factorial(n)`        | Returns `n` factorial.
 `floor(x)`            | Returns the greatest integer ≤ `x`.
 `gcd(a, b)`           | Returns the greatest common divisor of `a` and `b`.<br>If either argument is zero, the absolute value of the other argument will be returned.
