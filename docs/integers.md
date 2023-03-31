@@ -38,6 +38,6 @@ Or in base 10:
 Integers can be casted to characters represented by that integer's unicode code
 point:
 
-`/\\\\/%` returns `"!"`.
+> `/\\\\/%` returns `"!"`.
 
-`//////%` returns `"?"`.
+> `//////%` returns `"?"`.

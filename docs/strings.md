@@ -20,12 +20,14 @@ string"
 
 Strings can be manipulated using some arithmetic operators:
 
-`"hello" + "world"` is the same as `"helloworld"`
+> `"hello" + "world"` is the same as `"helloworld"`
 
-`"hello" ++ //` is the same as `"hellohellohello"`
+> `"hello" ++ //` is the same as `"hellohellohello"`
 
-`"hello" - "l"` is the same as `"heo"` (the 2nd operand removes all instances
-of itself from the 1st operand)
+> `"hello" - "l"` is the same as `"heo"` (the 2nd operand removes all
+> instances of itself from the 1st operand)
+
+
 
 
 ## Formatting
@@ -54,9 +56,9 @@ s --- coords!;
 Strings can be casted to Integers (for single characters) or Arrays of Integers
 (for longer strings), representing the Unicode code point of each character:
 
-`"a"%` returns `97`.
+> `"a"%` returns `97`.
 
-`"hi!"%` returns `[104, 105, 33]`.
+> `"hi!"%` returns `[104, 105, 33]`.
 
 
 ## Shifting

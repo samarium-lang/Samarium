@@ -63,11 +63,11 @@ for the life of the program, but may vary if the program is run multiple times.
 The typeof function `?!` returns the type of an object,
 as an instance of the `Type` class.
 
-`/?!` returns `Integer`.
+> `/?!` returns `Integer`.
 
-`"abc"?!` returns `String`.
+> `"abc"?!` returns `String`.
 
-`/?!?!` returns `Type`.
+> `/?!?!` returns `Type`.
 
 These instances are callable and can be used to convert values into that type,
 like so:
