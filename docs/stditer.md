@@ -21,7 +21,7 @@ Function                        | Use
 `flatten(array[, depth])`       | Flattens `array` `depth` times.<br>By default, flattens recursively as deep as possible.
 `map(function, array)`          | Applies `function`[^1] to each item of `array`, and yields those new values.
 `pairwise(array)`               | Yields successive overlapping pairs taken from `array`.
-`reduce(array, function)`       | Applies `function`[^2] cumulatively to consecutive items of `array`,<br>reducing it to a single value, then returns this value.<br>Equivalent to `[i ... i ->? accumulate(array, function)]<<-/>>`.
+`reduce(function, array)`       | Applies `function`[^2] cumulatively to consecutive items of `array`,<br>reducing it to a single value, then returns this value.<br>Equivalent to `[i ... i ->? accumulate(array, function)]<<-/>>`.
 `reverse(array)`                | Yields the items of `array` in reverse order.
 `sorted(array[, key])`          | Returns a sorted copy of `array`.<br>The optional parameter `key` specifies a function[^1] that is used<br>to extract a comparison key from each element in `array`.<br>Elements are compared directly by default. 
 `take_while(array, function)`   | Evaluates `function`[^1] on each item of `array`,<br>and yields elements of `array` that is cut off at the first item<br>(from the left) for which `function` returns a falsy value.
