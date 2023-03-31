@@ -25,5 +25,8 @@ Function              | Use
 `shr(a, b)`           | Returns `a` shifted to the right by `b` bits.
 `sqrt(n)`             | Returns the integer square root of the nonnegative integer `n`.<br>This is the floor of the exact square root of `n`.
 `sum(array[, start])` | Sums `start` and the items of `array` from left to right<br>and returns the total. `start` defaults to `0`.
+`to_bin(n)`           | Returns the binary representation of `n` as a string.
+`to_oct(n)`           | Returns the octal representation of `n` as a string.
+`to_hex(n)`           | Returns the hexadecimal representation of `n` as a string.
 
 </center>
