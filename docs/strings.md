@@ -22,7 +22,7 @@ Strings can be manipulated using some arithmetic operators:
 
 > `"hello" + "world"` is the same as `"helloworld"`
 
-> `"hello" ++ //` is the same as `"hellohellohello"`
+> `"hello" ++ //` (or `// ++ "hello"`) is the same as `"hellohellohello"`
 
 > `"hello" - "l"` is the same as `"helo"` (the 2nd operand removes the first
 > instance of itself from the 1st operand)
