@@ -25,3 +25,24 @@ var: -/;
 var!;  == -1
 #var!;  == 1
 ```
+
+
+## Parallel assignment
+
+Multiple variables can be set at once by separating them with a comma:
+```sm
+a, b: /, //;
+== same as
+a: /;
+b: //;
+
+
+primes: [/\, //, /\/, ///, /\//];
+
+first, **rest, last: primes;
+    == ^ collect as many values as possible
+== same as
+first: primes<<\>>;
+rest: primes<</..-/>>;
+last: primes<<-/>>;
+```
