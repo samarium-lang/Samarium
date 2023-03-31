@@ -24,9 +24,8 @@ Strings can be manipulated using some arithmetic operators:
 
 > `"hello" ++ //` is the same as `"hellohellohello"`
 
-> `"hello" - "l"` is the same as `"heo"` (the 2nd operand removes all
-> instances of itself from the 1st operand)
-
+> `"hello" - "l"` is the same as `"helo"` (the 2nd operand removes the first
+> instance of itself from the 1st operand)
 
 
 
