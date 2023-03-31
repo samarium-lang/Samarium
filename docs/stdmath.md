@@ -1,7 +1,13 @@
 # `math` module
 
 The `math` module provides access to a set of commonly used mathematical
-functions.
+functions and constants.
+
+Constants:
+
+- `math.E` (e: 2.718281828459045...)
+- `math.PHI` (φ: 1.618033988749894...)
+- `math.PI` (π: 3.141592653589793...)
 
 <center>
 
