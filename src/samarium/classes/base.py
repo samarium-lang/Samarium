@@ -500,7 +500,7 @@ class String(Attrs):
 
     def __getitem__(self, index: Number | Slice) -> String:
         if isinstance(index, Number):
-            if not index.is_int:
+            if not is_valid_index(self, index):
                 raise SamariumTypeError(f"invalid index: {index}")
             return String(self.val[cast(int, index.val)])
         if isinstance(index, Slice):
@@ -511,7 +511,7 @@ class String(Attrs):
         if not isinstance(index, (Number, Slice)):
             raise SamariumTypeError(f"invalid index: {index}")
         if isinstance(index, Number):
-            if not index.is_int:
+            if not is_valid_index(self, index):
                 raise SamariumTypeError(f"invalid index: {index}")
             i = cast(int, index.val)
         else:
@@ -605,8 +605,8 @@ class Array(Generic[T], Attrs):
 
     def __getitem__(self, index: Any) -> T | Array[T]:
         if isinstance(index, Number):
-            if not (0 <= index.val < len(self.val)) or not index.is_int:
-                raise SamariumValueError("index out of range")
+            if not is_valid_index(self, index):
+                raise SamariumValueError(f"invalid index: {index}")
             return self.val[cast(int, index.val)]
         if isinstance(index, Slice):
             return Array(self.val[index.val])
@@ -616,10 +616,9 @@ class Array(Generic[T], Attrs):
         if not isinstance(index, (Number, Slice)):
             raise SamariumTypeError(f"invalid index: {index}")
         if isinstance(index, Number):
-            if 0 <= index.val < len(self.val) or not index.is_int:
-                self.val[cast(int, index.val)] = value
-            else:
-                raise SamariumValueError("index out of range")
+            if not is_valid_index(self, index):
+                raise SamariumValueError(f"invalid index: {index}")
+            self.val[cast(int, index.val)] = value
         else:
             self.val[index.val] = cast(Array[T], value)
 
@@ -865,7 +864,9 @@ class Slice(Attrs):
         return Num(value.val in self.range)
 
     def __getitem__(self, index: Number) -> Number:
-        if isinstance(index, Number) and index.is_int:
+        if not isinstance(index, Number):
+            raise SamariumTypeError(f"invalid index: {index}")
+        if is_valid_index(self, index):
             return Num(self.range[cast(int, index.val)])
         raise SamariumValueError(f"invalid index: {index}")
 
@@ -1102,6 +1103,11 @@ def correct_type(obj: T, *objs: T) -> T | Array | Number | Iterator | Table | Nu
         return Table({correct_type(k): correct_type(v) for k, v in obj.items()})
     check_type(obj)
     return obj
+
+
+def is_valid_index(obj: Attrs, index: Number) -> bool:
+    len_ = len(obj.val)
+    return -len_ <= index.val < len_ and index.is_int
 
 
 def param_count(func: Callable) -> int:
