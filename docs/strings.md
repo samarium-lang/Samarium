@@ -57,3 +57,12 @@ Strings can be casted to Integers (for single characters) or Arrays of Integers
 `"a"%` returns `97`.
 
 `"hi!"%` returns `[104, 105, 33]`.
+
+
+## Shifting
+
+Strings can have their characters shifted by adding/subtracting numbers.
+For example, `"hi" + /` will result in the string `"ij"`, where each character
+in the string has been shifted one position ahead. Similarly, `"hi" - /` will
+result in the string `"gh"`, where each character in the string has been shifted
+one position backwards.
