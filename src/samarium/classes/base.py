@@ -287,7 +287,9 @@ class Number(Attrs):
             self.val = v.val
             self.is_int = v.is_int
         elif t is String:
-            self.val, self.is_int = parse_number(v.val) if v else (0, True)
+            val, is_int = parse_number(v.val) if v else (0, True)
+            self.val = int(val) if is_int else val
+            self.is_int = is_int
         elif v in (None, NULL):
             self.val = 0
             self.is_int = True
