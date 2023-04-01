@@ -10,9 +10,10 @@ Arrays can be concatenated with the `+` operator:
 
 > `[/, /\] + [//]` is the same as `[/, /\, //]`
 
-Items can also be removed from an array using the `-` operator, either by index
-or by value. Removing an element by value will remove only the first instance
-of that value in the array.
+To remove items from an array, the `-` operator can be used with either an index
+or a value. When removing by value, only the first instance of each value will
+be removed. Trying to remove an element not present in the array will result in
+an error.
 
 > `["a", "b", "c"] - /` gives `["a", "c"]`
 
