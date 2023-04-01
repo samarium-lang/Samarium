@@ -14,12 +14,12 @@ Function                                                
 `cycle(iter)`                                                                    | Copies an iterable by consuming it,<br>and yields its elements in an infinite cycle.
 `count(array, target)`                                                           | Returns the number of times `target` appears in `array`.
 `drop_while(array, function)`                                                    | Evaluates `function`[^1] on each item of `array`,<br>and yields elements of `array` starting from the first item<br>(from the left) for which `function` returns a falsy value.
-`filter(function, array)`                                                        | Evaluates `function`[^1] on each item of `array`,<br>and yields those items that cause `function` to return a truthy value.
+`filter(function, array)`                                                        | Evaluates `function`[^1] on each item of `array`,<br>and yields those items that cause `function` to return a truthy value.<br>`function`s taking *x* (≥2) arguments require<br>each element of `array` to have *x* elements.
 `filter_false(function, array)`                                                  | Evaluates `function`[^1] on each item of `array`,<br>and yields those items that cause `function` to return a falsy value.
 `find(array, target)`                                                            | Finds the first instance of `target` in `array`, and returns its index.<br>`array` may be of type Array or String.<br>If `target` does not appear in `array`, `-1` is returned instead.
 `find_all(array, target)`                                                        | Finds all instances of `target` in `array`, and yields their indices.
 `flatten(array[, depth])`                                                        | Flattens `array` `depth` times.<br>By default, flattens recursively as deep as possible.
-`map(function, array)`                                                           | Applies `function`[^1] to each item of `array`, and yields those new values.
+`map(function, array)`                                                           | Applies `function`[^1] to each item of `array`, and yields those new values.<br>`function`s taking *x* (≥2) arguments require<br>each element of `array` to have *x* elements.
 `pairwise(array)`                                                                | Yields successive overlapping pairs taken from `array`.
 `reduce(function, array)`                                                        | Applies `function`[^2] cumulatively to consecutive items of `array`,<br>reducing it to a single value, then returns this value.<br>Equivalent to `[i ... i ->? accumulate(array, function)]<<-/>>`.
 `reverse(array)`                                                                 | Yields the items of `array` in reverse order.
