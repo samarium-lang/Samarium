@@ -18,6 +18,24 @@ can be used with logical operators, and converted to a string (specifically
 either `"true"` or `"false"`).
 
 
+### Frozen
+
+`Frozen` is a wrapper type designed to allow mutable types like Arrays and
+Tables to be used as keys in a Table. `Frozen` is immutable, meaning that once a
+value has been wrapped in a Frozen, it cannot be changed.
+
+```sm
+test_key key * {
+    ?? { {{key -> <-math.sum(key)}}!; }
+    !! { "invalid key:", key!; }
+}
+
+test_key([//, /\\]);  == invalid key: [3, 4]
+test_key(<-types.Frozen([//, /\\]));  == {{Frozen([3, 4]) -> 7}}
+```
+
+
+
 ### UUID4
 
 Generates a random UUID, version 4.
