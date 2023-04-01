@@ -1102,7 +1102,7 @@ def correct_type(obj: T, *objs: T) -> T | Array | Number | Iterator | Table | Nu
     if isinstance(obj, (list, tuple, Array)):
         return Array(map(correct_type, obj))
     if isinstance(obj, Table):
-        return Table({correct_type(k): correct_type(v) for k, v in obj.items()})
+        return Table({correct_type(k): correct_type(v) for k, v in obj.val.items()})
     check_type(obj)
     return obj
 
