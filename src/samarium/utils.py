@@ -82,7 +82,7 @@ def parse_number(string: str) -> tuple[int | float, bool]:
             f'invalid string for Number with base {base}: "{no_prefix}"'
         ) from None
     else:
-        return num, isinstance(num, int)
+        return num, isinstance(num, int) or num.is_integer()
 
 
 def smformat(string: str, fields: str | list[Any] | dict[Any, Any]) -> str:
