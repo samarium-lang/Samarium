@@ -85,7 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The [Examples](https://samarium-lang.github.io/Samarium/examples/) page was also
 updated with new examples.
 
-Thanks to @DancingGrumpyCat for improving the documentation!
+Thanks to [@DancingGrumpyCat](https://github.com/DancingGrumpyCat) for improving the documentation!
 
 ## [0.4.0] - 2022-12-01
 
