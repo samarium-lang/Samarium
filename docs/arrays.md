@@ -15,8 +15,7 @@ or a value. When removing by value, only the first instance of each value will
 be removed. Trying to remove an element not present in the array will result in
 an error.
 
-> `["a", "b", "c"] - /` gives `["a", "c"]`
-
+> `["a", "b", "c"] - /` gives `["a", "c"]`  
 > `["a", "b", "c", "d"] - ["b", "d"]` gives `["a", "c"]`
 
 `--` can be used instead if we want to remove elements even if they're not

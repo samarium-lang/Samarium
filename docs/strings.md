@@ -60,9 +60,8 @@ s --- coords!;
 Strings can be cast to integers (for single characters) or Arrays of integers
 (for longer strings), representing the Unicode code point of each character:
 
-> `"a"%` returns `97`.
-
-> `"hi!"%` returns `[104, 105, 33]`.
+> `"a"%` returns `97`  
+> `"hi!"%` returns `[104, 105, 33]`
 
 
 ## Shifting

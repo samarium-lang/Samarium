@@ -11,8 +11,7 @@ tab: {{"key" -> "value", / -> [/\, "a"]}};
 A table may be indexed by its keys, which will return their corresponding
 values, for example, from the previous table:
 
-> `tab<<"key">>` returns `"value"`
-
+> `tab<<"key">>` returns `"value"`  
 > <code>tab&lt;&lt;/&gt;&gt;</code> returns `[2, "a"]`
 
 After its initialization, the items of a table can be set using this indexing
