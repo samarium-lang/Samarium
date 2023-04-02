@@ -5,6 +5,88 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2023-04-02
+
+### Added
+- `collections.Queue` now supports membership checking
+- `collections.Set` now uses the built-in set-based Array operations (working
+  with small sets can be up to 3,600x faster)
+- Files are now iterable
+- `iter.filter` and `iter.map` now adapt to functions based on their number of
+  parameters
+- `math.is_int`
+- `math.ceil`
+- `math.floor`
+- `math.round`
+- `math.to_bin` (to replace `Integer$`)
+- Number type (in place of the Integer type):
+  - supports floats
+  - `x$` now floors the number
+  - `x -- y` now does true division rather than floor division
+- Number literals, using `` ` `` as the decimal point (meaning that it's no
+  longer ignored by the tokenizer)
+- Nulls can now be cast to Numbers
+- Parallel assignment
+- `random.sample` now supports slices
+- Set-based Array operations:
+  - `-x` returns a copy of `x` with duplicates removed
+  - `x -- y` ("difference") tries removing elements of `y` from `x`, even if
+    they're not present
+  - `x --- y` removes all duplicates of `y` in `x`
+  - `x | y` ("union") creates an array with elements that appear in either `x`
+    or `y` (duplicates possible)
+  - `x & y` ("intersection") creates an array with elements that appear in both
+    `x` and `y` (duplicates possible)
+  - `x ^ y` ("symmetric difference") creates an array with elements that appear
+    in either `x` or `y`, but not both (duplicates possible)
+- Slices are now hashable
+- `String -- String` (old `String - String` behavior)
+- `String++` (equivalent to `String ++ /\`)
+- `string.split` now accepts multiple separators
+- String→Number now supports scientific notation
+- `string.split_lines`
+- Strings can have their characters shifted by adding or subtracting Integers
+- `types.Frozen`
+
+### Changed
+- Flipped argument order for `iter.reduce`
+- Improved Array/Slice/String index typechecking
+- Improved CLI error messages
+- Improved error messages
+- Improved `File.__str__`
+- Improved implicit null detection
+- Improved slice transpilation
+- `random.shuffle` now does type checking againast slices
+- `String - String` now removes only the first occurence
+- The main function is no longer required
+- Two or more consecutive logical NOTs are now considered a syntax error
+
+### Fixed
+- Comments are now correctly tokenized
+- Fixed `...` special method not being detected
+- Fixed Slice→Array construction
+- Fixed some yield statements crashing the transpiler
+- Functions are now correctly displayed in Arrays/Tables
+- Logical NOT (`~~`) no longer lets Python's `bool` slip in
+- Multiline strings are now correctly tokenized
+- `Number ++ String` is no longer detected as an invalid operation
+- Slices are now correctly detected as objects directly after scope exit
+- `String.__repr__` now correctly handles escape sequences
+- `Type(a) != B` no longer yields incorrect results
+- `UserAttrs` can no longer show up when using `x!?`
+- Varargs functions now work correctly with recursive functions and decorators
+
+### Removed
+- `collections.StaticArray`
+- Integer type
+
+<br>
+
+The [Examples](https://samarium-lang.github.io/Samarium/examples/) page was also
+updated with new examples.
+
+Thanks to @DancingGrumpyCat for improving the documentation!
+
 ## [0.4.0] - 2022-12-01
 
 ### Added
@@ -296,3 +378,4 @@ Initial release 🚀
 [0.3.0]: https://github.com/samarium-lang/Samarium/compare/0.2.3...0.3.0
 [0.3.1]: https://github.com/samarium-lang/Samarium/compare/0.3.0...0.3.1
 [0.4.0]: https://github.com/samarium-lang/Samarium/compare/0.3.1...0.4.0
+[0.5.0]: https://github.com/samarium-lang/Samarium/compare/0.4.0...0.5.0
