@@ -5,9 +5,7 @@ shebang line at the top of your program, for instance
 ```sm
 #!/usr/bin/env samarium
 
-=> * {
-    "Hi!"!;
-}
+"Hi!"!;
 ```
 and making it executable, e.g. with
 ```bash

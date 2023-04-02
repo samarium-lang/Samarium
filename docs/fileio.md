@@ -178,10 +178,8 @@ Integer value | Name
 
 An example use of these could be printing without a newline at the end:
 ```sm
-=> * {
-    ... i ->? <<../\/\>> {
-        i ~> /;
-    }
+... i ->? <<../\/\>> {
+    i ~> /;
 }
 ```
 The above code is equivalent to the following Python snippets:

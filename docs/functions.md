@@ -145,17 +145,15 @@ prime_generator * {
     }
 }
 
-=> * {
-    pg: prime_generator();
-    pg!;
-    "Primes below 100:"!;
-    ... i ->? pg {
-        ? i > /\/\ +++ /\ {
-            !;
-            <-
-        }
-        ""?!(i) + " " ~> /;
+pg: prime_generator();
+pg!;
+"Primes below 100:"!;
+... i ->? pg {
+    ? i > /\/\ +++ /\ {
+        !;
+        <-
     }
+    ""?!(i) + " " ~> /;
 }
 ```
 ```

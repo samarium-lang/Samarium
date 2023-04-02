@@ -5,15 +5,11 @@ The `io` module contains a few utilities for working with I/O.
 ### `io.Bytes`
 Allows for easier working with files in binary mode:
 ```sm
-<=io.Bytes;
-
-=> * {
-    b: Bytes("ball");
-    b!;  == 62 61 6c 6c
-    b+: "!";  == supports Strings, integers, Arrays of integers, and other Bytes
-    b.export_string()!;  == ball!
-    b.export()!;  == [98, 97, 108, 108, 33]
-}
+b: <-io.Bytes("ball");
+b!;  == 62 61 6c 6c
+b+: "!";  == supports Strings, integers, Arrays of integers, and other Bytes
+b.export_string()!;  == ball!
+b.export()!;  == [98, 97, 108, 108, 33]
 ```
 
 ### `io.inputcast([prompt])`
@@ -23,12 +19,10 @@ Example (showing all available conversions):
 ```sm
 <=io.inputcast;
 
-=> * {
-    .. {
-        value: inputcast(">> ");
-        "Type:", value?!!;
-        "Value:", value!;
-    }
+.. {
+    value: inputcast(">> ");
+    "Type:", value?!!;
+    "Value:", value!;
 }
 ```
 ```

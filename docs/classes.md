@@ -34,15 +34,13 @@ Just like variables, class attributes can be made private by prefixing them with
     }
 }
 
-=> * {
-    a: Foo(/\\);        == calls `Foo.create`; `a` is now an instance of `Foo`
-    a.var!;             == prints 5
-    a.get_pv()!;        == calls `Foo.get_pv(a)`; prints 4
+a: Foo(/\\);        == calls `Foo.create`; `a` is now an instance of `Foo`
+a.var!;             == prints 5
+a.get_pv()!;        == calls `Foo.get_pv(a)`; prints 4
 
-    b: Foo(/\);
-    a.shared+: ["str"]; == modifying a class variable for all instances
-    b.shared!;          == prints ["str"]
-}
+b: Foo(/\);
+a.shared+: ["str"]; == modifying a class variable for all instances
+b.shared!;          == prints ["str"]
 ```
 
 Parent classes are inherited from right to left, i.e. the first class in the
@@ -113,10 +111,8 @@ Two special methods – `=>` and `!` – have default definitions:
 ```sm
 @ Foo {}
 
-=> * {
-    f: Foo();
-    f!;  == <Foo@7fe5403d7b00>
-}
+f: Foo();
+f!;  == <Foo@7fe5403d7b00>
 ```
 The above class definition is equivalent to:
 ```sm
@@ -149,9 +145,7 @@ Methods can be made static by replacing the `*` keyword with the `~'*` keyword
     }
 }
 
-=> * {
-    Calendar.is_weekend(date("2022-11-08"))!;  == 0
-}
+Calendar.is_weekend(date("2022-11-08"))!;  == 0
 ```
 
 

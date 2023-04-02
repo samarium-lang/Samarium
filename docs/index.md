@@ -6,9 +6,7 @@ Samarium, in its most basic form, doesn't use any digits or letters.
 Here's a `Hello, World!` program written in Samarium:
 
 ```sm
-=> * {
-    "Hello, World!"!;
-}
+"Hello, World!"!;
 ```
 
 

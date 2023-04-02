@@ -25,12 +25,10 @@ Color # {
     Blue: "#0000FF";
 }
 
-=> * {
-    Shape!;
-    Shape.Circle!;
-    Shape.Square!;
-    Color.Red!;
-}
+Shape!;
+Shape.Circle!;
+Shape.Square!;
+Color.Red!;
 ```
 ```
 Enum(Shape)
@@ -52,10 +50,8 @@ Color # {
     Blue: "#0000FF";
 }
 
-=> * {
-    Shape%!;
-    Color%!;
-}
+Shape%!;
+Color%!;
 ```
 ```
 {{"Circle" -> 0, "Square" -> 1}}

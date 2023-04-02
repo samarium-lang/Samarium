@@ -71,10 +71,8 @@ whereas the first code block only has `shout`.
 Imports that are going to be only used once can be replaced
 by inline imports (using the `<-` keyword):
 ```sm
-=> * {
-    i: /?!("Enter a number: "???);
-    ? <-math.is_prime(i) {
-        i, "is a prime number"!;
-    }
+i: /?!("Enter a number: "???);
+? <-math.is_prime(i) {
+    i, "is a prime number"!;
 }
 ```
