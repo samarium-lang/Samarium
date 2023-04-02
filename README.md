@@ -5,9 +5,9 @@ Samarium, in its most basic form, doesn't use any digits or letters.
 
 Here's a `Hello, World!` program written in Samarium:
 
-<span style="display: inline-block" align="left">
-    <img src="docs/assets/example.png" width="50%">
-</span>
+```kt
+"Hello, World!"!;
+```
 
 Documentation on how to program in Samarium can be found [here](https://samarium-lang.github.io/Samarium/).
 
