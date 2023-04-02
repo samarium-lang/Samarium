@@ -58,19 +58,24 @@ The `target` is included in the output string.
 
 Example:
 ```sm
-=> * {
-    "Enter your program:"!;
-    program: <-io.read_until("}");
-    name: "Enter file name: "???;
-    program ~> name;
-    "Your program was saved to " + name!;
-}
+"Enter your JSON:"!;
+program: <-io.read_until("}");
+name: "Enter file name: "???;
+program ~> name;
+"Your program was saved to " + name!;
 ```
 ```
-Enter your program:
-=> * {
-    "Hello, World!"!;
+Enter your JSON:
+{
+  "name": "John Doe",
+  "age": 30,
+  "email": "johndoe@example.com",
+  "interests": [
+    "reading",
+    "hiking",
+    "cooking"
+  ]
 }
-Enter file name: ball.txt
-Your program was saved to ball.txt
+Enter file name: ball.json
+Your program was saved to ball.json
 ```
