@@ -23,6 +23,8 @@ Strings can be manipulated using some arithmetic operators:
 > `"hello" + "world"` is the same as `"helloworld"`
 
 > `"hello" ++ //` (or `// ++ "hello"`) is the same as `"hellohellohello"`  
+> ``"ball" ++ `/`` is the same as `"ba"`  
+> `"woah!" ++ <-math.PI` is the same as `"woah!woah!woah!w"`  
 > `"hello"++` is the same as `"hello" ++ /\`
 
 > `"hello" - "l"` is the same as `"helo"` (the 2nd operand removes the first
@@ -55,7 +57,7 @@ s --- coords!;
 
 ## Casting
 
-Strings can be casted to Integers (for single characters) or Arrays of Integers
+Strings can be cast to integers (for single characters) or Arrays of integers
 (for longer strings), representing the Unicode code point of each character:
 
 > `"a"%` returns `97`.

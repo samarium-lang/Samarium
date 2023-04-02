@@ -83,31 +83,31 @@ Arrays can also be constructed from strings and tables:
 > `Array({{// -> /\\, "X" -> "D" }})` is equivalent to `[[//, /\\], ["X", "D"]]`
 
 
-### Integer
+### Number
 
-The `Integer` type alias is defined to be equal to `\?!`.
+The `Number` type alias is defined to be equal to `\?!`.
 
-Caling `Integer()` with no arguments will return the integer `0`.
+Caling `Number()` with no arguments will return the number `0`.
 
-Integers can be constructed from strings, including
+Numbers can be constructed from strings, including
 binary, octal, and hexadecimal representations:  
 
-> `Integer("1000")` will return `1000`  
-> `Integer("b:1000")` will return `8`  
-> `Integer("o:1000")` will return `512`  
-> `Integer("x:1000")` will return `4096`
+> `Number("1000")` will return `1000`  
+> `Number("b:1000")` will return `8`  
+> `Number("o:1000")` will return `512`  
+> `Number("x:1000")` will return `4096`
 
 Floats can also be supplied:
-> `Integer("3.14")` will return `3.14`  
-> `Integer("x:3.23d70a3d70a3e")` will return `3.14`  
-> `Integer("o:23.6560507534121727")` will return `19.84`
+> `Number("3.14")` will return `3.14`  
+> `Number("x:3.23d70a3d70a3e")` will return `3.14`  
+> `Number("o:23.6560507534121727")` will return `19.84`
 
 Scientific notation is also supported, with `significand[e]exponent` for bases
 2, 8 and 10, and `significand[p]exponent` for base 16:
-> `Integer("b:0.11e11")` will return `6`  
-> `Integer("o:5e7")` will return `10485760`  
-> `Integer("1e-3")` will return `0.001`  
-> `Integer("x:0.2p7")` will return `16`
+> `Number("b:0.11e11")` will return `6`  
+> `Number("o:5e7")` will return `10485760`  
+> `Number("1e-3")` will return `0.001`  
+> `Number("x:0.2p7")` will return `16`
 
 
 ### Null

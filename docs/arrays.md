@@ -50,6 +50,6 @@ evens: [/\, /\\, //\, /\\\, /\/\, //\\]!;
 ^ [3, 5, 7, 11, 13, 4, 6, 8, 10, 12]
 ```
 
-Arrays of Integers can be cast to type String:
+Arrays of integers can be cast to type String:
 
 > `[//\/\\\, //\/\\/, ////\\/, //\\\\/]%` gives `"hiya"`

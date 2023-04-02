@@ -22,13 +22,13 @@ Function                             | Use
 `is_int(x)`                          | Returns `1` if `x` is an integer, `0` otherwise. Equivalent to `x :: x$`.
 `is_prime(n)`                        | Returns `1` if `n` is prime, `0` otherwise.
 `lcm(a, b)`                          | Returns the least common multiple of `a` and `b`.<br>If any of the arguments is zero,<br> then the returned value is `0`.
-`max(array)`                         | Returns the largest integer in `array`.
-`min(array)`                         | Returns the smallest integer in `array`.
-`product(array)`                     | Multiplies the items of `array` from left to right and returns the total.<br>The `array`'s items must be integers.
+`max(array)`                         | Returns the largest value in `array`.
+`min(array)`                         | Returns the smallest value in `array`.
+`product(array)`                     | Multiplies the items of `array` from left to right and returns the total.<br>The `array`'s items must be numbers.
 `round(x[, ndigits])`                | Returns `x` rounded to `ndigits` precision after the decimal point.<br>Works exactly like Python's [`round()`](https://docs.python.org/3/library/functions.html#round).
 `shl(a, b)`                          | Returns `a` shifted to the left by `b` bits.
 `shr(a, b)`                          | Returns `a` shifted to the right by `b` bits.
-`sqrt(x)`                            | Returns the integer square root of the nonnegative integer `n`.<br>This is the floor of the exact square root of `n`.
+`sqrt(x)`                            | Returns the square root of the nonnegative number `n`.
 `sum(array[, start])`                | Sums `start` and the items of `array` from left to right and returns the total.<br>`start` defaults to `0`.
 `to_bin(n)`                          | Returns the binary representation of `n` as a string.
 `to_oct(n)`                          | Returns the octal representation of `n` as a string.

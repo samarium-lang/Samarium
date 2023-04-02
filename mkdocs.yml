@@ -6,7 +6,7 @@ nav:
   - Home: index.md
   - Examples: examples.md
   - Language Guide:
-    - Integers: integers.md
+    - Numbers: numbers.md
     - Variables: variables.md
     - Operators: operators.md
     - Strings: strings.md

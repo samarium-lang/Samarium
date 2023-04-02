@@ -56,7 +56,7 @@ Samarium Type | Python Type
 Array         | list
 Enum          | Enum
 File          | IOBase
-Integer       | int
+Number        | float
 Iterator      | Iterator
 Null          | NoneType
 Slice         | SliceRange[^1]
@@ -69,9 +69,9 @@ Zip           | zip
 ### Python → Samarium
 Python Type    | Samarium Type
 ---            | ---
-int            | Integer
-bool           | Integer
-float          | Integer
+int            | Number
+bool           | Number
+float          | Number
 str            | String
 NoneType       | Null
 list           | Array

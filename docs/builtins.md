@@ -29,7 +29,7 @@ a string), and can thus be used in an assignment statement for example.
 
 ```sm
 x: //\!;
-== the string "6" is written to stdout, and `x` now has the value 6 (integer)
+== the string "6" is written to stdout, and `x` now has the value 6 (number)
 ```
 
 
@@ -63,7 +63,7 @@ for the life of the program, but may vary if the program is run multiple times.
 The typeof function `?!` returns the type of an object,
 as an instance of the `Type` class.
 
-> `/?!` returns `Integer`.
+> `/?!` returns `Number`.
 
 > `"abc"?!` returns `String`.
 
@@ -89,7 +89,7 @@ Object   | Use
 ---      | ---
 Array    | Returns the length of the array
 Function | Returns the number of parameters the function has
-Integer  | Returns the binary representation of the integer as a string
+Number   | Returns the integer part of the number as a string
 Slice    | Returns the length of the range covered by the slice
 String   | Returns the length of the string
 Table    | Returns an array of the table's values
@@ -167,8 +167,8 @@ used on.
 Object  | Use
 ---     | ---
 Array   | Returns a random element
-Integer | Returns a random integer from<br>an interval based on its value<br>`n = 0` → `0`<br>`n > 0` → `[0, n)`<br>`n < 0` → `[n, 0)`
-Slice   | Returns a random number that fits the slice's conditions
+Number  | Returns a random number from<br>an interval based on its value<br>`n = 0` → `0`<br>`n > 0` → `[0, n)`<br>`n < 0` → `[n, 0)`
+Slice   | Returns a random number in a range defined by that slice
 String  | Returns a random character
 Table   | Returns a random key
 
