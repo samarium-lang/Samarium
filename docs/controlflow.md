@@ -3,8 +3,8 @@
 
 ## `if`/`else`
 
-`if` statements are written using a `?` character, and `else` is written as `,,`.
-Blocks are enclosed in curly brackets.
+`if` statements are written using a `?` character, and `else` is written as
+`,,`. Blocks are enclosed in curly brackets.
 `else if` can be written using `,, ?`.
 
 ```sm
@@ -21,7 +21,7 @@ Blocks are enclosed in curly brackets.
 ## `foreach` loop
 
 `foreach` loops are written using `...`, and enclosed in curly brackets.
-Each of these loops must be paired with a `->?` operator, indicating the object to iterate over.
+They must be paired with a `->?` operator, indicating the object to iterate over.
 
 ```sm
 arr: [];
@@ -38,9 +38,11 @@ arr: [];
 #### **Array Comprehensions**
 
 Array comprehensions are a way to create an array based on another iterable.
-Uses may include performing an operation on each item of the iterable, or creating a subsequence of those items that satisfy a certain condition.
+Uses may include performing an operation on each item of the iterable, or
+creating a subsequence of those items that satisfy a certain condition.
 
-They are written similarly to `foreach` loops; they can come in two forms, as follows:
+They are written similarly to `foreach` loops; they can come in two forms,
+as follows:
 
 ```sm
 [expression ... member ->? iterable]
@@ -129,8 +131,8 @@ x: \;
 
 ## `break`/`continue`
 
-`break` statements are written with `<-`, and terminate the enclosing loop immediately.
-They can be used in both `foreach` and `while` loops.
+`break` statements are written with `<-`, and terminate the enclosing loop
+immediately. They can be used in both `foreach` and `while` loops.
 
 ```sm
 x: \;
@@ -141,10 +143,12 @@ x: \;
 }
 ```
 
-This program will print 1, 2, and then terminate the `while` loop on the third iteration, before printing 3.
+This program will print 1, 2, and then terminate the `while` loop on the third
+iteration, before printing 3.
 
-`continue` statements are written with `->`, and immediately finish the current iteration of the enclosing loop.
-These can also be used in both `for` and `while` loops.
+`continue` statements are written with `->`, and immediately finish the current
+iteration of the enclosing loop. These can also be used in both `for` and
+`while` loops.
 
 ```sm
 x: \;
@@ -155,18 +159,22 @@ x: \;
 }
 ```
 
-This program will print 1, 2, skip the third iteration of the `while` loop, then print 4, 5, and end the loop normally.
+This program will print 1, 2, skip the third iteration of the `while` loop,
+then print 4, 5, and end the loop normally.
 
 !!! note
-    Both `<-` and `->` do not need a semicolon at the end of the statement – it's optional.
+    Both `<-` and `->` do not need a semicolon at the end of the statement
+    – it's optional.
 
 
 ## `try`/`catch`
 
 `try`-`catch` statements are used for error handling.
 `try` clauses are written with `??`, and enclosed in curly brackets.
-If, during execution of the contents of the `try` clause, an error is thrown, the rest of the clause is skipped, the error will be silenced, and the adjoining `catch` clause will be executed.
-`catch` clauses are written with `!!`, and are also enclosed in curly brackets.
+If, during execution of the contents of the `try` clause, an error is thrown,
+the rest of the clause is skipped, the error will be silenced, and the adjoining
+`catch` clause will be executed. `catch` clauses are written with `!!`, and are
+also enclosed in curly brackets.
 
 ```sm
 ?? {

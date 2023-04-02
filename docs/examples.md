@@ -12,182 +12,166 @@
 ```
 
 
-## Truth Machine
+## Counting duplicates
 
 ```sm
-=> * {
-    ? ??? :: "1" {
-        .. { "1"!; }
-    }
-    "0"!;
-    =>!;
-}
+arr: <-io.inputcast("Enter an array of values: ");
+"Found $0 duplicate(s) in the array" --- [arr$ - (-arr)$]!;
 ```
 
 
-## Dropsort
+## Checking Pythagorean triplets
 
 ```sm
-dropsort array * {
-    out: [];
-    ... i, v ->? <<>> >< array {
-        ? ~~ out || v >: out<<-/>> {
-            out+: [v];
-        }
-    }
-    * out;
-}
+a, b, c: <-iter.sorted(<-io.inputcast("Enter three integers: "));
+"These numbers do $0form a Pythagorean triplet"
+--- ["not " ++ (~~(a+++ + b+++ :: c+++))]!;
 ```
 
 
-## Factorial
+## Generating a password
+
+```sm
+CHARSET: <-string.LETTERS + <-string.DIGITS;
+... c ->? [CHARSET?? ... _ ->? <<../?!("Password length: "???)>>] { c ~> /; }!;
+```
+
+
+## Factorial function
 
 ```sm
 factorial n * {
-    !! n >: \;
-    ? ~~ n {
-        * /;
-    }
-    * n ++ factorial(n - /);
+    !! n>:, "n cannot be negative";
+    ? ~~ n { * /; }
+    * n ++ factorial(n-);
 }
+
+n: /?!("n: "???);
+"n! =", factorial(n)!;
 ```
 
 
-## Variable Arguments
+## Memoization
 
 ```sm
-point coords... * {
-    * "(" + <-string.join(coords, ", ") + ") is a " + ""?!(coords$) + "D point";
-}
+<=types.Frozen;
 
-=> * {
-    point()!;                     == () is a 0D point
-    point(\)!;                    == (0) is a 1D point
-    point(//, -/\\)!;             == (3, -4) is a 2D point
-    point(-/\, /\\, -/\/)!;       == (-2, 4, -5) is a 3D point
-    point(///, -///, -/\/, -/)!;  == (7, -7, -5, -1) is a 4D point
-}
-```
-
-
-## Loop Flow
-
-```sm
-=> * {
-    nums: <</../\//>>!;
-    ... n ->? nums {
-        ? n --- /\ :: \ { -> }
-        ? n :: /\\/ { <- }
-        n!;
-    }
-}
-
-==<
-[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-1
-3
-5
-7
->==
-```
-
-
-## Randomness
-
-```sm
-random_hex_color * {
-    * "#" + <-string.join([<-string.hexdigits?? ... i ->? <<../\\>>]);
-}
-
-== could alternatively define that as
-
-random_hex_color * {
-    max: /\ +++ //\\\;
-    * "#" + <-string.leftpad(<-math.to_hex(max??), //\, "0");
-}
-
-=> * {
-    random_hex_color()!;     == #d2300a
-    random_hex_color()!;     == #f866ce
-    random_hex_color()!;     == #8fb3cf
-}
-```
-
-
-## Optional Arguments
-
-```sm
-roll_dice q? * {
-    roll1 * { * //\?? + /; }
-    q <> /;
-    ? q :: / {
-        * roll1();
-    } ,, {
-        * [roll1() ... i ->? <<..q>>];
-    }
-}
-
-=> * {
-    roll_dice()!;       == 5
-    roll_dice(/\)!;     == [6, 3]
-    roll_dice(/\\/\/)!; == [5, 5, 6, 4, 6, 5, 6, 4, 5, 4, 4, 6, 5, 3, 6, 6, 2, 1, 4, 5, 5, 1, 2, 1]
-}
-```
-
-
-## Classes
-
-```sm
-@ Rectangle {
-    create a b * {
-        'a: a;
-        'b: b;
-    }
-
-    to_string * {
-        * "Rectangle[" + ""?!('a) + ", " + ""?!('b) + "]";
-    }
-
-    circumference * {
-        * 'a ++ /\ + 'b ++ /\;
-    }
-
-    area * {
-        * 'a ++ 'b;
-    }
-
-    is_square * {
-        * 'a :: 'b;
-    }
-}
-
-=> * {
-    r: Rectangle(/\\, //);
-    r!;                  == Rectangle[4, 3]
-    r.circumference()!;  == 14
-    r.area()!;           == 12
-    r.is_square()!;       == 0
-}
-```
-
-## Decorators
-
-```sm
-log_call func * {
+memoize func * {
+    cache: {{}};
     wrapper args... * {
-        "Calling function", func, "with args", args!;
-        * func(**args);
+        args: Frozen(args);
+        ? args ->? cache { * cache<<args>>; }
+        result: func(**args);
+        cache<<args>>: result;
+        * result;
     }
     * wrapper;
 }
 
-log_call @ pow a b * {
-    * a +++ b;
+memoize @ fib n * {
+    ? n < /\ { * n; }
+    * fib(n-) + fib(n - /\);
 }
 
-=> * {
-    pow(/\, //)!;
-    == Calling function pow with args [2, 3]
-    == 8
+fib(///\/)!;
+```
+
+
+## Filtering and enumerating a file
+
+```sm
+== Reads URLs from a file, enumerates them and prints them out.
+== If a URL is 32 characters or longer, it will be printed in red.
+<=string.[to_upper, strip];
+
+urls <~~ "urls.txt";
+... lineno, line ->? <</..>> >< urls {
+    line: strip(line);
+    ? line$ > ///// {
+        line: "\033[31m$0\033[0m" --- line;
+    }
+    "$0. $1" --- [lineno, line]!;
 }
+~urls;
+```
+
+
+## Guess the number game
+
+```sm
+"Guess the number!"!;
+secret_number: (/\/\+++)??+;
+
+.. {
+    guess: "Please input your guess: "???;
+
+    ?? { guess: /?!(guess); }
+    !! { -> }
+
+    "You guessed:", gues!;
+
+    ? guess < secret_number { "Too small!"!; -> }
+    ? guess > secret_number { "Too big!"!; -> }
+
+    "You win!"!;
+    <-
+}
+```
+
+
+## Point class implementation
+
+```sm
+<=operator -> op;
+<=iter.map;
+
+@ Point {
+    => scalars... * { 'vector: scalars; }
+    ! * { * "($0)" --- <-string.join('vector, ", "); }
+    ... * { ... i -.? 'vector { **i; } }
+    magnitude * { * <-math.sum('vector) +++ `/; }
+
+    -   other * { * Point(**map(op.sub, ' >< other)); }
+    +   other * { * Point(**map(op.add, ' >< other)); }
+    --  other * { * Point(**map(op.div, ' >< other)); }
+    ++  other * { * Point(**map(op.mul, ' >< other)); }
+    --- other * { * Point(**map(op.mod, ' >< other)); }
+    ><  other * { * 'vector >< other.vector; }
+    +++ other * {
+        out: [];
+        ... a ->? 'vector {
+            ... b ->? other.vector { out+: [[a, b]]; }
+        }
+        * -out;
+    }
+}
+
+q, p: Point(/\, //, /\\), Point(//, /\\, /\/);
+
+p.magnitude()!;  == 3.4641016151377544
+[]?!(q)!;  == [2, 3, 4]
+
+p + q!;    == (5, 7, 9)
+p - q!;    == (1, 1, 1)
+p ++ q!;   == (6, 12, 20)
+p --- q!;  == (1, 1, 1)
+p +++ q!;
+== [
+==     [3, 2], [3, 3], [3, 4],
+==     [4, 2], [4, 3], [4, 4],
+==     [5, 2], [5, 3], [5, 4]
+== ]
+```
+
+
+## Optional arguments
+
+```sm
+rect_area length width? * {
+    width <> length;
+    * width ++ length;
+}
+
+rect_area(/\/, /\\\)!;  == 40
+rect_area(/\/)!;  == 25
 ```

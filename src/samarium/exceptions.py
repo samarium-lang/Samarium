@@ -6,23 +6,27 @@ from dahlia import Dahlia
 from .runtime import Runtime
 
 DAHLIA = Dahlia()
-SINGLE_QUOTED_NAME = compile(r"'(\w+)'")
+NDE_TYPES = {AttributeError, NameError, UnboundLocalError}
+
+ARG_NOT_ITER = compile(r"argument of type '(\w+)' is not iterable")
 BAD_OP = compile(
     r"'(.+)' not supported between instances of '(\w+)' and '(\w+)'"
     r"|unsupported operand type\(s\) for (.+): '(\w+)' and '(\w+)'"
 )
 BAD_UOP = compile(r"bad operand type for unary (.+): '(\w+)'")
-ARG_NOT_ITER = compile(r"argument of type '(\w+)' is not iterable")
+NO_GETITEM = compile(r"'(\w+)' object is not subscriptable")
+NO_SETITEM = compile(r"'(\w+)' object does not support item assignment")
 NOT_CALLITER = compile(r"'(\w+)' object is not (\w+)")
 OP_MAP = {
     ">=": ">:",
     "<=": "<:",
-    "//": "--",
+    "/": "--",
     "%": "---",
     "*": "++",
     "@": "><",
     "** or pow()": "+++",
 }
+SINGLE_QUOTED_NAME = compile(r"'(\w+)'")
 
 
 def clear_name(name: str) -> str:
@@ -49,23 +53,29 @@ def handle_exception(exception: Exception) -> None:
         op, type_ = m.groups()
         exc_type = NotDefinedError
         exception = exc_type(f"{op}{clear_name(type_)}")
+    elif m := ARG_NOT_ITER.match(errmsg):
+        exc_type = NotDefinedError
+        type_ = clear_name(m.group(1))
+        exception = exc_type(f"->? {type_}")
+    elif m := NO_GETITEM.match(errmsg):
+        exc_type = NotDefinedError
+        type_ = clear_name(m.group(1))
+        exception = exc_type(f"{type_}<<>>")
+    elif m := NO_SETITEM.match(errmsg):
+        exc_type = NotDefinedError
+        type_ = clear_name(m.group(1))
+        exception = exc_type(f"{type_}<<>>:")
     elif m := NOT_CALLITER.match(errmsg):
         exc_type = NotDefinedError
         type_ = clear_name(m.group(1))
         template = "... _ ->? {}" if m.group(2) == "iterable" else "{}()"
         exception = exc_type(template.format(type_))
-    elif m := ARG_NOT_ITER.match(errmsg):
-        exc_type = NotDefinedError
-        type_ = clear_name(m.group(1))
-        exception = exc_type(f"->? {type_}")
     elif exc_type is SyntaxError:
         exception = SamariumSyntaxError(
             f"invalid syntax at {int(errmsg.split()[-1][:-1])}"
         )
-    elif exc_type in {AttributeError, NameError}:
+    elif exc_type in NDE_TYPES:
         names = SINGLE_QUOTED_NAME.findall(errmsg)
-        if names == ["entry"]:
-            names = ["no entry point defined"]
         exc_type = NotDefinedError
         exception = exc_type(
             f"{clear_name(names[0])}<<>>{':' * (names[1] == '__setitem__')}"
@@ -79,9 +89,9 @@ def handle_exception(exception: Exception) -> None:
         else:
             name = f"Python{name}".replace("PythonZeroDivision", "Math")
     name = name or exc_type.__name__
-    sys.stderr.write(DAHLIA.convert(f"&4[{name}] {exception}\n"))
+    DAHLIA.print(f"&4[{name}] {exception}", file=sys.stderr)
     if Runtime.quit_on_error:
-        raise SystemExit(1)
+        sys.exit(1)
 
 
 class SamariumError(Exception):
@@ -104,8 +114,8 @@ class SamariumImportError(SamariumError):
 
 class SamariumSyntaxError(SamariumError):
     def __init__(self, msg: str) -> None:
-        sys.stderr.write(DAHLIA.convert(f"&4[SyntaxError] {msg}\n"))
-        raise SystemExit(1)
+        DAHLIA.print(f"&4[SyntaxError] {msg}", file=sys.stderr)
+        sys.exit(1)
 
 
 class SamariumTypeError(SamariumError):

@@ -5,15 +5,11 @@ The `io` module contains a few utilities for working with I/O.
 ### `io.Bytes`
 Allows for easier working with files in binary mode:
 ```sm
-<=io.Bytes;
-
-=> * {
-    b: Bytes("ball");
-    b!;  == 62 61 6c 6c
-    b+: "!";  == supports Strings, Integers, Arrays of Integers, and other Bytes objects
-    b.export_string()!;  == ball!
-    b.export()!;  == [98, 97, 108, 108, 33]
-}
+b: <-io.Bytes("ball");
+b!;  == 62 61 6c 6c
+b+: "!";  == supports Strings, integers, Arrays of integers, and other Bytes
+b.export_string()!;  == ball!
+b.export()!;  == [98, 97, 108, 108, 33]
 ```
 
 ### `io.inputcast([prompt])`
@@ -23,12 +19,10 @@ Example (showing all available conversions):
 ```sm
 <=io.inputcast;
 
-=> * {
-    .. {
-        value: inputcast(">> ");
-        "Type:", value?!!;
-        "Value:", value!;
-    }
+.. {
+    value: inputcast(">> ");
+    "Type:", value?!!;
+    "Value:", value!;
 }
 ```
 ```
@@ -39,7 +33,7 @@ Value: hello
 Type: Array
 Value: ["hello", "there"]
 >> 1
-Type: Integer
+Type: Number
 Value: 1
 >> 1 2
 Type: Array
@@ -64,19 +58,24 @@ The `target` is included in the output string.
 
 Example:
 ```sm
-=> * {
-    "Enter your program:"!;
-    program: <-io.read_until("}");
-    name: "Enter file name: "???;
-    program ~> name;
-    "Your program was saved to " + name!;
-}
+"Enter your JSON:"!;
+program: <-io.read_until("}");
+name: "Enter file name: "???;
+program ~> name;
+"Your program was saved to " + name!;
 ```
 ```
-Enter your program:
-=> * {
-    "Hello, World!"!;
+Enter your JSON:
+{
+  "name": "John Doe",
+  "age": 30,
+  "email": "johndoe@example.com",
+  "interests": [
+    "reading",
+    "hiking",
+    "cooking"
+  ]
 }
-Enter file name: ball.txt
-Your program was saved to ball.txt
+Enter file name: ball.json
+Your program was saved to ball.json
 ```

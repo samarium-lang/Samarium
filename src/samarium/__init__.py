@@ -3,6 +3,7 @@ from contextlib import suppress
 from pathlib import Path
 
 from .core import run
+from .exceptions import DAHLIA
 from .shell import run_shell
 from .transpiler import Registry
 from .utils import __version__
@@ -17,7 +18,7 @@ options and arguments:
 file              : reads program from script file"""
 
 
-def main(debug: bool = False) -> None:
+def main(*, debug: bool = False) -> None:
 
     reg = Registry(globals())
 
@@ -28,7 +29,9 @@ def main(debug: bool = False) -> None:
         if arg in OPTIONS[:2]:
             print(f"Samarium {__version__}")
         elif arg in OPTIONS[2:4]:
-            run(f"=> argv * {{ {sys.argv[2]} !; }}", reg, debug)
+            if len(sys.argv) > 2:
+                run(sys.argv[2] + " !;", reg, arg, debug=debug)
+            DAHLIA.print("&4missing code to execute", file=sys.stderr)
         elif arg in OPTIONS[4:]:
             print(HELP)
         sys.exit()
@@ -36,11 +39,11 @@ def main(debug: bool = False) -> None:
     try:
         file = Path(arg).read_text()
     except IOError:
-        print(f"file not found: {arg}", file=sys.stderr)
+        DAHLIA.print(f"&4file not found: {arg}", file=sys.stderr)
     else:
         with suppress(Exception, KeyboardInterrupt):
             file = "\n".join(file.splitlines()[file.startswith("#!") :])
-            run(file, reg, debug)
+            run(file, reg, arg, debug=debug)
 
 
 def main_debug() -> None:

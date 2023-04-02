@@ -1,6 +1,7 @@
 # Comments
 
-Comments are written using `==`, and comment blocks are written with `==<` and `>==`:
+Comments are written using `==`, and comment blocks are written with `==<` and
+`>==`:
 
 ```sm
 == single-line comment

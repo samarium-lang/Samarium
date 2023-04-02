@@ -4,11 +4,14 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from re import Pattern, compile, sub
-from sys import argv
+from typing import TYPE_CHECKING
 
 from .classes import Attrs, Module
 from .exceptions import SamariumImportError, SamariumSyntaxError
-from .transpiler import Registry
+
+if TYPE_CHECKING:
+    from .transpiler import Registry
+
 
 FORMATTERS = {
     r"\bsm_(\w+)\b": r"\g<1>",
@@ -41,23 +44,22 @@ def parse_string(string: str) -> list[Mod]:
         mods = string.split(",")
         out = []
         for m in mods:
-            name, alias = m.split(":") if ":" in m else (m, None)
-            out.append(Mod(name, alias))
+            name, _, alias = m.partition(":")
+            out.append(Mod(name, alias or None))
         return out
-    elif imptype is Import.STAR:
-        return [Mod(string.split(".")[0], None, True)]
-    elif imptype is Import.OBJECT:
+    if imptype is Import.STAR:
+        return [Mod(string.split(".")[0], None, objects=True)]
+    if imptype is Import.OBJECT:
         mod, obj = string.split(".")
-        obj, alias = obj.split(":") if ":" in obj else (obj, None)
-        return [Mod(mod, None, [Obj(obj, alias)])]
-    else:
-        mod, objects_ = string.split(".")
-        objects = objects_.strip("[]").split(",")
-        objs = []
-        for o in objects:
-            name, alias = o.split(":") if ":" in o else (o, None)
-            objs.append(Obj(name, alias))
-        return [Mod(mod, None, objs)]
+        obj, _, alias = obj.partition(":")
+        return [Mod(mod, None, [Obj(obj, alias or None)])]
+    mod, objects_ = string.split(".")
+    objects = objects_.strip("[]").split(",")
+    objs = []
+    for o in objects:
+        name, _, alias = o.partition(":")
+        objs.append(Obj(name, alias or None))
+    return [Mod(mod, None, objs)]
 
 
 def format_string(string: str) -> str:
@@ -69,17 +71,16 @@ def format_string(string: str) -> str:
 def merge_objects(reg: Registry, imported: Registry, module: Mod) -> dict[str, Attrs]:
     vars_ = reg.vars.copy()
     if module.objects is False:
-        vars_[f"sm_{module.alias}"] = Module(module.name, imported.vars)
-    elif module.objects is True:
-        vars_ |= {k: v for k, v in imported.vars.items() if k.startswith("sm_")}
-    else:
-        for obj in module.objects:
-            try:
-                vars_[f"sm_{obj.alias}"] = imported.vars[f"sm_{obj.name}"]
-            except KeyError:
-                raise SamariumImportError(
-                    f"{obj.name} is not a member of the {module.name} module"
-                ) from None
+        return vars_ | {f"sm_{module.alias}": Module(module.name, imported.vars)}
+    if module.objects is True:
+        return vars_ | {k: v for k, v in imported.vars.items() if k.startswith("sm_")}
+    for obj in module.objects:
+        try:
+            vars_[f"sm_{obj.alias}"] = imported.vars[f"sm_{obj.name}"]
+        except KeyError:
+            raise SamariumImportError(
+                f"{obj.name} is not a member of the {module.name} module"
+            ) from None
     return vars_
 
 
@@ -87,9 +88,9 @@ def regex(string: str) -> Pattern:
     return compile("^" + string.replace("W", r"\w+") + "$")
 
 
-def resolve_path(name: str) -> Path:
+def resolve_path(name: str, source: str) -> Path:
     try:
-        path = Path(argv[1][: argv[1].rfind("/") + 1] or ".")
+        path = Path(source).parent
     except IndexError:  # REPL
         path = Path().resolve()
     paths = [e.name for e in path.iterdir()]

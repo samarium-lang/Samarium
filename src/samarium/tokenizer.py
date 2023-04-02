@@ -8,23 +8,32 @@ from crossandra import Crossandra, CrossandraError, Rule, common
 
 from .exceptions import SamariumSyntaxError, handle_exception
 from .tokens import Token
+from .utils import convert_float
 
 
-def to_int(string: str) -> int:
-    return int(string.replace("/", "1").replace("\\", "0"), 2)
+def to_number(string: str) -> int | float:
+    string = string.replace("/", "1").replace("\\", "0")
+    if string == ".":
+        string = "0."
+    return convert_float(string, base=2, sep="`")
 
 
 Tokenlike = Union[Token, str, int]
 
+SM_BIT = r"[\\\/]"
+
 crossandra = Crossandra(
     Token,
     ignore_whitespace=True,
-    ignored_characters="`",
     rules=[
-        common.DOUBLE_QUOTED_STRING,
-        Rule(r"==[^\n]*", False, re.M | re.S),
-        Rule(r"==<.*>==", False, re.M | re.S),
-        Rule(r"(?:\\|/)+", to_int),
+        Rule(r"==<.*>==", converter=False, flags=re.M | re.S),
+        Rule(r"==[^\n]*", converter=False, flags=re.M | re.S),
+        Rule(
+            common.DOUBLE_QUOTED_STRING.pattern,
+            lambda x: x.replace("\n", r"\n"),
+            re.S,
+        ),
+        Rule(rf"{SM_BIT}+`?{SM_BIT}*|`{SM_BIT}*", to_number),
         Rule(r"\w+"),
     ],
 )
@@ -34,5 +43,8 @@ def tokenize(code: str) -> list[Tokenlike]:
     try:
         return cast(list[Tokenlike], crossandra.tokenize(code))
     except CrossandraError as e:
-        handle_exception(SamariumSyntaxError(str(e)))
+        errmsg = str(e)
+        if '"' in errmsg:
+            errmsg = "unclosed string literal"
+        handle_exception(SamariumSyntaxError(errmsg))
         sys.exit()

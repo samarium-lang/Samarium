@@ -1,7 +1,8 @@
 # Functions
 
 Functions are defined using the `*` character.
-Both the function's name and its parameters come before this `*` character, in that order, separated by spaces.
+Both the function's name and its parameters come before this `*` character, in
+that order, separated by spaces.
 The function body is enclosed in curly brackets.
 The function's return value is preceded by a `*` character as well.
 (Functions may also have multiple return statements, or none at all.)
@@ -13,7 +14,8 @@ add a b * {
 }
 ```
 
-Calling a function is done as in C-like languages, with the function name, followed by its arguments in parentheses, separated by commas.
+Calling a function is done as in C-like languages, with the function name,
+followed by its arguments in parentheses, separated by commas.
 
 ```sm
 a: /;
@@ -22,9 +24,27 @@ c: add(a, b);
 ```
 
 
+## Main Function
+
+The main function/entrypoint of the program is denoted by `=>`.
+This function will be implicitly called on execution of the program.
+The return value of the main function indicates the exit code of the program
+(optional, defaults to 0). This function will not be called when importing
+the module it's located in. Command line arguments can be gotten as an array
+with an optional parameter in this function.
+
+```sm
+=> argv * {
+    == program here
+}
+```
+
+
 ## Optional Parameters
 
-Parameters can be made optional by adding a `?` character after the parameter's name. Optional parameters are required to have a default value defined in the function's body using the `param <> default` syntax.
+Parameters can be made optional by adding a `?` character after the parameter's
+name. Optional parameters are required to have a default value defined in the
+function's body using the `param <> default` syntax.
 
 ```sm
 == string.leftpad
@@ -40,7 +60,9 @@ leftpad("hello", /\/\, "-")!; == -----hello
 
 ## Varargs
 
-A function can accept a variable number of arguments by adding `...` after the last parameter's name. Packed arguments will be passed into the function as an array.
+A function can accept a variable number of arguments by adding `...` after the
+last parameter's name. Packed arguments will be passed into the function as an
+array.
 
 ```sm
 product nums... * {
@@ -76,9 +98,11 @@ pow(**arguments)!;
 
 ## Decorators
 
-Decorators are syntactic sugar for calling a function/class which argument is another callable.
+Decorators are syntactic sugar for calling a function/class which argument is
+another callable.
 
-To use a function as a decorator, write the name, `@` and then declare the function it is decorating.
+To use a function as a decorator, write the name, `@` and then declare the
+function it is decorating.
 
 ```sm
 == Decorator
@@ -105,7 +129,8 @@ code_to_char(/\\\\/)!;  == !!
 
 ## Iterators
 
-Functions can yield values instead of returning them, thus making the function behave like an iterator. Values are yielded with the `**` operator:
+Functions can yield values instead of returning them, thus making the function
+behave like an iterator. Values are yielded with the `**` operator:
 
 ```sm
 <=math.is_prime;
@@ -120,17 +145,15 @@ prime_generator * {
     }
 }
 
-=> * {
-    pg: prime_generator();
-    pg!;
-    "Primes below 100:"!;
-    ... i ->? pg {
-        ? i > /\/\ +++ /\ {
-            !;
-            <-
-        }
-        ""?!(i) + " " ~> /;
+pg: prime_generator();
+pg!;
+"Primes below 100:"!;
+... i ->? pg {
+    ? i > /\/\ +++ /\ {
+        !;
+        <-
     }
+    ""?!(i) + " " ~> /;
 }
 ```
 ```

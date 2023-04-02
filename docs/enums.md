@@ -1,14 +1,17 @@
 # Enums
 
-Enums are defined using the `#` character, before which comes the name of the enum.
+Enums are defined using the `#` character, before which comes the name of the
+enum.
 
 Each of the enum members has to be separated with a semicolon.
 
 By default, enum members are assigned increasing numbers, starting from 0.
 
-You can provide your own values for enum members by simply assigning values to the names.
+You can provide your own values for enum members by simply assigning values to
+the names.
 
-Enum members cannot be modified. Enums are truthy when they have at least 1 member.
+Enum members cannot be modified. Enums are truthy when they have at least 1
+member.
 
 ```sm
 Shape # {
@@ -22,12 +25,10 @@ Color # {
     Blue: "#0000FF";
 }
 
-=> * {
-    Shape!;
-    Shape.Circle!;
-    Shape.Square!;
-    Color.Red!;
-}
+Shape!;
+Shape.Circle!;
+Shape.Square!;
+Color.Red!;
 ```
 ```
 Enum(Shape)
@@ -49,10 +50,8 @@ Color # {
     Blue: "#0000FF";
 }
 
-=> * {
-    Shape%!;
-    Color%!;
-}
+Shape%!;
+Color%!;
 ```
 ```
 {{"Circle" -> 0, "Square" -> 1}}

@@ -1,9 +1,13 @@
-import readline  # used by input() to provide elaborate line editing & history features
+from sys import platform
+
+if platform not in ("win32", "cygwin"):
+    # used by input() to provide elaborate line editing & history features
+    import readline
 
 from .core import run
 from .tokenizer import tokenize
-from .transpiler import Registry
-from .utils import __version__, match_brackets
+from .transpiler import Registry, match_brackets
+from .utils import __version__
 
 IN = "--> "
 INDENT = "  > "
@@ -28,7 +32,14 @@ def run_shell(*, debug: bool) -> None:
     main = Registry(globals())
     while True:
         try:
-            run(read_statement(), main, debug, load_template=False)
+            run(
+                read_statement(),
+                main,
+                "",
+                debug=debug,
+                load_template=False,
+                quit_on_error=False,
+            )
             main.output = ""
         except KeyboardInterrupt:
             print()

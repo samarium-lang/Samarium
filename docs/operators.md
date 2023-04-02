@@ -55,7 +55,8 @@ Operator             | Meaning
 
 ## Assignment
 
-All arithmetic and bitwise operators (except `~`) can be used together with the assignment operator.
+All arithmetic and bitwise operators (except `~`) can be used together with the
+assignment operator.
 
 For example:
 

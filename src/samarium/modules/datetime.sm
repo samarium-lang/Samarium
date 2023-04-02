@@ -3,12 +3,17 @@
 MONTHS: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 WEEKDAYS: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-sleep_seconds seconds * {
-    ,., seconds ++ /////\/\\\;
-}
-
-sleep_minutes minutes * {
-    sleep_seconds(minutes ++ ////\\);
+days_in_month year month * {
+    ? month ->? [/, //, /\/, ///, /\\\, /\/\, //\\] {
+        * /////;
+    }
+    ? month ->? [/\, //\, /\\/, /\//] {
+        * ////\;
+    }
+    ? is_leap_year(year) {
+        * ///\/;
+    }
+    * ///\\;
 }
 
 is_leap_year year * {
@@ -23,37 +28,22 @@ is_leap_year year * {
     }
 }
 
-days_in_month year month * {
-    ? month ->? [/, //, /\/, ///, /\\\, /\/\, //\\] {
-        * /////;
-    }
-    ? month ->? [/\, //\, /\\/, /\//] {
-        * ////\;
-    }
-    ? is_leap_year(year) {
-        * ///\/;
-    }
-    * ///\\;
-}
-
 month_name n * {
     ? n >: MONTHS$ {
         * "";
-    } ,, ? n < \ {
+    } ,, ? n< {
         * "";
     } ,, {
-        * MONTHS<<n + />>;
+        * MONTHS<<n+>>;
     }
 }
 
-weekday_name n * {
-    ? n >: WEEKDAYS$ {
-        * "";
-    } ,, ? n < \ {
-        * "";
-    } ,, {
-        * WEEKDAYS<<n>>;
-    }
+sleep_minutes minutes * {
+    sleep_seconds(minutes ++ ////\\);
+}
+
+sleep_seconds seconds * {
+    ,., seconds ++ /////\/\\\;
 }
 
 timestamp_utc ts? * {
@@ -64,6 +54,16 @@ timestamp_utc ts? * {
     tz: dtnow<<-/\..>>;
     offset: tz<<\>> ++ 3_600_000 + tz<</>> ++ 60_000;
     * ts - offset;
+}
+
+weekday_name n * {
+    ? n >: WEEKDAYS$ {
+        * "";
+    } ,, ? n< {
+        * "";
+    } ,, {
+        * WEEKDAYS<<n>>;
+    }
 }
 
 @ DateTime {
@@ -94,7 +94,9 @@ timestamp_utc ts? * {
             'array: [Y, M, D, h, m, s, ms, tz<<\>>, tz<</>>];
         }
         ? 'timezone ::: [\, \] {
-            'utc: DateTime('year, 'month, 'day, 'hour, 'minute, 'second, 'millisecond);
+            'utc: DateTime(
+                'year, 'month, 'day, 'hour, 'minute, 'second, 'millisecond
+            );
         } ,, {
             'utc: ';
         }
