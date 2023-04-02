@@ -108,7 +108,7 @@ secret_number: (/\/\+++)??+;
     ?? { guess: /?!(guess); }
     !! { -> }
 
-    "You guessed:", gues!;
+    "You guessed:", guess!;
 
     ? guess < secret_number { "Too small!"!; -> }
     ? guess > secret_number { "Too big!"!; -> }
