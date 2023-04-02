@@ -849,13 +849,14 @@ class Slice(Attrs):
         self.stop = stop
         self.step = step
         self.tup = start.val, stop.val, step.val
-        if not all(isinstance(i, int) for i in self.tup):
-            raise SamariumTypeError("slice values have to be integers")
-        self.range = range(
-            self.tup[0] or 0,
-            I64_MAX if self.tup[1] is None else self.tup[1],
-            self.tup[2] or 1,
-        )
+        try:
+            self.range = range(
+                self.tup[0] or 0,
+                I64_MAX if self.tup[1] is None else self.tup[1],
+                self.tup[2] or 1,
+            )
+        except TypeError:
+            raise SamariumTypeError("slice values have to be integers") from None
         self.val = slice(*self.tup)
 
     def __bool__(self) -> bool:
