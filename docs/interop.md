@@ -20,32 +20,34 @@ Samarium files take priority over Python files, meaning that if you have both
 ### Example 1
 ```py
 # foo.py
+from samarium import run, Registry
 from samarium.python import export
 
+
 @export
-def sqrt(n: int) -> str:
-    return str(n ** 0.5)
+def exec(code: str) -> None:
+    run(code, Registry({}), __file__)
 ```
 ```sm
-=> * {
-    <-foo.sqrt(/\)!;  == 1.4142135623730951
-}
+<-foo.exec("/////??!;");  == 14
 ```
 
 ### Example 2
 ```py
 # bar.py
-from samarium.python import export, SliceRange
+import json
+
+from samarium.python import export
+
 
 @export
-def find_perfect_squares(sr: SliceRange) -> list[int]:
-    return [n for n in sr.range if (n ** 0.5).is_integer()]
+def read_json(source: str) -> None:
+    return json.loads(source)
 ```
 ```sm
-=> * {
-    <-bar.find_perfect_squares(<<../\/\/\/>>)!;
-    == [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
-}
+source <~ "sample.json";
+<-bar.read_json(source)!;
+== {{"hello" -> "world", "pi" -> 3.14}}
 ```
 
 ## Supported Conversions
