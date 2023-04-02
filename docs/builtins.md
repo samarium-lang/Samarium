@@ -165,7 +165,7 @@ used on.
 Object  | Use
 ---     | ---
 Array   | Returns a random element
-Number  | Returns a random number from<br>an interval based on its value<br>`n = 0` → `0`<br>`n > 0` → `[0, n)`<br>`n < 0` → `[n, 0)`
+Number  | Returns a random number from<br>an interval based on its value<br>`n = 0` → `0`<br>`n > 0` → `[0, n)`<br>`n < 0` → `[n, 0)`<br>If `n` is an integer, `n??` is also going to return integers.
 Slice   | Returns a random number in a range defined by that slice
 String  | Returns a random character
 Table   | Returns a random key
