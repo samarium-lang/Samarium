@@ -831,6 +831,9 @@ class Null(Singleton, Attrs):
     def hash(self) -> Number:
         return Num(hash(self.val))
 
+    def __invert__(self) -> Number:
+        return Num(-1)
+
     def __floordiv__(self, other: Any) -> Number:
         return Num(not other)
 
