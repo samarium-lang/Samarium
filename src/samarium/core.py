@@ -66,7 +66,7 @@ def import_to_scope(data: str, reg: Registry, source: str) -> None:
             registry = {
                 f"sm_{k}": v
                 for k, v in vars(module).items()
-                if f"__export_{v}" in dir(v)
+                if getattr(v, "__pyexported__", False)
             }
             imported = Registry(registry)
 

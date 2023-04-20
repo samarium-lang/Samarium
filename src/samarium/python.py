@@ -13,6 +13,7 @@ from samarium.classes import (
     Attrs,
     Enum,
     File,
+    Function,
     Iterator,
     Mode,
     Null,
@@ -64,6 +65,8 @@ def to_samarium(obj: object) -> Attrs:
         return String(obj)
     if obj is None:
         return NULL
+    if isinstance(obj, FunctionType):
+        return Function(obj)
     if isinstance(obj, (list, tuple, set)):
         return Array([to_samarium(i) for i in obj])
     if isinstance(obj, dict):
@@ -95,13 +98,15 @@ def to_samarium(obj: object) -> Attrs:
 def export(func: Callable) -> Callable[[Attrs], Attrs]:
     """Wraps a Python function to be used in Samarium"""
 
+    if not isinstance(func, FunctionType):
+        raise TypeError(f"cannot export a non-function type {type(func).__name__!r}")
+
     @wraps(func)
     def wrapper(*_args: Attrs) -> Attrs:
         args = map(to_python, _args)
         return to_samarium(func(*args))
 
-    if not isinstance(func, FunctionType):
-        raise TypeError(f"cannot export a non-function type {type(func).__name__!r}")
-    setattr(wrapper, f"__export_{wrapper}", True)
+    f = Function(wrapper)
+    f.__pyexported__ = True
 
-    return wrapper
+    return f
