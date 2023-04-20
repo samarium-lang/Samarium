@@ -443,6 +443,8 @@ class String(Attrs):
     def __add__(self, other: Any) -> String:
         if isinstance(other, String):
             return String(self.val + other.val)
+        if other is NULL:
+            other = Num(1)
         if isinstance(other, Number):
             if other.is_int:
                 return String(
