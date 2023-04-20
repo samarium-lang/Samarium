@@ -25,6 +25,7 @@ from samarium.classes import (
     Zip,
 )
 
+from samarium.utils import get_type_name
 
 class SliceRange:
     def __init__(self, slice_: Slice) -> None:

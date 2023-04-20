@@ -3,7 +3,7 @@ from re import compile
 
 from dahlia import Dahlia
 
-from .runtime import Runtime
+from samarium.runtime import Runtime
 
 DAHLIA = Dahlia()
 NDE_TYPES = {AttributeError, NameError, UnboundLocalError}

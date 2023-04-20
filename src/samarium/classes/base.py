@@ -10,13 +10,13 @@ from random import choice, randrange, uniform
 from types import GeneratorType, MethodType
 from typing import Any, Generic, TypeVar, cast
 
-from ..exceptions import (
+from samarium.exceptions import (
     NotDefinedError,
     SamariumSyntaxError,
     SamariumTypeError,
     SamariumValueError,
 )
-from ..utils import (
+from samarium.utils import (
     ClassProperty,
     Singleton,
     get_name,

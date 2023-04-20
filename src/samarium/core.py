@@ -6,8 +6,8 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from . import exceptions as exc
-from .builtins import (
+from samarium import exceptions as exc
+from samarium.builtins import (
     correct_type,
     dtnow,
     mkslice,
@@ -18,7 +18,7 @@ from .builtins import (
     throw,
     timestamp,
 )
-from .classes import (
+from samarium.classes import (
     MISSING,
     NEXT,
     NULL,
@@ -35,11 +35,11 @@ from .classes import (
     Table,
     UserAttrs,
 )
-from .imports import merge_objects, parse_string, resolve_path
-from .runtime import Runtime
-from .tokenizer import tokenize
-from .transpiler import Registry, Transpiler
-from .utils import sysexit
+from samarium.imports import merge_objects, parse_string, resolve_path
+from samarium.runtime import Runtime
+from samarium.tokenizer import tokenize
+from samarium.transpiler import Registry, Transpiler
+from samarium.utils import sysexit
 
 if TYPE_CHECKING:
     from .classes import Attrs

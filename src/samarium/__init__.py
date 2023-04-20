@@ -2,11 +2,11 @@ import sys
 from contextlib import suppress
 from pathlib import Path
 
-from .core import run
-from .exceptions import DAHLIA
-from .shell import run_shell
-from .transpiler import Registry
-from .utils import __version__
+from samarium.core import run
+from samarium.exceptions import DAHLIA
+from samarium.shell import run_shell
+from samarium.transpiler import Registry
+from samarium.utils import __version__
 
 OPTIONS = ("-v", "--version", "-c", "--command", "-h", "--help")
 

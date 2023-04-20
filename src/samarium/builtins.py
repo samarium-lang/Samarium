@@ -8,7 +8,7 @@ from time import time_ns
 from types import GeneratorType
 from typing import Any, TypeVar
 
-from .classes import (
+from samarium.classes import (
     MISSING,
     NULL,
     Array,
@@ -21,7 +21,7 @@ from .classes import (
     correct_type,
     to_string,
 )
-from .exceptions import (
+from samarium.exceptions import (
     SamariumError,
     SamariumIOError,
     SamariumSyntaxError,

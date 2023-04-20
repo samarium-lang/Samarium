@@ -4,10 +4,10 @@ if platform not in ("win32", "cygwin"):
     # used by input() to provide elaborate line editing & history features
     import readline
 
-from .core import run
-from .tokenizer import tokenize
-from .transpiler import Registry, match_brackets
-from .utils import __version__
+from samarium.core import run
+from samarium.tokenizer import tokenize
+from samarium.transpiler import Registry, match_brackets
+from samarium.utils import __version__
 
 IN = "--> "
 INDENT = "  > "

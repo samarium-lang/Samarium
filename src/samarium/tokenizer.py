@@ -6,9 +6,9 @@ from typing import Union, cast
 
 from crossandra import Crossandra, CrossandraError, Rule, common
 
-from .exceptions import SamariumSyntaxError, handle_exception
-from .tokens import Token
-from .utils import convert_float
+from samarium.exceptions import SamariumSyntaxError, handle_exception
+from samarium.tokens import Token
+from samarium.utils import convert_float
 
 
 def to_number(string: str) -> int | float:

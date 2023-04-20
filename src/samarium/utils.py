@@ -4,7 +4,7 @@ from collections.abc import Callable
 from re import sub
 from typing import Any, TypeVar
 
-from .exceptions import SamariumTypeError, SamariumValueError
+from samarium.exceptions import SamariumTypeError, SamariumValueError
 
 __version__ = "0.5.1"
 
