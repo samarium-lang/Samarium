@@ -125,4 +125,8 @@ is_prime n * {
     * /;
 }
 
-round: <-pystd.round_;
+#r: <-pystd.round_;
+
+round n ndigits * {
+    * #r(n, ndigits);
+}
