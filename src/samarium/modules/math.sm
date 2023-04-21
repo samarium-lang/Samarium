@@ -127,6 +127,7 @@ is_prime n * {
 
 #r: <-pystd.round_;
 
-round n ndigits * {
+round n ndigits? * {
+    ndigits <>;
     * #r(n, ndigits);
 }
