@@ -87,7 +87,20 @@ MISSING = Missing()
 NEXT = object()
 
 
-class Attrs:
+class CompositionMeta(type):
+    def __mul__(cls, other: Any) -> Function:
+        if isinstance(other, type):
+            other = Type(other)
+        if isinstance(other, Type):
+            other = other.as_function()
+        if not isinstance(other, Function):
+            raise SamariumTypeError(
+                f"can't use function composition with {get_type_name(other)}"
+            )
+        return Type(cls).as_function() * other
+
+
+class Attrs(metaclass=CompositionMeta):
     def __getattribute__(self, name: str) -> Any:
         attr = object.__getattribute__(self, name)
         if isinstance(attr, Function) and "self" in signature(attr.func).parameters:
@@ -234,6 +247,19 @@ class Type(Attrs):
         if isinstance(other, Type):
             return Num(self.val != other.val)
         return Num(self.val != other)
+
+    def as_function(self) -> Function:
+        # "redundant" lambda on purpose to make the obj have a __code__ attr
+        return Function(lambda x: self(x))
+
+    def __mul__(self, other: Any) -> Function:
+        if isinstance(other, type):
+            other =  Type(other)
+        if isinstance(other, Type):
+            other = other.as_function()
+        if not isinstance(other, Function):
+            raise SamariumTypeError(f"Type ++ {get_type_name(other)}")
+        return self.as_function() * other
 
     def __str__(self) -> str:
         return get_name(self.val)
@@ -1076,6 +1102,18 @@ class Function(Attrs):
                 raise SamariumTypeError("missing instance") from None
             raise
         return out
+
+    def __mul__(self, other: Any) -> Function:
+        if isinstance(other, type):
+            other = Type(other)
+        if isinstance(other, Type):
+            other = other.as_function()
+        if not isinstance(other, Function):
+            raise SamariumTypeError(f"Function ++ {get_type_name(other)}")
+        def f(*args: Attrs) -> Attrs:
+            return self(other(*args))
+        f.__name__ = f"({self} ++ {other})"
+        return Function(f)
 
     def __hash__(self) -> int:
         return cast(int, self.hash().val)
