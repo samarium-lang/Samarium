@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "samarium"
-version = "0.5.2"
+version = "0.5.3"
 description = "The Samarium Programming Language"
 authors = ["trag1c <trag1cdev@yahoo.com>"]
 license = "MIT"
