@@ -6,7 +6,7 @@ from typing import Any, TypeVar
 
 from samarium.exceptions import SamariumTypeError, SamariumValueError
 
-__version__ = "0.5.1"
+__version__ = "0.6.0"
 
 T = TypeVar("T")
 
