@@ -7,15 +7,17 @@ if __name__ == "samarium":
         entry
     except NameError:
         sys.exit()
-    argc = param_count(entry)
+    argc = entry.special()
     is_class = isinstance(entry, type)
     if is_class:
         argc -= 1
-    if not argc:
+    if not argc.val:
         ex = entry()
-    elif argc == 1:
+    elif argc.val == 1:
         ex = entry(Array(map(String, sys.argv[1:])))
     else:
-        raise SamariumSyntaxError("entry function should take 0 or 1 arguments")
+        raise exceptions.SamariumSyntaxError(
+            "entry function should take 0 or 1 arguments"
+        )
     if not is_class:
         sys.exit(ex.val)
