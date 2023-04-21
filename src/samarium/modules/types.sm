@@ -19,14 +19,20 @@ Zip: ("" >< "")?!;
     ! * { * "true" ? 'value ,, "false"; }
     ? * { * 'value; }
 
-    :: other * {
-        * Boolean('value :: other.value);
+    val obj * {
+        ? obj?! :: '?! { * obj.value; }
+        * obj;
     }
 
-    > other * { * Boolean('value > other.value); }
+    :: other * {
+        * Boolean('value :: 'val(other));
+    }
+
+    > other * { * Boolean('value > 'val(other)); }
+
 
     + other * {
-        out: 'value + other.value;
+        out: 'value + 'val(other);
         ? out > / {
             * out;
         } ,, {
@@ -35,7 +41,7 @@ Zip: ("" >< "")?!;
     }
 
     - other * {
-        out: 'value - other.value;
+        out: 'value - 'val(other);
         ? out< {
             * out;
         } ,, {
@@ -44,24 +50,24 @@ Zip: ("" >< "")?!;
     }
 
     ++ other * {
-        * Boolean('value ++ other.value);
+        * Boolean('value ++ 'val(other));
     }
 
     -- other * {
-        * Boolean('value -- other.value);
+        * Boolean('value -- 'val(other));
     }
 
     +++ other * {
-        * Boolean('value +++ other.value);
+        * Boolean('value +++ 'val(other));
     }
 
     --- other * {
-        * Boolean('value --- other.value);
+        * Boolean('value --- 'val(other));
     }
 
-    & other * { * Boolean('value & other.value); }
-    ^ other * { * Boolean('value ^ other.value); }
-    | other * { * Boolean('value | other.value); }
+    & other * { * Boolean('value & 'val(other)); }
+    ^ other * { * Boolean('value ^ 'val(other)); }
+    | other * { * Boolean('value | 'val(other)); }
 
     ~ * { * Boolean(\ ? 'value ,, /); }
 }
