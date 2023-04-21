@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from collections.abc import Iterable as PyIterable
 from enum import Enum as PyEnum
-from functools import wraps
 from io import BufferedIOBase, IOBase
 from types import FunctionType
 
@@ -96,16 +95,14 @@ def to_samarium(obj: object) -> Attrs:
     raise TypeError(f"Conversion for type {type(obj).__name__!r} not found")
 
 
-def export(func: Callable) -> Callable[[Attrs], Attrs]:
+def export(func: Callable) -> Callable[..., Attrs]:
     """Wraps a Python function to be used in Samarium"""
 
     if not isinstance(func, FunctionType):
-        raise TypeError(f"cannot export a non-function type {type(func).__name__!r}")
+        raise TypeError(f"cannot export a non-function type {get_type_name(func)!r}")
 
-    @wraps(func)
     def wrapper(*_args: Attrs) -> Attrs:
-        args = map(to_python, _args)
-        return to_samarium(func(*args))
+        return to_samarium(func(*map(to_python, _args)))
 
     f = Function(wrapper)
     f.__pyexported__ = True

@@ -1057,6 +1057,8 @@ class Enum(Attrs):
 
 
 class Function(Attrs):
+    __pyexported__ = False
+
     def __init__(
         self,
         func: Callable[..., Any],
