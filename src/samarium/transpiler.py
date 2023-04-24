@@ -648,7 +648,6 @@ class Transpiler:
                 push("import_inline('")
             else:
                 push("break")
-                self._submit_line()
         elif token is Token.CATCH:
             if self._next is Token.BRACE_OPEN:
                 push("except Exception")
