@@ -565,6 +565,8 @@ class Transpiler:
             indented = self._indent > 0
             if is_first_token(self._line):
                 self._line.insert(indented, "return ")
+                if self._next is Token.BRACE_CLOSE:
+                    self._process_token(self._index, Token.END)
                 return
 
             # Function definition
@@ -622,6 +624,8 @@ class Transpiler:
                 # fmt: on
                 else:
                     push("yield ")
+                    if self._next is Token.BRACE_CLOSE:
+                        self._process_token(self._index, Token.END)
             elif self._prev in UNPACK_TRIGGERS:
                 push("*")
             else:
@@ -782,6 +786,8 @@ class Transpiler:
                 push("NULL")
             indented = self._indent > 0
             self._line = [*self._line[:indented], "throw(", *self._line[indented:], ")"]
+            if self._next is not Token.END:
+                self._process_token(self._index, Token.END)
         elif token is Token.PRINT:
             if (
                 self._scope.current == "class"
@@ -795,6 +801,8 @@ class Transpiler:
                     push("NULL")
             hook = self._line.index("=") + 1 if "=" in self._line else self._indent > 0
             self._line = [*self._line[:hook], "print_safe(", *self._line[hook:], ")"]
+            if self._next is not Token.END:
+                self._process_token(self._index, Token.END)
         else:  # SLEEP or EXIT
             func = "sysexit" if token is Token.EXIT else "sleep"
             push(f"{func}(")
