@@ -708,7 +708,6 @@ class Transpiler:
                 push(shift + "for ")
 
     def _core(self, token: Token, push: Callable) -> None:
-        index = self._index
         if token is Token.END:
             if self._prev in Group.operators | {
                 Token.DEFAULT,
@@ -716,7 +715,7 @@ class Transpiler:
             }:
                 push("NULL")
             if self._scope.current == "enum":
-                if self._tokens[index - 2] in {token, Token.BRACE_OPEN}:
+                if self._token_at(-2) in {token, Token.BRACE_OPEN}:
                     push("=NEXT")
                 push(",")
                 return
@@ -918,7 +917,7 @@ class Transpiler:
             # Identifiers
             if isinstance(self._prev, str):
                 offset = 0
-                while isinstance(tok := self._tokens[index + offset], str) or tok in (
+                while isinstance(tok := self._token_at(offset), str) or tok in (
                     Token.FOR,
                     Token.IF,
                 ):
@@ -928,7 +927,7 @@ class Transpiler:
                         "spaces are not allowed in variable names",
                         note=f"{self._prev} {token} -> {self._prev}{token}",
                     )
-            pprev_token = self._tokens[self._index - 2]
+            pprev_token = self._token_at(-2)
             if self._prev is Token.ENUM and isinstance(pprev_token, str):
                 if is_quoted(pprev_token):
                     throw_syntax("cannot use # after a string")
