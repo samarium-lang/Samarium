@@ -412,8 +412,8 @@ class Number(Attrs):
     def __le__(self, other: Any) -> Number:
         return Num(self.val <= other.val)
 
-    def __hash__(self) -> float:
-        return self.hash().val
+    def __hash__(self) -> int:
+        return cast(int, self.hash().val)
 
     def cast(self) -> String:
         if self.is_int:
