@@ -362,7 +362,9 @@ class Transpiler:
         self._tokens[self._index - 1] = value
 
     @property
-    def _next(self) -> Tokenlike:
+    def _next(self) -> Tokenlike | None:
+        if self._index + 1 >= len(self._tokens):
+            return None
         return self._tokens[self._index + 1]
 
     @_next.setter
