@@ -59,6 +59,7 @@ class Token(Enum):
 
     # OOP / Functions
     CLASS = "@"
+    DATACLASS = "@!"
     DEFAULT = "<>"
     FUNCTION = "*"
     INSTANCE = "'"

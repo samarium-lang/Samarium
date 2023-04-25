@@ -6,6 +6,7 @@ from .base import (
     NULL,
     Array,
     Attrs,
+    Dataclass,
     Enum,
     Function,
     Iterator,
@@ -27,6 +28,7 @@ from .fileio import File, FileManager, Mode
 __all__ = (
     "Array",
     "Attrs",
+    "Dataclass",
     "Enum",
     "File",
     "Function",

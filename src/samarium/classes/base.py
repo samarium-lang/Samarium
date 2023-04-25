@@ -232,6 +232,62 @@ class UserAttrs(Attrs):
         return Array(map(Type, parents))
 
 
+class Dataclass(UserAttrs):
+    _name: str
+    _field_names: list[str]
+    _fields: list[str]
+
+    def __init_subclass__(cls, /, fields: list[str]) -> None:
+        super().__init_subclass__()
+        cls._name = cls.__name__.removeprefix("sm_")
+        cls._field_names = fields
+        cls._fields = [f"sm_{f}" for f in fields]
+
+    def __init__(self, *args: Attrs) -> None:
+        argc = len(args)
+        fieldc = len(self._fields)
+        if argc < fieldc:
+            raise SamariumTypeError(
+                f"missing argument(s): {', '.join(self._field_names[argc:])}"
+            )
+        if argc > fieldc:
+            raise SamariumTypeError(f"too many arguments ({argc}/{fieldc})")
+        for field, arg in zip(self._fields, args):
+            setattr(self, field, arg)
+        self.vals = args
+
+    def __str__(self) -> str:
+        return f"{self._name}({', '.join(map(repr, self.vals))})"
+
+    def __hash__(self) -> int:
+        return cast(int, self.hash().val)
+
+    def hash(self) -> Number:
+        return Num(hash(self.vals))
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, type(self)):
+            return self.vals == other.vals
+        return False
+
+    def __gt__(self, other: object) -> bool:
+        if isinstance(other, type(self)):
+            return self.vals > other.vals
+        return False
+
+    def __ne__(self, other: object) -> bool:
+        return not (self == other)
+
+    def __ge__(self, other: object) -> bool:
+        return self == other or self > other
+
+    def __lt__(self, other: object) -> bool:
+        return not (self >= other)
+
+    def __le__(self, other: object) -> bool:
+        return not (self > other)
+
+
 class Type(Attrs):
     __slots__ = ("val",)
 
@@ -273,7 +329,7 @@ class Type(Attrs):
         return hash(self.val)
 
     def __call__(self, *args: Any) -> Any:
-        if self.val in (Function, Module, Type):
+        if self.val in (Function, Module, Type, Dataclass):
             raise SamariumTypeError(f"cannot instantiate a {self.val.__name__.lower()}")
         return self.val(*args)
 

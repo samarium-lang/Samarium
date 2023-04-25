@@ -23,6 +23,7 @@ from samarium.classes import (
     NEXT,
     NULL,
     Array,
+    Dataclass,
     Enum,
     FileManager,
     Function,
