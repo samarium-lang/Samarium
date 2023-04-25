@@ -34,9 +34,9 @@ def is_first_token(line: list[str]) -> bool:
     return not line or (len(line) == 1 and line[0].isspace())
 
 
-def is_quoted(string: Tokenlike) -> bool:
-    if isinstance(string, str):
-        return string[0] == string[-1] == '"'
+def is_quoted(token: Tokenlike) -> bool:
+    if isinstance(token, str):
+        return token[0] == token[-1] == '"'
     return False
 
 
