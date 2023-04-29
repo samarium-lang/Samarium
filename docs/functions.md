@@ -23,6 +23,14 @@ b: /\;
 c: add(a, b);
 ```
 
+If no value is returned, the semicolon after `*` may be omitted:
+
+```sm
+exit code * {
+    ? code {*}
+    "Success"!;
+}
+```
 
 ## Main Function
 
@@ -160,6 +168,14 @@ pg!;
 <Iterator@7fd890475860>
 Primes below 100:
 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
+```
+
+Just like with `*`, the semicolon after `**` can be omitted if no value is
+yielded:
+```sm
+foo * {**}
+
+[]?!(foo())!  == [null]
 ```
 
 Iterators support special `$` and cast `%` methods.

@@ -28,7 +28,7 @@ This function will return what it writes to stdout (though not necessarily as
 a string), and can thus be used in an assignment statement for example.
 
 ```sm
-x: //\!;
+x: //\!  == optional semicolon after !
 == the string "6" is written to stdout, and `x` now has the value 6 (number)
 ```
 
@@ -40,7 +40,7 @@ This will throw an error, and exit the program if the error is not caught.
 Only strings and arrays of length 2 can be used for throwing errors.
 
 ```sm
-"exception raised"!!!;
+"exception raised"!!!  == optional semicolon after !!!
 == the following is written to stderr:
 == [Error] exception raised
 
