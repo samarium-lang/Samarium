@@ -35,10 +35,21 @@ x: //\!;
 
 ## THROW
 
-Similarly to PRINTLN, objects can be written to standard error using `!!!`.
+Similarly to PRINTLN, some objects can be written to standard error using `!!!`.
 This will throw an error, and exit the program if the error is not caught.
+Only strings and arrays of length 2 can be used for throwing errors.
 
-`"exception raised"!!!` will write `[Error] exception raised` to standard error.
+```sm
+"exception raised"!!!;
+== the following is written to stderr:
+== [Error] exception raised
+
+== 2-element arrays can be used for adding notes to exceptions:  
+["invalid date format", "use YYYY-MM-DD format"]!!!
+== [Error] invalid date format
+== [Note] use YYYY-MM-DD format
+```
+
 
 
 ## EXIT
