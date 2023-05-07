@@ -259,12 +259,6 @@ class Dataclass(UserAttrs):
     def __str__(self) -> str:
         return f"{self._name}({', '.join(map(repr, self.vals))})"
 
-    def __hash__(self) -> int:
-        return cast(int, self.hash().val)
-
-    def hash(self) -> Number:
-        return Num(hash(self.vals))
-
     def __eq__(self, other: object) -> bool:
         if isinstance(other, type(self)):
             return self.vals == other.vals
