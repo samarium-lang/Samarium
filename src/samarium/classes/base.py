@@ -310,7 +310,7 @@ class Type(Attrs):
 
     def __mul__(self, other: Any) -> Function:
         if isinstance(other, type):
-            other =  Type(other)
+            other = Type(other)
         if isinstance(other, Type):
             other = other.as_function()
         if not isinstance(other, Function):
@@ -1168,8 +1168,10 @@ class Function(Attrs):
             other = other.as_function()
         if not isinstance(other, Function):
             raise SamariumTypeError(f"Function ++ {get_type_name(other)}")
+
         def f(*args: Attrs) -> Attrs:
             return self(other(*args))
+
         f.__name__ = f"({self} ++ {other})"
         return Function(f)
 

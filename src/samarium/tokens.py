@@ -2,7 +2,6 @@ from enum import Enum
 
 
 class Token(Enum):
-
     # Arithmetic
     ADD = "+"
     SUB = "-"

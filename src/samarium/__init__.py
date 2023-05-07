@@ -19,7 +19,6 @@ file              : reads program from script file"""
 
 
 def main(*, debug: bool = False) -> None:
-
     reg = Registry(globals())
 
     if len(sys.argv) == 1:
