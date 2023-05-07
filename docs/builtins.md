@@ -59,6 +59,11 @@ If a particular exit code is desired, it may be put after the exclamation mark:
 
 `=>! //` will exit the program with exit code 3.
 
+A string may also be supplied instead of a number, which will first write it to stderr
+and then exit the program with exit code 1.
+
+> `=>! "uh oh";` is equivalent to `"uh oh\n" ~> /\; =>! /;`
+
 
 ## HASH
 
