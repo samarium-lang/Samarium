@@ -254,7 +254,10 @@ class Dataclass(UserAttrs):
             raise SamariumTypeError(f"too many arguments ({argc}/{fieldc})")
         for field, arg in zip(self._fields, args):
             setattr(self, field, arg)
-        self.vals = args
+
+    @property
+    def vals(self) -> tuple[Attrs, ...]:
+        return tuple(getattr(self, i) for i in self._fields)
 
     def __str__(self) -> str:
         return f"{self._name}({', '.join(map(repr, self.vals))})"
