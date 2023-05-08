@@ -8,7 +8,7 @@ Operator | Meaning
 `+`      | Addition
 `-`      | Subtraction
 `++`     | Multiplication
-`--`     | Integer division
+`--`     | Division
 `+++`    | Exponentiation
 `---`    | Modulo
 
