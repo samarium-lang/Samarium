@@ -26,12 +26,12 @@ crossandra = Crossandra(
     Token,
     ignore_whitespace=True,
     rules=[
-        Rule(r"==<.*>==", converter=False, flags=re.M | re.S),
-        Rule(r"==[^\n]*", converter=False, flags=re.M | re.S),
+        Rule(r"==<.*>==", flags=re.M | re.S, ignore=True),
+        Rule(r"==[^\n]*", flags=re.M | re.S, ignore=True),
         Rule(
             common.DOUBLE_QUOTED_STRING.pattern,
             lambda x: x.replace("\n", r"\n"),
-            re.S,
+            flags=re.S,
         ),
         Rule(rf"{SM_BIT}+`?{SM_BIT}*|`{SM_BIT}*", to_number),
         Rule(r"\w+"),

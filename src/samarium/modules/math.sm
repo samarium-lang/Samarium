@@ -81,7 +81,7 @@ sqrt x * {
     ? x < \ {
         "sqrt is defined only for non-negative numbers"!!!;
     }
-    * n +++ `/;
+    * x +++ `/;
 }
 
 sum array start? * {

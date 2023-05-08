@@ -103,8 +103,22 @@ def t(obj: T | None = None) -> T | None:
     return obj
 
 
-def throw(message: String = NULL_STRING) -> None:
-    raise SamariumError(message.val)
+def throw(obj: String | Array = NULL_STRING) -> None:
+    note = ""
+    if isinstance(obj, Array):
+        if len(obj.val) != 2:
+            raise SamariumTypeError("array must be of form [error_msg, note]")
+        error_msg, note = obj.val
+        if not isinstance(error_msg, String):
+            raise SamariumTypeError("error message must be a string")
+        if not isinstance(note, String):
+            raise SamariumTypeError("error note must be a string")
+        note = f"\n&1[Note] {note.val}"
+    elif isinstance(obj, String):
+        error_msg = obj
+    else:
+        raise SamariumTypeError("throw argument must be a string or a 2-element array")
+    raise SamariumError(error_msg.val + note)
 
 
 def timestamp() -> Number:

@@ -88,7 +88,7 @@ NEXT = object()
 
 
 class CompositionMeta(type):
-    def __mul__(cls, other: Any) -> Function:
+    def __and__(cls, other: Any) -> Function:
         if isinstance(other, type):
             other = Type(other)
         if isinstance(other, Type):
@@ -97,7 +97,7 @@ class CompositionMeta(type):
             raise SamariumTypeError(
                 f"can't use function composition with {get_type_name(other)}"
             )
-        return Type(cls).as_function() * other
+        return Type(cls).as_function() & other
 
 
 class Attrs(metaclass=CompositionMeta):
@@ -232,6 +232,59 @@ class UserAttrs(Attrs):
         return Array(map(Type, parents))
 
 
+class Dataclass(UserAttrs):
+    _name: str
+    _field_names: list[str]
+    _fields: list[str]
+
+    def __init_subclass__(cls, /, fields: list[str]) -> None:
+        super().__init_subclass__()
+        cls._name = cls.__name__.removeprefix("sm_")
+        cls._field_names = fields
+        cls._fields = [f"sm_{f}" for f in fields]
+
+    def __init__(self, *args: Attrs) -> None:
+        argc = len(args)
+        fieldc = len(self._fields)
+        if argc < fieldc:
+            raise SamariumTypeError(
+                f"missing argument(s): {', '.join(self._field_names[argc:])}"
+            )
+        if argc > fieldc:
+            raise SamariumTypeError(f"too many arguments ({argc}/{fieldc})")
+        for field, arg in zip(self._fields, args):
+            setattr(self, field, arg)
+
+    @property
+    def vals(self) -> tuple[Attrs, ...]:
+        return tuple(getattr(self, i) for i in self._fields)
+
+    def __str__(self) -> str:
+        return f"{self._name}({', '.join(map(repr, self.vals))})"
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, type(self)):
+            return self.vals == other.vals
+        return False
+
+    def __gt__(self, other: object) -> bool:
+        if isinstance(other, type(self)):
+            return self.vals > other.vals
+        return False
+
+    def __ne__(self, other: object) -> bool:
+        return not (self == other)
+
+    def __ge__(self, other: object) -> bool:
+        return self == other or self > other
+
+    def __lt__(self, other: object) -> bool:
+        return not (self >= other)
+
+    def __le__(self, other: object) -> bool:
+        return not (self > other)
+
+
 class Type(Attrs):
     __slots__ = ("val",)
 
@@ -252,14 +305,14 @@ class Type(Attrs):
         # "redundant" lambda on purpose to make the obj have a __code__ attr
         return Function(lambda x: self(x))
 
-    def __mul__(self, other: Any) -> Function:
+    def __and__(self, other: Any) -> Function:
         if isinstance(other, type):
-            other =  Type(other)
+            other = Type(other)
         if isinstance(other, Type):
             other = other.as_function()
         if not isinstance(other, Function):
             raise SamariumTypeError(f"Type ++ {get_type_name(other)}")
-        return self.as_function() * other
+        return self.as_function() & other
 
     def __str__(self) -> str:
         return get_name(self.val)
@@ -273,7 +326,7 @@ class Type(Attrs):
         return hash(self.val)
 
     def __call__(self, *args: Any) -> Any:
-        if self.val in (Function, Module, Type):
+        if self.val in (Function, Module, Type, Dataclass):
             raise SamariumTypeError(f"cannot instantiate a {self.val.__name__.lower()}")
         return self.val(*args)
 
@@ -412,8 +465,8 @@ class Number(Attrs):
     def __le__(self, other: Any) -> Number:
         return Num(self.val <= other.val)
 
-    def __hash__(self) -> float:
-        return self.hash().val
+    def __hash__(self) -> int:
+        return cast(int, self.hash().val)
 
     def cast(self) -> String:
         if self.is_int:
@@ -1105,16 +1158,18 @@ class Function(Attrs):
             raise
         return out
 
-    def __mul__(self, other: Any) -> Function:
+    def __and__(self, other: Any) -> Function:
         if isinstance(other, type):
             other = Type(other)
         if isinstance(other, Type):
             other = other.as_function()
         if not isinstance(other, Function):
-            raise SamariumTypeError(f"Function ++ {get_type_name(other)}")
+            raise SamariumTypeError(f"Function & {get_type_name(other)}")
+
         def f(*args: Attrs) -> Attrs:
             return self(other(*args))
-        f.__name__ = f"({self} ++ {other})"
+
+        f.__name__ = f"({self} & {other})"
         return Function(f)
 
     def __hash__(self) -> int:

@@ -218,7 +218,7 @@ rightpad string length char? * {
 
 split string separator? * {
     separator <> " ";
-    ? ~~ separator { "empty separator"!!!; }
+    ? ~~ separator { ["empty separator", "use []?!(string) instead"]!!!; }
     ? separator?! :: []?! {
         first: separator<<\>>;
         rest: separator<</..>>;

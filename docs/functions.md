@@ -23,6 +23,14 @@ b: /\;
 c: add(a, b);
 ```
 
+If no value is returned, the semicolon after `*` may be omitted:
+
+```sm
+exit code * {
+    ? code {*}
+    "Success"!;
+}
+```
 
 ## Main Function
 
@@ -162,6 +170,14 @@ Primes below 100:
 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
 ```
 
+Just like with `*`, the semicolon after `**` can be omitted if no value is
+yielded:
+```sm
+foo * {**}
+
+[]?!(foo())!  == [null]
+```
+
 Iterators support special `$` and cast `%` methods.
 
 `Iterator%` returns the length of the iterator if available, and null otherwise.
@@ -169,3 +185,47 @@ Iterators support special `$` and cast `%` methods.
 `Iterator$` yields the next value of the iterator.
 
 Iterators are always truthy.
+
+
+## Function Composition
+
+Functions, types, and type aliases in Samarium can be composed together by using
+the `&` operator:
+
+```sm
+(<-math.sqrt & <-operator.add)(//, //\)!  == 3
+(<-types.Boolean & /?!)("1")!  == true
+```
+```sm
+<=math.[abs, max, min];
+arrmap: []?! & <-iter.map;
+arrmap(abs, [/, `/, //\, -/\\, -/\/])!  == [1, 0.5, 6, 4, 5]
+
+high x * { * min([x, /\/]); }
+low x * { * max([x, \]); }
+clamp: high & low;
+
+x: []?!(<<-//../\\/>>)!  == [-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+arrmap(clamp, x)!  == [0, 0, 0, 0, 1, 2, 3, 4, 5, 5, 5, 5]
+```
+```sm
+compose funcs... * {
+    * <-iter.reduce(<-operator.and, funcs);
+}
+
+repeat_function func times * {
+   * compose(**[func]++times);
+}
+
+foo x * {
+    out: x +++ /?!("0.1")!
+    * out;
+}
+
+repeat_function(foo, /\/)(`/);
+== 0.9330329915368074
+== 0.9930924954370359
+== 0.9993070929904525
+== 0.9999306876841536
+== 0.999993068552217
+```

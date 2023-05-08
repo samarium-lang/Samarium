@@ -20,18 +20,4 @@ null:;
 y :: null && null ->? z!;
 ```
 
-The null value is not inserted implicitly for method calls, therefore:
-```sm
-V: .to_bit();
-```
-has to be written as
-```sm
-null:;
-V: null.to_bit();
-```
-or – without introducing any variables – as
-```sm
-V: (||).to_bit();
-```
-
 Converting null to a number yields the value `0`.

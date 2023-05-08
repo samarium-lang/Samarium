@@ -34,10 +34,14 @@ def is_first_token(line: list[str]) -> bool:
     return not line or (len(line) == 1 and line[0].isspace())
 
 
-def is_quoted(string: Tokenlike) -> bool:
-    if isinstance(string, str):
-        return string[0] == string[-1] == '"'
+def is_quoted(token: Tokenlike) -> bool:
+    if isinstance(token, str):
+        return token[0] == token[-1] == '"'
     return False
+
+
+def is_varname(token: Tokenlike) -> bool:
+    return isinstance(token, str) and not is_quoted(token)
 
 
 def match_brackets(tokens_: list[Tokenlike]) -> tuple[int, list[Token]]:
@@ -190,6 +194,7 @@ class Group:
         Token.ENUM,
         Token.SLICE_OPEN,
         Token.SLICE_CLOSE,
+        Token.DATACLASS,
     }
     builtins = {
         Token.ARR_STMP,
@@ -344,6 +349,7 @@ class Transpiler:
         self._processed_tokens: list[Tokenlike] = []
         self._reg = registry
         self._scope = Scope()
+        self._skip = 0
         self._slice_object = []
         self._tokens = tokens
 
@@ -356,12 +362,17 @@ class Transpiler:
         self._tokens[self._index - 1] = value
 
     @property
-    def _next(self) -> Tokenlike:
+    def _next(self) -> Tokenlike | None:
+        if self._index + 1 >= len(self._tokens):
+            return None
         return self._tokens[self._index + 1]
 
     @_next.setter
     def _next(self, value: Tokenlike) -> None:
         self._tokens[self._index + 1] = value
+
+    def _token_at(self, offset: int) -> Tokenlike:
+        return self._tokens[self._index + offset]
 
     def transpile(self) -> Registry:
         # Matching brackets
@@ -376,6 +387,9 @@ class Transpiler:
 
         # Transpiling
         for index, token in enumerate(self._tokens):
+            if self._skip:
+                self._skip -= 1
+                continue
             self._process_token(index, token)
 
         self._reg.output = self._code
@@ -565,6 +579,8 @@ class Transpiler:
             indented = self._indent > 0
             if is_first_token(self._line):
                 self._line.insert(indented, "return ")
+                if self._next is Token.BRACE_CLOSE:
+                    self._process_token(self._index, Token.END)
                 return
 
             # Function definition
@@ -622,6 +638,8 @@ class Transpiler:
                 # fmt: on
                 else:
                     push("yield ")
+                    if self._next is Token.BRACE_CLOSE:
+                        self._process_token(self._index, Token.END)
             elif self._prev in UNPACK_TRIGGERS:
                 push("*")
             else:
@@ -648,7 +666,6 @@ class Transpiler:
                 push("import_inline('")
             else:
                 push("break")
-                self._submit_line()
         elif token is Token.CATCH:
             if self._next is Token.BRACE_OPEN:
                 push("except Exception")
@@ -693,7 +710,6 @@ class Transpiler:
                 push(shift + "for ")
 
     def _core(self, token: Token, push: Callable) -> None:
-        index = self._index
         if token is Token.END:
             if self._prev in Group.operators | {
                 Token.DEFAULT,
@@ -701,7 +717,7 @@ class Transpiler:
             }:
                 push("NULL")
             if self._scope.current == "enum":
-                if self._tokens[index - 2] in {token, Token.BRACE_OPEN}:
+                if self._token_at(-2) in {token, Token.BRACE_OPEN}:
                     push("=NEXT")
                 push(",")
                 return
@@ -752,6 +768,74 @@ class Transpiler:
             if not self._slice_object.pop():
                 push("]")
             self._scope.exit()
+        elif token is Token.DATACLASS:
+            name = ""
+            fields: list[str] = []
+
+            if is_varname(self._next):
+                name = self._next
+                push("class ")
+                self._process_token(self._index + 1, self._next)
+            else:
+                throw_syntax("dataclass name required after @!")
+
+            if self._token_at(1) is Token.END:  # @! Sentinel;
+                push(f"(Dataclass, {fields=}): pass")
+                self._line_tokens.extend((name, Token.END))
+                self._skip = 2
+                self._submit_line()
+                return
+
+            if self._token_at(1) not in (Token.PAREN_OPEN, Token.BRACE_OPEN):
+                throw_syntax("expected semicolon, fields or block after dataclass name")
+
+            offset = 2  # skipping name and ("(" or "{")
+            if fields_entered := self._token_at(1) is Token.PAREN_OPEN:  # fields
+                self._line_tokens.append(Token.PAREN_OPEN)
+                prev = None
+                while is_varname(curr := self._token_at(offset)) or curr is Token.SEP:
+                    if prev is None or (c := (prev, curr).count(Token.SEP)) == 1:
+                        self._line_tokens.append(curr)
+                        prev = curr
+                        if isinstance(curr, str):
+                            fields.append(curr)
+                        offset += 1
+                    elif c == 0:
+                        throw_syntax(
+                            "spaces are not allowed in variable names",
+                            note=f"{prev} {curr} -> {prev}{curr}",
+                        )
+                    elif c == 2:
+                        throw_syntax("missing field name between commas")
+
+                if self._token_at(offset) is Token.ENUM:
+                    throw_syntax("cannot use private names for dataclass fields")
+                if self._token_at(offset) is not Token.PAREN_CLOSE:
+                    throw_syntax("expected closing parenthesis after fields")
+
+                self._line_tokens.append(Token.PAREN_CLOSE)
+                offset += 1  # skipping ")"
+
+                self._skip = offset + 1  # skipping ";"
+                if self._token_at(offset) is Token.END:  # @! Person(name);
+                    push(f"(Dataclass, {fields=}): pass")
+                    self._submit_line()
+                    return
+                if self._token_at(offset) is not Token.BRACE_OPEN:
+                    throw_syntax("expected semicolon or block after dataclass fields")
+
+            self._skip = offset + fields_entered  # skipping ";"
+
+            # @! Sentinel {}
+            # @! Person(name) {}
+            self._reg[Switch.CLASS] = True
+            self._scope.enter("class")
+            self._indent += 1
+            push(f"(Dataclass, {fields=}):")
+            self._class_indent.append(self._indent)
+            self._line_tokens.append(Token.BRACE_OPEN)
+            self._submit_line()
+
         else:  # ENUM
             if isinstance(self._next, str):
                 if self._prev is Token.INSTANCE:
@@ -783,6 +867,8 @@ class Transpiler:
                 push("NULL")
             indented = self._indent > 0
             self._line = [*self._line[:indented], "throw(", *self._line[indented:], ")"]
+            if self._next is not Token.END:
+                self._process_token(self._index, Token.END)
         elif token is Token.PRINT:
             if (
                 self._scope.current == "class"
@@ -796,6 +882,8 @@ class Transpiler:
                     push("NULL")
             hook = self._line.index("=") + 1 if "=" in self._line else self._indent > 0
             self._line = [*self._line[:hook], "print_safe(", *self._line[hook:], ")"]
+            if self._next is not Token.END:
+                self._process_token(self._index, Token.END)
         else:  # SLEEP or EXIT
             func = "sysexit" if token is Token.EXIT else "sleep"
             push(f"{func}(")
@@ -831,7 +919,7 @@ class Transpiler:
             # Identifiers
             if isinstance(self._prev, str):
                 offset = 0
-                while isinstance(tok := self._tokens[index + offset], str) or tok in (
+                while isinstance(tok := self._token_at(offset), str) or tok in (
                     Token.FOR,
                     Token.IF,
                 ):
@@ -841,7 +929,7 @@ class Transpiler:
                         "spaces are not allowed in variable names",
                         note=f"{self._prev} {token} -> {self._prev}{token}",
                     )
-            pprev_token = self._tokens[self._index - 2]
+            pprev_token = self._token_at(-2)
             if self._prev is Token.ENUM and isinstance(pprev_token, str):
                 if is_quoted(pprev_token):
                     throw_syntax("cannot use # after a string")

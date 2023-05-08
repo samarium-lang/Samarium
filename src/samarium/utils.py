@@ -38,8 +38,8 @@ def sysexit(*args: Any) -> None:
     if len(args) > 1:
         raise SamariumTypeError("=>! only takes one argument")
     code = args[0].val if args else 0
-    if not isinstance(code, int):
-        raise SamariumTypeError("=>! only accepts integers")
+    if not isinstance(code, (int, str)):
+        raise SamariumTypeError("=>! only accepts integers and strings")
     raise SystemExit(code)
 
 

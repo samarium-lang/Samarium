@@ -23,6 +23,7 @@ from samarium.classes import (
     NEXT,
     NULL,
     Array,
+    Dataclass,
     Enum,
     FileManager,
     Function,
@@ -95,9 +96,9 @@ def run(
         code = (
             (Path(__file__).resolve().parent / "template.py")
             .read_text()
-            .replace("{{ CODE }}", code)
+            .replace("{{CODE}}", code)
             .replace(
-                "{{ SOURCE }}",
+                "{{SOURCE}}",
                 str(Path(source).resolve() if isinstance(source, str) else source),
             )
         )

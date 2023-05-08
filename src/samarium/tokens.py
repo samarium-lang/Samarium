@@ -2,7 +2,6 @@ from enum import Enum
 
 
 class Token(Enum):
-
     # Arithmetic
     ADD = "+"
     SUB = "-"
@@ -59,6 +58,7 @@ class Token(Enum):
 
     # OOP / Functions
     CLASS = "@"
+    DATACLASS = "@!"
     DEFAULT = "<>"
     FUNCTION = "*"
     INSTANCE = "'"
