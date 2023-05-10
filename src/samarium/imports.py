@@ -10,7 +10,7 @@ from samarium.classes import Attrs, Module
 from samarium.exceptions import SamariumImportError, SamariumSyntaxError
 
 if TYPE_CHECKING:
-    from .transpiler import Registry
+    from samarium.transpiler import Registry
 
 
 FORMATTERS = {

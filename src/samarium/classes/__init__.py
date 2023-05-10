@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .base import (
+from samarium.classes.base import (
     MISSING,
     NEXT,
     NULL,
@@ -23,7 +23,7 @@ from .base import (
     correct_type,
     to_string,
 )
-from .fileio import File, FileManager, Mode
+from samarium.classes.fileio import File, FileManager, Mode
 
 __all__ = (
     "Array",

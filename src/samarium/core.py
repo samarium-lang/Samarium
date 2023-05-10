@@ -43,7 +43,7 @@ from samarium.transpiler import Registry, Transpiler
 from samarium.utils import sysexit
 
 if TYPE_CHECKING:
-    from .classes import Attrs
+    from samarium.classes import Attrs
 
 
 def import_to_scope(data: str, reg: Registry, source: str) -> None:

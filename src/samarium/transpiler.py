@@ -9,7 +9,7 @@ from samarium.exceptions import SamariumSyntaxError, handle_exception
 from samarium.tokens import CLOSE_TOKENS, FILE_IO_TOKENS, OPEN_TOKENS, Token
 
 if TYPE_CHECKING:
-    from .tokenizer import Tokenlike
+    from samarium.tokenizer import Tokenlike
 
 
 def groupnames(array: list[str]) -> list[str]:
