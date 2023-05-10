@@ -47,7 +47,8 @@ lcm a b * {
     !! { * \; }
 }
 
-max array * {
+max array b... * {
+    ? b { * max([array] + b); }
     o: array<<\>>;
     ... e ->? array {
         ? e > o { o: e; }
@@ -55,7 +56,8 @@ max array * {
     * o;
 }
 
-min array * {
+min array b... * {
+    ? b { * min([array] + b); }
     o: array<<\>>;
     ... e ->? array {
         ? e < o { o: e; }
