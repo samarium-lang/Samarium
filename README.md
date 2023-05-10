@@ -11,6 +11,8 @@ Here's a `Hello, World!` program written in Samarium:
 
 Documentation on how to program in Samarium can be found [here](https://samarium-lang.github.io/Samarium/).
 
+## [Examples](https://samarium-lang.github.io/Samarium/examples/)
+
 
 # Installation
 
