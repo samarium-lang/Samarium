@@ -519,6 +519,9 @@ class String(Attrs):
     def __repr__(self) -> str:
         return f'"{repr(self.val)[1:-1]}"'
 
+    def __neg__(self) -> String:
+        return String(self.val[::-1])
+
     def __add__(self, other: Any) -> String:
         if isinstance(other, String):
             return String(self.val + other.val)
