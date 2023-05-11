@@ -88,7 +88,7 @@ def handle_exception(exception: Exception) -> None:
         name = exc_type.__name__.removeprefix("Samarium")
     name = name or exc_type.__name__
     DAHLIA.print(f"&4[{name}] {exception}", file=sys.stderr)
-    if Runtime.repl:
+    if not Runtime.repl:
         sys.exit(1)
 
 
@@ -111,9 +111,7 @@ class SamariumImportError(SamariumError):
 
 
 class SamariumSyntaxError(SamariumError):
-    def __init__(self, msg: str) -> None:
-        DAHLIA.print(f"&4[SyntaxError] {msg}", file=sys.stderr)
-        sys.exit(1)
+    pass
 
 
 class SamariumTypeError(SamariumError):

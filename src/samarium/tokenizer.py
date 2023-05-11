@@ -39,10 +39,12 @@ crossandra = Crossandra(
 )
 
 
-def tokenize(code: str) -> list[Tokenlike]:
+def tokenize(code: str, *, repl: bool = False) -> list[Tokenlike]:
     try:
         return cast(list[Tokenlike], crossandra.tokenize(code))
     except CrossandraError as e:
+        if repl:
+            raise
         errmsg = str(e)
         if '"' in errmsg:
             errmsg = "unclosed string literal"
