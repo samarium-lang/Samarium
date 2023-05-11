@@ -82,12 +82,10 @@ def handle_exception(exception: Exception) -> None:
             if len(names) >= 2 and names[1] in {"__getitem__", "__setitem__"}
             else ".".join(map(clear_name, names))
         )
+    elif exc_type is ZeroDivisionError:
+        name = "MathError"
     elif exc_type not in {AssertionError, NotDefinedError}:
-        name = exc_type.__name__
-        if name.startswith("Samarium"):
-            name = name.removeprefix("Samarium")
-        else:
-            name = f"Python{name}".replace("PythonZeroDivision", "Math")
+        name = exc_type.__name__.removeprefix("Samarium")
     name = name or exc_type.__name__
     DAHLIA.print(f"&4[{name}] {exception}", file=sys.stderr)
     if Runtime.repl:
