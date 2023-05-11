@@ -37,7 +37,7 @@ def main(*, debug: bool = False) -> None:
 
     try:
         file = Path(arg).read_text()
-    except IOError:
+    except OSError:
         DAHLIA.print(f"&4file not found: {arg}", file=sys.stderr)
     else:
         with suppress(Exception, KeyboardInterrupt):
