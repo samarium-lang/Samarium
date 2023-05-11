@@ -87,10 +87,10 @@ def run(
     *,
     debug: bool = False,
     load_template: bool = True,
-    quit_on_error: bool = True,
+    repl: bool = True,
 ) -> Registry:
-    runtime_state = Runtime.quit_on_error
-    Runtime.quit_on_error = quit_on_error
+    runtime_state = Runtime.repl
+    Runtime.repl = repl
     code = Transpiler(tokenize(code), reg).transpile().output
     if load_template:
         code = (
@@ -109,5 +109,5 @@ def run(
         exec(code, reg.vars)
     except Exception as e:
         exc.handle_exception(e)
-    Runtime.quit_on_error = runtime_state
+    Runtime.repl = runtime_state
     return reg

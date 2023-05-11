@@ -4,7 +4,7 @@ from pathlib import Path
 
 from samarium.core import run
 from samarium.exceptions import DAHLIA
-from samarium.shell import run_shell
+from samarium.repl import run_repl
 from samarium.transpiler import Registry
 from samarium.utils import __version__
 
@@ -22,7 +22,7 @@ def main(*, debug: bool = False) -> None:
     reg = Registry(globals())
 
     if len(sys.argv) == 1:
-        return run_shell(debug=debug)
+        return run_repl(debug=debug)
 
     if (arg := sys.argv[1]) in OPTIONS:
         if arg in OPTIONS[:2]:

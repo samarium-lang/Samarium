@@ -90,7 +90,7 @@ def handle_exception(exception: Exception) -> None:
             name = f"Python{name}".replace("PythonZeroDivision", "Math")
     name = name or exc_type.__name__
     DAHLIA.print(f"&4[{name}] {exception}", file=sys.stderr)
-    if Runtime.quit_on_error:
+    if Runtime.repl:
         sys.exit(1)
 
 
