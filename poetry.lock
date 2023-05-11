@@ -79,58 +79,68 @@ files = [
 
 [[package]]
 name = "crossandra"
-version = "1.3.0"
+version = "2.0.0"
 description = "A simple tokenizer operating on enums with a decent amount of configuration"
 category = "main"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.8"
 files = [
-    {file = "crossandra-1.3.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:6b8d255e18250eb60621f8240991fc3d8505849823ff3942b8a5c363453d1b6c"},
-    {file = "crossandra-1.3.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:f9a3882217cf125c3e1832265323d30f23d829e8df906dd91471db17f2257717"},
-    {file = "crossandra-1.3.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c00a21813f23e147d53072b3cb116af04ea481ffc54a99adb8aa28f88d3ffde3"},
-    {file = "crossandra-1.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9fadabd59d8a9dfc052a3bba636908c6a4b936450a91325d488248449ac217c1"},
-    {file = "crossandra-1.3.0-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2236bb9d235cae83d8912f54b5282e675ddc7017529c973acb2111afca210e01"},
-    {file = "crossandra-1.3.0-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:21cb2bd8b832eaad5d4c7c6c68fa6aa72eaff4c840df0de10f808a45eaae19d8"},
-    {file = "crossandra-1.3.0-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:02d2ec5180ba32b595af59e5c6bbfebfe2d79d5a082266fa6c30fe091c5766ea"},
-    {file = "crossandra-1.3.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:4d1c156be77489f29e5e044d35ac64011092f49d513e35016ad6018e11412409"},
-    {file = "crossandra-1.3.0-cp310-cp310-win32.whl", hash = "sha256:79d0864a2fb472f883f781de0def6fb643c90f34b48fce0dc5e373cc8a5b96ac"},
-    {file = "crossandra-1.3.0-cp310-cp310-win_amd64.whl", hash = "sha256:b6c4aa95a7ec6e0a22924c3183578d683c0b2309a2aafd88a9e553d3574009ed"},
-    {file = "crossandra-1.3.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:f1552faf6be32c291ea5087a3a793a87bdf40e52464f50a361b49845aa62a97b"},
-    {file = "crossandra-1.3.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:b3ab3df250cbebee973ccb6b7c48d3eb140269575f99e2a5e4a079751c942352"},
-    {file = "crossandra-1.3.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d99c0f30181f0c7794d01d55cf35b188c78665dfa5536928f9bf9febefdd2ee3"},
-    {file = "crossandra-1.3.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7170ff1d46f888c4740e25e5da6b6db5ff332756bceec145898d708008b9d915"},
-    {file = "crossandra-1.3.0-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:79c4043dac0217c666602720945ffd8325b78ccff33528170a968bf5cb747058"},
-    {file = "crossandra-1.3.0-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:edd7be66537e919638fcd14a5b07b11343eb7445f6d53132271ce68ddc41e768"},
-    {file = "crossandra-1.3.0-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:c7d8beb0409fbadfc8824244d53a55cd86636d7f47806c0af796f04386b74067"},
-    {file = "crossandra-1.3.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:8f513f1d472f70f1b7e06d95a2b8737b2e2f745fa0404639ce35f2ccb469be8e"},
-    {file = "crossandra-1.3.0-cp311-cp311-win32.whl", hash = "sha256:6f5e911168564fff2d390331c6137de0fb52599ce439f378bc1c6aa8d52e42c3"},
-    {file = "crossandra-1.3.0-cp311-cp311-win_amd64.whl", hash = "sha256:ddb1173af1045a7188f14187cf584edc670acbff6068f87b516cd2d32aad8a9e"},
-    {file = "crossandra-1.3.0-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:2130633551d4d15dc7aa018f0891b4ccf84615130ce5770b27852b053d685232"},
-    {file = "crossandra-1.3.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:891c4e69334383015af1645e0b75d84f00f819641af2b01a97cc9d58ac45f0cd"},
-    {file = "crossandra-1.3.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:27d3782fd98ea12c5c5f66623aa77fbea2b9138de88b520d66cb38993d1cc9d0"},
-    {file = "crossandra-1.3.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:faa60ed21022193455bbca47b2f7938f2144e2b32d8ca3202c813317622540ab"},
-    {file = "crossandra-1.3.0-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c0090db4684c5e53024bd82238e8a2198120ffd6fdb7c4ed55e2f78d05fc6972"},
-    {file = "crossandra-1.3.0-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:4092b135ff5f4ea0ad37725145eb3bc5d523c5c12dc306b26bc1644c057caead"},
-    {file = "crossandra-1.3.0-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:3180a94796d23c425f2d12f711b14c3a4c3c63e049366d16d46ca71b267290c4"},
-    {file = "crossandra-1.3.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:69be3f13f1ad4950ed5954ef5edf7d6bf73fa5ea619592b09057a083296adeed"},
-    {file = "crossandra-1.3.0-cp39-cp39-win32.whl", hash = "sha256:096191ab6f3709207498124bc29644f73e212be7be296b173d89236954e603ae"},
-    {file = "crossandra-1.3.0-cp39-cp39-win_amd64.whl", hash = "sha256:5ad83175d2ce80f978ae9de06db66ea44815680c8d1ff520cb4fcaf1d8249800"},
-    {file = "crossandra-1.3.0.tar.gz", hash = "sha256:f7bdc30a406db7316b035707f8cf4d5d968bda730645c1f09b0c847c7eac7bc1"},
+    {file = "crossandra-2.0.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:c7a07bf0b41605daccbd4ea2435b2a0a596e60f475d4c2c976a5975ca8e013ee"},
+    {file = "crossandra-2.0.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:58c4ca95ea56229ea1a65ad00b047c70cb0267ac38c6feaaf961dcdb4a9adcff"},
+    {file = "crossandra-2.0.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f988b9df5534037137dacfc3abd392a4adb03d4e1d4370b20cb126eb59a1096a"},
+    {file = "crossandra-2.0.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e959abeb87e43b00b11be962d759ea94191a0d43ee53649cb02dfafca0f85a7e"},
+    {file = "crossandra-2.0.0-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e8a5764d08518a6ad3f826ed054853d16fc43650594836427e28f216c2e9b996"},
+    {file = "crossandra-2.0.0-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:e08dc5652b75fc6a0d2cb1b35fa66b5c3445b146054a1591a24d8b75948b2200"},
+    {file = "crossandra-2.0.0-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:8459a9c924319d0b32d8048fa63cd19d66e43eb0f94509b0feda7cecc423b494"},
+    {file = "crossandra-2.0.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:e92727ac42385ee5dd85db7e39ea4d492fc80d0a0b7ce20c432ca5fbb57915b7"},
+    {file = "crossandra-2.0.0-cp310-cp310-win32.whl", hash = "sha256:42d2fb7524cd69f139afdc668c603859495ba66f41c6796a66cdeec1b8d95847"},
+    {file = "crossandra-2.0.0-cp310-cp310-win_amd64.whl", hash = "sha256:0eb00adfff046689e35d681a892ab8bb5c293476b7dcaa87b7655348010d537f"},
+    {file = "crossandra-2.0.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:bc60cd0f49364e72600ee39e001eefcc0c750469c21d3175992a50eda614730b"},
+    {file = "crossandra-2.0.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:aaa1b3cda28a5b2301a2da95efd189d128a336cbfc6f3f3a909f6edad0e63a6a"},
+    {file = "crossandra-2.0.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:aaa7392b3cc9be6b9c6c6dffdd7edaef28edb067ca56715560ec9033911b2e1a"},
+    {file = "crossandra-2.0.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4ca4c57db815c077f7c97db84e8bf7cddffb7d42e1467430b51754e331d2c325"},
+    {file = "crossandra-2.0.0-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c8a81712b971c50c530e1bd658da3ead61ed385f89bd71474b69f992614cd01c"},
+    {file = "crossandra-2.0.0-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:78cf49d89a0441d27b55d1ffd0ba79cc6174d8bd5d44c0aa56ef60c1eaa8ef17"},
+    {file = "crossandra-2.0.0-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:70c641d93f764f8f116f43d61097313a24571309b32ffa7dd3b129ef3ae597cd"},
+    {file = "crossandra-2.0.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:a71652b4d60d67ae7cb96d1427c32fd8a333f1cd6229fe23ebc9cdd65893b8d8"},
+    {file = "crossandra-2.0.0-cp311-cp311-win32.whl", hash = "sha256:98fb46248792c021870c460f4c0f299f4a9e3b7226450d48b9afafda28431ced"},
+    {file = "crossandra-2.0.0-cp311-cp311-win_amd64.whl", hash = "sha256:020f76818de066808e36e1de7b2e1bfb1a130258dd786971c6ebdc626e7db6cf"},
+    {file = "crossandra-2.0.0-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:ca39b4f7e8901cb7de7a99c1d04f32cc7ccc0ebd4d8c9bf39a0984fa367f2c5f"},
+    {file = "crossandra-2.0.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:2a47d87b880cc0d0a60112ee7433e1dd0a6d2e0963a317946e128454079eb33a"},
+    {file = "crossandra-2.0.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d16c6289042e2e1d0e137d3bd6576a4b696bc55a2f1b84b1571f7be22431d824"},
+    {file = "crossandra-2.0.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b6c65a93e78959296fc73c579f2c7f8bdd577640fde90cfbf39ea34d54827861"},
+    {file = "crossandra-2.0.0-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:5a61540971c7e30f1d0e33133e58e05c242ae44364e9e3a63f799c24cb9490d6"},
+    {file = "crossandra-2.0.0-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:2910b4778a338e27c1049f9ae4e582ce0e5f4a19189f40877a81fde24729b9a1"},
+    {file = "crossandra-2.0.0-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:28881c83cf55861442f44e1cb71fcda7a5918d4b7d432ee0420c2060376641fc"},
+    {file = "crossandra-2.0.0-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:c49fa01e1eadab04fe03e913669b87e77151852c0bf49691133b0af3eeebdff4"},
+    {file = "crossandra-2.0.0-cp38-cp38-win32.whl", hash = "sha256:d91e3d173aaeefc4f5fcee34c528525f0ca92af2c8d48a539584d27742073406"},
+    {file = "crossandra-2.0.0-cp38-cp38-win_amd64.whl", hash = "sha256:11f91f586bca22b831bce9e91ac2fad601a49398add29e8bdc919d7d895e54ba"},
+    {file = "crossandra-2.0.0-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:55ec40d752df445a133476514aa0b1e3ee601d43cfaff63260d1716742001b98"},
+    {file = "crossandra-2.0.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:a067e653259777bc5ddeb36ec9ba1dba0e50e53b083f34264dc698b6c1359547"},
+    {file = "crossandra-2.0.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:901d67f3f05b84e6b01db85f755173b6eacec3f56e2603a65ca02c1dc2bde206"},
+    {file = "crossandra-2.0.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:29b0f03bee111129eb2096528935f3d52de6225a85c57d3af38ea2be4d58bb6c"},
+    {file = "crossandra-2.0.0-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:7bc6aada63d2b01eae7b3af0d84a08c43dcc9ae05621756c881bb7f69df24f0e"},
+    {file = "crossandra-2.0.0-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:361479bfae35055f104bbacc67cdf30bd1fbe1cd03afd29427afb5ae20339998"},
+    {file = "crossandra-2.0.0-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:e5cb8c1b373641b6e726d8415d9eb2ddc9bc1a3abfa4687081aaab53f8c796a0"},
+    {file = "crossandra-2.0.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:16dbfb87d5dd48718ae3275dd5dc81bb8c4f05f26c6b9e92ad0493f13eda2b75"},
+    {file = "crossandra-2.0.0-cp39-cp39-win32.whl", hash = "sha256:a2bd9a3ad2fcaa16baa5c7e7d1d2368d334445d0877cf0a2a4278a4568f43ba7"},
+    {file = "crossandra-2.0.0-cp39-cp39-win_amd64.whl", hash = "sha256:66643ee65a6c27df93816ce9ea8a877d80d7c02fc0d0ef538c7f431a22b0dc7a"},
+    {file = "crossandra-2.0.0.tar.gz", hash = "sha256:ae6d52391e6034b5bcd5758c88af8450f86955019b39fd13fc9a05cbbe89365a"},
 ]
 
 [package.dependencies]
-result = ">=0.8.0,<0.9.0"
+result = ">=0.9.0,<0.10.0"
 
 [[package]]
 name = "dahlia"
-version = "2.3.1"
+version = "2.3.2"
 description = "A library allowing you to use Minecraft format codes in strings."
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "dahlia-2.3.1-py3-none-any.whl", hash = "sha256:575fc07b68b91ce6772cf45ab6829b3cbe849959c2288208e5104e6c8c26976f"},
-    {file = "dahlia-2.3.1.tar.gz", hash = "sha256:673d491c26005e027c78641a796821cfd600067434a071e13ee493557145406a"},
+    {file = "dahlia-2.3.2-py3-none-any.whl", hash = "sha256:5c654807ed6174b9ab1379813728026ab302f79fcc1a3a567adaa2d16e126a3c"},
+    {file = "dahlia-2.3.2.tar.gz", hash = "sha256:8872180125942f031c65bad0da7a6e30be5c2926d52c071a5d7c7ef0cef397f6"},
 ]
 
 [[package]]
@@ -165,14 +175,14 @@ files = [
 
 [[package]]
 name = "packaging"
-version = "23.0"
+version = "23.1"
 description = "Core utilities for Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "packaging-23.0-py3-none-any.whl", hash = "sha256:714ac14496c3e68c99c29b00845f7a2b85f3bb6f1078fd9f72fd20f0570002b2"},
-    {file = "packaging-23.0.tar.gz", hash = "sha256:b6ad297f8907de0fa2fe1ccbd26fdaf387f5f47c7275fedf8cce89f99446cf97"},
+    {file = "packaging-23.1-py3-none-any.whl", hash = "sha256:994793af429502c4ea2ebf6bf664629d07c1a9fe974af92966e4b8d2df7edc61"},
+    {file = "packaging-23.1.tar.gz", hash = "sha256:a392980d2b6cffa644431898be54b0045151319d1e7ec34f0cfed48767dd334f"},
 ]
 
 [[package]]
@@ -189,30 +199,30 @@ files = [
 
 [[package]]
 name = "platformdirs"
-version = "3.2.0"
+version = "3.5.1"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "platformdirs-3.2.0-py3-none-any.whl", hash = "sha256:ebe11c0d7a805086e99506aa331612429a72ca7cd52a1f0d277dc4adc20cb10e"},
-    {file = "platformdirs-3.2.0.tar.gz", hash = "sha256:d5b638ca397f25f979350ff789db335903d7ea010ab28903f57b27e1b16c2b08"},
+    {file = "platformdirs-3.5.1-py3-none-any.whl", hash = "sha256:e2378146f1964972c03c085bb5662ae80b2b8c06226c54b2ff4aa9483e8a13a5"},
+    {file = "platformdirs-3.5.1.tar.gz", hash = "sha256:412dae91f52a6f84830f39a8078cecd0e866cb72294a5c66808e74d5e88d251f"},
 ]
 
 [package.extras]
-docs = ["furo (>=2022.12.7)", "proselint (>=0.13)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.22,!=1.23.4)"]
-test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.2.2)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
+docs = ["furo (>=2023.3.27)", "proselint (>=0.13)", "sphinx (>=6.2.1)", "sphinx-autodoc-typehints (>=1.23,!=1.23.4)"]
+test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.3.1)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
 
 [[package]]
 name = "result"
-version = "0.8.0"
+version = "0.9.0"
 description = "A Rust-like result type for Python"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "result-0.8.0-py3-none-any.whl", hash = "sha256:d6a6258f32c057a4e0478999c6ce43dcadaf8ea435f58ac601ae2768f93ef243"},
-    {file = "result-0.8.0.tar.gz", hash = "sha256:c48c909e92181a075ba358228a3fe161e26d205dad416ad81f27f23515a5626d"},
+    {file = "result-0.9.0-py3-none-any.whl", hash = "sha256:2dd342c13fbf28d207c3f466f01a7915c6ee0d1fe3235fd9ba2041d36de498c1"},
+    {file = "result-0.9.0.tar.gz", hash = "sha256:cc4147c824221e8326d143a55065ec17b6337a9c0dda7700f7f947ca33ac63fd"},
 ]
 
 [package.dependencies]
@@ -245,4 +255,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "cd701495e8d4e1ff27418adba5a085bb5e4cb4741d8e47d32e5cc6649d836d5d"
+content-hash = "90fc75cf325d5ec8ad72b6a91c70c9ebcbe0e08126f3a39bebb89beb3076bb31"
