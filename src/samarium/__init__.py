@@ -29,7 +29,7 @@ def main(*, debug: bool = False) -> None:
             print(f"Samarium {__version__}")
         elif arg in OPTIONS[2:4]:
             if len(sys.argv) > 2:
-                run(sys.argv[2] + " !;", reg, arg, debug=debug)
+                run(sys.argv[2] + " !", reg, arg, debug=debug)
             DAHLIA.print("&4missing code to execute", file=sys.stderr)
         elif arg in OPTIONS[4:]:
             print(HELP)
