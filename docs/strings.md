@@ -27,6 +27,8 @@ Strings can be manipulated using some arithmetic operators:
 > `"woah!" ++ <-math.PI` is the same as `"woah!woah!woah!w"`  
 > `"hello"++` is the same as `"hello" ++ /\`
 
+> `-"hello"` is the same as `"olleh"`
+
 > `"hello" - "l"` is the same as `"helo"` (the 2nd operand removes the first
 > instance of itself from the 1st operand)
 
