@@ -87,7 +87,7 @@ def run(
     *,
     debug: bool = False,
     load_template: bool = True,
-    repl: bool = True,
+    repl: bool = False,
 ) -> Registry:
     runtime_state = Runtime.repl
     Runtime.repl = repl
