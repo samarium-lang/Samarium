@@ -32,8 +32,16 @@ Strings can be manipulated using some arithmetic operators:
 > `"hello" - "l"` is the same as `"helo"` (the 2nd operand removes the first
 > instance of itself from the 1st operand)
 
-> `"hello" -- "l"` is the same as `"heo"` (the 2nd operand removes all occurences
-> of itself from the 1st operand)
+> `"hello" -- "l"` is the same as `"heo"` (the 2nd operand removes all
+> occurences of itself from the 1st operand)
+
+!!! warning
+    Multiplying strings by negative numbers is undefined, as it is unclear
+    whether `s ++ -x` means `-(s ++ x)` or `(-s) ++ x`. These are equivalent for
+    integers, but they produce different results for other numbers:
+
+    - ``-("hello" ++ /`/)`` is `"eholleh"`
+    - ``(-"hello") ++ /`/`` is `"ollehol"`
 
 
 ## Formatting
