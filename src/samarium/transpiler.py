@@ -34,6 +34,12 @@ def is_first_token(line: list[str]) -> bool:
     return not line or (len(line) == 1 and line[0].isspace())
 
 
+def is_literal(token: Tokenlike) -> bool:
+    if isinstance(token, (int, float)):
+        return True
+    return is_quoted(token)
+
+
 def is_quoted(token: Tokenlike) -> bool:
     if isinstance(token, str):
         return token[0] == token[-1] == '"'
@@ -332,6 +338,18 @@ SPECIAL_METHOD_MAPPING = {
     "@": "matmul",
     "mkslice(t())": "getitem",
     "mkslice(t())=": "setitem",
+}
+
+IDENTIFIER_BOUNDARY_LEFT = {
+    Token.BRACKET_CLOSE,
+    Token.PAREN_CLOSE,
+    Token.TABLE_CLOSE,
+    Token.SLICE_CLOSE,
+}
+
+IDENTIFIER_BOUNDARY_RIGHT = {
+    Token.BRACKET_OPEN,
+    Token.TABLE_OPEN,
 }
 
 
@@ -937,6 +955,12 @@ class Transpiler:
                     "# must be put before the variable name",
                     note=f"{pprev_token}#{token} -> #{pprev_token}{token}",
                 )
+            if (
+                self._prev in IDENTIFIER_BOUNDARY_LEFT or is_literal(self._prev)
+            ) and self._next is not Token.FUNCTION:
+                throw_syntax("cannot use an identifier after a literal")
+            if self._next in IDENTIFIER_BOUNDARY_RIGHT or is_literal(self._next):
+                throw_syntax("cannot use a literal after an identifier")
             varname = f"sm_{token}"
             if self._private:
                 varname = "__" + varname
