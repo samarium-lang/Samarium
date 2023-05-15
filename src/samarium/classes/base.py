@@ -553,6 +553,11 @@ class String(Attrs):
         if other is NULL:
             other = Num(2)
         if isinstance(other, Number):
+            if other.val < 0:
+                raise SamariumTypeError(
+                    "String ++ -Number is ambiguous, use -(String ++ Number)"
+                    " or (-String) ++ Number instead"
+                )
             i, d = int(other.val // 1), other.val % 1
             return String(self.val * i + self.val[: round(d * len(self.val))])
         raise NotDefinedError(f"String ++ {get_type_name(other)}")
