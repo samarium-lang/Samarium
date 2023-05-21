@@ -199,3 +199,56 @@ multiply.outputs!;  == [10, 21, 108]
 [^1]: Note that order will be preserved here — if both class `A` and class `B`
 implement a function `f`, and class `C` inherits them in the order `(A, B)`,
 then `C` will inherit `f` from class `A`, as it is inherited later.
+
+
+## Data Classes
+
+Samarium has a shorthand syntax for defining classes whose main purpose is
+storing data:
+```sm
+@ Person {
+    => name age * {
+        'name: name;
+        'age: age;
+    }
+
+    ! * { * "$0($1, $2)" --- ['?!, 'name, 'age]; }
+    :: other * { * ['name, 'age] :: [other.name, other.age]; }
+    > other * { * ['name, 'age] > [other.name, other.age]; }
+    >: other * { * ['name, 'age] >: [other.name, other.age]; }
+}
+```
+The above definition can be replaced with just
+```sm
+@! Person(name, age);
+```
+If we wish to define additional methods, we can just open a pair of braces after
+we specify the name and the fields like in a regular class:
+```sm
+@! Person(name, age) {
+    birthday * { 'age+:; }
+}
+
+p: Person("Jake", /\\//)!  == Person("Jake", 19)
+p.birthday();
+p!  == Person("Jake", 20)
+```
+If you'd like your dataclass to not have any fields, you can either leave the
+parentheses empty or omit them entirely:
+```sm
+@! Unit(); Unit()!  == Unit()
+@! Unit; Unit()!  == Unit()
+```
+
+By default, all dataclass instances have a special method defined which returns
+its copy:
+```sm
+@! Person(name, age);
+
+p: Person("Bob", /\\//);
+q: p;
+r: p$;
+q.name: "Alice";
+r.name: "Dave";
+p, q, r!  == Person("Alice", 19) Person("Alice", 19) Person("Dave", 19)
+```
