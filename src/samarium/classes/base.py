@@ -284,6 +284,9 @@ class Dataclass(UserAttrs):
     def __le__(self, other: object) -> bool:
         return not (self > other)
 
+    def special(self) -> Any:
+        return type(self)(*self.vals)
+
 
 class Type(Attrs):
     __slots__ = ("val",)
