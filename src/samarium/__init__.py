@@ -1,5 +1,5 @@
 import sys
-from contextlib import suppress
+from contextlib import nullcontext, suppress
 from pathlib import Path
 
 from samarium.core import run
@@ -40,7 +40,7 @@ def main(*, debug: bool = False) -> None:
     except OSError:
         DAHLIA.print(f"&4file not found: {arg}", file=sys.stderr)
     else:
-        with suppress(Exception, KeyboardInterrupt):
+        with nullcontext() if debug else suppress(Exception, KeyboardInterrupt):
             file = "\n".join(file.splitlines()[file.startswith("#!") :])
             run(file, reg, arg, debug=debug)
 
