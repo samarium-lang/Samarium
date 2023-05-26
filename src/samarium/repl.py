@@ -2,7 +2,7 @@ import sys
 
 if sys.platform not in ("win32", "cygwin"):
     # used by input() to provide elaborate line editing & history features
-    import readline
+    import readline  # noqa: F401
 
 from crossandra import CrossandraError
 

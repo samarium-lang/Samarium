@@ -5,10 +5,9 @@ from enum import Enum
 from os import write
 from typing import IO, Any, cast
 
-from samarium.utils import get_type_name
-
-from samarium.exceptions import SamariumIOError, SamariumTypeError, SamariumValueError
 from samarium.classes.base import NULL, Array, Attrs, Null, Num, Number, Slice, String
+from samarium.exceptions import SamariumIOError, SamariumTypeError, SamariumValueError
+from samarium.utils import get_type_name
 
 
 class Mode(Enum):

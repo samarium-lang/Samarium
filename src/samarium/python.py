@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from collections.abc import Iterable as PyIterable
 from enum import Enum as PyEnum
-from io import BufferedIOBase, TextIOWrapper, BufferedReader, BufferedWriter
+from io import BufferedIOBase, BufferedReader, BufferedWriter, TextIOWrapper
 from types import FunctionType
 
 from samarium.classes import (
@@ -23,7 +23,6 @@ from samarium.classes import (
     Table,
     Zip,
 )
-
 from samarium.utils import get_type_name
 
 
