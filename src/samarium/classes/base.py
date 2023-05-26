@@ -43,14 +43,13 @@ def functype_repr(obj: Any) -> str:
 def guard(operator: str, *, default: int | None = None) -> Callable[..., Any]:
     def decorator(function: Callable[..., Any]) -> Callable[..., Any]:
         def wrapper(self: Any, other: Any) -> Any:
-            Ts = type(self)
-            To = type(other)
+            cls = type(self)
             use_default = default is not None and other.val is None
-            if isinstance(other, Ts):
+            if isinstance(other, cls):
                 return function(self, other)
             if use_default:
                 return function(self, Num(default))
-            raise NotDefinedError(f"{Ts.__name__} {operator} {To.__name__}")
+            raise NotDefinedError(f"{cls.__name__} {operator} {type(other).__name__}")
 
         return wrapper
 
