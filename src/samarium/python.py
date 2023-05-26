@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from collections.abc import Iterable as PyIterable
 from enum import Enum as PyEnum
-from io import BufferedIOBase, IOBase
+from io import BufferedIOBase, TextIOWrapper, BufferedReader, BufferedWriter
 from types import FunctionType
 
 from samarium.classes import (
@@ -80,9 +80,9 @@ def to_samarium(obj: object) -> Attrs:
         )
     if isinstance(obj, SliceRange):
         return obj._slice
-    if isinstance(obj, IOBase):
+    if isinstance(obj, (TextIOWrapper, BufferedWriter, BufferedReader)):
         return File(
-            obj, Mode(obj.mode).name, obj.name, binary=isinstance(obj, BufferedIOBase)  # type: ignore
+            obj, Mode(obj.mode).name, obj.name, binary=isinstance(obj, BufferedIOBase)
         )
     if isinstance(obj, zip):
         return Zip(*obj)
