@@ -94,7 +94,7 @@ def run(
     code = Transpiler(tokenize(code), reg).transpile().output
     if load_template:
         code = (
-            (Path(__file__).resolve().parent / "template.py")
+            (Path(__file__).resolve().parent / "template.txt")
             .read_text()
             .replace("{{CODE}}", code)
             .replace(
