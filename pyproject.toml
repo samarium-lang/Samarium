@@ -22,7 +22,7 @@ profile = "black"
 
 [tool.poetry.scripts]
 samarium = "samarium.__main__:main"
-samarium-debug = "samarium.__main__:main_debug"
+samarium-debug = "samarium.__init__:main_debug"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -1,4 +1,4 @@
-from samarium import main, main_debug
+from samarium import main
 
 if __name__ == "__main__":
     main()
