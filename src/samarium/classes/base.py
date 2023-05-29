@@ -868,6 +868,9 @@ class Table(Generic[KT, VT], Attrs):
     def __add__(self, other: Any) -> Table[KT, VT]:
         return Table(self.val | other.val)
 
+    def __invert__(self) -> Table[VT, KT]:
+        return Table({v: k for k, v in self.val.items()})
+
     def __sub__(self, other: Any) -> Table[KT, VT]:
         c = self.val.copy()
         try:
