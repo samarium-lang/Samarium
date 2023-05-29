@@ -657,7 +657,7 @@ class Array(Generic[T], Attrs):
             raise SamariumTypeError(f"cannot cast {get_type_name(value)} to an Array")
 
     def __str__(self) -> str:
-        return "[{}]".format(", ".join(map(functype_repr, self.val)))
+        return ", ".join(map(functype_repr, self.val)).join("[]")
 
     __repr__ = __str__
 
@@ -832,13 +832,9 @@ class Table(Generic[KT, VT], Attrs):
             raise SamariumTypeError(f"cannot cast {get_type_name(value)} to a Table")
 
     def __str__(self) -> str:
-        return (
-            "{{"
-            + ", ".join(
-                "{} -> {}".format(*map(functype_repr, i)) for i in self.val.items()
-            )
-            + "}}"
-        )
+        return ", ".join(
+            "{} -> {}".format(*map(functype_repr, i)) for i in self.val.items()
+        ).join(("{{", "}}"))
 
     def __bool__(self) -> bool:
         return self.val != {}
