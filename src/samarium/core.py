@@ -107,7 +107,13 @@ def run(
         if debug:
             print(code)
         reg.vars = globals() | reg.vars
-        exec(code, reg.vars)
+        if repl:
+            try:
+                print(eval(code, reg.vars))
+            except SyntaxError:
+                exec(code, reg.vars)
+        else:
+            exec(code, reg.vars)
     except Exception as e:
         exc.handle_exception(e)
     Runtime.repl = runtime_state
