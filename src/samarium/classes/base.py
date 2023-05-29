@@ -846,16 +846,12 @@ class Table(Generic[KT, VT], Attrs):
             raise SamariumValueError(f"key not found: {key}") from None
 
     def __setitem__(self, key: KT, value: VT) -> None:
-        # print(key, hash(key))
-        # print(value, hash(value))
         self.val[key] = value
 
     def __iter__(self) -> PyIterator[KT]:
         yield from self.val.keys()
 
     def __contains__(self, element: Any) -> bool:
-        # print("Table.__contains__", self.val, element, type(element))
-        # print("hsh", hash(element))
         return element in self.val
 
     def __eq__(self, other: Any) -> Number:
