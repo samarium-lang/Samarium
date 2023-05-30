@@ -10,12 +10,12 @@ from samarium.utils import __version__
 
 OPTIONS = ("-v", "--version", "-c", "--command", "-h", "--help")
 
-HELP = """samarium [option] [-c cmd | file]
+HELP = """samarium &7[option] [-c cmd | file]&r
 options and arguments:
--c, --command cmd : reads program from string
--h, --help        : shows this
--v, --version     : prints Samarium version
-file              : reads program from script file"""
+&e-c&r, &e--command&r &7<cmd>&r   reads program from string
+&e-h&r, &e--help&r            shows this message
+&e-v&r, &e--version&r         prints Samarium version
+&7file&r                  reads program from script file"""
 
 
 def main(*, debug: bool = False) -> None:
@@ -32,7 +32,7 @@ def main(*, debug: bool = False) -> None:
                 run(sys.argv[2] + " !", reg, arg, debug=debug)
             DAHLIA.print("&4missing code to execute", file=sys.stderr)
         elif arg in OPTIONS[4:]:
-            print(HELP)
+            DAHLIA.print(HELP)
         sys.exit()
 
     try:
