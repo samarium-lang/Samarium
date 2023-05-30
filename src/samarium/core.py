@@ -109,7 +109,9 @@ def run(
         reg.vars = globals() | reg.vars
         if repl:
             try:
-                print(eval(code, reg.vars))
+                res = eval(code, reg.vars)
+                if res not in (None, NULL):
+                    print(res)
             except SyntaxError:
                 exec(code, reg.vars)
         else:
