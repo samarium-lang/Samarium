@@ -4,25 +4,36 @@ from pathlib import Path
 
 from samarium.core import run
 from samarium.exceptions import DAHLIA
-from samarium.repl import run_repl
+from samarium.repl import Command, REPL
 from samarium.transpiler import Registry
 from samarium.utils import __version__
 
 OPTIONS = ("-v", "--version", "-c", "--command", "-h", "--help")
 
 HELP = """samarium &7[option] [-c cmd | file]&r
-options and arguments:
-&e-c&r, &e--command&r &7<cmd>&r   reads program from string
-&e-h&r, &e--help&r            shows this message
-&e-v&r, &e--version&r         prints Samarium version
-&7file&r                  reads program from script file"""
-
+options and arguments:\n""" + "\n".join(
+    map(
+        str,
+        (
+            Command(
+                "-c",
+                "--command",
+                arg="<cmd>",
+                sep=", ",
+                msg="reads program from string",
+            ),
+            Command("-h", "--help", sep=", ", msg="shows this message"),
+            Command("-v", "--version", sep=", ", msg="prints Samarium version"),
+            Command(arg="file", sep=", ", msg=" reads program from script file"),
+        ),
+    )
+)
 
 def main(*, debug: bool = False) -> None:
     reg = Registry(globals())
 
     if len(sys.argv) == 1:
-        return run_repl(debug=debug)
+        return REPL(debug=debug).run()
 
     if (arg := sys.argv[1]) in OPTIONS:
         if arg in OPTIONS[:2]:

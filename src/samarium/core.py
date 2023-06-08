@@ -110,8 +110,8 @@ def run(
         if repl:
             try:
                 res = eval(code, reg.vars)
-                if res not in (None, NULL):
-                    print(res)
+                if not (res is None or res is NULL):
+                    print(repr(res))
             except SyntaxError:
                 exec(code, reg.vars)
         else:

@@ -5,7 +5,7 @@ from dahlia import Dahlia
 
 from samarium.runtime import Runtime
 
-DAHLIA = Dahlia()
+DAHLIA = Dahlia(depth=8)
 NDE_TYPES = {AttributeError, NameError, UnboundLocalError}
 
 ARG_NOT_ITER = compile(r"argument of type '(\w+)' is not iterable")
