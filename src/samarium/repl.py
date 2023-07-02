@@ -111,6 +111,7 @@ COLOR_HELP_TEXT = """
 
 use &e:color save&r to save the current color to your config
 
+&00&r|&0black&r
 &11&r|&1blue&r
 &22&r|&2green&r
 &33&r|&3cyan&r
@@ -120,7 +121,6 @@ use &e:color save&r to save the current color to your config
 &77&r|&7light gray&r
 &88&r|&8gray&r
 &99&r|&9light blue&r
-&00&r|&0black&r
 &aa&r|&alime&r
 &bb&r|&baquamarine&r
 &cc&r|&clight red&r
