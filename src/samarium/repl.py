@@ -5,6 +5,7 @@ import sys
 from collections.abc import Iterator
 from contextlib import redirect_stderr, redirect_stdout, suppress
 from datetime import datetime, timedelta
+from os import get_terminal_size
 from pathlib import Path
 from time import time
 from typing import TypedDict
@@ -341,12 +342,16 @@ class REPL:
                     DAHLIA.print("&cAutosave disabled")
             elif subcmd == "list":
                 total_size = 0
+                term_size = min(get_terminal_size().columns - 8, 48)
                 for session in CACHE_DIR.glob("*"):
                     size = session.stat().st_size
                     total_size += size
-                    DAHLIA.print(f"{truncate(session.name, 32)} &e({fmt_size(size)})")
-                DAHLIA.print("-" * 32)
-                DAHLIA.print(f"&l{'Total':<32} &e{fmt_size(total_size)}\n")
+                    DAHLIA.print(
+                        f"{truncate(session.name, term_size)}"
+                        f" &e({fmt_size(size)})"
+                    )
+                DAHLIA.print("-" * term_size)
+                DAHLIA.print(f"&l{'Total':<{term_size}} &e{fmt_size(total_size)}\n")
             elif subcmd == "save":
                 if (CACHE_DIR / f"{arg}.json").exists() and input(
                     f"Session {arg!r} already exists. Replace? (y/N) "
