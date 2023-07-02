@@ -99,3 +99,9 @@ Runs a given piece of code and shows how much time it took to execute.
 0.009 seconds
 ```
 
+
+## Sessions
+
+Sessions provide a convenient way to save and restore your REPL state, allowing
+you to pick up right where you left off.
+
