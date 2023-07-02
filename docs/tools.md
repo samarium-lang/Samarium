@@ -105,7 +105,7 @@ color                   changes the prompt color, see :? color for details
 debug                   toggles debug mode
 restore                 restores the previous session
 t|time                  times the execution of the following statement
-undo                    undoes the last statement (reruns the entire session without it)
+undo                    undoes the last statement
 ```
 
 

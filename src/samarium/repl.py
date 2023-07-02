@@ -100,10 +100,7 @@ HELP_TEXT = "\n".join(
             Command("debug", msg="toggles debug mode"),
             Command("restore", msg="restores the previous session"),
             Command("t", "time", msg="times the execution of the following statement"),
-            Command(
-                "undo",
-                msg="undoes the last statement (reruns the entire session without it)",
-            ),
+            Command("undo", msg="undoes the last statement"),
         ),
     )
 )
