@@ -52,3 +52,7 @@ The REPL also supports compound statements:
 Samarium 0.6.0 introduced commands to improve your REPL experience.
 Commands are prefixed with a colon, use `:?` to see the list of all commands.
 
+
+## `clear`
+Clears the screen.
+
