@@ -92,6 +92,7 @@ $ ls -1 ~/.cache/samarium | wc -l
 
 ## `help [section]`
 > Aliases: `?`, `h`
+
 Shows the help message.
 ```
 --> :help
