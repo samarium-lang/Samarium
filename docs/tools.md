@@ -56,3 +56,17 @@ Commands are prefixed with a colon, use `:?` to see the list of all commands.
 ## `clear`
 Clears the screen.
 
+
+## `debug`
+Toggles debug mode which shows the intermediary Python code that the Samarium
+input is transpiled to before executing it (equivalent to using the `samarium-debug`
+command).
+```
+--> /
+1
+--> :debug
+--> /
+Num(1)
+1
+```
+
