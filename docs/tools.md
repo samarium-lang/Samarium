@@ -88,3 +88,14 @@ time|t                  times the execution of the following statement
 undo                    undoes the last statement (reruns the entire session without it)
 ```
 
+
+## `time <code>`
+> Aliases: `t`
+
+Runs a given piece of code and shows how much time it took to execute.
+```
+--> :t <-math.is_prime(/?!("2137"))
+1
+0.009 seconds
+```
+
