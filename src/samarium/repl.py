@@ -374,7 +374,10 @@ class REPL:
                 self.config.save()
                 DAHLIA.print(f"&aUpdated session lifetime to {arg} days")
             elif subcmd == "restore":
-                most_recent_session = max(unnamed_sessions(), key=lambda p: p[1])
+                try:
+                    most_recent_session = max(unnamed_sessions(), key=lambda p: p[1])
+                except ValueError:
+                    return repl_err("no sessions to restore")
                 self.load_session(Session.load(most_recent_session[0].stem))
                 DAHLIA.print(f"&aRestored latest session ({most_recent_session[1]})")
             else:
