@@ -114,3 +114,15 @@ Are you sure you want to delete all 27 sessions? (Y/n)
 Removed 1.7KB of session files
 ```
 
+
+## `lifetime [time]`
+Specifies the lifetime (in days) for unnamed sessions. Sessions that are too old
+get removed on the next launch of the REPL. Providing no argument will display
+the current value.
+```
+--> :session lifetime
+Current session lifetime is 30 days
+--> :session lifetime 20
+Updated session lifetime to 20 days
+```
+
