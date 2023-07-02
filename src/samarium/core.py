@@ -37,6 +37,7 @@ from samarium.classes import (
     Table,
     UserAttrs,
 )
+from samarium.exceptions import DAHLIA
 from samarium.imports import merge_objects, parse_string, resolve_path
 from samarium.runtime import Runtime
 from samarium.tokenizer import tokenize
@@ -105,7 +106,7 @@ def run(
         )
     try:
         if debug:
-            print(code)
+            DAHLIA.print(f"&j{code.strip()}")
         reg.vars = globals() | reg.vars
         if repl:
             try:
