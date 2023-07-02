@@ -105,3 +105,12 @@ Runs a given piece of code and shows how much time it took to execute.
 Sessions provide a convenient way to save and restore your REPL state, allowing
 you to pick up right where you left off.
 
+
+## `delete-all`
+Deletes all saved sessions (both named and unnamed).
+```
+--> :session delete-all
+Are you sure you want to delete all 27 sessions? (Y/n) 
+Removed 1.7KB of session files
+```
+
