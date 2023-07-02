@@ -23,6 +23,7 @@ from samarium.tokenizer import tokenize
 from samarium.transpiler import Registry, match_brackets
 from samarium.utils import __version__
 
+TIME = {"t", "time"}
 HELP = {"?", "h", "help"}
 QUIT = {"!", "exit", "q", "quit", "exit!", "q!", "quit!"}
 COMMANDS = (
@@ -34,10 +35,10 @@ COMMANDS = (
         "restore",
         "run",
         "session",
-        "time",
         "undo",
     }
     | HELP
+    | TIME
     | QUIT
 )
 NO_ARG_SESSION_SUBCMDS = {"delete-all", "autosave", "list", "restore"}
@@ -286,7 +287,7 @@ class REPL:
                 repl_err(str(e))
         elif cmd == "debug":
             self.session.debug = not self.session.debug
-        elif cmd == "time":
+        elif cmd in TIME:
             return arg
         elif cmd == "run":
             if not arg:
