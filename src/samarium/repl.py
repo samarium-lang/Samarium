@@ -41,7 +41,7 @@ COMMANDS = (
     | TIME
     | QUIT
 )
-NO_ARG_SESSION_SUBCMDS = {"delete-all", "autosave", "list", "restore"}
+NO_ARG_SESSION_SUBCMDS = {"delete-all", "list", "restore"}
 
 COLOR_TO_CODE = {
     "blue": "&1",
@@ -330,8 +330,11 @@ class REPL:
                     session.unlink()
                 DAHLIA.print(f"&aRemoved {fmt_size(size)} of session files")
             elif subcmd == "autosave":
-                self.config.autosave = not self.config.autosave
-                self.config.save()
+                if arg:
+                    if (arg := arg.casefold()) not in ("true", "false"):
+                        return repl_err(f"invalid value {arg!r} (must be true/false)")
+                    self.config.autosave = arg == "true"
+                    self.config.save()
                 if self.config.autosave:
                     DAHLIA.print("&aAutosave enabled")
                 else:
