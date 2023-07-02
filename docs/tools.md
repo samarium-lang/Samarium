@@ -120,6 +120,23 @@ Runs a given piece of code and shows how much time it took to execute.
 ```
 
 
+## `undo`
+Undoes the last statement.
+```
+--> x: /\/\!
+10
+--> x+++:
+--> x
+100
+--> :undo
+--> x
+10
+```
+This is done by rerunning all inputs except for the last one (simple value
+lookups like `x` on lines 4 and 7 are excluded) and silencing all writes to
+stdout/stderr.
+
+
 ## Sessions
 
 Sessions provide a convenient way to save and restore your REPL state, allowing
