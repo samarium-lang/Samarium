@@ -106,7 +106,7 @@ def run(
         )
     try:
         if debug:
-            DAHLIA.print(f"&j{code.strip()}")
+            DAHLIA.print(f"&j{code.strip()}", file=sys.stderr)
         reg.vars = globals() | reg.vars
         if repl:
             try:
