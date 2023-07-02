@@ -70,3 +70,21 @@ Num(1)
 1
 ```
 
+
+## `help [section]`
+> Aliases: `?`, `h`
+Shows the help message.
+```
+--> :help
+?|h|help                shows this message
+exit|q|quit             saves the session and quits the repl
+!|exit!|q!|quit!        force quits the repl
+session                 manages sessions, see :? session for details
+clear                   clears the screen
+color                   changes the prompt color, see :? color for details
+debug                   toggles debug mode
+restore                 restores the previous session
+time|t                  times the execution of the following statement
+undo                    undoes the last statement (reruns the entire session without it)
+```
+
