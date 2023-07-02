@@ -57,6 +57,41 @@ Commands are prefixed with a colon, use `:?` to see the list of all commands.
 Clears the screen.
 
 
+## `color [color|save]`
+Changes the prompt color. The available colors are [Dahlia codes] from `0` to
+`e`, as well as their English names. Providing no argument will reset the
+color. `:color save` will save the current color to the REPL config, making the
+change permanent.
+
+!!! note
+    Samarium uses an 8-bit color depth for Dahlia.
+
+The English names can be checked by using the `:? color` command:
+```
+--> :? color
+color [color]
+providing no color will reset it to the default one
+
+use :color save to save the current color to your config
+
+0|black
+1|blue
+2|green
+3|cyan
+4|red
+5|purple
+6|orange
+7|light gray
+8|gray
+9|light blue
+a|lime
+b|aquamarine
+c|light red
+d|pink
+e|yellow
+```
+
+
 ## `debug`
 Toggles debug mode which shows the intermediary Python code that the Samarium
 input is transpiled to before executing it (equivalent to using the
@@ -234,3 +269,6 @@ Samarium 0.6.0
 --> pi()
 3.141592653589793
 ```
+
+
+[Dahlia codes]: https://dahlia.readthedocs.io/en/latest/usage/reference.html#color-format-codes
