@@ -125,6 +125,17 @@ Sessions provide a convenient way to save and restore your REPL state, allowing
 you to pick up right where you left off.
 
 
+## `autosave [true|false]`
+Specifies whether sessions should be automatically saved on exit. Providing no
+argument will display the current value.
+```
+--> :session autosave false
+Autosave disabled
+--> :session autosave
+Autosave disabled
+```
+
+
 ## `delete-all`
 Deletes all saved sessions (both named and unnamed).
 ```
