@@ -179,3 +179,18 @@ prime-sieve.json                               (2.7KB)
 Total                                           3.3KB
 ```
 
+
+## `restore`
+Loads the most recent unnamed session.
+```
+--> :session autosave
+Autosave enabled
+--> f * { ("!"++(///+++))! }
+--> :q
+$ samarium
+Samarium 0.6.0
+--> :session restore
+--> f()
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+```
+
