@@ -355,9 +355,9 @@ class REPL:
                 self.load_session(Session.load(arg))
             elif subcmd == "lifetime":
                 if not arg:
+                    lifetime = str(self.config.session_lifetime).removesuffix(".0")
                     return DAHLIA.print(
-                        "Current session lifetime is"
-                        f" {self.config.session_lifetime} days"
+                        f"Current session lifetime is {lifetime} days"
                     )
                 try:
                     self.config.session_lifetime = float(arg)
