@@ -197,6 +197,15 @@ Total                                           3.3KB
 ```
 
 
+## `load <name>`
+Loads a given session.
+```
+--> :session load sorting
+--> quick_sort([/////?? ... _ ->? <<../\/\\>>])
+[1, 2, 2, 3, 3, 4, 5, 11, 13, 14, 17, 18, 20, 20, 21, 21, 23, 24, 26, 29]
+```
+
+
 ## `restore`
 Loads the most recent unnamed session.
 ```
