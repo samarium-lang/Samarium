@@ -220,3 +220,17 @@ Samarium 0.6.0
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ```
 
+
+## `save [name]`
+Saves a sesssion under a given name. Becomes an unnamed session if no name is
+supplied.
+```
+--> pi * { * <-math.TAU--; }
+--> :session save pi
+--> :q
+$ samarium
+Samarium 0.6.0
+--> :session load pi
+--> pi()
+3.141592653589793
+```
