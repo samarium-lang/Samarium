@@ -71,6 +71,25 @@ Num(1)
 ```
 
 
+## `exit`
+> Aliases: `q`, `quit`
+
+Exits the REPL and saves the session if [autosave](#autosave-truefalse) is
+enabled. Appending a `!` or just using it as a command will "force quit" the
+REPL without saving the session.
+```
+$ ls -1 ~/.cache/samarium | wc -l
+       7
+$ samarium
+Samarium 0.6.0
+--> :session autosave
+Autosave is enabled
+--> :!
+$ ls -1 ~/.cache/samarium | wc -l
+       7
+```
+
+
 ## `help [section]`
 > Aliases: `?`, `h`
 Shows the help message.
