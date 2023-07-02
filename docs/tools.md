@@ -156,3 +156,25 @@ Current session lifetime is 30 days
 Updated session lifetime to 20 days
 ```
 
+
+## `list`
+Displays a list of saved sessions and their sizes.
+```
+--> :session list
+20230702193813.json                            (57.0B)
+20230702163714.json                            (57.0B)
+20230702194010.json                            (57.0B)
+20230702163535.json                            (64.0B)
+20230702193747.json                            (57.0B)
+20230702210821.json                            (51.0B)
+20230702170234.json                            (57.0B)
+prime-sieve.json                               (2.7KB)
+20230702171025.json                            (57.0B)
+20230702193958.json                            (57.0B)
+20230702171009.json                            (57.0B)
+20230702193902.json                            (57.0B)
+20230702192942.json                            (57.0B)
+----------------------------------------------
+Total                                           3.3KB
+```
+
