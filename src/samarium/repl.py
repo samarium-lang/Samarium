@@ -351,7 +351,7 @@ class REPL:
                         f" &e({fmt_size(size)})"
                     )
                 DAHLIA.print("-" * term_size)
-                DAHLIA.print(f"&l{'Total':<{term_size}} &e{fmt_size(total_size)}\n")
+                DAHLIA.print(f"&l{'Total':<{term_size + 1}} &e{fmt_size(total_size)}\n")
             elif subcmd == "save":
                 if (CACHE_DIR / f"{arg}.json").exists() and input(
                     f"Session {arg!r} already exists. Replace? (y/N) "
