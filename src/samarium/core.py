@@ -1,6 +1,7 @@
 # ruff: noqa: F401
 from __future__ import annotations
 
+import ast
 import importlib.machinery
 import importlib.util
 import sys
@@ -106,7 +107,8 @@ def run(
         )
     try:
         if debug:
-            DAHLIA.print(f"&j{code.strip()}", file=sys.stderr)
+            code = ast.unparse(ast.parse(code))
+            DAHLIA.print(f"&j{code}", file=sys.stderr)
         reg.vars = globals() | reg.vars
         if repl:
             try:
