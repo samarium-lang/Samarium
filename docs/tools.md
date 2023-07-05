@@ -15,7 +15,7 @@ $ chmod +x script
 
 # Samarium REPL
 
-If you run the `samarium` command without any other arguments,
+If you run the `samarium` command without any arguments,
 you'll launch the REPL, an interactive shell that will read
 and evaluate any Samarium code you enter.
 ```txt
