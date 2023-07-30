@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from datetime import datetime
+from datetime import datetime, timezone
 from re import compile
 from time import sleep as _sleep
 from time import time_ns
@@ -43,7 +43,7 @@ TOO_MANY_ARGS_PATTERN = compile(
 
 
 def dtnow() -> Array:
-    utcnow = datetime.utcnow()
+    utcnow = datetime.now(tz=timezone.utc)
     now = datetime.now().timetuple()
     utcnow_tt = utcnow.timetuple()
     tz = now[3] - utcnow_tt[3], now[4] - utcnow_tt[4]

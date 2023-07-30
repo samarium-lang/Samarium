@@ -92,7 +92,7 @@ def resolve_path(name: str, source: str) -> Path:
     try:
         path = Path(source).parent
     except IndexError:  # REPL
-        path = Path().resolve()
+        path = Path.cwd()
     paths = [e.name for e in path.iterdir()]
     if not (f"{name}.sm" in paths or f"{name}.py" in paths):
         if name not in MODULE_NAMES:
