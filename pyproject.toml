@@ -22,7 +22,42 @@ mkdocs-material = "^9.1.21"
 
 [tool.ruff]
 target-version = "py39"
-select = ["E", "F", "RET", "I001", "ANN201", "ANN202", "ANN204", "ANN205", "ANN206"]
+select = [
+    "A",
+    "ANN",
+    "ARG",
+    "B",
+    "BLE",
+    "C",
+    "E",
+    "ERA",
+    "F",
+    "FBT",
+    "I",
+    "ISC",
+    "N",
+    "PIE",
+    "Q",
+    "RET",
+    "RSE",
+    "RUF",
+    "SIM",
+    "SLF",
+    "TCH",
+    "TRY",
+    "UP",
+    "W",
+]
+ignore = [
+    "A003",
+    "ANN101",
+    "ANN102",
+    "ANN401",
+    "RUF001",
+    "RUF002",
+    "RUF003",
+    "TRY003",
+]
 
 [tool.poetry.scripts]
 samarium = "samarium.__main__:main"
