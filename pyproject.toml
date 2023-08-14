@@ -49,6 +49,7 @@ select = [
     "W",
 ]
 ignore = [
+    "A002",
     "A003",
     "ANN101",
     "ANN102",
@@ -57,6 +58,7 @@ ignore = [
     "RUF002",
     "RUF003",
     "TRY003",
+    "C90"
 ]
 
 [tool.poetry.scripts]
