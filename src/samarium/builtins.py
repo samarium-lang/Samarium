@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from datetime import datetime, timezone
 from re import compile
 from time import sleep as _sleep
 from time import time_ns
 from types import GeneratorType
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from samarium.classes import (
     MISSING,
@@ -27,6 +26,9 @@ from samarium.exceptions import (
     SamariumSyntaxError,
     SamariumTypeError,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 MISSING_ARGS_PATTERN = compile(
     r"\w+\(\) takes exactly one argument \(0 given\)"

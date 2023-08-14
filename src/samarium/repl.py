@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import json
 import sys
-from collections.abc import Iterator
 from contextlib import redirect_stderr, redirect_stdout, suppress
 from datetime import datetime, timedelta
 from os import get_terminal_size
 from pathlib import Path
 from time import time
-from typing import TypedDict
+from typing import TYPE_CHECKING, TypedDict
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 if sys.platform not in ("win32", "cygwin"):
     # used by input() to provide elaborate line editing & history features

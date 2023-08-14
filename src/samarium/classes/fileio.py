@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
 from enum import Enum
 from os import write
-from typing import IO, Any, cast
+from typing import IO, TYPE_CHECKING, Any, cast
 
 from samarium.classes.base import NULL, Array, Attrs, Null, Num, Number, Slice, String
 from samarium.exceptions import SamariumIOError, SamariumTypeError, SamariumValueError
 from samarium.utils import get_type_name
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 class Mode(Enum):

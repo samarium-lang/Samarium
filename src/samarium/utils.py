@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from re import sub
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from samarium.exceptions import SamariumTypeError, SamariumValueError
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 __version__ = "0.6.0"
 

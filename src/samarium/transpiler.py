@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from contextlib import suppress
 from enum import Enum
 from typing import TYPE_CHECKING, Any, cast
@@ -9,6 +8,8 @@ from samarium.exceptions import SamariumSyntaxError, handle_exception
 from samarium.tokens import CLOSE_TOKENS, FILE_IO_TOKENS, OPEN_TOKENS, Token
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from samarium.tokenizer import Tokenlike
 
 
