@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from re import sub
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 from samarium.exceptions import SamariumTypeError, SamariumValueError
 
@@ -28,7 +28,7 @@ class ClassProperty:
 
 
 class Singleton:
-    _instances: dict[type[Singleton], Singleton] = {}
+    _instances: ClassVar[dict[type[Singleton], Singleton]] = {}
 
     def __new__(cls, *args: Any, **kwargs: Any) -> Singleton:
         if cls not in cls._instances:
