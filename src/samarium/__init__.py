@@ -4,7 +4,7 @@ from pathlib import Path
 
 from samarium.core import run
 from samarium.exceptions import DAHLIA
-from samarium.repl import Command, REPL
+from samarium.repl import REPL, Command
 from samarium.transpiler import Registry
 from samarium.utils import __version__
 
@@ -28,6 +28,7 @@ options and arguments:\n""" + "\n".join(
         ),
     )
 )
+
 
 def main(*, debug: bool = False) -> None:
     reg = Registry(globals())

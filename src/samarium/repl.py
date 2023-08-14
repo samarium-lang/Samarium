@@ -346,8 +346,7 @@ class REPL:
                     size = session.stat().st_size
                     total_size += size
                     DAHLIA.print(
-                        f"{truncate(session.name, term_size)}"
-                        f" &e({fmt_size(size)})"
+                        f"{truncate(session.name, term_size)} &e({fmt_size(size)})"
                     )
                 DAHLIA.print("-" * term_size)
                 DAHLIA.print(f"&l{'Total':<{term_size + 1}} &e{fmt_size(total_size)}\n")
@@ -363,9 +362,7 @@ class REPL:
             elif subcmd == "lifetime":
                 if not arg:
                     lifetime = str(self.config.session_lifetime).removesuffix(".0")
-                    return DAHLIA.print(
-                        f"Current session lifetime is {lifetime} days"
-                    )
+                    return DAHLIA.print(f"Current session lifetime is {lifetime} days")
                 try:
                     self.config.session_lifetime = float(arg)
                 except ValueError:
