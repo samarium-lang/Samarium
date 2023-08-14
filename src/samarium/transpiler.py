@@ -147,72 +147,84 @@ class Registry:
 
 
 class Group:
-    operators = {
-        Token.ADD,
-        Token.SUB,
-        Token.MUL,
-        Token.DIV,
-        Token.MOD,
-        Token.POW,
-        Token.EQ,
-        Token.NE,
-        Token.GT,
-        Token.LT,
-        Token.GE,
-        Token.LE,
-        Token.AND,
-        Token.OR,
-        Token.XOR,
-        Token.NOT,
-        Token.BAND,
-        Token.BOR,
-        Token.BXOR,
-        Token.BNOT,
-        Token.IN,
-        Token.ZIP,
-    }
-    brackets = {
-        Token.BRACKET_OPEN,
-        Token.BRACKET_CLOSE,
-        Token.BRACE_OPEN,
-        Token.BRACE_CLOSE,
-        Token.PAREN_OPEN,
-        Token.PAREN_CLOSE,
-        Token.TABLE_OPEN,
-        Token.TABLE_CLOSE,
-    }
-    functions = {Token.FUNCTION, Token.YIELD, Token.ENTRY, Token.DEFAULT}
-    multisemantic = {
-        Token.TO,
-        Token.CATCH,
-        Token.WHILE,
-        Token.CLASS,
-        Token.TRY,
-        Token.FROM,
-    }
-    control_flow = {Token.IF, Token.ELSE, Token.FOR}
-    core = {
-        Token.ASSIGN,
-        Token.END,
-        Token.IMPORT,
-        Token.SEP,
-        Token.ATTR,
-        Token.INSTANCE,
-        Token.ENUM,
-        Token.SLICE_OPEN,
-        Token.SLICE_CLOSE,
-        Token.DATACLASS,
-    }
-    builtins = {
-        Token.ARR_STMP,
-        Token.UNIX_STMP,
-        Token.READLINE,
-        Token.EXIT,
-        Token.SLEEP,
-        Token.PRINT,
-        Token.THROW,
-    }
-    methods = {Token.SPECIAL, Token.HASH, Token.TYPE, Token.PARENT, Token.CAST}
+    operators = frozenset(
+        (
+            Token.ADD,
+            Token.SUB,
+            Token.MUL,
+            Token.DIV,
+            Token.MOD,
+            Token.POW,
+            Token.EQ,
+            Token.NE,
+            Token.GT,
+            Token.LT,
+            Token.GE,
+            Token.LE,
+            Token.AND,
+            Token.OR,
+            Token.XOR,
+            Token.NOT,
+            Token.BAND,
+            Token.BOR,
+            Token.BXOR,
+            Token.BNOT,
+            Token.IN,
+            Token.ZIP,
+        )
+    )
+    brackets = frozenset(
+        (
+            Token.BRACKET_OPEN,
+            Token.BRACKET_CLOSE,
+            Token.BRACE_OPEN,
+            Token.BRACE_CLOSE,
+            Token.PAREN_OPEN,
+            Token.PAREN_CLOSE,
+            Token.TABLE_OPEN,
+            Token.TABLE_CLOSE,
+        )
+    )
+    functions = frozenset((Token.FUNCTION, Token.YIELD, Token.ENTRY, Token.DEFAULT))
+    multisemantic = frozenset(
+        (
+            Token.TO,
+            Token.CATCH,
+            Token.WHILE,
+            Token.CLASS,
+            Token.TRY,
+            Token.FROM,
+        )
+    )
+    control_flow = frozenset((Token.IF, Token.ELSE, Token.FOR))
+    core = frozenset(
+        (
+            Token.ASSIGN,
+            Token.END,
+            Token.IMPORT,
+            Token.SEP,
+            Token.ATTR,
+            Token.INSTANCE,
+            Token.ENUM,
+            Token.SLICE_OPEN,
+            Token.SLICE_CLOSE,
+            Token.DATACLASS,
+        )
+    )
+    builtins = frozenset(
+        (
+            Token.ARR_STMP,
+            Token.UNIX_STMP,
+            Token.READLINE,
+            Token.EXIT,
+            Token.SLEEP,
+            Token.PRINT,
+            Token.THROW,
+        )
+    )
+    methods = frozenset(
+        (Token.SPECIAL, Token.HASH, Token.TYPE, Token.PARENT, Token.CAST)
+    )
 
 
 OPEN_TO_CLOSE = {
@@ -928,7 +940,6 @@ class Transpiler:
         elif isinstance(token, str):
             if is_quoted(token):
                 # Strings
-                # token = token.replace("\n", "\\n")  # TODO: Understand why?
                 push(f"String({token})")
                 return
             # [self varname] -> [self.varname]
