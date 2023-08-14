@@ -119,7 +119,7 @@ def run(
                 exec(code, reg.vars)
         else:
             exec(code, reg.vars)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         exc.handle_exception(e)
     Runtime.repl = runtime_state
     return reg

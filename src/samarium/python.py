@@ -78,7 +78,7 @@ def to_samarium(obj: object) -> Attrs:
             to_samarium(None if obj.step == 1 else obj.step),
         )
     if isinstance(obj, SliceRange):
-        return obj._slice
+        return obj._slice  # noqa: SLF001
     if isinstance(obj, (TextIOWrapper, BufferedWriter, BufferedReader)):
         return File(
             obj, Mode(obj.mode).name, obj.name, binary=isinstance(obj, BufferedIOBase)
