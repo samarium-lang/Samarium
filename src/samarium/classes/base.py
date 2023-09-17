@@ -504,7 +504,7 @@ class String(Attrs):
     __slots__ = ("val",)
 
     def __init__(self, value: Any = "") -> None:
-        self.val = to_string(value)
+        self.val = str(value)
 
     def __contains__(self, element: String) -> bool:
         return element.val in self.val
@@ -1230,7 +1230,3 @@ def to_chr(code: int) -> str:
     if 0 <= code < 0x110000:
         return chr(code)
     raise SamariumValueError("invalid Unicode code point")
-
-
-def to_string(obj: Attrs | Callable) -> str:
-    return str(obj)

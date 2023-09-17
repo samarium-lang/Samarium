@@ -21,7 +21,6 @@ from samarium.classes.base import (
     UserAttrs,
     Zip,
     correct_type,
-    to_string,
 )
 from samarium.classes.fileio import File, FileManager, Mode
 
@@ -49,5 +48,4 @@ __all__ = (
     "UserAttrs",
     "Zip",
     "correct_type",
-    "to_string",
 )

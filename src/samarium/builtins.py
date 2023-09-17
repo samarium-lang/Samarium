@@ -18,7 +18,6 @@ from samarium.classes import (
     Slice,
     String,
     correct_type,
-    to_string,
 )
 from samarium.exceptions import (
     SamariumError,
@@ -67,7 +66,7 @@ def mkslice(start: Any = None, stop: Any = MISSING, step: Any = None) -> Any:
 def print_safe(*args: Attrs | Callable[..., Any] | bool | None) -> Attrs:
     typechecked_args = list(map(correct_type, args))
     return_args = typechecked_args.copy()
-    strs = list(map(to_string, typechecked_args))
+    strs = list(map(str, typechecked_args))
     types = list(map(type, typechecked_args))
     if tuple in types:
         raise SamariumSyntaxError("missing brackets")
