@@ -10,7 +10,7 @@ from samarium.utils import __version__
 
 OPTIONS = ("-v", "--version", "-c", "--command", "-h", "--help")
 
-HELP = """samarium &7[option] [-c cmd | file]&r
+HELP = """samarium &7[option] [-c cmd | file]&R
 options and arguments:\n""" + "\n".join(
     map(
         str,

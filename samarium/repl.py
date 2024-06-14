@@ -83,7 +83,7 @@ class Command:
 
     def __str__(self) -> str:
         return (
-            self.sep.join(f"&e{a}&r" for a in self.aliases) + f" &7{self.arg}&r"
+            self.sep.join(f"&e{a}&R" for a in self.aliases) + f" &7{self.arg}&R"
         ).ljust(28 + 4 * len(self.aliases)).lstrip() + self.msg
 
 
@@ -94,10 +94,10 @@ HELP_TEXT = "\n".join(
             Command("?", "h", "help", msg="shows this message"),
             Command("exit", "q", "quit", msg="saves the session and quits the repl"),
             Command("!", "exit!", "q!", "quit!", msg="force quits the repl"),
-            Command("session", msg="manages sessions, see &2:? session&r for details"),
+            Command("session", msg="manages sessions, see &2:? session&R for details"),
             Command("clear", msg="clears the screen"),
             Command(
-                "color", msg="changes the prompt color, see &2:? color&r for details"
+                "color", msg="changes the prompt color, see &2:? color&R for details"
             ),
             Command("debug", msg="toggles debug mode"),
             Command("restore", msg="restores the previous session"),
@@ -108,26 +108,26 @@ HELP_TEXT = "\n".join(
 )
 
 COLOR_HELP_TEXT = """
-&ecolor &7[color]&r
-&oproviding no color will reset it to the default one&r
+&ecolor &7[color]&R
+&oproviding no color will reset it to the default one&R
 
-use &e:color save&r to save the current color to your config
+use &e:color save&R to save the current color to your config
 
-&00&r|&0black&r
-&11&r|&1blue&r
-&22&r|&2green&r
-&33&r|&3cyan&r
-&44&r|&4red&r
-&55&r|&5purple&r
-&66&r|&6orange&r
-&77&r|&7light gray&r
-&88&r|&8gray&r
-&99&r|&9light blue&r
-&aa&r|&alime&r
-&bb&r|&baquamarine&r
-&cc&r|&clight red&r
-&dd&r|&dpink&r
-&ee&r|&eyellow&r
+&00&R|&0black&R
+&11&R|&1blue&R
+&22&R|&2green&R
+&33&R|&3cyan&R
+&44&R|&4red&R
+&55&R|&5purple&R
+&66&R|&6orange&R
+&77&R|&7light gray&R
+&88&R|&8gray&R
+&99&R|&9light blue&R
+&aa&R|&alime&R
+&bb&R|&baquamarine&R
+&cc&R|&clight red&R
+&dd&R|&dpink&R
+&ee&R|&eyellow&R
 """
 
 SESSIONS_HELP_TEXT = "\n".join(
@@ -141,7 +141,7 @@ SESSIONS_HELP_TEXT = "\n".join(
                 arg="[time]",
                 msg=(
                     "updates session lifetime (how long they stay cached)\n"
-                    f"{' ' * 24}&ocurrent value is shown when run without an argument&r"
+                    f"{' ' * 24}&ocurrent value is shown when run without an argument&R"
                 ),
             ),
             Command("session list", msg="lists all sessions and their sizes"),
@@ -450,7 +450,7 @@ class REPL:
                     repl=True,
                 )
                 if time_code:
-                    DAHLIA.print(f"&2{time() - start:.3f} seconds&r")
+                    DAHLIA.print(f"&2{time() - start:.3f} seconds&R")
                 self.registry.output = ""
             except RuntimeError:
                 pass
