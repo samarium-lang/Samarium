@@ -81,3 +81,6 @@ For example, `"hi" + /` will result in the string `"ij"`, where each character
 in the string has been shifted one position ahead. Similarly, `"hi" - /` will
 result in the string `"gh"`, where each character in the string has been shifted
 one position backwards.
+
+> `"hi"+` is the same as `"hi" + /`  
+> `"hi"-` is the same as `"hi" - /`
