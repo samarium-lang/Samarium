@@ -52,25 +52,25 @@ class FileManager:
         binary: bool = False,
     ) -> String | Array | Null:
         if isinstance(path, String):
-            with open(path.val, mode.value + "b" * binary) as f:
-                if mode is Mode.READ:
-                    if binary:
-                        return Array(map(Num, f.read()))
-                    return String(f.read())
-                if data is None:
-                    msg = "missing data"
-                    raise SamariumIOError(msg)
-                if isinstance(data, Array):
-                    bytes_ = b""
-                    for i in data.val:
-                        try:
-                            bytes_ += i.val.to_bytes(1, "big")
-                        except AssertionError:
-                            msg = "some items in the array are not of type Integer"
-                            raise SamariumTypeError(msg) from None
-                    f.write(bytes_)
-                else:
-                    f.write(data.val)
+            p = Path(path.val)
+            if mode is Mode.READ:
+                content = p.read_bytes() if binary else p.read_text()
+                return Array(map(Num, content)) if binary else String(content)
+            if data is None:
+                msg = "missing data"
+                raise SamariumIOError(msg)
+            if not isinstance(data, Array):
+                p.write_text(data.val)
+                return NULL
+            if isinstance(data, Array):
+                bytes_ = b""
+                for i in data.val:
+                    try:
+                        bytes_ += i.val.to_bytes(1, "big")
+                    except AssertionError:  # TODO(trag1c): why AssertionError?
+                        msg = "some items in the array are not of type Integer"
+                        raise SamariumTypeError(msg) from None
+                p.write_bytes(bytes_)
         elif isinstance(path, Number):
             if not path.is_int:
                 msg = "cannot use non-integers"
