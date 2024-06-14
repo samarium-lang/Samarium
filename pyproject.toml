@@ -10,8 +10,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-dahlia = "^2.3.1"
-crossandra = "^2.0.0"
+dahlia = "^3.0.0"
+crossandra = "^2.2.1"
 configzen = "^0.5.6"
 
 [tool.poetry.group.dev.dependencies]
