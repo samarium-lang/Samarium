@@ -7,7 +7,7 @@
 => argv * {
     file: argv<</>>;
     data <~ file;
-    data<<....-/>> ~> file;
+    -data ~> file;
 }
 ```
 

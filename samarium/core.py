@@ -1,14 +1,15 @@
+# ruff: noqa: F401
 from __future__ import annotations
 
+import ast
 import importlib.machinery
 import importlib.util
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from . import exceptions as exc
-from .builtins import (
-    correct_type,
+from samarium import exceptions as exc
+from samarium.builtins import (
     dtnow,
     mkslice,
     print_safe,
@@ -18,11 +19,12 @@ from .builtins import (
     throw,
     timestamp,
 )
-from .classes import (
+from samarium.classes import (
     MISSING,
     NEXT,
     NULL,
     Array,
+    Dataclass,
     Enum,
     FileManager,
     Function,
@@ -34,15 +36,17 @@ from .classes import (
     String,
     Table,
     UserAttrs,
+    correct_type,
 )
-from .imports import merge_objects, parse_string, resolve_path
-from .runtime import Runtime
-from .tokenizer import tokenize
-from .transpiler import Registry, Transpiler
-from .utils import sysexit
+from samarium.exceptions import DAHLIA
+from samarium.imports import merge_objects, parse_string, resolve_path
+from samarium.runtime import Runtime
+from samarium.tokenizer import tokenize
+from samarium.transpiler import Registry, Transpiler
+from samarium.utils import sysexit
 
 if TYPE_CHECKING:
-    from .classes import Attrs
+    from samarium.classes import Attrs
 
 
 def import_to_scope(data: str, reg: Registry, source: str) -> None:
@@ -55,18 +59,22 @@ def import_to_scope(data: str, reg: Registry, source: str) -> None:
         if mod_path.exists():
             imported = run(mod_path.read_text(), Registry({}), mod_path)
         else:
-            spec: importlib.machinery.ModuleSpec = (
-                importlib.util.spec_from_file_location(
-                    mod.name, str(path / f"{mod.name}.py")
-                )
-            )  # type: ignore
+            spec = importlib.util.spec_from_file_location(
+                mod.name, str(path / f"{mod.name}.py")
+            )
+            if spec is None:
+                msg = "couldn't load spec"
+                raise ValueError(msg)
             module = importlib.util.module_from_spec(spec)
             sys.modules[mod.name] = module
-            spec.loader.exec_module(module)  # type: ignore
+            if spec.loader is None:
+                msg = "ModuleSpec.loader is None"
+                raise ValueError(msg)
+            spec.loader.exec_module(module)
             registry = {
                 f"sm_{k}": v
                 for k, v in vars(module).items()
-                if f"__export_{v}" in dir(v)
+                if getattr(v, "__pyexported__", False)
             }
             imported = Registry(registry)
 
@@ -86,27 +94,36 @@ def run(
     *,
     debug: bool = False,
     load_template: bool = True,
-    quit_on_error: bool = True,
+    repl: bool = False,
 ) -> Registry:
-    runtime_state = Runtime.quit_on_error
-    Runtime.quit_on_error = quit_on_error
+    runtime_state = Runtime.repl
+    Runtime.repl = repl
     code = Transpiler(tokenize(code), reg).transpile().output
     if load_template:
         code = (
-            (Path(__file__).resolve().parent / "template.py")
+            (Path(__file__).resolve().parent / "template.txt")
             .read_text()
-            .replace("{{ CODE }}", code)
+            .replace("{{CODE}}", code)
             .replace(
-                "{{ SOURCE }}",
+                "{{SOURCE}}",
                 str(Path(source).resolve() if isinstance(source, str) else source),
             )
         )
     try:
         if debug:
-            print(code)
+            code = ast.unparse(ast.parse(code))
+            DAHLIA.print(f"&j{code}", file=sys.stderr)
         reg.vars = globals() | reg.vars
-        exec(code, reg.vars)
-    except Exception as e:
+        if repl:
+            try:
+                res = eval(code, reg.vars)
+                if not (res is None or res is NULL):
+                    print(repr(res))
+            except SyntaxError:
+                exec(code, reg.vars)
+        else:
+            exec(code, reg.vars)
+    except Exception as e:  # noqa: BLE001
         exc.handle_exception(e)
-    Runtime.quit_on_error = runtime_state
+    Runtime.repl = runtime_state
     return reg

@@ -31,7 +31,8 @@ If we want to remove duplicates of just one value, we can use `---`:
 
 > `[/\\\, //, //, //\, /\\\, //, /\/] --- //` gives `[/\\\, //, //\, /\\\, /\/]`
 
-Set-like union, interection, and symmetric difference can be obtained by using `|`, `&` and `^`, respectively:
+Set-like union, intersection, and symmetric difference can be obtained by using
+`|`, `&` and `^`, respectively:
 
 ```sm
 primes: [/\, //, /\/, ///, /\//, //\/]!;

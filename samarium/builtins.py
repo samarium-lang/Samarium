@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Callable
-from datetime import datetime
+from datetime import datetime, timezone
 from re import compile
 from time import sleep as _sleep
 from time import time_ns
 from types import GeneratorType
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
-from .classes import (
+from samarium.classes import (
     MISSING,
     NULL,
     Array,
@@ -19,14 +18,16 @@ from .classes import (
     Slice,
     String,
     correct_type,
-    to_string,
 )
-from .exceptions import (
+from samarium.exceptions import (
     SamariumError,
     SamariumIOError,
     SamariumSyntaxError,
     SamariumTypeError,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 MISSING_ARGS_PATTERN = compile(
     r"\w+\(\) takes exactly one argument \(0 given\)"
@@ -43,7 +44,7 @@ TOO_MANY_ARGS_PATTERN = compile(
 
 
 def dtnow() -> Array:
-    utcnow = datetime.utcnow()
+    utcnow = datetime.now(tz=timezone.utc)
     now = datetime.now().timetuple()
     utcnow_tt = utcnow.timetuple()
     tz = now[3] - utcnow_tt[3], now[4] - utcnow_tt[4]
@@ -65,18 +66,20 @@ def mkslice(start: Any = None, stop: Any = MISSING, step: Any = None) -> Any:
 def print_safe(*args: Attrs | Callable[..., Any] | bool | None) -> Attrs:
     typechecked_args = list(map(correct_type, args))
     return_args = typechecked_args.copy()
-    strs = list(map(to_string, typechecked_args))
+    strs = list(map(str, typechecked_args))
     types = list(map(type, typechecked_args))
     if tuple in types:
-        raise SamariumSyntaxError("missing brackets")
+        msg = "missing brackets"
+        raise SamariumSyntaxError(msg)
     if GeneratorType in types:
-        raise SamariumSyntaxError("invalid comprehension")
+        msg = "invalid comprehension"
+        raise SamariumSyntaxError(msg)
     print(*strs)
     if len(return_args) > 1:
         return Array(return_args)
     if not return_args or types[0] is Null:
         return NULL
-    return return_args[0]
+    return return_args[0]  # type: ignore[return-value]
 
 
 def readline(prompt: String = NULL_STRING) -> String:
@@ -91,11 +94,14 @@ def readline(prompt: String = NULL_STRING) -> String:
 
 def sleep(*args: Number) -> None:
     if not args:
-        raise SamariumTypeError("no argument provided for ,.,")
+        msg = "no argument provided for ,.,"
+        raise SamariumTypeError(msg)
     if len(args) > 1:
-        raise SamariumTypeError(",., only takes one argument")
+        msg = ",., only takes one argument"
+        raise SamariumTypeError(msg)
     if not isinstance((time := args[0]), Number):
-        raise SamariumTypeError(",., only accepts integers")
+        msg = ",., only accepts integers"
+        raise SamariumTypeError(msg)
     _sleep(time.val / 1000)
 
 
@@ -103,8 +109,26 @@ def t(obj: T | None = None) -> T | None:
     return obj
 
 
-def throw(message: String = NULL_STRING) -> None:
-    raise SamariumError(message.val)
+def throw(obj: String | Array[Any] = NULL_STRING) -> None:
+    note = ""
+    if isinstance(obj, Array):
+        if len(obj.val) != 2:
+            msg = "array must be of form [error_msg, note]"
+            raise SamariumTypeError(msg)
+        error_msg, note = obj.val
+        if not isinstance(error_msg, String):
+            msg = "error message must be a string"
+            raise SamariumTypeError(msg)
+        if not isinstance(note, String):
+            msg = "error note must be a string"
+            raise SamariumTypeError(msg)
+        note = f"\n&1[Note] {note.val}"
+    elif isinstance(obj, String):
+        error_msg = obj
+    else:
+        msg = "throw argument must be a string or a 2-element array"
+        raise SamariumTypeError(msg)
+    raise SamariumError(error_msg.val + note)
 
 
 def timestamp() -> Number:

@@ -2,7 +2,6 @@ from enum import Enum
 
 
 class Token(Enum):
-
     # Arithmetic
     ADD = "+"
     SUB = "-"
@@ -24,7 +23,7 @@ class Token(Enum):
     IN = "->?"
     NOT = "~~"
     OR = "||"
-    XOR = "^^"  # TODO
+    XOR = "^^"  # TODO(trag1c): Implement in ≤2025 (optional)
 
     # Bitwise
     BAND = "&"
@@ -59,6 +58,7 @@ class Token(Enum):
 
     # OOP / Functions
     CLASS = "@"
+    DATACLASS = "@!"
     DEFAULT = "<>"
     FUNCTION = "*"
     INSTANCE = "'"

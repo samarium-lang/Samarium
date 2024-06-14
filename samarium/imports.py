@@ -6,11 +6,11 @@ from pathlib import Path
 from re import Pattern, compile, sub
 from typing import TYPE_CHECKING
 
-from .classes import Attrs, Module
-from .exceptions import SamariumImportError, SamariumSyntaxError
+from samarium.classes import Attrs, Module
+from samarium.exceptions import SamariumImportError, SamariumSyntaxError
 
 if TYPE_CHECKING:
-    from .transpiler import Registry
+    from samarium.transpiler import Registry
 
 
 FORMATTERS = {
@@ -39,7 +39,8 @@ def parse_string(string: str) -> list[Mod]:
         if pattern.match(string):
             break
     else:
-        raise SamariumSyntaxError("invalid import syntax")
+        msg = "invalid import syntax"
+        raise SamariumSyntaxError(msg)
     if imptype is Import.MODULE:
         mods = string.split(",")
         out = []
@@ -78,9 +79,8 @@ def merge_objects(reg: Registry, imported: Registry, module: Mod) -> dict[str, A
         try:
             vars_[f"sm_{obj.alias}"] = imported.vars[f"sm_{obj.name}"]
         except KeyError:
-            raise SamariumImportError(
-                f"{obj.name} is not a member of the {module.name} module"
-            ) from None
+            msg = f"{obj.name} is not a member of the {module.name} module"
+            raise SamariumImportError(msg) from None
     return vars_
 
 
@@ -92,11 +92,12 @@ def resolve_path(name: str, source: str) -> Path:
     try:
         path = Path(source).parent
     except IndexError:  # REPL
-        path = Path().resolve()
+        path = Path.cwd()
     paths = [e.name for e in path.iterdir()]
     if not (f"{name}.sm" in paths or f"{name}.py" in paths):
         if name not in MODULE_NAMES:
-            raise SamariumImportError(f"invalid module: {name}")
+            msg = f"invalid module: {name}"
+            raise SamariumImportError(msg)
         path = Path(__file__).resolve().parent / "modules"
     return path
 

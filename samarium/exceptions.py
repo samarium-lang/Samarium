@@ -3,7 +3,7 @@ from re import compile
 
 from dahlia import Dahlia
 
-from .runtime import Runtime
+from samarium.runtime import Runtime
 
 DAHLIA = Dahlia()
 NDE_TYPES = {AttributeError, NameError, UnboundLocalError}
@@ -82,15 +82,13 @@ def handle_exception(exception: Exception) -> None:
             if len(names) >= 2 and names[1] in {"__getitem__", "__setitem__"}
             else ".".join(map(clear_name, names))
         )
+    elif exc_type is ZeroDivisionError:
+        name = "MathError"
     elif exc_type not in {AssertionError, NotDefinedError}:
-        name = exc_type.__name__
-        if name.startswith("Samarium"):
-            name = name.removeprefix("Samarium")
-        else:
-            name = f"Python{name}".replace("PythonZeroDivision", "Math")
+        name = exc_type.__name__.removeprefix("Samarium")
     name = name or exc_type.__name__
     DAHLIA.print(f"&4[{name}] {exception}", file=sys.stderr)
-    if Runtime.quit_on_error:
+    if not Runtime.repl:
         sys.exit(1)
 
 
@@ -113,9 +111,7 @@ class SamariumImportError(SamariumError):
 
 
 class SamariumSyntaxError(SamariumError):
-    def __init__(self, msg: str) -> None:
-        DAHLIA.print(f"&4[SyntaxError] {msg}", file=sys.stderr)
-        sys.exit(1)
+    pass
 
 
 class SamariumTypeError(SamariumError):

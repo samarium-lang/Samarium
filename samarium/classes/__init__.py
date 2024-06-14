@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from .base import (
+from samarium.classes.base import (
     MISSING,
     NEXT,
     NULL,
     Array,
     Attrs,
+    Dataclass,
     Enum,
     Function,
     Iterator,
@@ -20,13 +21,13 @@ from .base import (
     UserAttrs,
     Zip,
     correct_type,
-    to_string,
 )
-from .fileio import File, FileManager, Mode
+from samarium.classes.fileio import File, FileManager, Mode
 
 __all__ = (
     "Array",
     "Attrs",
+    "Dataclass",
     "Enum",
     "File",
     "Function",
@@ -47,5 +48,4 @@ __all__ = (
     "UserAttrs",
     "Zip",
     "correct_type",
-    "to_string",
 )

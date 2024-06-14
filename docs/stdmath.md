@@ -22,8 +22,8 @@ Function                             | Use
 `is_int(x)`                          | Returns `1` if `x` is an integer, `0` otherwise. Equivalent to `x :: x$`.
 `is_prime(n)`                        | Returns `1` if `n` is prime, `0` otherwise.
 `lcm(a, b)`                          | Returns the least common multiple of `a` and `b`.<br>If any of the arguments is zero,<br> then the returned value is `0`.
-`max(array)`                         | Returns the largest value in `array`.
-`min(array)`                         | Returns the smallest value in `array`.
+`max(array[, values...])`            | Returns the largest value in `array` if only one argument is passed,<br>otherwise returns the largest value in `[array] + values`.
+`min(array[, values...])`            | Returns the smallest value in `array` if only one argument is passed,<br>otherwise returns the smallest value in `[array] + values`.
 `product(array)`                     | Multiplies the items of `array` from left to right and returns the total.<br>The `array`'s items must be numbers.
 `round(x[, ndigits])`                | Returns `x` rounded to `ndigits` precision after the decimal point.<br>Works exactly like Python's [`round()`](https://docs.python.org/3/library/functions.html#round).
 `shl(a, b)`                          | Returns `a` shifted to the left by `b` bits.

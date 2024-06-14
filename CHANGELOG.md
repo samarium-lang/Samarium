@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2024-06-14
+
+### Added
+- `=>!` now accepts strings
+- Added an exception note for `string.split`
+- Allowed adding notes for `!!!`
+- Command system for the REPL
+- Data classes
+- Function composition
+- Made the semicolon optional for `!`, `!!!`, `*`, `**`
+- `math.max` and `math.min` now work with varargs
+- `String+`
+- `-String`
+- `~Table`
+- The REPL now automatically displays most expressions
+
+### Changed
+- `String ++ -Number` now throws a type error (ambiguous operation)
+
+### Fixed
+- Fixed function conversion when `@export`ing
+- Fixed internal name of `math.round`
+- Fixed `math.sqrt` using an incorrect variable name
+- Fixed multiline string handling in the REPL
+- Fixed REPL quitting on syntax error
+- `math.round` now correctly provides a default value for `ndigits`
+- The transpiler now correctly disallows literals around identifiers
+- `types.Boolean` should now correctly interract with external types
+- Various minor fixes to the transpiler
+
 ## [0.5.3] - 2023-04-21
 
 ### Fixed
@@ -402,3 +432,4 @@ Initial release 🚀
 [0.5.1]: https://github.com/samarium-lang/Samarium/compare/0.5.0...0.5.1
 [0.5.2]: https://github.com/samarium-lang/Samarium/compare/0.5.1...0.5.2
 [0.5.3]: https://github.com/samarium-lang/Samarium/compare/0.5.2...0.5.3
+[0.6.0]: https://github.com/samarium-lang/Samarium/compare/0.5.3...0.6.0

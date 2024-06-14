@@ -28,3 +28,6 @@ table to the right of the operator take priority when both tables share keys.
 Items can be removed from a table by key using the subtraction operator `-`:
 
 > `{{"a" -> /, "b" -> /\, // -> /\//}} - "b"` gives `{{"a" -> /, // -> /\//}}`
+
+Tables can be inverted using the unary `~` operator:
+> `~{{"a" -> /, "b" -> /\}}` gives `{{/ -> "a", /\ -> "b"}}`

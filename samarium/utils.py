@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from re import sub
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
-from .exceptions import SamariumTypeError, SamariumValueError
+from samarium.exceptions import SamariumTypeError, SamariumValueError
 
-__version__ = "0.5.3"
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+__version__ = "0.6.0"
 
 T = TypeVar("T")
 
@@ -15,18 +17,18 @@ KT = TypeVar("KT")
 VT = TypeVar("VT")
 
 
-class ClassProperty:
-    def __init__(self, func: Callable[..., Any]) -> None:
+class ClassProperty(Generic[T]):
+    def __init__(self, func: Callable[..., T]) -> None:
         self.func = func
 
-    def __get__(self, obj: Any, owner: Any | None = None) -> Any:
+    def __get__(self, obj: object, owner: object = None) -> T:
         if obj is None:
             obj = owner
         return self.func(obj)
 
 
 class Singleton:
-    _instances: dict[type[Singleton], Singleton] = {}
+    _instances: ClassVar[dict[type[Singleton], Singleton]] = {}
 
     def __new__(cls, *args: Any, **kwargs: Any) -> Singleton:
         if cls not in cls._instances:
@@ -36,10 +38,12 @@ class Singleton:
 
 def sysexit(*args: Any) -> None:
     if len(args) > 1:
-        raise SamariumTypeError("=>! only takes one argument")
+        msg = "=>! only takes one argument"
+        raise SamariumTypeError(msg)
     code = args[0].val if args else 0
-    if not isinstance(code, int):
-        raise SamariumTypeError("=>! only accepts integers")
+    if not isinstance(code, (int, str)):
+        msg = "=>! only accepts integers and strings"
+        raise SamariumTypeError(msg)
     raise SystemExit(code)
 
 
@@ -56,7 +60,8 @@ def convert_float(string: str, *, base: int, sep: str = ".") -> int | float:
         try:
             exponent = int(exp_part, 10 if base == 16 else base)
         except ValueError:
-            raise SamariumValueError(f"invalid exponent: {exp_part}") from None
+            msg = f"invalid exponent: {exp_part}"
+            raise SamariumValueError(msg) from None
         out *= (2 if base == 16 else base) ** exponent
     return out
 
@@ -69,7 +74,8 @@ def parse_number(string: str) -> tuple[int | float, bool]:
     if ":" in string:
         b, _, string = string.partition(":")
         if b not in "box":
-            raise SamariumValueError(f"{b} is not a valid base")
+            msg = f"{b} is not a valid base"
+            raise SamariumValueError(msg)
     base = {"b": 2, "o": 8, "x": 16, "d": 10}[b]
     string = string.lstrip("-")
     neg = -2 * ((neg - len(string)) % 2) + 1
@@ -78,9 +84,8 @@ def parse_number(string: str) -> tuple[int | float, bool]:
         num = neg * convert_float(string, base=base)
     except ValueError:
         no_prefix = orig[2:] if orig[1] == ":" else orig
-        raise SamariumValueError(
-            f'invalid string for Number with base {base}: "{no_prefix}"'
-        ) from None
+        msg = f'invalid string for Number with base {base}: "{no_prefix}"'
+        raise SamariumValueError(msg) from None
     else:
         return num, isinstance(num, int) or num.is_integer()
 
@@ -88,9 +93,7 @@ def parse_number(string: str) -> tuple[int | float, bool]:
 def smformat(string: str, fields: str | list[Any] | dict[Any, Any]) -> str:
     if isinstance(fields, str):
         fields = [fields]
-    it = enumerate(fields)
-    if isinstance(fields, dict):
-        it = fields.items()
+    it = fields.items() if isinstance(fields, dict) else enumerate(fields)
     for k, v in it:
         string = sub(rf"(?<!\$)\${k}", str(v), string)
     return string.replace("$$", "$")

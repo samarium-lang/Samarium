@@ -28,17 +28,27 @@ This function will return what it writes to stdout (though not necessarily as
 a string), and can thus be used in an assignment statement for example.
 
 ```sm
-x: //\!;
+x: //\!  == optional semicolon after !
 == the string "6" is written to stdout, and `x` now has the value 6 (number)
 ```
 
 
 ## THROW
 
-Similarly to PRINTLN, objects can be written to standard error using `!!!`.
+Similarly to PRINTLN, some objects can be written to standard error using `!!!`.
 This will throw an error, and exit the program if the error is not caught.
+Only strings and arrays of length 2 can be used for throwing errors.
 
-`"exception raised"!!!` will write `[Error] exception raised` to standard error.
+```sm
+"exception raised"!!!  == optional semicolon after !!!
+== the following is written to stderr:
+== [Error] exception raised
+
+== 2-element arrays can be used for adding notes to exceptions:  
+["invalid date format", "use YYYY-MM-DD format"]!!!
+== [Error] invalid date format
+== [Note] use YYYY-MM-DD format
+```
 
 
 ## EXIT
@@ -47,6 +57,11 @@ The program may be exited with `=>!`.
 If a particular exit code is desired, it may be put after the exclamation mark:
 
 `=>! //` will exit the program with exit code 3.
+
+A string may also be supplied instead of a number, which will first write it to stderr
+and then exit the program with exit code 1.
+
+> `=>! "uh oh";` is equivalent to `"uh oh\n" ~> /\; =>! /;`
 
 
 ## HASH

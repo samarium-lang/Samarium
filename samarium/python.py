@@ -3,8 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from collections.abc import Iterable as PyIterable
 from enum import Enum as PyEnum
-from functools import wraps
-from io import BufferedIOBase, IOBase
+from io import BufferedIOBase, BufferedReader, BufferedWriter, TextIOWrapper
 from types import FunctionType
 
 from samarium.classes import (
@@ -13,6 +12,7 @@ from samarium.classes import (
     Attrs,
     Enum,
     File,
+    Function,
     Iterator,
     Mode,
     Null,
@@ -23,6 +23,7 @@ from samarium.classes import (
     Table,
     Zip,
 )
+from samarium.utils import get_type_name
 
 
 class SliceRange:
@@ -38,7 +39,7 @@ class SliceRange:
         return self._slice.range
 
 
-def to_python(obj: Attrs) -> object:
+def to_python(obj: object) -> object:
     if isinstance(obj, (String, Number, Zip, File)):
         return obj.val
     if isinstance(obj, Null):
@@ -54,7 +55,8 @@ def to_python(obj: Attrs) -> object:
         return PyEnum(obj.name, o)
     if isinstance(obj, Iterator):
         return map(to_python, obj)
-    raise TypeError(f"Conversion for type {type(obj).__name__!r} not found")
+    msg = f"Conversion for type {type(obj).__name__!r} not found"
+    raise TypeError(msg)
 
 
 def to_samarium(obj: object) -> Attrs:
@@ -64,6 +66,8 @@ def to_samarium(obj: object) -> Attrs:
         return String(obj)
     if obj is None:
         return NULL
+    if isinstance(obj, FunctionType):
+        return Function(obj)
     if isinstance(obj, (list, tuple, set)):
         return Array([to_samarium(i) for i in obj])
     if isinstance(obj, dict):
@@ -76,9 +80,9 @@ def to_samarium(obj: object) -> Attrs:
         )
     if isinstance(obj, SliceRange):
         return obj._slice
-    if isinstance(obj, IOBase):
+    if isinstance(obj, (TextIOWrapper, BufferedWriter, BufferedReader)):
         return File(
-            obj, Mode(obj.mode).name, obj.name, binary=isinstance(obj, BufferedIOBase)  # type: ignore
+            obj, Mode(obj.mode).name, obj.name, binary=isinstance(obj, BufferedIOBase)
         )
     if isinstance(obj, zip):
         return Zip(*obj)
@@ -89,19 +93,21 @@ def to_samarium(obj: object) -> Attrs:
         return to_samarium(obj.value)
     if isinstance(obj, PyIterable):
         return Iterator(obj)
-    raise TypeError(f"Conversion for type {type(obj).__name__!r} not found")
+    msg = f"Conversion for type {type(obj).__name__!r} not found"
+    raise TypeError(msg)
 
 
-def export(func: Callable) -> Callable[[Attrs], Attrs]:
+def export(func: Callable) -> Callable[..., Attrs]:
     """Wraps a Python function to be used in Samarium"""
 
-    @wraps(func)
-    def wrapper(*_args: Attrs) -> Attrs:
-        args = map(to_python, _args)
-        return to_samarium(func(*args))
-
     if not isinstance(func, FunctionType):
-        raise TypeError(f"cannot export a non-function type {type(func).__name__!r}")
-    setattr(wrapper, f"__export_{wrapper}", True)
+        msg = f"cannot export a non-function type {get_type_name(func)!r}"
+        raise TypeError(msg)
 
-    return wrapper
+    def wrapper(*_args: Attrs) -> Attrs:
+        return to_samarium(func(*map(to_python, _args)))
+
+    f = Function(wrapper)
+    f.__pyexported__ = True
+
+    return f

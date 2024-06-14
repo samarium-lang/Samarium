@@ -47,7 +47,8 @@ lcm a b * {
     !! { * \; }
 }
 
-max array * {
+max array b... * {
+    ? b { * max([array] + b); }
     o: array<<\>>;
     ... e ->? array {
         ? e > o { o: e; }
@@ -55,7 +56,8 @@ max array * {
     * o;
 }
 
-min array * {
+min array b... * {
+    ? b { * min([array] + b); }
     o: array<<\>>;
     ... e ->? array {
         ? e < o { o: e; }
@@ -81,7 +83,7 @@ sqrt x * {
     ? x < \ {
         "sqrt is defined only for non-negative numbers"!!!;
     }
-    * n +++ `/;
+    * x +++ `/;
 }
 
 sum array start? * {
@@ -125,4 +127,9 @@ is_prime n * {
     * /;
 }
 
-round: <-pystd.round_;
+#r: <-pystd.round_;
+
+round n ndigits? * {
+    ndigits <>;
+    * #r(n, ndigits);
+}

@@ -1,0 +1,2 @@
+class Runtime:
+    repl = False

@@ -27,11 +27,21 @@ Strings can be manipulated using some arithmetic operators:
 > `"woah!" ++ <-math.PI` is the same as `"woah!woah!woah!w"`  
 > `"hello"++` is the same as `"hello" ++ /\`
 
+> `-"hello"` is the same as `"olleh"`
+
 > `"hello" - "l"` is the same as `"helo"` (the 2nd operand removes the first
 > instance of itself from the 1st operand)
 
-> `"hello" -- "l"` is the same as `"heo"` (the 2nd operand removes all occurences
-> of itself from the 1st operand)
+> `"hello" -- "l"` is the same as `"heo"` (the 2nd operand removes all
+> occurences of itself from the 1st operand)
+
+!!! warning
+    Multiplying strings by negative numbers is undefined, as it is unclear
+    whether `s ++ -x` means `-(s ++ x)` or `(-s) ++ x`. These are equivalent for
+    integers, but they produce different results for other numbers:
+
+    - ``-("hello" ++ /`/)`` is `"eholleh"`
+    - ``(-"hello") ++ /`/`` is `"ollehol"`
 
 
 ## Formatting
@@ -71,3 +81,6 @@ For example, `"hi" + /` will result in the string `"ij"`, where each character
 in the string has been shifted one position ahead. Similarly, `"hi" - /` will
 result in the string `"gh"`, where each character in the string has been shifted
 one position backwards.
+
+> `"hi"+` is the same as `"hi" + /`  
+> `"hi"-` is the same as `"hi" - /`
