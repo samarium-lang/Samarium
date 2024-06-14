@@ -19,6 +19,7 @@ ruff = "^0.4.8"
 mkdocs = "^1.5.1"
 mkdocs-material = "^9.1.21"
 mypy = "^1.10.0"
+mike = "^2.1.1"
 
 [tool.ruff.lint]
 select = ["ALL"]
