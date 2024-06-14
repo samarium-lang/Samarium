@@ -1,3 +1,4 @@
+# ruff: noqa: INP001
 from __future__ import annotations
 
 from samarium.python import export

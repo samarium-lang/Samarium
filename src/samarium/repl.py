@@ -193,7 +193,8 @@ class Session:
         elif value in COLOR_TO_CODE:
             self._color = COLOR_TO_CODE[value]
         else:
-            raise ValueError(f"unknown color {value!r}")
+            msg = f"unknown color {value!r}"
+            raise ValueError(msg)
 
     @property
     def color_name(self) -> str:

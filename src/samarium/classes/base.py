@@ -49,7 +49,8 @@ def guard(operator: str, *, default: int | None = None) -> Callable[..., Any]:
                 return function(self, other)
             if use_default:
                 return function(self, Num(default))
-            raise NotDefinedError(f"{cls.__name__} {operator} {type(other).__name__}")
+            msg = f"{cls.__name__} {operator} {type(other).__name__}"
+            raise NotDefinedError(msg)
 
         return wrapper
 
@@ -57,7 +58,8 @@ def guard(operator: str, *, default: int | None = None) -> Callable[..., Any]:
 
 
 def throw_missing(*_: Any) -> None:
-    raise SamariumTypeError("missing default parameter value(s)")
+    msg = "missing default parameter value(s)"
+    raise SamariumTypeError(msg)
 
 
 class Missing:
@@ -93,8 +95,9 @@ class CompositionMeta(type):
         if isinstance(other, Type):
             other = other.as_function()
         if not isinstance(other, Function):
+            msg = f"can't use function composition with {get_type_name(other)}"
             raise SamariumTypeError(
-                f"can't use function composition with {get_type_name(other)}"
+                msg
             )
         return Type(cls).as_function() & other
 
@@ -121,10 +124,10 @@ class Attrs(metaclass=CompositionMeta):
 
 
 class UserAttrs(Attrs):
-    def __entry__(self, *args: Any) -> None:
+    def __entry__(self, *args: object) -> None:
         ...
 
-    def __init__(self, *args: Any) -> None:
+    def __init__(self, *args: object) -> None:
         self.__entry__(*args)
 
     def __string__(self) -> String:
@@ -135,82 +138,96 @@ class UserAttrs(Attrs):
     def __str__(self) -> str:
         string = self.__string__
         if param_count(string) != 1:
+            msg = f"{get_type_name(self)}! should only take one argument"
             raise SamariumTypeError(
-                f"{get_type_name(self)}! should only take one argument"
+                msg
             )
         if isinstance(v := string().val, str):
             return v
-        raise SamariumTypeError(f"{get_type_name(self)}! returned a non-string")
+        msg = f"{get_type_name(self)}! returned a non-string"
+        raise SamariumTypeError(msg)
 
     def __bit__(self) -> Number:
-        raise NotDefinedError(f"? {get_type_name(self)}")
+        msg = f"? {get_type_name(self)}"
+        raise NotDefinedError(msg)
 
     __bit__.param_count = 1
 
     def __bool__(self) -> bool:
         bit = self.__bit__
         if param_count(bit) != 1:
+            msg = f"? {get_type_name(self)} should only take one argument"
             raise SamariumTypeError(
-                f"? {get_type_name(self)} should only take one argument"
+                msg
             )
         if (v := bit().val) in (0, 1):
             return bool(v)
-        raise SamariumTypeError(f"? {get_type_name(self)} returned a non-bit")
+        msg = f"? {get_type_name(self)} returned a non-bit"
+        raise SamariumTypeError(msg)
 
     def __hash__(self) -> int:
         return cast(int, self.hash().val)
 
-    def __special__(self) -> Any:
-        raise NotDefinedError(f"{get_type_name(self)}$")
+    def __special__(self) -> object:
+        msg = f"{get_type_name(self)}$"
+        raise NotDefinedError(msg)
 
     __special__.param_count = 1
 
     def special(self) -> Any:
         special = self.__special__
         if param_count(special) != 1:
+            msg = f"{get_type_name(self)}$ should only take one argument"
             raise SamariumTypeError(
-                f"{get_type_name(self)}$ should only take one argument"
+                msg
             )
         return special()
 
     def __hsh__(self) -> Number:
-        raise NotDefinedError(f"{get_type_name(self)}##")
+        msg = f"{get_type_name(self)}##"
+        raise NotDefinedError(msg)
 
     __hsh__.param_count = 1
 
     def hash(self) -> Number:
         hsh = self.__hsh__
         if param_count(hsh) != 1:
+            msg = f"{get_type_name(self)}## should only take one argument"
             raise SamariumTypeError(
-                f"{get_type_name(self)}## should only take one argument"
+                msg
             )
         if isinstance(v := hsh(), Number):
             return v
-        raise SamariumTypeError(f"{get_type_name(self)}## returned a non-integer")
+        msg = f"{get_type_name(self)}## returned a non-integer"
+        raise SamariumTypeError(msg)
 
-    def __cast__(self) -> Any:
-        raise NotDefinedError(f"{get_type_name(self)}%")
+    def __cast__(self) -> object:
+        msg = f"{get_type_name(self)}%"
+        raise NotDefinedError(msg)
 
     __cast__.param_count = 1
 
-    def cast(self) -> Any:
+    def cast(self) -> object:
         cast = self.__cast__
         if param_count(cast) != 1:
+            msg = f"{get_type_name(self)}% should only take one argument"
             raise SamariumTypeError(
-                f"{get_type_name(self)}% should only take one argument"
+                msg
             )
         return cast()
 
     def __random__(self) -> Number:
-        raise NotDefinedError(f"{get_type_name(self)}??")
+        msg = f"{get_type_name(self)}??"
+        raise NotDefinedError(msg)
 
     __random__.param_count = 1
 
-    def random(self) -> Any:
+    def random(self) -> object:
         random = self.__random__
         if param_count(random) != 1:
+            msg = f"{get_type_name(self)}?? should only take one argument"
             raise SamariumTypeError(
-                f"{get_type_name(self)}?? should only take one argument"
+                msg
             )
         return random()
 
@@ -246,11 +263,13 @@ class Dataclass(UserAttrs):
         argc = len(args)
         fieldc = len(self._fields)
         if argc < fieldc:
+            msg = f"missing argument(s): {', '.join(self._field_names[argc:])}"
             raise SamariumTypeError(
-                f"missing argument(s): {', '.join(self._field_names[argc:])}"
+                msg
             )
         if argc > fieldc:
-            raise SamariumTypeError(f"too many arguments ({argc}/{fieldc})")
+            msg = f"too many arguments ({argc}/{fieldc})"
+            raise SamariumTypeError(msg)
         for field, arg in zip(self._fields, args):
             setattr(self, field, arg)
 
@@ -283,7 +302,7 @@ class Dataclass(UserAttrs):
     def __le__(self, other: object) -> bool:
         return not (self > other)
 
-    def special(self) -> Any:
+    def special(self) -> Dataclass:
         return type(self)(*self.vals)
 
 
@@ -293,12 +312,12 @@ class Type(Attrs):
     def __init__(self, type_: type) -> None:
         self.val = type_
 
-    def __eq__(self, other: Any) -> Number:
+    def __eq__(self, other: object) -> Number:
         if isinstance(other, Type):
             return Num(self.val == other.val)
         return Num(self.val == other)
 
-    def __ne__(self, other: Any) -> Number:
+    def __ne__(self, other: object) -> Number:
         if isinstance(other, Type):
             return Num(self.val != other.val)
         return Num(self.val != other)
@@ -307,13 +326,14 @@ class Type(Attrs):
         # "redundant" lambda on purpose to make the obj have a __code__ attr
         return Function(lambda x: self(x))
 
-    def __and__(self, other: Any) -> Function:
+    def __and__(self, other: object) -> Function:
         if isinstance(other, type):
             other = Type(other)
         if isinstance(other, Type):
             other = other.as_function()
         if not isinstance(other, Function):
-            raise SamariumTypeError(f"Type ++ {get_type_name(other)}")
+            msg = f"Type ++ {get_type_name(other)}"
+            raise SamariumTypeError(msg)
         return self.as_function() & other
 
     def __str__(self) -> str:
@@ -327,16 +347,17 @@ class Type(Attrs):
     def __hash__(self) -> int:
         return hash(self.val)
 
-    def __call__(self, *args: Any) -> Any:
+    def __call__(self, *args: object) -> object:
         if self.val in (Function, Module, Type, Dataclass):
-            raise SamariumTypeError(f"cannot instantiate a {self.val.__name__.lower()}")
+            msg = f"cannot instantiate a {self.val.__name__.lower()}"
+            raise SamariumTypeError(msg)
         return self.val(*args)
 
 
 class Module(Attrs):
     __slots__ = ("name", "objects")
 
-    def __init__(self, name: str, objects: dict[str, Any]) -> None:
+    def __init__(self, name: str, objects: dict[str, object]) -> None:
         self.name = name
         self.objects = objects
 
@@ -348,7 +369,7 @@ class Module(Attrs):
 
     __repr__ = __str__
 
-    def __getattr__(self, key: str) -> Any:
+    def __getattr__(self, key: str) -> object:
         return self.objects[key]
 
 
@@ -375,7 +396,8 @@ class Number(Attrs):
             self.val = 0
             self.is_int = True
         else:
-            raise SamariumTypeError(f"cannot cast {get_name(t)} to Number")
+            msg = f"cannot cast {get_name(t)} to Number"
+            raise SamariumTypeError(msg)
 
     def __bool__(self) -> bool:
         return self.val != 0.0
@@ -416,24 +438,28 @@ class Number(Attrs):
     def __and__(self, other: Any) -> Number:
         if self.is_int and other.is_int:
             return Num(self.val & other.val)
-        raise SamariumValueError("cannot use & with non-integer numbers")
+        msg = "cannot use & with non-integer numbers"
+        raise SamariumValueError(msg)
 
     @guard("|")
     def __or__(self, other: Any) -> Number:
         if self.is_int and other.is_int:
             return Num(self.val | other.val)
-        raise SamariumValueError("cannot use | with non-integer numbers")
+        msg = "cannot use | with non-integer numbers"
+        raise SamariumValueError(msg)
 
     @guard("^")
     def __xor__(self, other: Any) -> Number:
         if self.is_int and other.is_int:
             return Num(self.val ^ other.val)
-        raise SamariumValueError("cannot use ^ with non-integer numbers")
+        msg = "cannot use ^ with non-integer numbers"
+        raise SamariumValueError(msg)
 
     def __invert__(self) -> Number:
         if self.is_int:
             return Num(~cast(int, self.val))
-        raise SamariumValueError("cannot invert a non-integer number")
+        msg = "cannot invert a non-integer number"
+        raise SamariumValueError(msg)
 
     def __pos__(self) -> Number:
         return self
@@ -441,12 +467,12 @@ class Number(Attrs):
     def __neg__(self) -> Number:
         return Num(-self.val)
 
-    def __eq__(self, other: Any) -> Number:
+    def __eq__(self, other: object) -> Number:
         if isinstance(other, Number):
             return Num(self.val == other.val)
         return Num(0.0)
 
-    def __ne__(self, other: Any) -> Number:
+    def __ne__(self, other: object) -> Number:
         if isinstance(other, Number):
             return Num(self.val != other.val)
         return Num(1.0)
@@ -473,7 +499,8 @@ class Number(Attrs):
     def cast(self) -> String:
         if self.is_int:
             return String(to_chr(cast(int, self.val)))
-        raise SamariumValueError("cannot cast a non-integer number")
+        msg = "cannot cast a non-integer number"
+        raise SamariumValueError(msg)
 
     def hash(self) -> Number:
         return Num(hash(self.val))
@@ -503,7 +530,7 @@ Num = lru_cache(1024)(Number)
 class String(Attrs):
     __slots__ = ("val",)
 
-    def __init__(self, value: Any = "") -> None:
+    def __init__(self, value: object = "") -> None:
         self.val = str(value)
 
     def __contains__(self, element: String) -> bool:
@@ -524,7 +551,7 @@ class String(Attrs):
     def __neg__(self) -> String:
         return String(self.val[::-1])
 
-    def __add__(self, other: Any) -> String:
+    def __add__(self, other: object) -> String:
         if isinstance(other, String):
             return String(self.val + other.val)
         if other is NULL:
@@ -537,42 +564,50 @@ class String(Attrs):
                         for i in self.val
                     )
                 )
-            raise SamariumTypeError("cannot shift using non-integers")
-        raise SamariumTypeError(f"String + {get_type_name(other)}")
+            msg = "cannot shift using non-integers"
+            raise SamariumTypeError(msg)
+        msg = f"String + {get_type_name(other)}"
+        raise SamariumTypeError(msg)
 
-    def __sub__(self, other: Any) -> String:
+    def __sub__(self, other: object) -> String:
         if isinstance(other, String):
             return String(self.val.replace(other.val, "", 1))
         if isinstance(other, Number):
             return self + (-other)
-        raise SamariumTypeError(f"String - {get_type_name(other)}")
+        msg = f"String - {get_type_name(other)}"
+        raise SamariumTypeError(msg)
 
     @guard("--")
     def __truediv__(self, other: Any) -> String:
         return String(self.val.replace(other.val, ""))
 
-    def __mul__(self, other: Any) -> String:
+    def __mul__(self, other: object) -> String:
         if other is NULL:
             other = Num(2)
         if isinstance(other, Number):
             if other.val < 0:
-                raise SamariumTypeError(
+                msg = (
                     "String ++ -Number is ambiguous, use -(String ++ Number)"
                     " or (-String) ++ Number instead"
                 )
+                raise SamariumTypeError(
+                    msg
+                )
             i, d = int(other.val // 1), other.val % 1
             return String(self.val * i + self.val[: round(d * len(self.val))])
-        raise NotDefinedError(f"String ++ {get_type_name(other)}")
+        msg = f"String ++ {get_type_name(other)}"
+        raise NotDefinedError(msg)
 
-    def __mod__(self, other: Any) -> String:
+    def __mod__(self, other: object) -> String:
         if isinstance(other, (String, Array, Table)):
             return String(smformat(self.val, other.val))
-        raise NotDefinedError(f"String --- {get_type_name(other)}")
+        msg = f"String --- {get_type_name(other)}"
+        raise NotDefinedError(msg)
 
-    def __eq__(self, other: Any) -> Number:
+    def __eq__(self, other: object) -> Number:
         return Num(self.val == other.val)
 
-    def __ne__(self, other: Any) -> Number:
+    def __ne__(self, other: object) -> Number:
         return Num(self.val != other.val)
 
     @guard(">")
@@ -594,18 +629,22 @@ class String(Attrs):
     def __getitem__(self, index: Number | Slice) -> String:
         if isinstance(index, Number):
             if not is_valid_index(self, index):
-                raise SamariumTypeError(f"invalid index: {index}")
+                msg = f"invalid index: {index}"
+                raise SamariumTypeError(msg)
             return String(self.val[cast(int, index.val)])
         if isinstance(index, Slice):
             return String(self.val[index.val])
-        raise SamariumTypeError(f"invalid index: {index}")
+        msg = f"invalid index: {index}"
+        raise SamariumTypeError(msg)
 
     def __setitem__(self, index: Number | Slice, value: String) -> None:
         if not isinstance(index, (Number, Slice)):
-            raise SamariumTypeError(f"invalid index: {index}")
+            msg = f"invalid index: {index}"
+            raise SamariumTypeError(msg)
         if isinstance(index, Number):
             if not is_valid_index(self, index):
-                raise SamariumTypeError(f"invalid index: {index}")
+                msg = f"invalid index: {index}"
+                raise SamariumTypeError(msg)
             i = cast(int, index.val)
         else:
             i = index.val
@@ -616,7 +655,7 @@ class String(Attrs):
     def __hash__(self) -> int:
         return cast(int, self.hash().val)
 
-    def __matmul__(self, other: Any) -> Zip:
+    def __matmul__(self, other: object) -> Zip:
         return Zip(self, other)
 
     def cast(self) -> Array | Number:
@@ -637,7 +676,7 @@ class String(Attrs):
 class Array(Generic[T], Attrs):
     __slots__ = ("val",)
 
-    def __init__(self, value: Any = None) -> None:
+    def __init__(self, value: object = None) -> None:
         self.val: list[Any]
         if value is None:
             self.val = []
@@ -649,12 +688,14 @@ class Array(Generic[T], Attrs):
             self.val = list(map(Array, value.val.items()))
         elif isinstance(value, Slice):
             if value.stop is NULL:
-                raise SamariumValueError("cannot convert an infinite Slice to an Array")
+                msg = "cannot convert an infinite Slice to an Array"
+                raise SamariumValueError(msg)
             self.val = list(value)
         elif isinstance(value, Iterable):
             self.val = [*value]
         else:
-            raise SamariumTypeError(f"cannot cast {get_type_name(value)} to an Array")
+            msg = f"cannot cast {get_type_name(value)} to an Array"
+            raise SamariumTypeError(msg)
 
     def __str__(self) -> str:
         return ", ".join(map(functype_repr, self.val)).join("[]")
@@ -670,12 +711,12 @@ class Array(Generic[T], Attrs):
     def __contains__(self, element: T) -> bool:
         return element in self.val
 
-    def __eq__(self, other: Any) -> Number:
+    def __eq__(self, other: object) -> Number:
         if isinstance(other, Array):
             return Num(self.val == other.val)
         return Num(0)
 
-    def __ne__(self, other: Any) -> Number:
+    def __ne__(self, other: object) -> Number:
         if isinstance(other, Array):
             return Num(self.val != other.val)
         return Num(1)
@@ -696,21 +737,25 @@ class Array(Generic[T], Attrs):
     def __le__(self, other: Any) -> Number:
         return Num(self.val <= other.val)
 
-    def __getitem__(self, index: Any) -> T | Array[T]:
+    def __getitem__(self, index: object) -> T | Array[T]:
         if isinstance(index, Number):
             if not is_valid_index(self, index):
-                raise SamariumValueError(f"invalid index: {index}")
+                msg = f"invalid index: {index}"
+                raise SamariumValueError(msg)
             return self.val[cast(int, index.val)]
         if isinstance(index, Slice):
             return Array(self.val[index.val])
-        raise SamariumTypeError(f"invalid index: {index}")
+        msg = f"invalid index: {index}"
+        raise SamariumTypeError(msg)
 
-    def __setitem__(self, index: Any, value: T | Array[T]) -> None:
+    def __setitem__(self, index: object, value: T | Array[T]) -> None:
         if not isinstance(index, (Number, Slice)):
-            raise SamariumTypeError(f"invalid index: {index}")
+            msg = f"invalid index: {index}"
+            raise SamariumTypeError(msg)
         if isinstance(index, Number):
             if not is_valid_index(self, index):
-                raise SamariumValueError(f"invalid index: {index}")
+                msg = f"invalid index: {index}"
+                raise SamariumValueError(msg)
             self.val[cast(int, index.val)] = value
         else:
             self.val[index.val] = cast(Array[T], value)
@@ -719,22 +764,25 @@ class Array(Generic[T], Attrs):
     def __add__(self, other: Any) -> Array[T]:
         return Array(self.val + other.val)
 
-    def __sub__(self, other: Any) -> Array[T]:
+    def __sub__(self, other: object) -> Array[T]:
         new_array = self.val.copy()
         if isinstance(other, Array):
             for i in other:
                 try:
                     new_array.remove(i)
                 except ValueError:
-                    raise SamariumValueError(f"{i!r} not in array") from None
+                    msg = f"{i!r} not in array"
+                    raise SamariumValueError(msg) from None
         elif isinstance(other, Number):
             if not other.is_int:
-                raise SamariumValueError(f"invalid index: {other}")
+                msg = f"invalid index: {other}"
+                raise SamariumValueError(msg)
             new_array.pop(cast(int, other.val))
         elif other is NULL:
             return self.val.pop()
         else:
-            raise NotDefinedError(f"Array - {get_type_name(other)}")
+            msg = f"Array - {get_type_name(other)}"
+            raise NotDefinedError(msg)
         return Array(new_array)
 
     def __neg__(self) -> Array[T]:
@@ -744,7 +792,7 @@ class Array(Generic[T], Attrs):
                 new_array.append(i)
         return Array(new_array)
 
-    def __mod__(self, other: Any) -> Array[T]:
+    def __mod__(self, other: object) -> Array[T]:
         indexes = [i for i, v in enumerate(self.val) if v == other]
         new_array = self.val.copy()
         for i in indexes[1:][::-1]:
@@ -775,13 +823,14 @@ class Array(Generic[T], Attrs):
     def __xor__(self, other: Any) -> Array[T]:
         return (self | other) / (self & other)
 
-    def __mul__(self, other: Any) -> Array[T]:
+    def __mul__(self, other: object) -> Array[T]:
         if isinstance(other, Number):
             i, d = int(other.val // 1), other.val % 1
             return Array(self.val * i + self.val[: round(d * len(self.val))])
-        raise NotDefinedError(f"Array ++ {get_type_name(other)}")
+        msg = f"Array ++ {get_type_name(other)}"
+        raise NotDefinedError(msg)
 
-    def __matmul__(self, other: Any) -> Zip:
+    def __matmul__(self, other: object) -> Zip:
         return Zip(self, other)
 
     def cast(self) -> String:
@@ -790,12 +839,14 @@ class Array(Generic[T], Attrs):
             if isinstance(i, Number) and i.is_int:
                 s += to_chr(cast(int, i.val))
             else:
-                raise SamariumTypeError("array contains non-integers")
+                msg = "array contains non-integers"
+                raise SamariumTypeError(msg)
         return String(s)
 
     def random(self) -> T:
         if not self.val:
-            raise SamariumValueError("array is empty")
+            msg = "array is empty"
+            raise SamariumValueError(msg)
         return choice(self.val)
 
     def special(self) -> Number:
@@ -805,7 +856,7 @@ class Array(Generic[T], Attrs):
 class Table(Generic[KT, VT], Attrs):
     __slots__ = ("val",)
 
-    def __init__(self, value: Any = None) -> None:
+    def __init__(self, value: object = None) -> None:
         if value is None:
             self.val = {}
         elif isinstance(value, Table):
@@ -825,11 +876,13 @@ class Table(Generic[KT, VT], Attrs):
                         table[k] = v
                 self.val = table
             else:
+                msg = "not all elements of the array are of length 2"
                 raise SamariumValueError(
-                    "not all elements of the array are of length 2"
+                    msg
                 )
         else:
-            raise SamariumTypeError(f"cannot cast {get_type_name(value)} to a Table")
+            msg = f"cannot cast {get_type_name(value)} to a Table"
+            raise SamariumTypeError(msg)
 
     def __str__(self) -> str:
         return ", ".join(
@@ -843,7 +896,8 @@ class Table(Generic[KT, VT], Attrs):
         try:
             return self.val[key]
         except KeyError:
-            raise SamariumValueError(f"key not found: {key}") from None
+            msg = f"key not found: {key}"
+            raise SamariumValueError(msg) from None
 
     def __setitem__(self, key: KT, value: VT) -> None:
         self.val[key] = value
@@ -851,15 +905,15 @@ class Table(Generic[KT, VT], Attrs):
     def __iter__(self) -> PyIterator[KT]:
         yield from self.val.keys()
 
-    def __contains__(self, element: Any) -> bool:
+    def __contains__(self, element: object) -> bool:
         return element in self.val
 
-    def __eq__(self, other: Any) -> Number:
+    def __eq__(self, other: object) -> Number:
         if isinstance(other, Table):
             return Num(self.val == other.val)
         return Num(0)
 
-    def __ne__(self, other: Any) -> Number:
+    def __ne__(self, other: object) -> Number:
         if isinstance(other, Table):
             return Num(self.val != other.val)
         return Num(1)
@@ -871,20 +925,22 @@ class Table(Generic[KT, VT], Attrs):
     def __invert__(self) -> Table[VT, KT]:
         return Table({v: k for k, v in self.val.items()})
 
-    def __sub__(self, other: Any) -> Table[KT, VT]:
+    def __sub__(self, other: object) -> Table[KT, VT]:
         c = self.val.copy()
         try:
             del c[other]
         except KeyError:
-            raise SamariumValueError(f"key not found: {other}") from None
+            msg = f"key not found: {other}"
+            raise SamariumValueError(msg) from None
         return Table(c)
 
-    def __matmul__(self, other: Any) -> Zip:
+    def __matmul__(self, other: object) -> Zip:
         return Zip(self, other)
 
-    def random(self) -> Any:
+    def random(self) -> object:
         if not self.val:
-            raise SamariumValueError("table is empty")
+            msg = "table is empty"
+            raise SamariumValueError(msg)
         return choice(list(self.val.keys()))
 
     def special(self) -> Array[VT]:
@@ -905,10 +961,10 @@ class Null(Singleton, Attrs):
     def __bool__(self) -> bool:
         return False
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         return self is other
 
-    def __ne__(self, other: Any) -> bool:
+    def __ne__(self, other: object) -> bool:
         return self is not other
 
     def __hash__(self) -> int:
@@ -920,7 +976,7 @@ class Null(Singleton, Attrs):
     def __invert__(self) -> Number:
         return Num(-1)
 
-    def __floordiv__(self, other: Any) -> Number:
+    def __floordiv__(self, other: object) -> Number:
         return Num(not other)
 
 
@@ -933,7 +989,8 @@ class Slice(Attrs):
 
     def __init__(self, start: Any, stop: Any = NULL, step: Any = NULL) -> None:
         if step.val == 0:
-            raise SamariumValueError("step cannot be zero")
+            msg = "step cannot be zero"
+            raise SamariumValueError(msg)
         self.start = start
         self.stop = stop
         self.step = step
@@ -945,7 +1002,8 @@ class Slice(Attrs):
                 self.tup[2] or 1,
             )
         except TypeError:
-            raise SamariumTypeError("slice values have to be integers") from None
+            msg = "slice values have to be integers"
+            raise SamariumTypeError(msg) from None
         self.val = slice(*self.tup)
 
     def __bool__(self) -> bool:
@@ -959,10 +1017,12 @@ class Slice(Attrs):
 
     def __getitem__(self, index: Number) -> Number:
         if not isinstance(index, Number):
-            raise SamariumTypeError(f"invalid index: {index}")
+            msg = f"invalid index: {index}"
+            raise SamariumTypeError(msg)
         if is_valid_index(self, index):
             return Num(self.range[cast(int, index.val)])
-        raise SamariumValueError(f"invalid index: {index}")
+        msg = f"invalid index: {index}"
+        raise SamariumValueError(msg)
 
     def __str__(self) -> str:
         start, stop, step = self.tup
@@ -981,17 +1041,17 @@ class Slice(Attrs):
             string += f"..{step!r}"
         return f"<<{string}>>"
 
-    def __matmul__(self, other: Any) -> Zip:
+    def __matmul__(self, other: object) -> Zip:
         return Zip(self, other)
 
     __repr__ = __str__
 
-    def __eq__(self, other: Any) -> Number:
+    def __eq__(self, other: object) -> Number:
         if isinstance(other, Slice):
             return Num(self.tup == other.tup)
         return Num(0)
 
-    def __ne__(self, other: Any) -> Number:
+    def __ne__(self, other: object) -> Number:
         if isinstance(other, Slice):
             return Num(self.tup != other.tup)
         return Num(1)
@@ -1017,7 +1077,8 @@ class Zip(Attrs):
 
     def __init__(self, *values: Any) -> None:
         if not all(isinstance(i, Iterable) for i in values):
-            raise SamariumTypeError("cannot zip a non-iterable")
+            msg = "cannot zip a non-iterable"
+            raise SamariumTypeError(msg)
         self.iters = values
         self.val = zip(*values)
 
@@ -1030,7 +1091,7 @@ class Zip(Attrs):
     def __iter__(self) -> PyIterator[Array]:
         yield from map(Array, self.val)
 
-    def __matmul__(self, other: Any) -> Zip:
+    def __matmul__(self, other: object) -> Zip:
         return Zip(*self.iters, other)
 
     def __str__(self) -> str:
@@ -1045,7 +1106,8 @@ class Iterator(Generic[T], Attrs):
 
     def __init__(self, value: Any) -> None:
         if not isinstance(value, Iterable):
-            raise SamariumTypeError("cannot create an Iterator from a non-iterable")
+            msg = "cannot create an Iterator from a non-iterable"
+            raise SamariumTypeError(msg)
         self.val = iter(value)
         try:
             self.length = Num(len(value.val))
@@ -1077,9 +1139,9 @@ class Enum(Attrs):
     def __bool__(self) -> bool:
         return bool(self.members)
 
-    def __init__(self, name: str, **members: Any) -> None:
+    def __init__(self, name: str, **members: object) -> None:
         self.name = name.removeprefix("sm_")
-        self.members: dict[str, Any] = {}
+        self.members: dict[str, object] = {}
 
         i = 0
         for k, v in members.items():
@@ -1094,15 +1156,17 @@ class Enum(Attrs):
     def __str__(self) -> str:
         return f"Enum({self.name})"
 
-    def __getattr__(self, name: str) -> Any:
+    def __getattr__(self, name: str) -> object:
         try:
             return self.members[name]
         except KeyError:
-            raise AttributeError(f"'{self.name}''{name}'") from None
+            msg = f"'{self.name}''{name}'"
+            raise AttributeError(msg) from None
 
-    def __setattr__(self, name: str, value: Any) -> None:
+    def __setattr__(self, name: str, value: object) -> None:
         if name.startswith("sm_"):
-            raise SamariumTypeError("enum members cannot be modified")
+            msg = "enum members cannot be modified"
+            raise SamariumTypeError(msg)
         object.__setattr__(self, name, value)
 
     def cast(self) -> Table:
@@ -1143,8 +1207,9 @@ class Function(Attrs):
         if self.inst is not None:
             posargs = (self.inst, *posargs)
         if not self.varargs and args:
+            msg = f"too many arguments ({supplied}/{self.param_count})"
             raise SamariumTypeError(
-                f"too many arguments ({supplied}/{self.param_count})"
+                msg
             )
         try:
             out = correct_type(
@@ -1155,11 +1220,13 @@ class Function(Attrs):
         except TypeError as e:
             errmsg = str(e)
             if m := MISSING_POSARG.search(errmsg):
+                msg = f"not enough arguments ({supplied}/{supplied + int(m.group(1))})"
                 raise SamariumTypeError(
-                    f"not enough arguments ({supplied}/{supplied + int(m.group(1))})"
+                    msg
                 ) from None
             if "positional argument: 'self'" in errmsg:
-                raise SamariumTypeError("missing instance") from None
+                msg = "missing instance"
+                raise SamariumTypeError(msg) from None
             raise
         return out
 
@@ -1169,7 +1236,8 @@ class Function(Attrs):
         if isinstance(other, Type):
             other = other.as_function()
         if not isinstance(other, Function):
-            raise SamariumTypeError(f"Function & {get_type_name(other)}")
+            msg = f"Function & {get_type_name(other)}"
+            raise SamariumTypeError(msg)
 
         def f(*args: Attrs) -> Attrs:
             return self(other(*args))
@@ -1189,9 +1257,11 @@ class Function(Attrs):
 
 def check_type(obj: Any) -> None:
     if isinstance(obj, property):
-        raise SamariumTypeError("cannot use a special method on a type")
+        msg = "cannot use a special method on a type"
+        raise SamariumTypeError(msg)
     if isinstance(obj, (tuple, GeneratorType)):
-        raise SamariumSyntaxError("invalid syntax")
+        msg = "invalid syntax"
+        raise SamariumSyntaxError(msg)
 
 
 def correct_type(obj: T, *objs: T) -> T | Array | Number | Iterator | Table | Null:
@@ -1229,4 +1299,5 @@ def param_count(func: Callable) -> int:
 def to_chr(code: int) -> str:
     if 0 <= code < 0x110000:
         return chr(code)
-    raise SamariumValueError("invalid Unicode code point")
+    msg = "invalid Unicode code point"
+    raise SamariumValueError(msg)

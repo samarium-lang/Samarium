@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from contextlib import suppress
 from enum import Enum
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 from samarium.exceptions import SamariumSyntaxError, handle_exception
 from samarium.tokens import CLOSE_TOKENS, FILE_IO_TOKENS, OPEN_TOKENS, Token
@@ -131,10 +131,10 @@ class Switch(Enum):
 
 
 class Registry:
-    def __init__(self, vars: dict[str, Any]) -> None:
+    def __init__(self, vars_: dict[str, object]) -> None:
         self._switches = [False] * len(Switch)
         self.output = ""
-        self.vars = vars
+        self.vars = vars_
 
     def __getitem__(self, switch: Switch) -> bool:
         return self._switches[switch.value]
@@ -251,7 +251,7 @@ OPERATOR_MAPPING = {
     Token.LE: "<=",
     Token.AND: " and ",
     Token.OR: " or ",
-    Token.XOR: "!=",  # TODO: implement this properly (before 2025)
+    Token.XOR: "!=",  # TODO(trag1c): implement this properly in ≤2025 (optional)
     Token.NOT: " NULL// ",
     Token.BAND: "&",
     Token.BOR: "|",

@@ -39,7 +39,8 @@ def parse_string(string: str) -> list[Mod]:
         if pattern.match(string):
             break
     else:
-        raise SamariumSyntaxError("invalid import syntax")
+        msg = "invalid import syntax"
+        raise SamariumSyntaxError(msg)
     if imptype is Import.MODULE:
         mods = string.split(",")
         out = []
@@ -78,8 +79,9 @@ def merge_objects(reg: Registry, imported: Registry, module: Mod) -> dict[str, A
         try:
             vars_[f"sm_{obj.alias}"] = imported.vars[f"sm_{obj.name}"]
         except KeyError:
+            msg = f"{obj.name} is not a member of the {module.name} module"
             raise SamariumImportError(
-                f"{obj.name} is not a member of the {module.name} module"
+                msg
             ) from None
     return vars_
 
@@ -96,7 +98,8 @@ def resolve_path(name: str, source: str) -> Path:
     paths = [e.name for e in path.iterdir()]
     if not (f"{name}.sm" in paths or f"{name}.py" in paths):
         if name not in MODULE_NAMES:
-            raise SamariumImportError(f"invalid module: {name}")
+            msg = f"invalid module: {name}"
+            raise SamariumImportError(msg)
         path = Path(__file__).resolve().parent / "modules"
     return path
 

@@ -23,7 +23,7 @@ class Token(Enum):
     IN = "->?"
     NOT = "~~"
     OR = "||"
-    XOR = "^^"  # TODO
+    XOR = "^^"  # TODO(trag1c): Implement in ≤2025 (optional)
 
     # Bitwise
     BAND = "&"

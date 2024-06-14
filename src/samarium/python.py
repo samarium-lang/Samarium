@@ -55,7 +55,8 @@ def to_python(obj: Attrs) -> object:
         return PyEnum(obj.name, o)
     if isinstance(obj, Iterator):
         return map(to_python, obj)
-    raise TypeError(f"Conversion for type {type(obj).__name__!r} not found")
+    msg = f"Conversion for type {type(obj).__name__!r} not found"
+    raise TypeError(msg)
 
 
 def to_samarium(obj: object) -> Attrs:
@@ -78,7 +79,7 @@ def to_samarium(obj: object) -> Attrs:
             to_samarium(None if obj.step == 1 else obj.step),
         )
     if isinstance(obj, SliceRange):
-        return obj._slice  # noqa: SLF001
+        return obj._slice
     if isinstance(obj, (TextIOWrapper, BufferedWriter, BufferedReader)):
         return File(
             obj, Mode(obj.mode).name, obj.name, binary=isinstance(obj, BufferedIOBase)
@@ -92,14 +93,16 @@ def to_samarium(obj: object) -> Attrs:
         return to_samarium(obj.value)
     if isinstance(obj, PyIterable):
         return Iterator(obj)
-    raise TypeError(f"Conversion for type {type(obj).__name__!r} not found")
+    msg = f"Conversion for type {type(obj).__name__!r} not found"
+    raise TypeError(msg)
 
 
 def export(func: Callable) -> Callable[..., Attrs]:
     """Wraps a Python function to be used in Samarium"""
 
     if not isinstance(func, FunctionType):
-        raise TypeError(f"cannot export a non-function type {get_type_name(func)!r}")
+        msg = f"cannot export a non-function type {get_type_name(func)!r}"
+        raise TypeError(msg)
 
     def wrapper(*_args: Attrs) -> Attrs:
         return to_samarium(func(*map(to_python, _args)))

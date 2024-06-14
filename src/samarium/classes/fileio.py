@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from os import write
+from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, cast
 
 from samarium.classes.base import NULL, Array, Attrs, Null, Num, Number, Slice, String
@@ -22,20 +23,22 @@ class Mode(Enum):
 class FileManager:
     @staticmethod
     def create(path: String) -> Null:
-        open(path.val, "x").close()
+        Path(path.val).touch()
         return NULL
 
     @staticmethod
     def open(path: String | Number, mode: Mode, *, binary: bool = False) -> File:
         if isinstance(path, Number):
             if mode is Mode.READ_WRITE:
+                msg = "cannot open a standard stream in a read & write mode"
                 raise SamariumIOError(
-                    "cannot open a standard stream in a read & write mode"
+                    msg
                 )
             if not path.is_int:
-                raise SamariumValueError("cannot use non-integers")
+                msg = "cannot use non-integers"
+                raise SamariumValueError(msg)
         pth = cast(int, path.val) if isinstance(path, Number) else path.val
-        f = open(pth, mode.value + "b" * binary)
+        f = Path(pth).open(mode.value + "b" * binary)  # noqa: SIM115
         return File(f, mode.name, pth, binary=binary)
 
     @staticmethod
@@ -57,29 +60,35 @@ class FileManager:
                         return Array(map(Num, f.read()))
                     return String(f.read())
                 if data is None:
-                    raise SamariumIOError("missing data")
+                    msg = "missing data"
+                    raise SamariumIOError(msg)
                 if isinstance(data, Array):
                     bytes_ = b""
                     for i in data.val:
                         try:
                             bytes_ += i.val.to_bytes(1, "big")
                         except AssertionError:
+                            msg = "some items in the array are not of type Integer"
                             raise SamariumTypeError(
-                                "some items in the array are not of type Integer"
+                                msg
                             ) from None
                     f.write(bytes_)
                 else:
                     f.write(data.val)
         elif isinstance(path, Number):
             if not path.is_int:
-                raise SamariumValueError("cannot use non-integers")
+                msg = "cannot use non-integers"
+                raise SamariumValueError(msg)
             if mode in {Mode.APPEND, Mode.WRITE}:
                 fd = cast(int, path.val)
                 write(fd, str(data).encode())
             else:
-                raise SamariumIOError(
+                msg = (
                     "reading from file descriptors is "
                     "not supported for quick operations"
+                )
+                raise SamariumIOError(
+                    msg
                 )
         else:
             file = path
@@ -88,7 +97,8 @@ class FileManager:
             if data is not None:
                 file.save(data)
             else:
-                raise SamariumIOError("missing data")
+                msg = "missing data"
+                raise SamariumIOError(msg)
         return NULL
 
 
@@ -123,12 +133,14 @@ class File(Attrs):
             if index.is_empty():
                 return Num(self.val.tell())
             if isinstance(index.step, Number):
-                raise SamariumIOError("cannot use step")
+                msg = "cannot use step"
+                raise SamariumIOError(msg)
             if isinstance(index.start, Number):
                 if not isinstance(index.stop, Number):
                     return self.load(index.start)
                 if not (index.start.is_int or index.stop.is_int):
-                    raise SamariumValueError(f"invalid index: {index}")
+                    msg = f"invalid index: {index}"
+                    raise SamariumValueError(msg)
                 start = cast(int, index.start.val)
                 stop = cast(int, index.stop.val)
                 current_pos = self.val.tell()
@@ -149,7 +161,8 @@ class File(Attrs):
         if bytes_ is None:
             bytes_ = Num(-1)
         if not bytes_.is_int:
-            raise SamariumValueError("cannot use non-integers")
+            msg = "cannot use non-integers"
+            raise SamariumValueError(msg)
         val = self.val.read(cast(int, bytes_.val))
         if self.binary:
             return Array(map(Num, val))
@@ -166,8 +179,9 @@ class File(Attrs):
                 try:
                     bytes_ += i.val.to_bytes(1, "big")
                 except AssertionError:
+                    msg = "some items in the array are not of type Integer"
                     raise SamariumTypeError(
-                        "some items in the array are not of type Integer"
+                        msg
                     ) from None
             self.val.write(bytes_)
         else:

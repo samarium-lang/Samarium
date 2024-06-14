@@ -69,9 +69,11 @@ def print_safe(*args: Attrs | Callable[..., Any] | bool | None) -> Attrs:
     strs = list(map(str, typechecked_args))
     types = list(map(type, typechecked_args))
     if tuple in types:
-        raise SamariumSyntaxError("missing brackets")
+        msg = "missing brackets"
+        raise SamariumSyntaxError(msg)
     if GeneratorType in types:
-        raise SamariumSyntaxError("invalid comprehension")
+        msg = "invalid comprehension"
+        raise SamariumSyntaxError(msg)
     print(*strs)
     if len(return_args) > 1:
         return Array(return_args)
@@ -92,11 +94,14 @@ def readline(prompt: String = NULL_STRING) -> String:
 
 def sleep(*args: Number) -> None:
     if not args:
-        raise SamariumTypeError("no argument provided for ,.,")
+        msg = "no argument provided for ,.,"
+        raise SamariumTypeError(msg)
     if len(args) > 1:
-        raise SamariumTypeError(",., only takes one argument")
+        msg = ",., only takes one argument"
+        raise SamariumTypeError(msg)
     if not isinstance((time := args[0]), Number):
-        raise SamariumTypeError(",., only accepts integers")
+        msg = ",., only accepts integers"
+        raise SamariumTypeError(msg)
     _sleep(time.val / 1000)
 
 
@@ -108,17 +113,21 @@ def throw(obj: String | Array = NULL_STRING) -> None:
     note = ""
     if isinstance(obj, Array):
         if len(obj.val) != 2:
-            raise SamariumTypeError("array must be of form [error_msg, note]")
+            msg = "array must be of form [error_msg, note]"
+            raise SamariumTypeError(msg)
         error_msg, note = obj.val
         if not isinstance(error_msg, String):
-            raise SamariumTypeError("error message must be a string")
+            msg = "error message must be a string"
+            raise SamariumTypeError(msg)
         if not isinstance(note, String):
-            raise SamariumTypeError("error note must be a string")
+            msg = "error note must be a string"
+            raise SamariumTypeError(msg)
         note = f"\n&1[Note] {note.val}"
     elif isinstance(obj, String):
         error_msg = obj
     else:
-        raise SamariumTypeError("throw argument must be a string or a 2-element array")
+        msg = "throw argument must be a string or a 2-element array"
+        raise SamariumTypeError(msg)
     raise SamariumError(error_msg.val + note)
 
 
