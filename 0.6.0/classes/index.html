@@ -1,0 +1,1259 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../modules/">
+      
+      
+        <link rel="next" href="../fileio/">
+      
+      <link rel="icon" href="../assets/icon-black.png">
+      <meta name="generator" content="mkdocs-1.5.1, mkdocs-material-9.1.21">
+    
+    
+      
+        <title>Classes - Samarium Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.eebd395e.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ecc896b0.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/style.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#classes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Samarium Documentation" class="md-header__button md-logo" aria-label="Samarium Documentation" data-md-component="logo">
+      
+  <img src="../assets/icon-white.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Samarium Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Classes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+          
+            
+            
+            
+            <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+            
+              <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+              </label>
+            
+          
+            
+            
+            
+            <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+            
+              <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              </label>
+            
+          
+        </form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/samarium-lang/Samarium" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    samarium-lang/Samarium
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Samarium Documentation" class="md-nav__button md-logo" aria-label="Samarium Documentation" data-md-component="logo">
+      
+  <img src="../assets/icon-white.png" alt="logo">
+
+    </a>
+    Samarium Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/samarium-lang/Samarium" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    samarium-lang/Samarium
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          Language Guide
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Language Guide
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../numbers/" class="md-nav__link">
+        Numbers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../variables/" class="md-nav__link">
+        Variables
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operators/" class="md-nav__link">
+        Operators
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../strings/" class="md-nav__link">
+        Strings
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comments/" class="md-nav__link">
+        Comments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arrays/" class="md-nav__link">
+        Arrays
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/" class="md-nav__link">
+        Tables
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../builtins/" class="md-nav__link">
+        Built-in Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../controlflow/" class="md-nav__link">
+        Control Flow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../null/" class="md-nav__link">
+        Null
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../slices/" class="md-nav__link">
+        Slices
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zip/" class="md-nav__link">
+        Zipping
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enums/" class="md-nav__link">
+        Enums
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/" class="md-nav__link">
+        Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/" class="md-nav__link">
+        Modules
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Classes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Classes
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#static-methods" class="md-nav__link">
+    Static Methods
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes-as-entry-points" class="md-nav__link">
+    Classes As Entry Points
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-decorators" class="md-nav__link">
+    Class Decorators
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-classes" class="md-nav__link">
+    Data Classes
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fileio/" class="md-nav__link">
+        File I/O
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interop/" class="md-nav__link">
+        Python Interop
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          Standard Library
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Standard Library
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stdcollections/" class="md-nav__link">
+        collections module
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stddatetime/" class="md-nav__link">
+        datetime module
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stdio/" class="md-nav__link">
+        io module
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stditer/" class="md-nav__link">
+        iter module
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stdmath/" class="md-nav__link">
+        math module
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stdoperator/" class="md-nav__link">
+        operator module
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stdrandom/" class="md-nav__link">
+        random module
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stdstring/" class="md-nav__link">
+        string module
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stdtypes/" class="md-nav__link">
+        types module
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/" class="md-nav__link">
+        Tools
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#static-methods" class="md-nav__link">
+    Static Methods
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classes-as-entry-points" class="md-nav__link">
+    Classes As Entry Points
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-decorators" class="md-nav__link">
+    Class Decorators
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-classes" class="md-nav__link">
+    Data Classes
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="classes">Classes</h1>
+<p>Classes are defined with the <code>@</code> character. Any inherited classes can follow the
+name of the class in parentheses, separated by commas<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.
+Class variables and methods are defined inside curly braces.</p>
+<p>Inside a class' methods, the <code>'</code> character can be used to reference its instance
+variables and methods. Class variables are those that are shared between all
+instances of a class, and instance variables are for data unique to each
+instance.</p>
+<p>Class variables, instance variables and methods can be accessed with the <code>.</code>
+operator on an instance of the class. In this case, class methods will
+implicitly be given a reference to the instance as the first argument of the
+method; <code>x.method(arg1, arg2, ...)</code> is equivalent to <code>x?!.method(x, arg1, arg2, ...)</code>.
+Class variables and methods can also be accessed in the same way directly from
+the class itself, though note that in this case methods will not implicitly have
+an instance as the first argument, so it must be provided.</p>
+<p>Just like variables, class attributes can be made private by prefixing them with
+<code>#</code>, making them inaccessible outside the class.</p>
+<pre class="sm"><code>@ Foo {
+    shared: [];
+
+    =&gt; var * {
+        'var: var;
+        '#pv: var - /;
+    }
+
+    get_pv * {
+        * '#pv;
+    }
+}
+
+a: Foo(/\\);        == calls `Foo.create`; `a` is now an instance of `Foo`
+a.var!;             == prints 5
+a.get_pv()!;        == calls `Foo.get_pv(a)`; prints 4
+
+b: Foo(/\);
+a.shared+: ["str"]; == modifying a class variable for all instances
+b.shared!;          == prints ["str"]</code></pre>
+<p>Parent classes are inherited from right to left, i.e. the first class in the
+inheritance takes priority and will overwrite any functions/variables defined
+by the following classes:</p>
+<pre class="sm"><code>@ A {
+    method * { "A"!; }
+}
+
+@ B {
+    method * { "B"!; }
+}
+
+@ C(A, B) {}
+
+=&gt; * {
+    c: C();
+    c.method();     == prints "A", as class A was inherited last
+}</code></pre>
+<p>There are a number of special methods that the user can implement to override
+certain functionality of a class, such as how it's initialized (with the
+<code>create</code> method), or how it interacts with different operators. These methods
+are as follows (where <code>func(...)</code> indicates a variable number of arguments):</p>
+<p><center></p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Python</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>+(other)</code></td>
+<td><code>add</code></td>
+<td>Interacts with the addition operator <code>+</code>.</td>
+</tr>
+<tr>
+<td><code>&amp;(other)</code></td>
+<td><code>and</code></td>
+<td>Interacts with the bitwise AND operator <code>&amp;</code>.</td>
+</tr>
+<tr>
+<td><code>()(...)</code></td>
+<td><code>call</code></td>
+<td>Called when an instance itself is "called" as a function;<br><code>x(...)</code> roughly translates to <code>x?!.call(x, ...)</code>.</td>
+</tr>
+<tr>
+<td><code>%()</code></td>
+<td>--</td>
+<td>Interacts with the cast function operator <code>%</code>.</td>
+</tr>
+<tr>
+<td><code>=&gt;(...)</code></td>
+<td><code>init</code></td>
+<td>Initializes an instance of a class, takes any number<br>of arguments. Typically used for setting instance<br>variables based on these arguments.<br>No return value necessary.</td>
+</tr>
+<tr>
+<td><code>--(other)</code></td>
+<td><code>floordiv</code></td>
+<td>Interacts with the division operator <code>--</code>.</td>
+</tr>
+<tr>
+<td><code>::(other)</code></td>
+<td><code>eq</code></td>
+<td>Implements the equality operator <code>::</code>.</td>
+</tr>
+<tr>
+<td><code>&lt;&lt;&gt;&gt;(index)</code></td>
+<td><code>getitem</code></td>
+<td>Implements indexing an object;<br><code>x&lt;&lt;index&gt;&gt;</code> is equivalent to <code>x.get_item(index)</code>.</td>
+</tr>
+<tr>
+<td><code>&gt;(other)</code></td>
+<td><code>gt</code></td>
+<td>Implements the greater than operator <code>&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>&gt;:(other)</code></td>
+<td><code>ge</code></td>
+<td>Implements the greater than or equal operator <code>&gt;:</code>.</td>
+</tr>
+<tr>
+<td><code>-&gt;?(item)</code></td>
+<td><code>contains</code></td>
+<td>Implements membership testing,<br>returns <code>1</code> (object contains <code>item</code>)<br>or <code>0</code> (object does not contain <code>item</code>).<br>Interacts with <code>-&gt;?</code> operator.</td>
+</tr>
+<tr>
+<td><code>##()</code></td>
+<td><code>hash</code></td>
+<td>Called by the built-in hash function <code>##</code>,<br>and for keys in a table.<br>Objects which compare equal<br>should have the same hash value.</td>
+</tr>
+<tr>
+<td><code>...()</code></td>
+<td><code>iter</code></td>
+<td>Called when iterating over an object in a <code>foreach</code> loop.<br>Returns an array of objects to iterate over.</td>
+</tr>
+<tr>
+<td><code>&lt;(other)</code></td>
+<td><code>lt</code></td>
+<td>Implements the less than operator <code>&lt;</code>.</td>
+</tr>
+<tr>
+<td><code>&lt;:(other)</code></td>
+<td><code>le</code></td>
+<td>Implements the less than or equal operator <code>&lt;:</code>.</td>
+</tr>
+<tr>
+<td><code>---(other)</code></td>
+<td><code>mod</code></td>
+<td>Interacts with the modulo operator <code>---</code>.</td>
+</tr>
+<tr>
+<td><code>++(other)</code></td>
+<td><code>mul</code></td>
+<td>Interacts with the multiplication operator <code>++</code>.</td>
+</tr>
+<tr>
+<td><code>-_()</code></td>
+<td><code>neg</code></td>
+<td>Interacts with the negative unary operator <code>-</code>.</td>
+</tr>
+<tr>
+<td><code>~()</code></td>
+<td><code>invert</code></td>
+<td>Interacts with the bitwise NOT operator <code>~</code>.</td>
+</tr>
+<tr>
+<td><code>:::(other)</code></td>
+<td><code>ne</code></td>
+<td>Implements the inequality operator <code>:::</code>.</td>
+</tr>
+<tr>
+<td><code>|(other)</code></td>
+<td><code>or</code></td>
+<td>Interacts with the bitwise OR operator <code>\|</code>.</td>
+</tr>
+<tr>
+<td><code>+_()</code></td>
+<td><code>pos</code></td>
+<td>Interacts with the positive unary operator <code>+</code>.</td>
+</tr>
+<tr>
+<td><code>+++(other)</code></td>
+<td><code>pow</code></td>
+<td>Interacts with the exponentiation operator <code>+++</code>.</td>
+</tr>
+<tr>
+<td><code>??()</code></td>
+<td>--</td>
+<td>Interacts with the random function operator <code>??</code>.</td>
+</tr>
+<tr>
+<td><code>&lt;&lt;&gt;&gt;:(index, value)</code></td>
+<td><code>setitem</code></td>
+<td>Implements assigning to an index of an object;<br><code>x&lt;&lt;index&gt;&gt;: value</code> is equivalent<br>to <code>x.set_item(index, value)</code>.</td>
+</tr>
+<tr>
+<td><code>$()</code></td>
+<td>--</td>
+<td>Interacts with the special function operator <code>$</code>.</td>
+</tr>
+<tr>
+<td><code>-(other)</code></td>
+<td><code>sub</code></td>
+<td>Interacts with the subtraction operator <code>-</code>.</td>
+</tr>
+<tr>
+<td><code>?()</code></td>
+<td><code>bool</code></td>
+<td>Implements boolean value testing,<br>returns <code>1</code> (truthy) or <code>0</code> (falsy).<br>Used for conditional statements and logical operators.</td>
+</tr>
+<tr>
+<td><code>!()</code></td>
+<td><code>str</code></td>
+<td>Returns the string representation of an object.</td>
+</tr>
+<tr>
+<td><code>^(other)</code></td>
+<td><code>xor</code></td>
+<td>Interacts with the bitwise XOR operator <code>^</code>.</td>
+</tr>
+</tbody>
+</table>
+<p></center></p>
+<p>Two special methods – <code>=&gt;</code> and <code>!</code> – have default definitions:
+<pre class="sm"><code>@ Foo {}
+
+f: Foo();
+f!;  == &lt;Foo@7fe5403d7b00&gt;</code></pre>
+The above class definition is equivalent to:
+<pre class="sm"><code>@ Foo {
+    =&gt; * {}
+
+    ! * {
+        * "&lt;$name@$address&gt;" --- {{"name" -&gt; '?!, "address" -&gt; '**}};
+    }
+}</code></pre></p>
+<p>Some of the comparison operators can be inferred from others,
+so not all of them are necessary to provide implementations for.
+The following operators infer from each other:
+- <code>::</code> and <code>:::</code>
+- <code>&gt;</code> and <code>&lt;</code>
+- <code>&gt;:</code> and <code>&lt;:</code></p>
+<h2 id="static-methods">Static Methods</h2>
+<p>Methods can be made static by replacing the <code>*</code> keyword with the <code>~'*</code> keyword
+(where <code>~'</code> can be read as "no instance"):
+<pre class="sm"><code>&lt;=calendar.date;
+
+@ Calendar {
+    is_weekend date ~'* {
+        * date.weekday &gt; /\\;
+    }
+}
+
+Calendar.is_weekend(date("2022-11-08"))!;  == 0</code></pre></p>
+<h2 id="classes-as-entry-points">Classes As Entry Points</h2>
+<p>A class named <code>=&gt;</code> can serve as an entry point instead of a function:
+<pre class="sm"><code>=&gt; argv * {
+    "Hello, " + argv&lt;&lt;/&gt;&gt;!;
+}</code></pre>
+<pre class="sm"><code>@ =&gt; {
+    =&gt; argv * {
+        "Hello, " + argv&lt;&lt;/&gt;&gt;!;
+    }
+}</code></pre></p>
+<h2 id="class-decorators">Class Decorators</h2>
+<p>Decorators can also be created using classes:
+<pre class="sm"><code>@ OutputStorage {
+
+    =&gt; func * {
+        'func: func;
+        'outputs: [];
+    }
+
+    () args... * {
+        out: 'function(**args);
+        'outputs_: [out];
+        * out;
+    }
+
+}
+
+OutputStorage @ multiply a b * {
+    * a ++ b;
+}
+
+multiply(/\, /\/)!;  == 10
+multiply(//, ///)!;  == 21
+multiply(/\\/, //\\)!;  == 108
+
+multiply.outputs!;  == [10, 21, 108]</code></pre></p>
+<h2 id="data-classes">Data Classes</h2>
+<p>Samarium has a shorthand syntax for defining classes whose main purpose is
+storing data:
+<pre class="sm"><code>@ Person {
+    =&gt; name age * {
+        'name: name;
+        'age: age;
+    }
+
+    ! * { * "$0($1, $2)" --- ['?!, 'name, 'age]; }
+    :: other * { * ['name, 'age] :: [other.name, other.age]; }
+    &gt; other * { * ['name, 'age] &gt; [other.name, other.age]; }
+    &gt;: other * { * ['name, 'age] &gt;: [other.name, other.age]; }
+}</code></pre>
+The above definition can be replaced with just
+<pre class="sm"><code>@! Person(name, age);</code></pre>
+If we wish to define additional methods, we can just open a pair of braces after
+we specify the name and the fields like in a regular class:
+<pre class="sm"><code>@! Person(name, age) {
+    birthday * { 'age+:; }
+}
+
+p: Person("Jake", /\\//)!  == Person("Jake", 19)
+p.birthday();
+p!  == Person("Jake", 20)</code></pre>
+If you'd like your dataclass to not have any fields, you can either leave the
+parentheses empty or omit them entirely:
+<pre class="sm"><code>@! Unit(); Unit()!  == Unit()
+@! Unit; Unit()!  == Unit()</code></pre></p>
+<p>By default, all dataclass instances have a special method defined which returns
+its copy:
+<pre class="sm"><code>@! Person(name, age);
+
+p: Person("Bob", /\\//);
+q: p;
+r: p$;
+q.name: "Alice";
+r.name: "Dave";
+p, q, r!  == Person("Alice", 19) Person("Alice", 19) Person("Dave", 19)</code></pre></p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Note that order will be preserved here — if both class <code>A</code> and class <code>B</code>
+implement a function <code>f</code>, and class <code>C</code> inherits them in the order <code>(A, B)</code>,
+then <code>C</code> will inherit <code>f</code> from class <code>A</code>, as it is inherited later.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2021–2023 Samarium
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+        
+          <script src="https://unpkg.com/shiki@0.10.1/dist/index.unpkg.iife.js"></script>
+        
+      
+        
+          <script src="../assets/script.js"></script>
+        
+      
+    
+  </body>
+</html>
