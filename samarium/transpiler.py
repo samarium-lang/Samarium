@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from contextlib import suppress
 from enum import Enum
-from typing import TYPE_CHECKING, TypeGuard, cast
+from typing import TYPE_CHECKING, cast
 
 from samarium.exceptions import SamariumSyntaxError, handle_exception
 from samarium.tokens import CLOSE_TOKENS, FILE_IO_TOKENS, OPEN_TOKENS, Token
@@ -48,7 +48,7 @@ def is_quoted(token: object) -> bool:
     return False
 
 
-def is_varname(token: object) -> TypeGuard[str]:
+def is_varname(token: object) -> bool:
     return isinstance(token, str) and not is_quoted(token)
 
 
