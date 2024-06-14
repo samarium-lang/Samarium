@@ -63,9 +63,6 @@ Changes the prompt color. The available colors are [Dahlia codes] from `0` to
 color. `:color save` will save the current color to the REPL config, making the
 change permanent.
 
-!!! note
-    Samarium uses an 8-bit color depth for Dahlia.
-
 The English names can be checked by using the `:? color` command:
 ```
 --> :? color
@@ -271,4 +268,4 @@ Samarium 0.6.0
 ```
 
 
-[Dahlia codes]: https://dahlia.readthedocs.io/en/latest/usage/reference.html#color-format-codes
+[Dahlia codes]: https://github.com/dahlia-lib/spec/blob/main/SPECIFICATION.md#standard-formatting
