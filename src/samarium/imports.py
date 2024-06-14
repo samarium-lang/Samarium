@@ -80,9 +80,7 @@ def merge_objects(reg: Registry, imported: Registry, module: Mod) -> dict[str, A
             vars_[f"sm_{obj.alias}"] = imported.vars[f"sm_{obj.name}"]
         except KeyError:
             msg = f"{obj.name} is not a member of the {module.name} module"
-            raise SamariumImportError(
-                msg
-            ) from None
+            raise SamariumImportError(msg) from None
     return vars_
 
 

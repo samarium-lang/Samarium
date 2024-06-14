@@ -31,9 +31,7 @@ class FileManager:
         if isinstance(path, Number):
             if mode is Mode.READ_WRITE:
                 msg = "cannot open a standard stream in a read & write mode"
-                raise SamariumIOError(
-                    msg
-                )
+                raise SamariumIOError(msg)
             if not path.is_int:
                 msg = "cannot use non-integers"
                 raise SamariumValueError(msg)
@@ -69,9 +67,7 @@ class FileManager:
                             bytes_ += i.val.to_bytes(1, "big")
                         except AssertionError:
                             msg = "some items in the array are not of type Integer"
-                            raise SamariumTypeError(
-                                msg
-                            ) from None
+                            raise SamariumTypeError(msg) from None
                     f.write(bytes_)
                 else:
                     f.write(data.val)
@@ -87,9 +83,7 @@ class FileManager:
                     "reading from file descriptors is "
                     "not supported for quick operations"
                 )
-                raise SamariumIOError(
-                    msg
-                )
+                raise SamariumIOError(msg)
         else:
             file = path
             if mode is Mode.READ:
@@ -180,9 +174,7 @@ class File(Attrs):
                     bytes_ += i.val.to_bytes(1, "big")
                 except AssertionError:
                     msg = "some items in the array are not of type Integer"
-                    raise SamariumTypeError(
-                        msg
-                    ) from None
+                    raise SamariumTypeError(msg) from None
             self.val.write(bytes_)
         else:
             self.val.write(data.val)

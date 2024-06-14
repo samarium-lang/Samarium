@@ -85,9 +85,7 @@ def parse_number(string: str) -> tuple[int | float, bool]:
     except ValueError:
         no_prefix = orig[2:] if orig[1] == ":" else orig
         msg = f'invalid string for Number with base {base}: "{no_prefix}"'
-        raise SamariumValueError(
-            msg
-        ) from None
+        raise SamariumValueError(msg) from None
     else:
         return num, isinstance(num, int) or num.is_integer()
 

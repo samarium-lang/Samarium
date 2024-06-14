@@ -96,9 +96,7 @@ class CompositionMeta(type):
             other = other.as_function()
         if not isinstance(other, Function):
             msg = f"can't use function composition with {get_type_name(other)}"
-            raise SamariumTypeError(
-                msg
-            )
+            raise SamariumTypeError(msg)
         return Type(cls).as_function() & other
 
 
@@ -124,8 +122,7 @@ class Attrs(metaclass=CompositionMeta):
 
 
 class UserAttrs(Attrs):
-    def __entry__(self, *args: object) -> None:
-        ...
+    def __entry__(self, *args: object) -> None: ...
 
     def __init__(self, *args: object) -> None:
         self.__entry__(*args)
@@ -139,9 +136,7 @@ class UserAttrs(Attrs):
         string = self.__string__
         if param_count(string) != 1:
             msg = f"{get_type_name(self)}! should only take one argument"
-            raise SamariumTypeError(
-                msg
-            )
+            raise SamariumTypeError(msg)
         if isinstance(v := string().val, str):
             return v
         msg = f"{get_type_name(self)}! returned a non-string"
@@ -157,9 +152,7 @@ class UserAttrs(Attrs):
         bit = self.__bit__
         if param_count(bit) != 1:
             msg = f"? {get_type_name(self)} should only take one argument"
-            raise SamariumTypeError(
-                msg
-            )
+            raise SamariumTypeError(msg)
         if (v := bit().val) in (0, 1):
             return bool(v)
         msg = f"? {get_type_name(self)} returned a non-bit"
@@ -178,9 +171,7 @@ class UserAttrs(Attrs):
         special = self.__special__
         if param_count(special) != 1:
             msg = f"{get_type_name(self)}$ should only take one argument"
-            raise SamariumTypeError(
-                msg
-            )
+            raise SamariumTypeError(msg)
         return special()
 
     def __hsh__(self) -> Number:
@@ -193,9 +184,7 @@ class UserAttrs(Attrs):
         hsh = self.__hsh__
         if param_count(hsh) != 1:
             msg = f"{get_type_name(self)}## should only take one argument"
-            raise SamariumTypeError(
-                msg
-            )
+            raise SamariumTypeError(msg)
         if isinstance(v := hsh(), Number):
             return v
         msg = f"{get_type_name(self)}## returned a non-integer"
@@ -211,9 +200,7 @@ class UserAttrs(Attrs):
         cast = self.__cast__
         if param_count(cast) != 1:
             msg = f"{get_type_name(self)}% should only take one argument"
-            raise SamariumTypeError(
-                msg
-            )
+            raise SamariumTypeError(msg)
         return cast()
 
     def __random__(self) -> Number:
@@ -226,9 +213,7 @@ class UserAttrs(Attrs):
         random = self.__random__
         if param_count(random) != 1:
             msg = f"{get_type_name(self)}?? should only take one argument"
-            raise SamariumTypeError(
-                msg
-            )
+            raise SamariumTypeError(msg)
         return random()
 
     @ClassProperty
@@ -264,9 +249,7 @@ class Dataclass(UserAttrs):
         fieldc = len(self._fields)
         if argc < fieldc:
             msg = f"missing argument(s): {', '.join(self._field_names[argc:])}"
-            raise SamariumTypeError(
-                msg
-            )
+            raise SamariumTypeError(msg)
         if argc > fieldc:
             msg = f"too many arguments ({argc}/{fieldc})"
             raise SamariumTypeError(msg)
@@ -590,9 +573,7 @@ class String(Attrs):
                     "String ++ -Number is ambiguous, use -(String ++ Number)"
                     " or (-String) ++ Number instead"
                 )
-                raise SamariumTypeError(
-                    msg
-                )
+                raise SamariumTypeError(msg)
             i, d = int(other.val // 1), other.val % 1
             return String(self.val * i + self.val[: round(d * len(self.val))])
         msg = f"String ++ {get_type_name(other)}"
@@ -877,9 +858,7 @@ class Table(Generic[KT, VT], Attrs):
                 self.val = table
             else:
                 msg = "not all elements of the array are of length 2"
-                raise SamariumValueError(
-                    msg
-                )
+                raise SamariumValueError(msg)
         else:
             msg = f"cannot cast {get_type_name(value)} to a Table"
             raise SamariumTypeError(msg)
@@ -1208,9 +1187,7 @@ class Function(Attrs):
             posargs = (self.inst, *posargs)
         if not self.varargs and args:
             msg = f"too many arguments ({supplied}/{self.param_count})"
-            raise SamariumTypeError(
-                msg
-            )
+            raise SamariumTypeError(msg)
         try:
             out = correct_type(
                 self.func(*posargs, Array(args))
@@ -1221,9 +1198,7 @@ class Function(Attrs):
             errmsg = str(e)
             if m := MISSING_POSARG.search(errmsg):
                 msg = f"not enough arguments ({supplied}/{supplied + int(m.group(1))})"
-                raise SamariumTypeError(
-                    msg
-                ) from None
+                raise SamariumTypeError(msg) from None
             if "positional argument: 'self'" in errmsg:
                 msg = "missing instance"
                 raise SamariumTypeError(msg) from None
