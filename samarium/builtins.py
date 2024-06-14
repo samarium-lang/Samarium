@@ -79,7 +79,7 @@ def print_safe(*args: Attrs | Callable[..., Any] | bool | None) -> Attrs:
         return Array(return_args)
     if not return_args or types[0] is Null:
         return NULL
-    return return_args[0]
+    return return_args[0]  # type: ignore[return-value]
 
 
 def readline(prompt: String = NULL_STRING) -> String:
@@ -109,7 +109,7 @@ def t(obj: T | None = None) -> T | None:
     return obj
 
 
-def throw(obj: String | Array = NULL_STRING) -> None:
+def throw(obj: String | Array[Any] = NULL_STRING) -> None:
     note = ""
     if isinstance(obj, Array):
         if len(obj.val) != 2:

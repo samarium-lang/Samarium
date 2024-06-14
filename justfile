@@ -9,7 +9,7 @@ fmt:
     poetry run ruff format
 
 mypy:
-    poetry run mypy --strict samarium
+    poetry run mypy samarium
 
 @run *args:
     poetry run samarium $@

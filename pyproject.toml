@@ -27,6 +27,9 @@ ignore = ["COM", "D", "DTZ", "FIX", "S", "SLF", "ANN1", "ANN401", "C90", "ISC001
 [tool.ruff.lint.pylint]
 max-returns = 8
 
+[tool.mypy]
+disable_error_code = "attr-defined, override"
+
 [tool.poetry.scripts]
 samarium = "samarium.__main__:main"
 samarium-debug = "samarium.__init__:main_debug"

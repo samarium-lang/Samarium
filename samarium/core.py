@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 
 from samarium import exceptions as exc
 from samarium.builtins import (
-    correct_type,
     dtnow,
     mkslice,
     print_safe,
@@ -37,6 +36,7 @@ from samarium.classes import (
     String,
     Table,
     UserAttrs,
+    correct_type,
 )
 from samarium.exceptions import DAHLIA
 from samarium.imports import merge_objects, parse_string, resolve_path
@@ -59,14 +59,18 @@ def import_to_scope(data: str, reg: Registry, source: str) -> None:
         if mod_path.exists():
             imported = run(mod_path.read_text(), Registry({}), mod_path)
         else:
-            spec: importlib.machinery.ModuleSpec = (
-                importlib.util.spec_from_file_location(
-                    mod.name, str(path / f"{mod.name}.py")
-                )
-            )  # type: ignore
+            spec = importlib.util.spec_from_file_location(
+                mod.name, str(path / f"{mod.name}.py")
+            )
+            if spec is None:
+                msg = "couldn't load spec"
+                raise ValueError(msg)
             module = importlib.util.module_from_spec(spec)
             sys.modules[mod.name] = module
-            spec.loader.exec_module(module)  # type: ignore
+            if spec.loader is None:
+                msg = "ModuleSpec.loader is None"
+                raise ValueError(msg)
+            spec.loader.exec_module(module)
             registry = {
                 f"sm_{k}": v
                 for k, v in vars(module).items()

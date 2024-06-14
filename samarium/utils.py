@@ -93,9 +93,7 @@ def parse_number(string: str) -> tuple[int | float, bool]:
 def smformat(string: str, fields: str | list[Any] | dict[Any, Any]) -> str:
     if isinstance(fields, str):
         fields = [fields]
-    it = enumerate(fields)
-    if isinstance(fields, dict):
-        it = fields.items()
+    it = fields.items() if isinstance(fields, dict) else enumerate(fields)
     for k, v in it:
         string = sub(rf"(?<!\$)\${k}", str(v), string)
     return string.replace("$$", "$")

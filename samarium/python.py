@@ -39,7 +39,7 @@ class SliceRange:
         return self._slice.range
 
 
-def to_python(obj: Attrs) -> object:
+def to_python(obj: object) -> object:
     if isinstance(obj, (String, Number, Zip, File)):
         return obj.val
     if isinstance(obj, Null):

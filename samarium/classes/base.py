@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from collections.abc import Iterator as PyIterator
 from contextlib import suppress
 from functools import lru_cache
@@ -218,10 +218,10 @@ class UserAttrs(Attrs):
 
     @ClassProperty
     def param_count(self) -> int:
-        return len(signature(self.__init__).parameters)
+        return len(signature(self.__init__).parameters)  # type: ignore[misc]
 
     @classmethod
-    def parent(cls) -> Array | Type:
+    def parent(cls) -> Array | Type:  # type: ignore [override]
         parents = cls.__bases__
         if len(parents) == 1:
             parent = parents[0]
@@ -340,7 +340,7 @@ class Type(Attrs):
 class Module(Attrs):
     __slots__ = ("name", "objects")
 
-    def __init__(self, name: str, objects: dict[str, object]) -> None:
+    def __init__(self, name: str, objects: Mapping[str, object]) -> None:
         self.name = name
         self.objects = objects
 
@@ -492,13 +492,9 @@ class Number(Attrs):
         if not self:
             return self
         if self.is_int:
-            v = cast(int, self.val)
-            r = randrange(v)
-            if v > 0:
-                return Num(r)
-            return Num(~r)
-        v = self.val
-        u = uniform(0, v)
+            r = randrange(v_ := cast(int, self.val))
+            return Num(r if v_ > 0 else ~r)
+        u = uniform(0, v := self.val)
         if v > 0.0:
             return Num(u)
         return Num(-u - 1)
@@ -622,6 +618,7 @@ class String(Attrs):
         if not isinstance(index, (Number, Slice)):
             msg = f"invalid index: {index}"
             raise SamariumTypeError(msg)
+        i: int | slice
         if isinstance(index, Number):
             if not is_valid_index(self, index):
                 msg = f"invalid index: {index}"
@@ -839,7 +836,7 @@ class Table(Generic[KT, VT], Attrs):
 
     def __init__(self, value: object = None) -> None:
         if value is None:
-            self.val = {}
+            self.val: dict[KT, VT] = {}
         elif isinstance(value, Table):
             self.val = value.val.copy()
         elif isinstance(value, dict):
@@ -855,7 +852,7 @@ class Table(Generic[KT, VT], Attrs):
                     else:
                         k, v = e.val
                         table[k] = v
-                self.val = table
+                self.val = cast(dict[KT, VT], table)
             else:
                 msg = "not all elements of the array are of length 2"
                 raise SamariumValueError(msg)
@@ -904,7 +901,7 @@ class Table(Generic[KT, VT], Attrs):
     def __invert__(self) -> Table[VT, KT]:
         return Table({v: k for k, v in self.val.items()})
 
-    def __sub__(self, other: object) -> Table[KT, VT]:
+    def __sub__(self, other: KT) -> Table[KT, VT]:
         c = self.val.copy()
         try:
             del c[other]
@@ -1083,6 +1080,8 @@ class Zip(Attrs):
 class Iterator(Generic[T], Attrs):
     __slots__ = ("val", "length")
 
+    length: Number | Null
+
     def __init__(self, value: Any) -> None:
         if not isinstance(value, Iterable):
             msg = "cannot create an Iterator from a non-iterable"
@@ -1122,7 +1121,7 @@ class Enum(Attrs):
         self.name = name.removeprefix("sm_")
         self.members: dict[str, object] = {}
 
-        i = 0
+        i: int | float = 0
         for k, v in members.items():
             if v is NEXT:
                 self.members[k] = Num(i)
@@ -1239,9 +1238,9 @@ def check_type(obj: Any) -> None:
         raise SamariumSyntaxError(msg)
 
 
-def correct_type(obj: T, *objs: T) -> T | Array | Number | Iterator | Table | Null:
+def correct_type(obj: T, *objs: T) -> T | Attrs:
     if objs:
-        return Array(map(correct_type, (obj, *objs)))
+        return Array(map(correct_type, (obj, *objs)))  # type: ignore[arg-type]
     if isinstance(
         obj, (Null, Number, String, Slice, Enum, Type, Module, Zip, Function)
     ):

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from contextlib import suppress
 from enum import Enum
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, TypeGuard, cast
 
 from samarium.exceptions import SamariumSyntaxError, handle_exception
 from samarium.tokens import CLOSE_TOKENS, FILE_IO_TOKENS, OPEN_TOKENS, Token
@@ -10,6 +10,7 @@ from samarium.tokens import CLOSE_TOKENS, FILE_IO_TOKENS, OPEN_TOKENS, Token
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from samarium.classes.base import Attrs
     from samarium.tokenizer import Tokenlike
 
 
@@ -35,19 +36,19 @@ def is_first_token(line: list[str]) -> bool:
     return not line or (len(line) == 1 and line[0].isspace())
 
 
-def is_literal(token: Tokenlike) -> bool:
+def is_literal(token: object) -> bool:
     if isinstance(token, (int, float)):
         return True
     return is_quoted(token)
 
 
-def is_quoted(token: Tokenlike) -> bool:
+def is_quoted(token: object) -> bool:
     if isinstance(token, str):
         return token[0] == token[-1] == '"'
     return False
 
 
-def is_varname(token: Tokenlike) -> bool:
+def is_varname(token: object) -> TypeGuard[str]:
     return isinstance(token, str) and not is_quoted(token)
 
 
@@ -112,6 +113,7 @@ class Scope:
     def _get(self, index: int) -> str | None:
         with suppress(IndexError):
             return self._scope[index]
+        return None
 
     @property
     def parent(self) -> str | None:
@@ -131,7 +133,7 @@ class Switch(Enum):
 
 
 class Registry:
-    def __init__(self, vars_: dict[str, object]) -> None:
+    def __init__(self, vars_: dict[str, Attrs]) -> None:
         self._switches = [False] * len(Switch)
         self.output = ""
         self.vars = vars_
@@ -381,7 +383,7 @@ class Transpiler:
         self._reg = registry
         self._scope = Scope()
         self._skip = 0
-        self._slice_object = []
+        self._slice_object: list[bool] = []
         self._tokens = tokens
 
     @property
@@ -607,7 +609,7 @@ class Transpiler:
                 return
 
             # Return
-            indented = self._indent > 0
+            indented = int(self._indent > 0)
             if is_first_token(self._line):
                 self._line.insert(indented, "return ")
                 if self._next is Token.BRACE_CLOSE:
@@ -804,9 +806,9 @@ class Transpiler:
             fields: list[str] = []
 
             if is_varname(self._next):
-                name = self._next
+                name = self._next  # type: ignore[assignment]
                 push("class ")
-                self._process_token(self._index + 1, self._next)
+                self._process_token(self._index + 1, self._next)  # type: ignore[arg-type]
             else:
                 throw_syntax("dataclass name required after @!")
 

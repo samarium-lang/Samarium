@@ -292,11 +292,13 @@ class REPL:
             return arg
         elif cmd == "run":
             if not arg:
-                return repl_err("missing file")
+                repl_err("missing file")
+                return None
             try:
                 src = Path(arg).read_text()
             except FileNotFoundError:
-                return repl_err(f"file {arg!r} not found")
+                repl_err(f"file {arg!r} not found")
+                return None
             core.run(
                 src, self.registry, "", debug=self.session.debug, load_template=False
             )
@@ -306,17 +308,20 @@ class REPL:
             self.load_session(s, reset_registry=True)
         elif cmd == "session":
             if not arg:
-                return repl_err("missing subcommand")
+                repl_err("missing subcommand")
+                return None
             try:
                 subcmd, arg = arg.split()
             except ValueError:
                 subcmd, arg = arg, ""
             if subcmd in NO_ARG_SESSION_SUBCMDS and arg:
-                return repl_err(f"expected no arguments for subcommand {subcmd!r}")
+                repl_err(f"expected no arguments for subcommand {subcmd!r}")
+                return None
             if subcmd == "delete-all":
                 sessions = tuple(CACHE_DIR.glob("*"))
                 if not sessions:
-                    return repl_err("no sessions to delete")
+                    repl_err("no sessions to delete")
+                    return None
                 if (
                     DAHLIA.input(
                         "Are you sure you want to delete all"
@@ -333,7 +338,8 @@ class REPL:
             elif subcmd == "autosave":
                 if arg:
                     if (arg := arg.casefold()) not in ("true", "false"):
-                        return repl_err(f"invalid value {arg!r} (must be true/false)")
+                        repl_err(f"invalid value {arg!r} (must be true/false)")
+                        return None
                     self.config.autosave = arg == "true"
                     self.config.save()
                 if self.config.autosave:
@@ -363,18 +369,21 @@ class REPL:
             elif subcmd == "lifetime":
                 if not arg:
                     lifetime = str(self.config.session_lifetime).removesuffix(".0")
-                    return DAHLIA.print(f"Current session lifetime is {lifetime} days")
+                    DAHLIA.print(f"Current session lifetime is {lifetime} days")
+                    return None
                 try:
                     self.config.session_lifetime = float(arg)
                 except ValueError:
-                    return repl_err(f"invalid lifetime {arg!r} (must be a float)")
+                    repl_err(f"invalid lifetime {arg!r} (must be a float)")
+                    return None
                 self.config.save()
                 DAHLIA.print(f"&aUpdated session lifetime to {arg} days")
             elif subcmd == "restore":
                 try:
                     most_recent_session = max(unnamed_sessions(), key=lambda p: p[1])
                 except ValueError:
-                    return repl_err("no sessions to restore")
+                    repl_err("no sessions to restore")
+                    return None
                 self.load_session(Session.load(most_recent_session[0].stem))
                 DAHLIA.print(f"&aRestored latest session ({most_recent_session[1]})")
             else:

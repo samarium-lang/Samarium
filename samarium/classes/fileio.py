@@ -35,8 +35,11 @@ class FileManager:
             if not path.is_int:
                 msg = "cannot use non-integers"
                 raise SamariumValueError(msg)
-        pth = cast(int, path.val) if isinstance(path, Number) else path.val
-        f = Path(pth).open(mode.value + "b" * binary)  # noqa: SIM115
+        pth = cast("str | int", path.val)
+        if isinstance(pth, str):
+            f = Path(pth).open(mode.value + "b" * binary)  # noqa: SIM115
+        else:
+            f = open(pth, mode.value + "b" * binary)  # noqa: PTH123, SIM115
         return File(f, mode.name, pth, binary=binary)
 
     @staticmethod
