@@ -51,7 +51,6 @@ Only strings and arrays of length 2 can be used for throwing errors.
 ```
 
 
-
 ## EXIT
 
 The program may be exited with `=>!`.
