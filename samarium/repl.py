@@ -58,7 +58,7 @@ COLOR_TO_CODE = {
     "light blue": "&9",
     "black": "&0",
     "lime": "&a",
-    "aquamarine": "&b",
+    "turquoise": "&b",
     "light red": "&c",
     "pink": "&d",
     "yellow": "&e",
@@ -124,7 +124,7 @@ use &e:color save&R to save the current color to your config
 &88&R|&8gray&R
 &99&R|&9light blue&R
 &aa&R|&alime&R
-&bb&R|&baquamarine&R
+&bb&R|&bturquoise&R
 &cc&R|&clight red&R
 &dd&R|&dpink&R
 &ee&R|&eyellow&R
