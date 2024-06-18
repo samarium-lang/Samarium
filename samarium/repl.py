@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import sys
+from ast import literal_eval
 from contextlib import redirect_stderr, redirect_stdout, suppress
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from os import get_terminal_size
 from pathlib import Path
@@ -16,7 +18,6 @@ if sys.platform not in ("win32", "cygwin"):
     # used by input() to provide elaborate line editing & history features
     import readline  # noqa: F401
 
-from configzen import ConfigModel
 from crossandra import CrossandraError
 
 from samarium import core
@@ -160,10 +161,24 @@ HELP_TEXT_INDEX = {
 }
 
 
-class REPLConfig(ConfigModel):
+@dataclass
+class REPLConfig:
     color: str = ""
     autosave: bool = True
     session_lifetime: float = 30.0
+
+    @classmethod
+    def load(cls) -> REPLConfig:
+        lines = CONFIG_FILE.read_text().splitlines()
+        data = {
+            k.strip(): literal_eval(v.strip())
+            for k, _, v in (line.partition(":") for line in lines)
+        }
+        return cls(**data)
+
+    def save(self) -> None:
+        content = "\n".join(f"{k}: {v!r}" for k, v in vars(self).items())
+        CONFIG_FILE.write_text(content)
 
 
 class SessionData(TypedDict):
@@ -232,7 +247,7 @@ class REPL:
         if not CONFIG_FILE.exists():
             CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
             CONFIG_FILE.touch()
-        self.config = REPLConfig.load(CONFIG_FILE)
+        self.config = REPLConfig.load()
         cache_cleanup(self.config.session_lifetime)
         self.registry = Registry(globals())
         self.session = Session(
