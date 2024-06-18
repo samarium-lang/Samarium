@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "samarium"
-version = "0.6.0"
+version = "0.6.1"
 description = "The Samarium Programming Language"
 authors = ["trag1c <trag1cdev@yahoo.com>"]
 license = "MIT"
@@ -12,7 +12,6 @@ readme = "README.md"
 python = "^3.9"
 dahlia = "^3.0.0"
 crossandra = "^2.2.1"
-configzen = "^0.5.6"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.4.8"
