@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import string
 import sys
 from ast import literal_eval
 from contextlib import redirect_stderr, redirect_stdout, suppress
@@ -188,6 +189,8 @@ class SessionData(TypedDict):
 
 
 class Session:
+    ALLOWED_CHARS = string.ascii_letters + string.digits + "-_"
+
     def __init__(
         self, color: str, *, debug: bool, history: list[str] | None = None
     ) -> None:
@@ -240,6 +243,10 @@ class Session:
     @classmethod
     def load(cls, name: str) -> Session:
         return cls(**json.loads((CACHE_DIR / f"{name}.json").read_text()))
+
+    @staticmethod
+    def is_valid_name(name: str) -> bool:
+        return all(char in Session.ALLOWED_CHARS for char in name)
 
 
 class REPL:
@@ -373,6 +380,12 @@ class REPL:
                 DAHLIA.print("-" * term_size)
                 DAHLIA.print(f"&l{'Total':<{term_size + 1}} &e{fmt_size(total_size)}\n")
             elif subcmd == "save":
+                if not Session.is_valid_name(arg):
+                    repl_err(
+                        f"invalid session name {arg!r} "
+                        "(allowed chars: A..Z a..z 0..9 _ -])"
+                    )
+                    return None
                 if (CACHE_DIR / f"{arg}.json").exists() and input(
                     f"Session {arg!r} already exists. Replace? (y/N) "
                 ).casefold() != "y":
@@ -380,6 +393,15 @@ class REPL:
                 self.session.save(arg)
                 DAHLIA.print(f"Saved session {arg!r}")
             elif subcmd == "load":
+                if not Session.is_valid_name(arg):
+                    repl_err(
+                        f"invalid session name {arg!r} "
+                        "(allowed chars: A..Z a..z 0..9 _ -])"
+                    )
+                    return None
+                if not (CACHE_DIR / f"{arg}.json").exists():
+                    repl_err(f"session {arg!r} not found")
+                    return None
                 self.load_session(Session.load(arg))
             elif subcmd == "lifetime":
                 if not arg:
