@@ -380,6 +380,9 @@ class REPL:
                 self.session.save(arg)
                 DAHLIA.print(f"Saved session {arg!r}")
             elif subcmd == "load":
+                if not (CACHE_DIR / f"{arg}.json").exists():
+                    repl_err(f"session {arg!r} not found")
+                    return None
                 self.load_session(Session.load(arg))
             elif subcmd == "lifetime":
                 if not arg:
