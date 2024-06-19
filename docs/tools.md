@@ -255,7 +255,8 @@ Samarium 0.6.0
 
 ## `save [name]`
 Saves a sesssion under a given name. Becomes an unnamed session if no name is
-supplied.
+supplied. Session names can consist of English letters, digits, hyphens, and
+underscores.
 ```
 --> pi * { * <-math.TAU--; }
 --> :session save pi
