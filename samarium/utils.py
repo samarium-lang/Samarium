@@ -8,7 +8,7 @@ from samarium.exceptions import SamariumTypeError, SamariumValueError
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-__version__ = "0.6.0"
+__version__ = "0.6.2"
 
 T = TypeVar("T")
 
