@@ -20,7 +20,7 @@ you'll launch the REPL, an interactive shell that will read
 and evaluate any Samarium code you enter.
 ```txt
 $ samarium
-Samarium 0.6.0
+Samarium 0.6.2
 --> 
 ```
 Interacting with the REPL is a nice way to experiment with Samarium:
@@ -113,7 +113,7 @@ REPL without saving the session.
 $ ls -1 ~/.cache/samarium | wc -l
        7
 $ samarium
-Samarium 0.6.0
+Samarium 0.6.2
 --> :session autosave
 Autosave is enabled
 --> :!
@@ -246,7 +246,7 @@ Autosave enabled
 --> f * { ("!"++(///+++))! }
 --> :q
 $ samarium
-Samarium 0.6.0
+Samarium 0.6.2
 --> :session restore
 --> f()
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -262,7 +262,7 @@ underscores.
 --> :session save pi
 --> :q
 $ samarium
-Samarium 0.6.0
+Samarium 0.6.2
 --> :session load pi
 --> pi()
 3.141592653589793
