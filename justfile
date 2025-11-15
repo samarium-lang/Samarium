@@ -5,15 +5,15 @@ default:
 set positional-arguments
 
 fmt:
-    poetry run ruff check --select=I --fix
-    poetry run ruff format
+    uv run ruff check --select=I --fix
+    uv run ruff format
 
 ruff:
-    poetry run ruff check
-    poetry run ruff format --check
+    uv run ruff check
+    uv run ruff format --check
 
 mypy:
-    poetry run mypy samarium
+    uv run mypy src
 
 @run *args:
-    poetry run samarium $@
+    uv run samarium $@
