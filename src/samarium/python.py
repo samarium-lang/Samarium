@@ -40,7 +40,7 @@ class SliceRange:
 
 
 def to_python(obj: object) -> object:
-    if isinstance(obj, (String, Number, Zip, File)):
+    if isinstance(obj, String | Number | Zip | File):
         return obj.val
     if isinstance(obj, Null):
         return None
@@ -60,7 +60,7 @@ def to_python(obj: object) -> object:
 
 
 def to_samarium(obj: object) -> Attrs:
-    if isinstance(obj, (int, bool, float)):
+    if isinstance(obj, int | bool | float):
         return Num(obj)
     if isinstance(obj, str):
         return String(obj)
@@ -68,11 +68,11 @@ def to_samarium(obj: object) -> Attrs:
         return NULL
     if isinstance(obj, FunctionType):
         return Function(obj)
-    if isinstance(obj, (list, tuple, set)):
+    if isinstance(obj, list | tuple | set):
         return Array([to_samarium(i) for i in obj])
     if isinstance(obj, dict):
         return Table({to_samarium(k): to_samarium(v) for k, v in obj.items()})
-    if isinstance(obj, (range, slice)):
+    if isinstance(obj, range | slice):
         return Slice(
             to_samarium(None if obj.start == 0 else obj.start),
             to_samarium(obj.stop),
@@ -80,7 +80,7 @@ def to_samarium(obj: object) -> Attrs:
         )
     if isinstance(obj, SliceRange):
         return obj._slice
-    if isinstance(obj, (TextIOWrapper, BufferedWriter, BufferedReader)):
+    if isinstance(obj, TextIOWrapper | BufferedWriter | BufferedReader):
         return File(
             obj, Mode(obj.mode).name, obj.name, binary=isinstance(obj, BufferedIOBase)
         )
