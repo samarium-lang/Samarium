@@ -8,7 +8,7 @@ version = "0.6.2"
 description = "The Samarium Programming Language"
 readme = "README.md"
 authors = [{ name = "trag1c", email = "dev@jakubr.me" }]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "dahlia ~=3.0",
     "crossandra >=2.2.1,<3.0.0",

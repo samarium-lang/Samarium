@@ -37,7 +37,7 @@ def is_first_token(line: list[str]) -> bool:
 
 
 def is_literal(token: object) -> bool:
-    if isinstance(token, (int, float)):
+    if isinstance(token, int | float):
         return True
     return is_quoted(token)
 
@@ -936,7 +936,7 @@ class Transpiler:
             push("', __file__)")
 
         # Numbers
-        if isinstance(token, (int, float)):
+        if isinstance(token, int | float):
             push(f"Num({token})")
 
         elif isinstance(token, str):

@@ -253,7 +253,7 @@ class Dataclass(UserAttrs):
         if argc > fieldc:
             msg = f"too many arguments ({argc}/{fieldc})"
             raise SamariumTypeError(msg)
-        for field, arg in zip(self._fields, args):
+        for field, arg in zip(self._fields, args, strict=True):
             setattr(self, field, arg)
 
     @property
@@ -576,7 +576,7 @@ class String(Attrs):
         raise NotDefinedError(msg)
 
     def __mod__(self, other: object) -> String:
-        if isinstance(other, (String, Array, Table)):
+        if isinstance(other, String | Array | Table):
             return String(smformat(self.val, other.val))
         msg = f"String --- {get_type_name(other)}"
         raise NotDefinedError(msg)
@@ -615,7 +615,7 @@ class String(Attrs):
         raise SamariumTypeError(msg)
 
     def __setitem__(self, index: Number | Slice, value: String) -> None:
-        if not isinstance(index, (Number, Slice)):
+        if not isinstance(index, Number | Slice):
             msg = f"invalid index: {index}"
             raise SamariumTypeError(msg)
         i: int | slice
@@ -727,7 +727,7 @@ class Array(Generic[T], Attrs):
         raise SamariumTypeError(msg)
 
     def __setitem__(self, index: object, value: T | Array[T]) -> None:
-        if not isinstance(index, (Number, Slice)):
+        if not isinstance(index, Number | Slice):
             msg = f"invalid index: {index}"
             raise SamariumTypeError(msg)
         if isinstance(index, Number):
@@ -843,7 +843,7 @@ class Table(Generic[KT, VT], Attrs):
             self.val = value
         elif isinstance(value, Array):
             arr = value.val
-            if all(isinstance(i, (String, Array)) and len(i.val) == 2 for i in arr):
+            if all(isinstance(i, String | Array) and len(i.val) == 2 for i in arr):
                 table = {}
                 for e in arr:
                     if isinstance(e, String):
@@ -1056,7 +1056,7 @@ class Zip(Attrs):
             msg = "cannot zip a non-iterable"
             raise SamariumTypeError(msg)
         self.iters = values
-        self.val = zip(*values)
+        self.val = zip(*values, strict=False)
 
     def __hash__(self) -> int:
         return hash(self.val)
@@ -1233,7 +1233,7 @@ def check_type(obj: Any) -> None:
     if isinstance(obj, property):
         msg = "cannot use a special method on a type"
         raise SamariumTypeError(msg)
-    if isinstance(obj, (tuple, GeneratorType)):
+    if isinstance(obj, tuple | GeneratorType):
         msg = "invalid syntax"
         raise SamariumSyntaxError(msg)
 
@@ -1242,7 +1242,7 @@ def correct_type(obj: T, *objs: T) -> T | Attrs:
     if objs:
         return Array(map(correct_type, (obj, *objs)))  # type: ignore[arg-type]
     if isinstance(
-        obj, (Null, Number, String, Slice, Enum, Type, Module, Zip, Function)
+        obj, Null | Number | String | Slice | Enum | Type | Module | Zip | Function
     ):
         return obj
     if obj is None:
@@ -1251,7 +1251,7 @@ def correct_type(obj: T, *objs: T) -> T | Attrs:
         return Num(obj)
     if isinstance(obj, GeneratorType):
         return Iterator(obj)
-    if isinstance(obj, (list, tuple, Array)):
+    if isinstance(obj, list | tuple | Array):
         return Array(map(correct_type, obj))
     if isinstance(obj, Table):
         return Table({correct_type(k): correct_type(v) for k, v in obj.val.items()})

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 import sys
-from typing import Union, cast
+from typing import cast
 
 from crossandra import Crossandra, CrossandraError, Rule, common
 
@@ -18,7 +18,7 @@ def to_number(string: str) -> int | float:
     return convert_float(string, base=2, sep="`")
 
 
-Tokenlike = Union[Token, str, int]
+Tokenlike = Token | str | int
 
 SM_BIT = r"[\\\/]"
 
