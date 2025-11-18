@@ -1,5 +1,6 @@
 .vscode
 .mypy_cache
+.hypothesis
 __pycache__
 test
 dist/

@@ -8,17 +8,18 @@ from crossandra import Crossandra, CrossandraError, Rule, common
 
 from samarium.exceptions import SamariumSyntaxError, handle_exception
 from samarium.tokens import Token
-from samarium.utils import convert_float
 
 
-def to_number(string: str) -> int | float:
+def to_number(string: str) -> tuple[int, int] | int:
     string = string.replace("/", "1").replace("\\", "0")
-    if string == ".":
-        string = "0."
-    return convert_float(string, base=2, sep="`")
+    if "`" in string:
+        dec, _, frac = string.partition("`")
+        return int(dec or "0", 2), int(frac or "0", 2)
+    else:
+        return int(string, 2)
 
 
-Tokenlike = Token | str | int
+Tokenlike = Token | str | int | tuple[int, int]
 
 SM_BIT = r"[\\\/]"
 
@@ -34,7 +35,7 @@ crossandra = Crossandra(
             flags=re.S,
         ),
         Rule(rf"{SM_BIT}+`?{SM_BIT}*|`{SM_BIT}*", to_number),
-        Rule(r"\w+"),
+        Rule(r"[a-zA-Z0-9_]+"),
     ],
 )
 
