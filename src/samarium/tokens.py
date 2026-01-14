@@ -1,4 +1,11 @@
+from __future__ import annotations
+
 from enum import Enum
+from types import SimpleNamespace
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class Token(Enum):
@@ -107,10 +114,34 @@ class Token(Enum):
     SLEEP = ",.,"
     ZIP = "><"
 
+    # Literals (only used by the parser, excluded from the tokenization process)
+    IDENTIFIER = "IDN"
+    STRING = "STR"
+    INT = "INT"
+    FLOAT = "FLT"
 
-FILE_IO_TOKENS = [
-    token for name, token in Token.__members__.items() if name.startswith("FILE_")
-]
+    def __init__(self, lexeme: str) -> None:
+        self.index = len(type(self)) + 1
+
+    def __eq__(self, value: object, /) -> bool:
+        return self.index == value
+
+    def __hash__(self) -> int:
+        return self.index
+        return hash((self.name, self.index))
+
+    @classmethod
+    def without_literals(cls) -> SimpleNamespace:
+        tokens = [t for t in cls if t.index <= 80]
+        # The tokenizer only reads __members__
+        return SimpleNamespace(__members__=tokens)
+
+    @classmethod
+    def from_index(cls, index: int) -> Self:
+        return list(cls)[index - 1]
+
+
+FILE_IO_TOKENS = [t for t in Token if t.name.startswith("FILE_")]
 
 OPEN_TOKENS = [
     Token.BRACKET_OPEN,

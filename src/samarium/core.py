@@ -42,7 +42,7 @@ from samarium.exceptions import DAHLIA
 from samarium.imports import merge_objects, parse_string, resolve_path
 from samarium.runtime import Runtime
 from samarium.tokenizer import tokenize
-from samarium.transpiler import Registry, Transpiler
+from samarium.old_transpiler import Registry, Transpiler
 from samarium.utils import sysexit
 
 if TYPE_CHECKING:

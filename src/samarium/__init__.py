@@ -5,7 +5,7 @@ from pathlib import Path
 from samarium.core import run
 from samarium.exceptions import DAHLIA
 from samarium.repl import REPL, Command
-from samarium.transpiler import Registry
+from samarium.old_transpiler import Registry
 from samarium.utils import __version__
 
 OPTIONS = ("-v", "--version", "-c", "--command", "-h", "--help")

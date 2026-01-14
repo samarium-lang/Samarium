@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import string
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple
 
 import bitstruct.c as bitstruct
 
@@ -13,48 +13,47 @@ if TYPE_CHECKING:
 
 IDENT_CHARSET = "\0" + string.ascii_letters + string.digits + "_"
 
-token_ids = {name: i for i, name in enumerate(Token.__members__, 1)}
-token_ids |= {
-    name: i
-    for i, name in enumerate(
-        ("IDENTIFIER", "STRING", "INT", "FLOAT"), len(token_ids) + 1
-    )
-}
+
+class SourceData(NamedTuple):
+    tokens: list[int]
+    identifier_table: list[str]
+    string_table: list[str]
+    int_table: list[int]
+    float_table: list[tuple[int, int]]
 
 
 def group_tokens(
     tokens: Iterable[Tokenlike],
-) -> tuple[list[int], list[str], list[str], list[int], list[tuple[int, int]]]:
-    ids: list[int] = []
+) -> SourceData:
+    token_ids: list[int] = []
     ident_table: list[str] = []
     string_table: list[str] = ['""']
     int_table: list[int] = []
     float_table: list[tuple[int, int]] = []
     for tok in tokens:
         if isinstance(tok, Token):
-            ids.append(token_ids[tok.name])
+            token_ids.append(tok.index)
         elif isinstance(tok, tuple):
-            ids.append(token_ids["FLOAT"])
+            token_ids.append(Token.FLOAT.index)
             if tok not in float_table:
                 float_table.append(tok)
-            ids.extend(get_length(float_table.index(tok), 7))
+            token_ids.extend(get_length(float_table.index(tok), 7))
         elif isinstance(tok, int):
-            ids.append(token_ids["INT"])
+            token_ids.append(Token.INT.index)
             if tok not in int_table:
                 int_table.append(tok)
-            ids.extend(get_length(int_table.index(tok), 7))
+            token_ids.extend(get_length(int_table.index(tok), 7))
         elif tok.startswith('"'):
-            ids.append(token_ids["STRING"])
+            token_ids.append(Token.STRING.index)
             if tok not in string_table:
                 string_table.append(tok)
-            ids.extend(get_length(string_table.index(tok), 7))
+            token_ids.extend(get_length(string_table.index(tok), 7))
         else:
-            ids.append(token_ids["IDENTIFIER"])
+            token_ids.append(Token.IDENTIFIER.index)
             if tok not in ident_table:
                 ident_table.append(tok)
-            ids.extend(get_length(ident_table.index(tok), 7))
-    ids.append(0)
-    return ids, ident_table, string_table, int_table, float_table
+            token_ids.extend(get_length(ident_table.index(tok), 7))
+    return SourceData(token_ids, ident_table, string_table, int_table, float_table)
 
 
 def get_length(length: int, bits: int) -> list[int]:
@@ -120,18 +119,19 @@ def pack_floats(float_table: list[tuple[int, int]]) -> list[int]:
 
 
 def compress(tokens: Iterable[Tokenlike]) -> bytes:
-    ids, ident_table, string_table, int_table, float_table = group_tokens(tokens)
+    token_ids, ident_table, string_table, int_table, float_table = group_tokens(tokens)
+    token_ids.append(0)
     idents = pack_idents(ident_table)
     strings = pack_strings(string_table)
     ints = pack_ints(int_table)
     floats = pack_floats(float_table)
     fmt = (
-        "u7" * len(ids)
+        "u7" * len(token_ids)
         + "u6" * len(idents)
         + "u8" * len(strings)
         + "u4" * (len(ints) + len(floats))
     )
-    return bitstruct.pack(fmt, *ids, *idents, *strings, *ints, *floats)
+    return bitstruct.pack(fmt, *token_ids, *idents, *strings, *ints, *floats)
 
 
 if __name__ == "__main__":

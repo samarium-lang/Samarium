@@ -25,7 +25,7 @@ from samarium import core
 from samarium.exceptions import DAHLIA, SamariumSyntaxError, handle_exception
 from samarium.runtime import Runtime
 from samarium.tokenizer import tokenize
-from samarium.transpiler import Registry, match_brackets
+from samarium.old_transpiler import Registry, match_brackets
 from samarium.utils import __version__
 
 TIME = {"t", "time"}

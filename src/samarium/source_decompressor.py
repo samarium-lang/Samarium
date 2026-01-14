@@ -3,11 +3,9 @@ from __future__ import annotations
 from itertools import chain
 from typing import final
 
-from samarium.source_compressor import IDENT_CHARSET, token_ids
+from samarium.source_compressor import IDENT_CHARSET, SourceData
 from samarium.tokenizer import Tokenlike
 from samarium.tokens import Token
-
-token_ids_rev = {v: k for k, v in token_ids.items()}
 
 
 @final
@@ -41,7 +39,8 @@ def decompress_tokens(bitbuf: BitBuffer) -> list[int]:
         tokens.append(septet)
         if not septet:
             continue
-        if token_ids_rev[septet] in ("IDENTIFIER", "STRING", "INT", "FLOAT"):
+        if septet > 80:
+            # We're dealing with a literal now, so expect an index
             null_allowed = True
     return tokens
 
@@ -100,29 +99,22 @@ def build_token_list(
 ) -> list[Tokenlike]:
     built_tokens: list[Tokenlike] = []
     for i, tok in enumerate(tokens):
-        if tok >= 81:
+        if tok > 80:
             continue
-        if i and (prev := tokens[i - 1]) >= 81:
+        if i and (prev := tokens[i - 1]) > 80:
             table = {81: ident_table, 82: string_table, 83: int_table, 84: float_table}
             built_tokens.append(table[prev][tok])
-        elif t := token_ids_rev.get(tok):
-            built_tokens.append(Token[t])
+        else:
+            built_tokens.append(Token.from_index(tok))
     return built_tokens
 
 
-def decompress(minified: bytes) -> list[Tokenlike]:
+def decompress(minified: bytes) -> SourceData:
     bitbuf = BitBuffer(minified)
-    return build_token_list(
+    return SourceData(
         decompress_tokens(bitbuf),
         decompress_ident_table(bitbuf),
         decompress_string_table(bitbuf),
         decompress_int_table(bitbuf),
         decompress_float_table(bitbuf),
     )
-
-
-if __name__ == "__main__":
-    import sys
-    from pathlib import Path
-    compressed = Path(sys.argv[1]).read_bytes()
-    print(decompress(compressed))
