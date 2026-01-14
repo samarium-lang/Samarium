@@ -141,6 +141,11 @@ def test_parse_primary_slice_fail(source: str, error_message: str) -> None:
         ("{{k -> v,", "expected a `k -> v` pair"),
         ("{{k -> v", "expected `...` after pair in table comprehension"),
         ("{{k -> v, l -> w  m -> x}}", "missing `,` between table pairs"),
+        ("[a, b c]", "missing `,` between array items"),
+        ("[x .. ->?]", "expected `...` after item in array comprehension"),
+        ("[x ... a b ->?]", "missing `,` between array comprehension targets"),
+        ("[... / ->?]", "expected identifier as an array comprehension target"),
+        ("[...->?", "`[` was never closed"),
     ],
 )
 def test_parse_primary_collections_fail(source: str, error_message: str) -> None:

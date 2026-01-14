@@ -1198,6 +1198,7 @@ class Parser:
     def _expr_array(self) -> n.Array | None:
         pf = self._pf
         pf.mark("array")
+
         if pf.next() != Token.BRACKET_OPEN:
             pf.drop()
             return None
@@ -1210,37 +1211,34 @@ class Parser:
                 pf.commit()
                 return n.Array(items)
 
-            if sep:
-                pf.mark("array: items")
-                if pf.next() == Token.SEP:
-                    sep = False
-                    pf.commit()
-                else:
-                    pf.drop("array")
-                    return None
-            else:
-                if not (item := self._expr()):
-                    pf.drop()
-                    return None
-                items.append(item)
+            if not sep:
+                items.append(self._expr())
                 sep = True
+                continue
+
+            if pf.next() == Token.SEP:
+                sep = False
+                continue
+
+            if len(items) > 1:
+                raise ParseError("missing `,` between array items")
+
+            # We're likely trying to parse an array comp, so let's gracefully stop here.
+            pf.drop()
+            return None
 
     @watch
     def _expr_array_comp(self) -> n.ArrayComp | None:
         pf = self._pf
-        pf.mark("array_comp")
 
-        if pf.next() != Token.BRACKET_OPEN:
-            pf.drop()
+        if pf.peek() != Token.BRACKET_OPEN:
             return None
 
-        if not (item := self._expr()):
-            pf.drop()
-            return None
+        _ = pf.next()
+        item = self._expr()
 
         if pf.next() != Token.FOR:
-            pf.drop()
-            return None
+            raise ParseError("expected `...` after item in array comprehension")
 
         members: list[n.Identifier] = []
         sep = False
@@ -1250,33 +1248,25 @@ class Parser:
                 break
             if sep:
                 if pf.next() != Token.SEP:
-                    pf.drop()
-                    return None
+                    raise ParseError("missing `,` between array comprehension targets")
                 sep = False
-            else:
-                if not (member := self._expr_identifier()):
-                    pf.drop()
-                    return None
-                sep = True
-                members.append(member)
+                continue
+            if not (member := self._expr_identifier()):
+                raise ParseError("expected identifier as an array comprehension target")
+            sep = True
+            members.append(member)
 
-        if not (iterable := self._expr()):
-            pf.drop()
-            return None
+        iterable = self._expr()
 
         if pf.peek() == Token.IF:
             _ = pf.next()
-            if not (condition := self._expr()):
-                pf.drop()
-                return None
+            condition = self._expr()
         else:
             condition = None
 
         if pf.next() != Token.BRACKET_CLOSE:
-            pf.drop()
-            return None
+            raise ParseError("`[` was never closed")
 
-        pf.commit()
         return n.ArrayComp(iterable, members, item, condition)
 
     @watch
