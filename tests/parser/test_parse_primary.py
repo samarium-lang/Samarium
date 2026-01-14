@@ -21,18 +21,14 @@ INULL = n.UnitExpr.IMPLICIT_NULL
                 n.Identifier("1"), [n.Identifier("0")], n.Identifier("0"), None
             ),
         ),
-        (
-            r"[... ->? [] ?]",
-            n.ArrayComp(n.Array([]), [], INULL, INULL),
-        ),
+        (r"[... ->? [] ?]", n.ArrayComp(n.Array([]), [], INULL, INULL)),
         (r"{{}}", n.Table([])),
+        (r"{{->,->}}", n.Table([(INULL, INULL), (INULL, INULL)])),
+        (r"{{->,->,}}", n.Table([(INULL, INULL), (INULL, INULL)])),
+        (r"{{->...->?()?}}", n.TableComp(NULL, [], (INULL, INULL), INULL)),
         (
-            r"{{->,->}}",
-            n.Table([(INULL, INULL), (INULL, INULL)]),
-        ),
-        (
-            r"{{->...->?()?}}",
-            n.TableComp(NULL, [], (INULL, INULL), INULL),
+            r"{{->...0,->?()?}}",
+            n.TableComp(NULL, [n.Identifier("0")], (INULL, INULL), INULL),
         ),
         (
             r"{{{{}}->{{}}...->?[]?[]}}",
@@ -129,5 +125,24 @@ def test_parse_primary_identifer_fail() -> None:
     ],
 )
 def test_parse_primary_slice_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()
+
+
+@pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("{{x y ... ->?}}", "expected a `k -> v` pair"),
+        ("{{k -> v .. ->?}}", "expected `...` after pair in table comprehension"),
+        ("{{k -> v ... a b ->?}}", "missing `,` between table comprehension targets"),
+        ("{{-> ... / ->?}}", "expected identifier as a table comprehension target"),
+        ("{{->...->?", "`{{` was never closed"),
+        ("{{k v}}", "expected a `k -> v` pair"),
+        ("{{k -> v,", "expected a `k -> v` pair"),
+        ("{{k -> v", "expected `...` after pair in table comprehension"),
+        ("{{k -> v, l -> w  m -> x}}", "missing `,` between table pairs"),
+    ],
+)
+def test_parse_primary_collections_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
         _ = Parser(source).parse()

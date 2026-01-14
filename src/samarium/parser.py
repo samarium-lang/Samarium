@@ -69,6 +69,7 @@ UNARY_OPS = frozenset(
     }
 )
 
+
 class ParseError(Exception):
     pass
 
@@ -1279,20 +1280,18 @@ class Parser:
         return n.ArrayComp(iterable, members, item, condition)
 
     @watch
-    @automark
-    def _table_pair(self) -> tuple[n.Expr, n.Expr] | None:
-        if not (key := self._expr()):
-            return None
+    def _table_pair(self) -> tuple[n.Expr, n.Expr]:
+        key = self._expr()
         if self._pf.next() != Token.TO:
-            return None
-        if not (value := self._expr()):
-            return None
+            raise ParseError("expected a `k -> v` pair")
+        value = self._expr()
         return key, value
 
     @watch
     def _expr_table(self) -> n.Table | None:
         pf = self._pf
         pf.mark("table")
+
         if pf.next() != Token.TABLE_OPEN:
             pf.drop()
             return None
@@ -1305,40 +1304,35 @@ class Parser:
                 pf.commit()
                 return n.Table(pairs)
 
-            pf.mark("table: pairs")
-            if sep:
-                if pf.next() == Token.SEP:
-                    sep = False
-                    pf.commit()
-                else:
-                    pf.drop()
-                    pf.drop()
-                    return None
-            else:
-                if not (pair := self._table_pair()):
-                    pf.drop()
-                    pf.drop()
-                    return None
-                pf.commit()
+            if not sep:
+                pair = self._table_pair()
                 pairs.append(pair)
                 sep = True
+                continue
+
+            if pf.next() == Token.SEP:
+                sep = False
+                continue
+
+            if len(pairs) > 1:
+                raise ParseError("missing `,` between table pairs")
+
+            # We're likely trying to parse a table comp, so let's gracefully stop here.
+            pf.drop()
+            return None
 
     @watch
     def _expr_table_comp(self) -> n.TableComp | None:
         pf = self._pf
-        pf.mark("table_comp")
 
-        if pf.next() != Token.TABLE_OPEN:
-            pf.drop()
+        if pf.peek() != Token.TABLE_OPEN:
             return None
 
-        if not (pair := self._table_pair()):
-            pf.drop()
-            return None
+        _ = pf.next()
+        pair = self._table_pair()
 
         if pf.next() != Token.FOR:
-            pf.drop()
-            return None
+            raise ParseError("expected `...` after pair in table comprehension")
 
         members: list[n.Identifier] = []
         sep = False
@@ -1346,40 +1340,27 @@ class Parser:
             if pf.peek() == Token.IN:
                 _ = pf.next()
                 break
-            pf.mark("table_comp: members")
             if sep:
                 if pf.next() != Token.SEP:
-                    pf.drop()
-                    pf.drop()
-                    return None
-                pf.commit()
+                    raise ParseError("missing `,` between table comprehension targets")
                 sep = False
-            else:
-                if not (member := self._expr_identifier()):
-                    pf.drop()
-                    pf.drop()
-                    return None
-                pf.commit()
-                sep = True
-                members.append(member)
+                continue
+            if not (member := self._expr_identifier()):
+                raise ParseError("expected identifier as a table comprehension target")
+            sep = True
+            members.append(member)
 
-        if not (iterable := self._expr()):
-            pf.drop()
-            return None
+        iterable = self._expr()
 
         if pf.peek() == Token.IF:
             _ = pf.next()
-            if not (condition := self._expr()):
-                pf.drop()
-                return None
+            condition = self._expr()
         else:
             condition = None
 
         if pf.next() != Token.TABLE_CLOSE:
-            pf.drop()
-            return None
+            raise ParseError("`{{` was never closed")
 
-        pf.commit()
         return n.TableComp(iterable, members, pair, condition)
 
     @watch
