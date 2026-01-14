@@ -99,6 +99,21 @@ string %> f;
 ```
 
 
+## Reading & Writing
+
+Files can be opened for reading and writing (updating) in two ways:
+
+```sm
+f <~> "file.txt";
+== opens/creates `file.txt` for updating, in text
+== mode, and stores the file I/O object in `f`.
+
+f <%> "file.txt";
+== opens/creates `file.txt` for updating, in binary
+== mode, and stores the file I/O object in `f`.
+```
+
+
 ## Appending
 
 Files can be opened for appending in two ways:
