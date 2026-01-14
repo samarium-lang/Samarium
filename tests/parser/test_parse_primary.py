@@ -102,9 +102,10 @@ def test_parse_primary_slice(
     ]
 
 
-def test_parse_primary_identifer_fail() -> None:
-    with pytest.raises(ParseError, match="expected a name after '#"):
-        _ = Parser("'#").parse()
+@pytest.mark.parametrize("source", ["#", "'#"])
+def test_parse_primary_identifer_fail(source: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(f"expected a name after {source}")):
+        _ = Parser(source).parse()
 
 
 @pytest.mark.parametrize(

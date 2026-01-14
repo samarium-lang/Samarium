@@ -1157,12 +1157,10 @@ class Parser:
     @automark
     def _expr_identifier(self) -> n.Identifier | None:
         pf = self._pf
-        inst = pf.peek() == Token.INSTANCE
-        if inst:
-            _ = pf.next()
 
-        private = pf.peek() == Token.ENUM
-        if private:
+        if inst := pf.peek() == Token.INSTANCE:
+            _ = pf.next()
+        if private := pf.peek() == Token.ENUM:
             _ = pf.next()
 
         if pf.peek() == Token.IDENTIFIER:
@@ -1173,6 +1171,8 @@ class Parser:
             if private:
                 raise ParseError("expected a name after '#")
             return n.Identifier(None, inst)
+        elif private:
+            raise ParseError("expected a name after #")
         else:
             return None
 
