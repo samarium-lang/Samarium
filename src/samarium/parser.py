@@ -1526,22 +1526,18 @@ class Parser:
         sep = False
         args: list[n.Expr] = []
         while True:
-            pf.mark("call: args")
-            if sep and pf.next() == Token.SEP:
-                sep = False
+            if pf.peek() == Token.PAREN_CLOSE:
+                _ = pf.next()
                 pf.commit()
-                continue
-            if not sep and (expr := self._expr()):
-                sep = True
-                pf.commit()
-                args.append(expr)
-                continue
-            pf.reset()
-            if pf.next() == Token.PAREN_CLOSE:
-                pf.commit("call")
                 return n.Call(args)
-            pf.drop("call")
-            return None
+            if not sep:
+                sep = True
+                args.append(self._expr())
+                continue
+            if pf.peek() != Token.SEP:
+                raise ParseError("expected `,` between arguments")
+            _ = pf.next()
+            sep = False
 
 
 def test() -> None:
