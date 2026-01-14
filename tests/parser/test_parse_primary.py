@@ -114,7 +114,18 @@ def test_parse_primary_identifer_fail() -> None:
 @pytest.mark.parametrize(
     ("source", "error_message"),
     [
-        
+        (r"<<..b..c;", "`<<` was never closed"),
+        (r"<<..b?", "`<<` was never closed"),
+        (r"<<..@", "`<<` was never closed"),
+        (r"<<a b>>", "missing `..` between slice items"),
+        (r"<<a;", "`<<` was never closed"),
+        (r"<<a..b;", "`<<` was never closed"),
+        (r"<<a..b c;", "missing `..` between slice items"),
+        (r"<<...x>>", "expected `<<..` or `<<....`, not `<<...`"),
+        (r"<<a....>", "`<<` was never closed"),
+        (r"<<a.. ..>", "`<<` was never closed"),
+        (r"<<a..b..;", "`<<` was never closed"),
+        (r"<<a...>", "expected `<<a..` or `<<a....`, not `<<a...`"),
     ],
 )
 def test_parse_primary_slice_fail(source: str, error_message: str) -> None:
