@@ -1387,6 +1387,9 @@ class Parser:
         pf = self._pf
         pf.mark("slice")
 
+        # Predefined common error
+        unclosed = ParseError("`<<` was never closed")
+
         if pf.next() != Token.SLICE_OPEN:
             pf.drop()
             return None
@@ -1407,38 +1410,39 @@ class Parser:
             pf.reset()
             if pf.next() == Token.WHILE:
                 # <<.. ..
-                expr = self._expr()
+                expr_c = self._expr()
                 if pf.next() == Token.SLICE_CLOSE:
                     pf.commit("slice")  # <<.. ..>> or <<.. ..c>>
-                    return n.Slice(n.UnitExpr.NULL, n.UnitExpr.NULL, expr)
+                    return n.Slice(n.UnitExpr.NULL, n.UnitExpr.NULL, expr_c)
+                raise unclosed
 
             pf.reset()
-            if expr := self._expr():
-                pf.mark("slice: <<..b")
+            expr_b = self._expr()
+            pf.mark("slice: <<..b")
 
+            if pf.next() == Token.SLICE_CLOSE:
+                pf.commit("slice")  # <<..b>>
+                return n.Slice(n.UnitExpr.NULL, expr_b, n.UnitExpr.NULL)
+
+            pf.reset()
+            if pf.next() == Token.WHILE:
+                pf.mark("slice: <<..b..")
                 if pf.next() == Token.SLICE_CLOSE:
-                    pf.commit("slice")  # <<..b>>
-                    return n.Slice(n.UnitExpr.NULL, expr, n.UnitExpr.NULL)
+                    pf.commit("slice")  # <<..b..>>
+                    return n.Slice(n.UnitExpr.NULL, expr_b, n.UnitExpr.NULL)
 
                 pf.reset()
-                if pf.next() == Token.WHILE:
-                    pf.mark("slice: <<..b..")
-                    if pf.next() == Token.SLICE_CLOSE:
-                        pf.commit("slice")  # <<..b..>>
-                        return n.Slice(n.UnitExpr.NULL, expr, n.UnitExpr.NULL)
-
-                    pf.reset()
-                    expr2 = self._expr()
-                    # <<..b..c
-                    if pf.next() == Token.SLICE_CLOSE:
-                        pf.commit("slice")  # <<..b..c>>
-                        return n.Slice(n.UnitExpr.NULL, expr, expr2)
-                    pf.drop()
-                pf.drop()
-            pf.drop()
+                expr_c = self._expr()
+                # <<..b..c
+                if pf.next() == Token.SLICE_CLOSE:
+                    pf.commit("slice")  # <<..b..c>>
+                    return n.Slice(n.UnitExpr.NULL, expr_b, expr_c)
+            raise unclosed
 
         pf.reset()
-        if pf.nexts(2) == [Token.FOR, Token.ATTR]:
+        if pf.next() == Token.FOR:
+            if pf.next() != Token.ATTR:
+                raise ParseError("expected `<<..` or `<<....`, not `<<...`")
             # <<... .
             expr = self._expr()
             if pf.next() == Token.SLICE_CLOSE:
@@ -1446,55 +1450,64 @@ class Parser:
                 return n.Slice(n.UnitExpr.NULL, n.UnitExpr.NULL, expr)
 
         pf.reset()
-        if expr := self._expr():
-            pf.mark("slice: <<a")
+        expr_a = self._expr()
+        pf.mark("slice: <<a")
+        if pf.next() == Token.SLICE_CLOSE:
+            pf.commit("slice")  # <<a>>
+            return n.Index(expr_a)
+
+        pf.reset()
+        if pf.next() == Token.WHILE:
+            pf.mark("slice: <<a..")
             if pf.next() == Token.SLICE_CLOSE:
-                pf.commit("slice")  # <<a>>
-                return n.Index(expr)
+                pf.commit("slice")  # <<a..>>
+                return n.Slice(expr_a, n.UnitExpr.NULL, n.UnitExpr.NULL)
 
             pf.reset()
             if pf.next() == Token.WHILE:
-                pf.mark("slice: <<a..")
+                # <<a.. ..
+                expr_c = self._expr()
                 if pf.next() == Token.SLICE_CLOSE:
-                    pf.commit("slice")  # <<a..>>
-                    return n.Slice(expr, n.UnitExpr.NULL, n.UnitExpr.NULL)
-
-                pf.reset()
-                if pf.next() == Token.WHILE:
-                    # <<a.. ..
-                    expr2 = self._expr()
-                    if pf.next() == Token.SLICE_CLOSE:
-                        pf.commit("slice")  # <<a.. ..>> or <<a.. ..c>>
-                        return n.Slice(expr, n.UnitExpr.NULL, expr2)
-
-                pf.reset()
-                if expr2 := self._expr():
-                    pf.mark("slice: <<a..b")
-                    if pf.next() == Token.WHILE:
-                        # <<a..b..
-                        expr3 = self._expr()
-                        if pf.next() == Token.SLICE_CLOSE:
-                            pf.commit("slice")  # <<a..b..>> or <<a..b..c>>
-                            return n.Slice(expr, expr2, expr3)
-
-                    pf.reset()
-                    if pf.next() == Token.SLICE_CLOSE:
-                        pf.commit("slice")  # <<a..b>>
-                        return n.Slice(expr, expr2, n.UnitExpr.NULL)
-
-                    pf.drop()
-                pf.drop()
+                    pf.commit("slice")  # <<a.. ..>> or <<a.. ..c>>
+                    return n.Slice(expr_a, n.UnitExpr.NULL, expr_c)
+                raise unclosed
 
             pf.reset()
-            if pf.nexts(2) == [Token.FOR, Token.ATTR]:
-                # <<a... .
-                expr2 = self._expr()
+            expr_b = self._expr()
+            pf.mark("slice: <<a..b")
+            if pf.next() == Token.WHILE:
+                # <<a..b..
+                expr_c = self._expr()
                 if pf.next() == Token.SLICE_CLOSE:
-                    pf.commit("slice")  # <<a... .>> or <<a... .c>>
-                    return n.Slice(expr, n.UnitExpr.NULL, expr2)
+                    pf.commit("slice")  # <<a..b..>> or <<a..b..c>>
+                    return n.Slice(expr_a, expr_b, expr_c)
+                raise unclosed
 
-            pf.drop()
-        pf.drop("slice")
+            pf.reset()
+            if pf.next() == Token.SLICE_CLOSE:
+                pf.commit("slice")  # <<a..b>>
+                return n.Slice(expr_a, expr_b, n.UnitExpr.NULL)
+
+            pf.reset()
+            if self._expr() is n.UnitExpr.IMPLICIT_NULL:
+                raise unclosed
+            raise ParseError("missing `..` between slice items")
+
+        pf.reset()
+        if pf.next() == Token.FOR:
+            if pf.next() != Token.ATTR:
+                raise ParseError("expected `<<a..` or `<<a....`, not `<<a...`")
+            # <<a... .
+            expr_c = self._expr()
+            if pf.next() == Token.SLICE_CLOSE:
+                pf.commit("slice")  # <<a... .>> or <<a... .c>>
+                return n.Slice(expr_a, n.UnitExpr.NULL, expr_c)
+            raise unclosed
+
+        pf.reset()
+        if self._expr() is n.UnitExpr.IMPLICIT_NULL:
+            raise unclosed
+        raise ParseError("missing `..` between slice items")
 
     @watch
     def _expr_call(self) -> n.Call | None:
