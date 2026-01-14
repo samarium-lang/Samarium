@@ -152,3 +152,14 @@ def test_parse_primary_slice_fail(source: str, error_message: str) -> None:
 def test_parse_primary_collections_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
         _ = Parser(source).parse()
+
+
+@pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("(0", "`(` was never closed"),
+    ],
+)
+def test_parse_primary_basic_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()

@@ -1188,10 +1188,9 @@ class Parser:
         pf = self._pf
         if pf.next() != Token.PAREN_OPEN:
             return None
-        if not (expr := self._expr()):
-            return None
+        expr = self._expr()
         if pf.next() != Token.PAREN_CLOSE:
-            return None
+            raise ParseError("`(` was never closed")
         return expr
 
     @watch
