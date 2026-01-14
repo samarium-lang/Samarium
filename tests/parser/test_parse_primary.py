@@ -5,6 +5,7 @@ from samarium import nodes as n
 from samarium.parser import ParseError, Parser
 
 NULL = n.UnitExpr.NULL
+INULL = n.UnitExpr.IMPLICIT_NULL
 
 
 @pytest.mark.parametrize(
@@ -22,16 +23,16 @@ NULL = n.UnitExpr.NULL
         ),
         (
             r"[... ->? [] ?]",
-            n.ArrayComp(n.Array([]), [], NULL, NULL),
+            n.ArrayComp(n.Array([]), [], INULL, INULL),
         ),
         (r"{{}}", n.Table([])),
         (
             r"{{->,->}}",
-            n.Table([(NULL, NULL), (NULL, NULL)]),
+            n.Table([(INULL, INULL), (INULL, INULL)]),
         ),
         (
             r"{{->...->?()?}}",
-            n.TableComp(NULL, [], (NULL, NULL), NULL),
+            n.TableComp(NULL, [], (INULL, INULL), INULL),
         ),
         (
             r"{{{{}}->{{}}...->?[]?[]}}",
@@ -52,7 +53,7 @@ def test_parse_primary_collections(source: str, expected_node: n.Expr) -> None:
         (r"@@", n.UnitExpr.DATETIME),
         (r"@@@", n.UnitExpr.TIMESTAMP),
         (r"()", NULL),
-        (r"", NULL),
+        (r"", INULL),
         (r"(\)", n.Int(0)),
         (r"<<\>>", n.Index(n.Int(0))),
     ],
@@ -78,25 +79,31 @@ def test_parse_primary_identifier(
 
 
 @pytest.mark.parametrize(
-    ("fields", "inner_source"),
+    ("start", "stop", "step", "inner_source"),
     [
-        ((0, 0, 0), r""),
-        ((0, 0, 0), r".."),
-        ((0, 0, 0), r"...."),
-        ((1, 0, 0), r"/.."),
-        ((1, 0, 0), r"/...."),
-        ((0, 1, 0), r"../"),
-        ((0, 1, 0), r"../.."),
-        ((0, 0, 1), r"..../"),
-        ((0, 1, 1), r"../../"),
-        ((1, 0, 1), r"/..../"),
-        ((1, 1, 0), r"/../.."),
-        ((1, 1, 1), r"/../../"),
+        (NULL, NULL, NULL, r""),
+        (NULL, NULL, NULL, r".."),
+        (NULL, NULL, INULL, r"...."),
+        (n.Int(1), NULL, NULL, r"/.."),
+        (n.Int(1), NULL, INULL, r"/...."),
+        (NULL, n.Int(1), NULL, r"../"),
+        (NULL, n.Int(1), NULL, r"../.."),
+        (NULL, NULL, n.Int(1), r"..../"),
+        (NULL, n.Int(1), n.Int(1), r"../../"),
+        (n.Int(1), NULL, n.Int(1), r"/..../"),
+        (n.Int(1), n.Int(1), INULL, r"/../.."),
+        (n.Int(1), n.Int(1), n.Int(1), r"/../../"),
     ],
 )
-def test_parse_primary_slice(inner_source: str, fields: tuple[int, int, int]) -> None:
-    slice = n.Slice(*(n.Int(1) if num else NULL for num in fields))
-    assert Parser(f"<<{inner_source}>>;").parse() == [n.ExprStmt(slice)]
+def test_parse_primary_slice(
+    inner_source: str,
+    start: n.Int | n.UnitExpr,
+    stop: n.Int | n.UnitExpr,
+    step: n.Int | n.UnitExpr,
+) -> None:
+    assert Parser(f"<<{inner_source}>>;").parse() == [
+        n.ExprStmt(n.Slice(start, stop, step))
+    ]
 
 
 def test_parse_primary_identifer_fail() -> None:
