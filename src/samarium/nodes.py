@@ -27,6 +27,7 @@ class UnitStmt(Enum):
 
 
 class UnitExpr(Enum):
+    IMPLICIT_NULL = auto()
     NULL = auto()
     TIMESTAMP = auto()
     DATETIME = auto()

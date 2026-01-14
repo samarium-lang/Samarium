@@ -1108,7 +1108,7 @@ class Parser:
             return null
         if expr := self._expr_paren():
             return expr
-        return n.UnitExpr.NULL
+        return n.UnitExpr.IMPLICIT_NULL
 
     @watch
     def _expr_literal(self) -> n.Primary | None:
