@@ -15,6 +15,7 @@ INULL = n.UnitExpr.IMPLICIT_NULL
         (r"[/,]", n.Array([n.Int(1)])),
         (r"[/\, //]", n.Array([n.Int(2), n.Int(3)])),
         (r"[[],(),[]]", n.Array([n.Array([]), NULL, n.Array([])])),
+        (r"[[], ,[]]", n.Array([n.Array([]), INULL, n.Array([])])),
         (
             r"[0 ... 0 ->? 1]",
             n.ArrayComp(
@@ -22,6 +23,7 @@ INULL = n.UnitExpr.IMPLICIT_NULL
             ),
         ),
         (r"[... ->? [] ?]", n.ArrayComp(n.Array([]), [], INULL, INULL)),
+        (r"[...->??]", n.ArrayComp(INULL, [], INULL, INULL)),
         (r"{{}}", n.Table([])),
         (r"{{->,->}}", n.Table([(INULL, INULL), (INULL, INULL)])),
         (r"{{->,->,}}", n.Table([(INULL, INULL), (INULL, INULL)])),
