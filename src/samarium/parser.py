@@ -1036,7 +1036,6 @@ class Parser:
     @watch
     def _expr_unary(self) -> n.Expr:
         pf = self._pf
-        pf.mark("unary")
 
         ops: list[n.UnOp] = []
         while pf.peek() in UNARY_OPS:
@@ -1044,7 +1043,6 @@ class Parser:
             ops.append(n.UnOp[Token.from_index(op).name])
 
         power = self._expr_power()
-        pf.commit()
         return n.UnaryOp(ops, power) if ops else power
 
     @watch
