@@ -1152,6 +1152,7 @@ class Parser:
             return n.UnitExpr.TIMESTAMP
 
         pf.drop()
+        return None
 
     @watch
     @automark
