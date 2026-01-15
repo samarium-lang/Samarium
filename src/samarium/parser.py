@@ -1073,12 +1073,9 @@ class Parser:
     def _expr_postfix_prime(self) -> Prime[n.PostfixKind]:
         pf = self._pf
         if pf.peek() == Token.ATTR:
-            pf.mark("postfix_prime")
             _ = pf.next()
             if not (ident := self._expr_identifier()):
-                pf.drop()
-                return None
-            pf.commit()
+                raise ParseError("expected attribute name after `.`")
             postfix = n.Attribute(ident)
         elif slice := self._expr_slice():
             postfix = slice
