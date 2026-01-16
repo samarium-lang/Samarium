@@ -114,7 +114,7 @@ def test_parse_primary_identifer_fail(source: str) -> None:
     ("source", "error_message"),
     [
         (r"<<..b..c;", "`<<` was never closed"),
-        (r"<<..b?", "`<<` was never closed"),
+        (r"<<..b?", "expected `,,` after `?` expression"),
         (r"<<..@", "`<<` was never closed"),
         (r"<<a b>>", "missing `..` between slice items"),
         (r"<<a;", "`<<` was never closed"),

@@ -858,20 +858,25 @@ class Parser:
 
     @watch
     def _expr_if(self) -> n.Expr:
-        lor = self._expr_lor()
         pf = self._pf
-        pf.mark("if_expr")
-        if (
-            pf.next() == Token.IF
-            and (condition := self._expr_lor())
-            and pf.next() == Token.ELSE
-            and (else_ := self._expr())
-        ):
-            pf.commit()
-            return n.IfExpr(condition, lor, else_)
 
-        pf.drop()
-        return lor
+        lor = self._expr_lor()
+        if pf.peek() != Token.IF:
+            return lor
+
+        pf.mark("if_expr: post then")
+        _ = pf.next()
+
+        condition = self._expr_lor()
+        if pf.next() != Token.ELSE:
+            if pf.waypoints[-2].name != "x_comp: iterable":
+                raise ParseError("expected `,,` after `?` expression")
+            pf.drop()
+            return lor
+
+        else_ = self._expr()
+        pf.commit()
+        return n.IfExpr(condition, lor, else_)
 
     @watch
     def _expr_lor(self) -> n.Expr:
@@ -1251,7 +1256,9 @@ class Parser:
             sep = True
             members.append(member)
 
+        pf.mark("x_comp: iterable")  # context for _expr_if
         iterable = self._expr()
+        pf.commit()
 
         if pf.peek() == Token.IF:
             _ = pf.next()
@@ -1335,7 +1342,9 @@ class Parser:
             sep = True
             members.append(member)
 
+        pf.mark("x_comp: iterable")  # context for _expr_if
         iterable = self._expr()
+        pf.commit()
 
         if pf.peek() == Token.IF:
             _ = pf.next()
