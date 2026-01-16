@@ -84,7 +84,7 @@ class Pathfinder:
     def __init__(self, tokens: Iterable[int]) -> None:
         self._tokens = list(tokens)
         self._index = 0
-        self._waypoints: list[Waypoint] = []
+        self.waypoints: list[Waypoint] = []
 
     # def insert_literals(self, tokens: Iterable[Tokenlike]) -> None:
     #     for tok in tokens:
@@ -126,41 +126,41 @@ class Pathfinder:
         return self._index >= len(self._tokens)
 
     def mark(self, name: str) -> None:
-        self._waypoints.append(Waypoint(name, self._index))
+        self.waypoints.append(Waypoint(name, self._index))
         # print("MARK", self.debug(6))
 
     def reset(self, to: str | None = None) -> None:
-        if not self._waypoints:
+        if not self.waypoints:
             raise RuntimeError("no waypoint to reset to")
         idx = -1
         if to:
-            while self._waypoints[idx].name != to:
+            while self.waypoints[idx].name != to:
                 idx -= 1
-        self._index = self._waypoints[idx].idx
+        self._index = self.waypoints[idx].idx
         # print("RESET", self.debug(6))
 
     def drop(self, to: str | None = None) -> None:
         """To be used for acceptable failures, e.g. first token checks."""
-        if not self._waypoints:
+        if not self.waypoints:
             raise RuntimeError("no waypoint to drop")
 
         if not to:
-            self._index = self._waypoints.pop().idx
+            self._index = self.waypoints.pop().idx
             return
 
-        while (waypoint := self._waypoints.pop()).name != to:
+        while (waypoint := self.waypoints.pop()).name != to:
             pass
 
         self._index = waypoint.idx
         # print("DROP", self.debug(6))
 
     def commit(self, to: str | None = None) -> None:
-        if not self._waypoints:
+        if not self.waypoints:
             raise RuntimeError("no waypoint to commit to")
         if not to:
-            _ = self._waypoints.pop()
+            _ = self.waypoints.pop()
             return
-        while self._waypoints.pop().name != to:
+        while self.waypoints.pop().name != to:
             pass
         # print("COMMIT", self.debug(6))
 
@@ -171,11 +171,11 @@ def watch(f: Callable[[Parser], T]) -> Callable[[Parser], T]:
         import inspect
 
         caller = inspect.currentframe().f_back.f_code.co_name  # pyright: ignore[reportOptionalMemberAccess]
-        x = len(self._pf._waypoints)  # pyright: ignore[reportPrivateUsage]
+        x = len(self._pf.waypoints)  # pyright: ignore[reportPrivateUsage]
         # print(f"\033[32m-> (stack: {x}) {f.__name__} from {caller}\033[0m")
         # print(f"+ (stack: {x}) {f.__name__} from {caller}")
         r = f(self)
-        y = len(self._pf._waypoints)  # pyright: ignore[reportPrivateUsage]
+        y = len(self._pf.waypoints)  # pyright: ignore[reportPrivateUsage]
         # print(f"- (stack: {x} -> {y}) {f.__name__} to {caller}")
         # print(f"\033[31m<- (stack: {x} -> {y}) {f.__name__} to {caller}\033[0m")
         if y != x:
