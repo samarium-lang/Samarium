@@ -1,8 +1,7 @@
-import re
 import pytest
 
 from samarium import nodes as n
-from samarium.parser import ParseError, Parser
+from samarium.parser import Parser
 
 NULL = n.UnitExpr.NULL
 INULL = n.UnitExpr.IMPLICIT_NULL
