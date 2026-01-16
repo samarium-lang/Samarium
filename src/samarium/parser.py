@@ -982,15 +982,12 @@ class Parser:
     @watch
     def _expr_bor_prime(self) -> Prime[n.Expr]:
         pf = self._pf
-        pf.mark("bor_prime")
 
-        if pf.next() != Token.BOR:
-            pf.drop()
+        if pf.peek() != Token.BOR:
             return None
 
-        pf.commit()
-        bxor = self._expr_bxor() or n.UnitExpr.NULL
-        return (bxor, self._expr_bor_prime())
+        _ = pf.next()
+        return (self._expr_bxor(), self._expr_bor_prime())
 
     @watch
     def _expr_bxor(self) -> n.Expr:
@@ -1004,16 +1001,12 @@ class Parser:
     @watch
     def _expr_bxor_prime(self) -> Prime[n.Expr]:
         pf = self._pf
-        pf.mark("bxor_prime")
 
-        if pf.next() != Token.BXOR:
-            pf.drop()
+        if pf.peek() != Token.BXOR:
             return None
 
-        pf.commit()
-        band = self._expr_band() or n.UnitExpr.NULL
-
-        return (band, self._expr_bxor_prime())
+        _ = pf.next()
+        return (self._expr_band(), self._expr_bxor_prime())
 
     @watch
     def _expr_band(self) -> n.Expr:
@@ -1027,13 +1020,11 @@ class Parser:
     @watch
     def _expr_band_prime(self) -> Prime[n.Expr]:
         pf = self._pf
-        pf.mark("band_prime")
 
-        if pf.next() != Token.BAND:
-            pf.drop()
+        if pf.peek() != Token.BAND:
             return None
 
-        pf.commit()
+        _ = pf.next()
         return (self._expr_sum(), self._expr_band_prime())
 
     @watch
