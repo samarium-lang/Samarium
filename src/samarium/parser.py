@@ -68,6 +68,18 @@ UNARY_OPS = frozenset(
         Token.YIELD,
     }
 )
+COMPARISON_OPS = frozenset(
+    {
+        Token.NE,
+        Token.EQ,
+        Token.GT,
+        Token.GE,
+        Token.LT,
+        Token.LE,
+        Token.IN,
+        Token.NOT,
+    }
+)
 
 
 class ParseError(Exception):
@@ -875,61 +887,88 @@ class Parser:
             return lor
 
         else_ = self._expr()
-        pf.commit()
         return n.IfExpr(condition, lor, else_)
 
     @watch
     def _expr_lor(self) -> n.Expr:
-        a = self._expr_land()
-
         pf = self._pf
-        pf.mark("lor")
-        if pf.next() == Token.OR:
-            b = self._expr_lor()
-            pf.commit()
-            return n.BinaryOp(a, n.BinOp.OR, b)
 
-        pf.drop()
-        return a
+        ors = [self._expr_land()]
+        while True:
+            if pf.peek() != Token.OR:
+                break
+            _ = pf.next()
+            ors.append(self._expr_land())
+
+        rhs = ors.pop()
+        while ors:
+            rhs = n.BinaryOp(ors.pop(), n.BinOp.OR, rhs)
+
+        return rhs
 
     @watch
     def _expr_land(self) -> n.Expr:
-        a = self._expr_membership()
-
         pf = self._pf
-        pf.mark("land")
-        if pf.next() == Token.AND:
-            b = self._expr_membership()
-            pf.commit()
-            return n.BinaryOp(a, n.BinOp.AND, b)
 
-        pf.drop()
-        return a
+        ands = [self._expr_membership()]
+        while True:
+            if pf.peek() != Token.AND:
+                break
+            _ = pf.next()
+            ands.append(self._expr_membership())
+
+        rhs = ands.pop()
+        while ands:
+            rhs = n.BinaryOp(ands.pop(), n.BinOp.AND, rhs)
+
+        return rhs
 
     @watch
     def _expr_membership(self) -> n.Expr:
         comparison = self._expr_comparison()
-
         pf = self._pf
-        if pf.peek() == Token.NOT:
-            _ = pf.next()
-        if pf.peek() == Token.IN:
-            _ = pf.next()
-            b = self._expr_comparison()
-            return n.BinaryOp(comparison, n.BinOp.IN, b)
-        return comparison
+
+        match pf.peek(), pf.peek(1):
+            case Token.IN, _:
+                op = n.BinOp.IN
+                _ = pf.next()
+            case Token.NOT, Token.IN:
+                op = n.BinOp.NIN
+                _ = pf.nexts(2)
+            case _:
+                return comparison
+
+        return n.BinaryOp(comparison, op, self._expr_comparison())
 
     @watch
     def _expr_comparison(self) -> n.Expr:
         a = self._expr_bor()
 
         pf = self._pf
-        if pf.peek() in (Token.NE, Token.EQ, Token.GT, Token.LT, Token.GE, Token.LE):
-            op = cast("int", pf.next())
-            b = self._expr_bor()
-            return n.BinaryOp(a, n.BinOp[Token.from_index(op).name], b)
+        primes: list[tuple[n.BinOp, n.Expr]] = []
+        while True:
+            if pf.peek() not in COMPARISON_OPS:
+                break
+            op = Token.from_index(cast("int", pf.next())).name
+            if op == "NOT" and pf.peek() == Token.IN:
+                op = "NIN"
+            primes.append((n.BinOp[op], self._expr_bor()))
 
-        return a
+        if not primes:
+            return a
+
+        binops: list[n.BinaryOp] = []
+        lhs = a
+        while primes:
+            op, rhs = primes.pop(0)
+            binops.append(n.BinaryOp(lhs, op, rhs))
+            lhs = rhs
+
+        rhs = binops.pop()
+        while binops:
+            rhs = n.BinaryOp(binops.pop(), n.BinOp.AND, rhs)
+
+        return rhs
 
     @watch
     def _expr_bor(self) -> n.Expr:

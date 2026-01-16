@@ -229,6 +229,7 @@ class BinOp(Enum):
     NE = auto()
     AND = auto()
     IN = auto()
+    NIN = auto()
     OR = auto()
     BAND = auto()
     BOR = auto()
