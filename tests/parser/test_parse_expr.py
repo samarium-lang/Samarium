@@ -131,8 +131,3 @@ def test_parse_operator_precedence() -> None:
             ),
         ),
     )
-
-
-def test_pec() -> None:
-    print(Parser(r"~((>w<))~;").parse())
-    assert False
