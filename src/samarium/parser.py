@@ -856,7 +856,8 @@ class Parser:
     @automark
     def _expr_or_throw_stmt(self) -> n.ExprStmt | n.Throw | None:
         pf = self._pf
-        if (expr := self._expr()) and (final := pf.next()) in (Token.END, Token.THROW):
+        expr = self._expr()
+        if (final := pf.next()) in (Token.END, Token.THROW):
             if final == Token.THROW and pf.peek() == Token.END:
                 _ = pf.next()
             if final == Token.END:
