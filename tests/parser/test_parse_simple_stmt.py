@@ -70,3 +70,12 @@ def test_parse_import_stmt(source: str, statement: n.Import) -> None:
 def test_parse_import_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
         _ = Parser(source).parse()
+
+
+def test_parse_default_stmt() -> None:
+    assert Parser("0<>;").parse() == [n.Default(n.Identifier("0"), INULL)]
+
+
+def test_parse_default_stmt_fail() -> None:
+    with pytest.raises(ParseError, match="expected `;` after default value"):
+        _ = Parser("0<>").parse()

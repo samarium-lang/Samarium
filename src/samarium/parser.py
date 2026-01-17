@@ -774,10 +774,9 @@ class Parser:
             return None
         if pf.next() != Token.DEFAULT:
             return None
-        if not (value := self._expr()):
-            return None
+        value = self._expr()
         if pf.next() != Token.END:
-            return None
+            raise ParseError("expected `;` after default value")
         return n.Default(identifier, value)
 
     @watch
