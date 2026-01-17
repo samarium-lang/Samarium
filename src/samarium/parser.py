@@ -336,19 +336,23 @@ class Parser:
     @automark
     def _assert_stmt(self) -> n.Assert | None:
         pf = self._pf
+
         if pf.next() != Token.CATCH:
             return None
-        if not (condition := self._expr()):
-            return None
+
+        condition = self._expr()
+
         if pf.peek() == Token.END:
             _ = pf.next()
             return n.Assert(condition, None)
+
         if pf.next() != Token.SEP:
-            return None
-        if not (msg := self._expr()):
-            return None
+            raise ParseError("expected `,` or `;` after assert expression")
+
+        msg = self._expr()
         if pf.next() != Token.END:
-            return None
+            raise ParseError("expected `;` after assert message")
+
         return n.Assert(condition, msg)
 
     @watch

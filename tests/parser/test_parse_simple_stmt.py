@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 import pytest
 
@@ -225,3 +227,25 @@ def test_parse_return_stmt_fail() -> None:
         ParseError, match="expected `;` or block end after return statement"
     ):
         _ = Parser("* x").parse()
+
+
+@pytest.mark.parametrize(
+    ("source", "condition", "msg"),
+    [
+        ("!!;", INULL, None),
+    ],
+)
+def test_parse_assert_stmt(source: str, condition: n.Expr, msg: n.Expr | None) -> None:
+    assert Parser(source).parse() == [n.Assert(condition, msg)]
+
+
+@pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("!!", "expected `,` or `;` after assert expression"),
+        ("!!,", "expected `;` after assert message"),
+    ],
+)
+def test_parse_assert_stmt_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()
