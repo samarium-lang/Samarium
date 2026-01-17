@@ -790,7 +790,7 @@ class Parser:
             return n.ImportItem(name, None)
         _ = pf.next()
         if not (alias := self._expr_identifier()):
-            return None
+            raise ParseError("expected alias name after `->`")
         return n.ImportItem(name, alias)
 
     @watch
@@ -803,8 +803,7 @@ class Parser:
             return None
 
         if not (module := self._expr_identifier()):
-            pf.drop()
-            return None
+            raise ParseError("expected identifier after `<=`")
 
         if pf.peek() == Token.END:
             _ = pf.next()
@@ -812,45 +811,46 @@ class Parser:
             return n.Import(module, None)
 
         if pf.next() != Token.ATTR:
-            pf.drop()
-            return None
+            raise ParseError("expected `.` or `;` after module name")
 
         pf.mark("import: wildcard")
-        if pf.nexts(2) == [Token.FUNCTION, Token.END]:
+        if pf.next() == Token.FUNCTION:
+            if pf.next() != Token.END:
+                raise ParseError("expected `;` after `*`")
             pf.commit("import")
             return n.Import(module, "*")
         pf.drop()
 
         if import_item := self._import_item():
+            if pf.next() != Token.END:
+                raise ParseError("expected `;` after import item")
             pf.commit()
             return n.Import(module, [import_item])
 
         if pf.next() != Token.BRACKET_OPEN:
-            pf.drop()
-            return None
+            raise ParseError("expected import item or array of import items")
 
         sep = False
         import_items: list[n.ImportItem] = []
         while True:
-            if pf.peek() == Token.BRACKET_CLOSE and pf.peek(1) == Token.END:
+            if pf.peek() == Token.BRACKET_CLOSE:
+                if pf.peek(1) != Token.END:
+                    raise ParseError("expected `;` after import item array")
                 _ = pf.nexts(2)
                 pf.commit()
                 return n.Import(module, import_items)
-            pf.mark("import: items")
+
             if sep:
-                if pf.next() == Token.SEP:
-                    sep = False
-                    pf.commit()
-                else:
-                    pf.drop("import")
-                    return None
-            else:
-                if not (import_item := self._import_item()):
-                    pf.drop("import")
-                    return None
-                pf.commit()
-                import_items.append(import_item)
-                sep = True
+                if pf.next() != Token.SEP:
+                    raise ParseError("expected `,` between import items")
+                sep = False
+                continue
+
+            if not (import_item := self._import_item()):
+                raise ParseError("expected import item")
+
+            import_items.append(import_item)
+            sep = True
 
     @watch
     @automark
