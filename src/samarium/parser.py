@@ -44,7 +44,7 @@ ALLOWED_FUNC_DEF_OPS = frozenset(
         Token.ENTRY,
     }
 )
-ASSIGNMENT_OPS = frozenset(
+ASSIGNMENT_KINDS = frozenset(
     {
         Token.ADD,
         Token.SUB,
@@ -55,7 +55,6 @@ ASSIGNMENT_OPS = frozenset(
         Token.BOR,
         Token.BAND,
         Token.BXOR,
-        Token.ASSIGN,
     }
 )
 UNARY_OPS = frozenset(
@@ -485,35 +484,32 @@ class Parser:
                 if not (ident := self._expr_identifier()):
                     pf.drop()
                     return None
-                if not (slice := self._expr_slice()):
-                    slice = None
-                targets.append(n.AssignmentTarget(ident, slice))
+                targets.append(n.AssignmentTarget(ident, self._expr_slice()))
                 sep = True
-            if pf.peek() in ASSIGNMENT_OPS:
+            if Token.ASSIGN in (assign_op_tokens := (pf.peek(), pf.peek(1))):
                 break
 
-        pf.mark("assignment: kind")
-        if (k := cast("int", pf.next())) == Token.ASSIGN:
-            pf.reset()
-            kind = n.AssignmentKind.REGULAR
-        else:
-            kind = n.AssignmentKind[Token.from_index(k).name]
-
-        if pf.next() != Token.ASSIGN:
-            pf.drop("assignment")
-            return None
-
         pf.commit()
 
-        if not (value := self._expr()):
-            pf.drop()
-            return None
+        match assign_op_tokens:
+            case Token.ASSIGN, _:
+                kind = n.AssignmentKind.REGULAR
+                _ = pf.next()
+            case k, Token.ASSIGN:
+                kind_tok = Token.from_index(cast("int", k))
+                if k in ASSIGNMENT_KINDS:
+                    kind = n.AssignmentKind[kind_tok.name]
+                    _ = pf.nexts(2)
+                else:
+                    raise ParseError(f"invalid assignment operator `{kind_tok.value}:`")
+            case _:
+                raise RuntimeError("unreachable")
+
+        value = self._expr()
 
         if pf.next() != Token.END:
-            pf.drop()
-            return None
+            raise ParseError("expected `;` after assignment statement")
 
-        pf.commit()
         return n.Assignment(targets, kind, value)
 
     @watch

@@ -159,3 +159,41 @@ def test_parse_file_io_stmt_access(
 def test_parse_file_io_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
         _ = Parser(source).parse()
+
+
+@pytest.mark.parametrize(
+    ("source", "targets", "kind"),
+    [
+        ("x:;", [("x", None)], n.AssignmentKind.REGULAR),
+        ("a,b+:;", [("a", None), ("b", None)], n.AssignmentKind.ADD),
+        (
+            "a<<>>,b,c<</..>>,d^:;",
+            [
+                ("a", n.Slice(NULL, NULL, NULL)),
+                ("b", None),
+                ("c", n.Slice(n.Int(1), NULL, NULL)),
+                ("d", None),
+            ],
+            n.AssignmentKind.BXOR,
+        ),
+    ],
+)
+def test_parse_assignment_stmt(
+    source: str, targets: list[tuple[str, n.Slice | None]], kind: n.AssignmentKind
+) -> None:
+    assignment_targets = [
+        n.AssignmentTarget(n.Identifier(name), slice) for name, slice in targets
+    ]
+    assert Parser(source).parse() == [n.Assignment(assignment_targets, kind, INULL)]
+
+
+@pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("x ~ : 5;", "invalid assignment operator `~:`"),
+        ("0:", "expected `;` after assignment statement"),
+    ],
+)
+def test_parse_assignment_stmt_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()
