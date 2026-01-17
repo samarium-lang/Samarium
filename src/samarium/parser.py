@@ -442,16 +442,21 @@ class Parser:
     @automark
     def _return_stmt(self) -> n.Return | None:
         pf = self._pf
+
         if pf.next() != Token.FUNCTION:
             return None
-        if not (expr := self._expr()):
-            return None
-        if pf.peek() == Token.BRACE_CLOSE:
-            _ = pf.next()
-            return n.Return(expr)
-        if pf.next() == Token.END:
-            return n.Return(expr)
-        return None
+
+        expr = self._expr()
+
+        match pf.peek():
+            case Token.END:
+                _ = pf.next()
+            case Token.BRACE_CLOSE:
+                pass  # Let the block parser consume it
+            case _:
+                raise ParseError("expected `;` or block end after return statement")
+
+        return n.Return(expr)
 
     @watch
     @automark
