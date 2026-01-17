@@ -457,16 +457,21 @@ class Parser:
     @automark
     def _yield_stmt(self) -> n.Yield | None:
         pf = self._pf
+
         if pf.next() != Token.YIELD:
             return None
-        if not (expr := self._expr()):
-            return None
-        if pf.peek() == Token.BRACE_CLOSE:
-            _ = pf.next()
-            return n.Yield(expr)
-        if pf.next() == Token.END:
-            return n.Yield(expr)
-        return None
+
+        expr = self._expr()
+
+        match pf.peek():
+            case Token.END:
+                _ = pf.next()
+            case Token.BRACE_CLOSE:
+                pass  # Let the block parser consume it
+            case _:
+                raise ParseError("expected `;` or block end after yield statement")
+
+        return n.Yield(expr)
 
     @watch
     def _assignment_stmt(self) -> n.Assignment | None:

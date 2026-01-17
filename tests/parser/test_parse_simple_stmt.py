@@ -197,3 +197,17 @@ def test_parse_assignment_stmt(
 def test_parse_assignment_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
         _ = Parser(source).parse()
+
+
+@pytest.mark.parametrize("ending", [";", ""])
+def test_parse_yield_stmt_ending(ending: str) -> None:
+    assert Parser(f".. {{ ** x{ending} }}").parse() == [
+        n.While(INULL, n.Block([n.Yield(n.Identifier("x"))]))
+    ]
+
+
+def test_parse_yield_stmt_fail() -> None:
+    with pytest.raises(
+        ParseError, match="expected `;` or block end after yield statement"
+    ):
+        _ = Parser("** x").parse()
