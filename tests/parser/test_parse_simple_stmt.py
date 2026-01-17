@@ -249,3 +249,35 @@ def test_parse_assert_stmt(source: str, condition: n.Expr, msg: n.Expr | None) -
 def test_parse_assert_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
         _ = Parser(source).parse()
+
+
+def test_parse_sleep_stmt() -> None:
+    assert Parser(",.,;").parse() == [n.Sleep(INULL)]
+
+
+def test_parse_sleep_stmt_fail() -> None:
+    with pytest.raises(ParseError, match="expected `;` after sleep statement"):
+        _ = Parser(",.,").parse()
+
+
+def test_parse_exit_stmt() -> None:
+    assert Parser("=>!;").parse() == [n.Exit(INULL)]
+
+
+def test_parse_exit_stmt_fail() -> None:
+    with pytest.raises(ParseError, match="expected `;` after exit statement"):
+        _ = Parser("=>!").parse()
+
+
+@pytest.mark.parametrize("ending", [";", ""])
+def test_parse_break_stmt_ending(ending: str) -> None:
+    assert Parser(f".. {{ <-{ending} }}").parse() == [
+        n.While(INULL, n.Block([n.UnitStmt.BREAK]))
+    ]
+
+
+@pytest.mark.parametrize("ending", [";", ""])
+def test_parse_continue_stmt_ending(ending: str) -> None:
+    assert Parser(f".. {{ ->{ending} }}").parse() == [
+        n.While(INULL, n.Block([n.UnitStmt.CONTINUE]))
+    ]

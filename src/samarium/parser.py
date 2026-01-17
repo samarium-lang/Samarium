@@ -291,45 +291,57 @@ class Parser:
     @automark
     def _continue_stmt(self) -> Literal[n.UnitStmt.CONTINUE] | None:
         pf = self._pf
-        if pf.next() == Token.TO:
-            if pf.peek() == Token.END:
+
+        if pf.next() != Token.TO:
+            return None
+
+        match pf.peek():
+            case Token.END:
                 _ = pf.next()
-            if pf.peek() == Token.BRACE_CLOSE:
-                return n.UnitStmt.CONTINUE
-        return None
+            case Token.BRACE_CLOSE:
+                pass  # Let the block parser consume it
+            case _:
+                return None
+
+        return n.UnitStmt.CONTINUE
 
     @watch
     @automark
     def _break_stmt(self) -> Literal[n.UnitStmt.BREAK] | None:
         pf = self._pf
-        if pf.next() == Token.FROM:
-            if pf.peek() == Token.END:
+
+        if pf.next() != Token.FROM:
+            return None
+
+        match pf.peek():
+            case Token.END:
                 _ = pf.next()
-            if pf.peek() == Token.BRACE_CLOSE:
-                return n.UnitStmt.BREAK
-        return None
+            case Token.BRACE_CLOSE:
+                pass  # Let the block parser consume it
+            case _:
+                return None
+
+        return n.UnitStmt.BREAK
 
     @watch
     @automark
     def _exit_stmt(self) -> n.Exit | None:
         pf = self._pf
-        if (
-            pf.next() == Token.EXIT
-            and (expr := self._expr())
-            and pf.next() == Token.END
-        ):
-            return n.Exit(expr)
-        return None
+        if pf.next() != Token.EXIT:
+            return None
+        expr = self._expr()
+        if pf.next() != Token.END:
+            raise ParseError("expected `;` after exit statement")
+        return n.Exit(expr)
 
     @watch
     @automark
     def _sleep_stmt(self) -> n.Sleep | None:
         if self._pf.next() != Token.SLEEP:
             return None
-        if not (expr := self._expr()):
-            return None
+        expr = self._expr()
         if self._pf.next() != Token.END:
-            return None
+            raise ParseError("expected `;` after sleep statement")
         return n.Sleep(expr)
 
     @watch
