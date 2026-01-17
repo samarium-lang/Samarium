@@ -111,3 +111,51 @@ def test_parse_enum_stmt(source: str, enum: n.EnumDef) -> None:
 def test_parse_enum_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
         _ = Parser(source).parse()
+
+
+def test_parse_file_io_stmt_create() -> None:
+    assert Parser("?~>;").parse() == [n.FileIO(NULL, None, INULL)]
+
+
+@pytest.mark.parametrize(
+    ("op", "io_access", "io_binary", "io_quick"),
+    [
+        ("&~~>", "APPEND", False, False),
+        ("<~~", "READ", False, False),
+        ("~~>", "WRITE", False, False),
+        ("<~>", "READ_WRITE", False, False),
+        ("&%~>", "APPEND", True, False),
+        ("<~%", "READ", True, False),
+        ("%~>", "WRITE", True, False),
+        ("<%>", "READ_WRITE", True, False),
+        ("&~>", "APPEND", False, True),
+        ("<~", "READ", False, True),
+        ("~>", "WRITE", False, True),
+        ("&%>", "APPEND", True, True),
+        ("<%", "READ", True, True),
+        ("%>", "WRITE", True, True),
+    ],
+)
+def test_parse_file_io_stmt_access(
+    op: str, io_access: str, io_binary: bool, io_quick: bool
+) -> None:
+    assert Parser(f"a {op} b;").parse() == [
+        n.FileIO(
+            n.Identifier("a"),
+            n.FileIOKind(n.FileIOAccess[io_access], io_binary, io_quick),
+            n.Identifier("b"),
+        )
+    ]
+
+
+@pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("?~>", "expected `;` after file path"),
+        ("~>", "expected `;` after file I/O statement"),
+        ("a ?~> b;", "`?~>` cannot follow an expression"),
+    ],
+)
+def test_parse_file_io_stmt_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()

@@ -519,41 +519,40 @@ class Parser:
     @watch
     def _file_io_stmt(self) -> n.FileIO | None:
         pf = self._pf
-        pf.mark("file_io")
 
         if pf.peek() == Token.FILE_CREATE:
             _ = pf.next()
-            if not (rhs := self._expr()):
-                pf.drop()
-                return None
+            path = self._expr()
             if pf.next() != Token.END:
-                pf.drop()
-                return None
-            pf.commit()
-            return n.FileIO(n.UnitExpr.NULL, None, rhs)
+                raise ParseError("expected `;` after file path")
+            return n.FileIO(n.UnitExpr.NULL, None, path)
 
-        if not (lhs := self._expr()):
+        pf.mark("file_io")
+
+        lhs = self._expr()
+
+        if not (op := pf.next()):
             pf.drop()
             return None
 
-        op = pf.next()
-        if not (op and (tok := Token.from_index(op)).name.startswith("FILE_")):
+        if op == Token.FILE_CREATE:
+            raise ParseError("`?~>` cannot follow an expression")
+
+        if not (tok := Token.from_index(op)).name.startswith("FILE_"):
             pf.drop()
             return None
 
-        if not (rhs := self._expr()):
-            pf.drop()
-            return None
+        rhs = self._expr()
 
         if pf.next() != Token.END:
-            pf.drop()
-            return None
+            raise ParseError("expected `;` after file I/O statement")
 
         token_name = tok.name.removeprefix("FILE_")
         if quick := token_name.startswith("QUICK_"):
             token_name = token_name.removeprefix("QUICK_")
         if binary := token_name.startswith("BINARY_"):
             token_name = token_name.removeprefix("BINARY_")
+
         access = n.FileIOAccess[token_name]
         io_kind = n.FileIOKind(access, binary, quick)
 
