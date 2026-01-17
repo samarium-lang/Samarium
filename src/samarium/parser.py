@@ -725,45 +725,40 @@ class Parser:
         pf = self._pf
         pf.mark("enum")
 
-        if not (name := self._expr_identifier()):
+        if not (enum_name := self._expr_identifier()):
             pf.drop()
             return None
 
-        if pf.nexts(2) != [Token.ENUM, Token.BRACE_OPEN]:
+        if pf.next() != Token.ENUM:
             pf.drop()
             return None
+
+        if pf.next() != Token.BRACE_OPEN:
+            raise ParseError("expected block after `#`")
 
         members: list[n.EnumMember] = []
         while True:
             if pf.peek() == Token.BRACE_CLOSE:
                 _ = pf.next()
                 pf.commit()
-                return n.EnumDef(name, members)
+                return n.EnumDef(enum_name, members)
 
-            pf.mark("enum: members")
             if not (name := self._expr_identifier()):
-                pf.drop("enum")
-                return None
+                raise ParseError("expected enum member name")
 
             if pf.peek() == Token.END:
                 _ = pf.next()
-                pf.commit()
                 members.append(n.EnumMember(name, None))
                 continue
 
             if pf.next() != Token.ASSIGN:
-                pf.drop("enum")
-                return None
+                raise ParseError("expected `:` or `;` after enum member name")
 
-            if not (value := self._expr()):
-                pf.drop("enum")
-                return None
+            value = self._expr()
 
             if pf.next() != Token.END:
-                pf.drop("enum")
-                return None
+                raise ParseError("expected `;` after enum member value")
 
-            pf.commit()
             members.append(n.EnumMember(name, value))
 
     @watch
@@ -1203,6 +1198,9 @@ class Parser:
                 raise ParseError("expected a name after '#")
             return n.Identifier(None, inst)
         elif private:
+            if pf.waypoints[-2].name == "func_def: params":
+                # We're likely trying to parse an enum definition (`name # {}`)
+                return None
             raise ParseError("expected a name after #")
         else:
             return None

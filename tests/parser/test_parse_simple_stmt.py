@@ -79,3 +79,35 @@ def test_parse_default_stmt() -> None:
 def test_parse_default_stmt_fail() -> None:
     with pytest.raises(ParseError, match="expected `;` after default value"):
         _ = Parser("0<>").parse()
+
+
+@pytest.mark.parametrize(
+    ("source", "enum"),
+    [
+        ("0 # {}", n.EnumDef(n.Identifier("0"), [])),
+        (
+            "0 # { a; }",
+            n.EnumDef(n.Identifier("0"), [n.EnumMember(n.Identifier("a"), None)]),
+        ),
+        (
+            "0 # { a: /; }",
+            n.EnumDef(n.Identifier("0"), [n.EnumMember(n.Identifier("a"), n.Int(1))]),
+        ),
+    ],
+)
+def test_parse_enum_stmt(source: str, enum: n.EnumDef) -> None:
+    assert Parser(source).parse() == [enum]
+
+
+@pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("0 #;", "expected block after `#`"),
+        ("0 # { / }", "expected enum member name"),
+        ("0 # { a }", "expected `:` or `;` after enum member name"),
+        ("0 # { a: / }", "expected `;` after enum member value"),
+    ],
+)
+def test_parse_enum_stmt_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()
