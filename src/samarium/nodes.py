@@ -124,6 +124,8 @@ class FuncParam(NamedTuple):
 
 
 class FuncSpecialName(Enum):
+    ADD = auto()
+    SUB = auto()
     POW = auto()
     MUL = auto()
     MOD = auto()

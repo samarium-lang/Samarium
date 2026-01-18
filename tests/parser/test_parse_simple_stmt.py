@@ -24,6 +24,18 @@ def test_parse_expr_or_throw_stmt(source: str, statements: list[n.Statement]) ->
 
 
 @pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("hey", "expected `;` after the expression"),
+        ("<>", "unexpected token `<>`")
+    ],
+)
+def test_parse_expr_or_throw_stmt_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()
+
+
+@pytest.mark.parametrize(
     ("source", "statement"),
     [
         ("<=0;", n.Import(n.Identifier("0"), None)),

@@ -48,11 +48,6 @@ def test_parse_data_class_stmt_fail(source: str, error_message: str) -> None:
         _ = Parser(source).parse()
 
 
-def test_parse_stmt_fail() -> None:
-    with pytest.raises(ParseError, match="unexpected token `<>`"):
-        _ = Parser("<>").parse()
-
-
 @pytest.mark.parametrize(
     ("source", "name", "parents", "block"),
     [
@@ -89,5 +84,65 @@ def test_parse_class_def_stmt(
     ],
 )
 def test_parse_class_def_stmt_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()
+
+
+@pytest.mark.parametrize(
+    ("source", "name", "params", "static", "body", "decorators"),
+    [
+        ("hey * {}", "hey", [], False, [], []),
+        ("?what? * {}", n.FuncSpecialName.IF, [("what", 2)], False, [], []),
+        ("hey who? ~'* {}", "hey", [("who", 2)], True, [], []),
+        ("hey who... ~'* {}", "hey", [("who", 3)], True, [], []),
+        ("dont @ me ok... * {}", "me", [("ok", 3)], False, [], [n.Identifier("dont")]),
+        ("=> * {}", n.FuncSpecialName.ENTRY, [], False, [], []),
+        ("->? * {}", n.FuncSpecialName.IN, [], False, [], []),
+        ("++ * {}", n.FuncSpecialName.MUL, [], False, [], []),
+        ("+ * {}", n.FuncSpecialName.ADD, [], False, [], []),
+        ("+a * {}", n.FuncSpecialName.ADD, [("a", 1)], False, [], []),
+        ("-_ * {}", n.FuncSpecialName.NEG, [], False, [], []),
+        ("<<>> * {}", n.FuncSpecialName.GET, [], False, [], []),
+        ("<<>>: * {}", n.FuncSpecialName.SET, [], False, [], []),
+        (
+            'hey who * { "hey"!; }',
+            "hey",
+            [("who", 1)],
+            False,
+            [n.ExprStmt(n.Postfix(n.String('"hey"'), n.UnitPostfix.PRINT))],
+            [],
+        ),
+    ],
+)
+def test_parse_func_def_stmt(
+    source: str,
+    name: str | n.FuncSpecialName,
+    params: list[tuple[str, int]],
+    static: bool,
+    body: list[n.Statement],
+    decorators: list[n.Expr],
+) -> None:
+    assert Parser(source).parse() == [
+        n.FuncDef(
+            n.Identifier(name) if isinstance(name, str) else name,
+            [n.FuncParam(n.Identifier(p), n.FuncParamKind(k)) for p, k in params],
+            static,
+            n.Block(body),
+            decorators,
+        )
+    ]
+
+
+@pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("foo bar baz", "expected parameter"),
+        ("foo bar baz /", "expected parameter"),
+        ("foo bar baz ~*", "expected `*` or `~'*`"),
+        ("hey * * {}", "expected block after function definition"),
+        ("hey *", "expected block after function definition"),
+    ],
+)
+def test_parse_func_def_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
         _ = Parser(source).parse()

@@ -18,6 +18,8 @@ Prime: TypeAlias = "tuple[T, Prime[T]] | None"
 
 ALLOWED_FUNC_DEF_OPS = frozenset(
     {
+        Token.ADD,
+        Token.SUB,
         Token.POW,
         Token.MUL,
         Token.MOD,
@@ -251,8 +253,8 @@ class Parser:
             self._return_stmt,
             self._yield_stmt,
             self._assignment_stmt,
-            self._file_io_stmt,
             self._func_def_stmt,
+            self._file_io_stmt,
             self._class_def_stmt,
             self._data_class_stmt,
             self._enum_stmt,
@@ -367,6 +369,20 @@ class Parser:
         pf = self._pf
         if pf.next() != Token.IF:
             return None
+
+        # Corner case: check if we might be trying to parse a `?` function
+        pf.mark("if_stmt: ? func check")
+        while True:
+            if pf.peek() in (Token.FUNCTION, Token.BNOT):
+                pf.drop()
+                return None
+            if not self._expr_identifier():
+                pf.drop()
+                break
+            if pf.peek() in (Token.FOR, Token.IF):
+                _ = pf.next()
+        pf.drop()
+
         if not (condition := self._expr()):
             return None
         if not (then := self._block()):
@@ -595,23 +611,29 @@ class Parser:
 
         pf.mark("func_def: name")
         if not (name := self._expr_identifier()):
-            if pf.peek() in ALLOWED_FUNC_DEF_OPS:
-                name = n.FuncSpecialName[Token.from_index(cast("int", pf.next())).name]
-            elif (next2 := pf.nexts(2)) == [Token.ADD, Token.IDENTIFIER]:
-                _ = pf.next()
-                name = n.FuncSpecialName.POS
-            elif next2 == [Token.SUB, Token.IDENTIFIER]:
-                _ = pf.next()
-                name = n.FuncSpecialName.NEG
-            elif next2 == [Token.SLICE_OPEN, Token.SLICE_CLOSE]:
-                if pf.peek() == Token.ASSIGN:
+            match pf.peek(), pf.peek(1), pf.peek(2):
+                case (Token.ADD | Token.SUB) as tok, Token.IDENTIFIER, _:
                     _ = pf.next()
+
+                    pf.mark("func_def: name: unary check")
+                    unary_ident = self._expr_identifier() == n.Identifier("_")
+                    pf.commit() if unary_ident else pf.drop()
+
+                    is_plus = tok == Token.ADD
+                    tok_name = (("SUB", "ADD"), ("NEG", "POS"))[unary_ident][is_plus]
+                    name = n.FuncSpecialName[tok_name]
+                case tok, _, _ if tok in ALLOWED_FUNC_DEF_OPS:
+                    op = cast("int", pf.next())
+                    name = n.FuncSpecialName[Token.from_index(op).name]
+                case Token.SLICE_OPEN, Token.SLICE_CLOSE, Token.ASSIGN:
+                    _ = pf.nexts(3)
                     name = n.FuncSpecialName.SET
-                else:
+                case Token.SLICE_OPEN, Token.SLICE_CLOSE, _:
+                    _ = pf.nexts(2)
                     name = n.FuncSpecialName.GET
-            else:
-                pf.drop("func_def")
-                return None
+                case _:
+                    pf.drop("func_def")
+                    return None
         pf.commit()
 
         params: list[n.FuncParam] = []
@@ -620,29 +642,34 @@ class Parser:
                 break
             pf.mark("func_def: params")
             if not (param_name := self._expr_identifier()):
+                if params:
+                    raise ParseError("expected parameter")
                 pf.drop("func_def")
                 return None
-            if pf.peek() in (Token.IF, Token.FOR):
-                kind = n.FuncParamKind[
-                    "VARIADIC" if pf.next() == Token.FOR else "OPTIONAL"
-                ]
+
+            if kind := {
+                Token.IF.index: n.FuncParamKind.VARIADIC,
+                Token.FOR.index: n.FuncParamKind.OPTIONAL,
+            }.get(cast("int", pf.peek())):
+                _ = pf.next()
             else:
                 kind = n.FuncParamKind.DEFAULT
+
             pf.commit()
             params.append(n.FuncParam(param_name, kind))
 
-        if pf.peek() == Token.FUNCTION:
-            _ = pf.next()
-            static = False
-        elif pf.nexts(3) == [Token.BNOT, Token.INSTANCE, Token.FUNCTION]:
-            static = True
-        else:
-            pf.drop()
-            return None
+        match pf.peek(), pf.peek(1), pf.peek(2):
+            case Token.FUNCTION, _, _:
+                _ = pf.next()
+                static = False
+            case Token.BNOT, Token.INSTANCE, Token.FUNCTION:
+                _ = pf.nexts(3)
+                static = True
+            case _:
+                raise ParseError("expected `*` or `~'*`")
 
         if not (body := self._block()):
-            pf.drop()
-            return None
+            raise ParseError("expected block after function definition")
 
         pf.commit()
         return n.FuncDef(name, params, static, body, decorators)
@@ -856,6 +883,8 @@ class Parser:
             if final == Token.END:
                 return n.ExprStmt(expr)
             return n.Throw(expr)
+        if expr is not n.UnitExpr.IMPLICIT_NULL:
+            raise ParseError("expected `;` after the expression")
         return None
 
     @watch
@@ -875,7 +904,10 @@ class Parser:
 
         condition = self._expr_lor()
         if pf.next() != Token.ELSE:
-            if pf.waypoints[-2].name != "x_comp: iterable":
+            if pf.waypoints[-2].name not in (
+                "x_comp: iterable",
+                "func_def: decorators",
+            ):
                 raise ParseError("expected `,,` after `?` expression")
             pf.drop()
             return lor
@@ -1200,6 +1232,7 @@ class Parser:
             if pf.waypoints[-2].name == "func_def: params":
                 # We're likely trying to parse an enum definition (`name # {}`)
                 return None
+            print(pf.waypoints)
             raise ParseError("expected a name after #")
         else:
             return None
