@@ -232,15 +232,12 @@ class Parser:
         stmts: list[n.Statement] = []
 
         while not self._pf.eof():
-            if stmt := self._stmt():
-                stmts.append(stmt)
-            else:
-                raise RuntimeError(stmts)
+            stmts.append(self._stmt())
 
         return stmts
 
     @watch
-    def _stmt(self) -> n.Statement | None:
+    def _stmt(self) -> n.Statement:
         for stmt_kind in (
             self._continue_stmt,
             self._break_stmt,
@@ -265,27 +262,24 @@ class Parser:
         ):
             if obj := stmt_kind():
                 return obj
+        else:
+            tok = Token.from_index(cast("int", self._pf.peek()))
+            raise ParseError(f"unexpected token {tok.value}")
 
     @watch
     def _block(self) -> n.Block | None:
         pf = self._pf
-        pf.mark("block")
 
-        if pf.next() != Token.BRACE_OPEN:
-            pf.drop()
+        if pf.peek() != Token.BRACE_OPEN:
             return None
+        _ = pf.next()
 
         stmts: list[n.Statement] = []
         while True:
             if pf.peek() == Token.BRACE_CLOSE:
                 _ = pf.next()
-                pf.commit()
                 return n.Block(stmts)
-            if stmt := self._stmt():
-                stmts.append(stmt)
-            else:
-                pf.drop()
-                return None
+            stmts.append(self._stmt())
 
     @watch
     @automark
