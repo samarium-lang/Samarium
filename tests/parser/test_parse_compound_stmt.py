@@ -197,7 +197,7 @@ def test_parse_while_stmt_fail() -> None:
         ),
     ],
 )
-def test_parse_foreach_stmt(
+def test_parse_if_stmt(
     source: str, iterable: n.Expr, targets: list[str], body: list[n.Statement]
 ) -> None:
     assert Parser(source).parse() == [
@@ -214,5 +214,35 @@ def test_parse_foreach_stmt(
     ],
 )
 def test_parse_foreach_stmt_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()
+
+
+@pytest.mark.parametrize(
+    ("source", "cond", "then", "else_"),
+    [
+        ("? {}", INULL, [], None),
+        ("? {} ,, {}", INULL, [], []),
+        ("? {} ,, ? {}", INULL, [], n.If(INULL, n.Block([]), None)),
+        ("? {} ,, ? {} ,, {}", INULL, [], n.If(INULL, n.Block([]), n.Block([]))),
+        ("? a {;} ,, {;}", n.Identifier("a"), [n.ExprStmt(INULL)], [n.ExprStmt(INULL)]),
+    ],
+)
+def test_parse_if_stmt(
+    source: str, cond: n.Expr, then: list[n.Statement], else_: list[n.Statement] | n.If | None
+) -> None:
+    assert Parser(source).parse() == [
+        n.If(cond, n.Block(then), n.Block(else_) if isinstance(else_, list) else else_)
+    ]
+
+
+@pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("?", "expected block after `?` condition"),
+        ("? {} ,,", "expected block or `?` after `,,`")
+    ],
+)
+def test_parse_if_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
         _ = Parser(source).parse()

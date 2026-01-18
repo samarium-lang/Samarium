@@ -367,6 +367,7 @@ class Parser:
     @automark
     def _if_stmt(self) -> n.If | None:
         pf = self._pf
+
         if pf.next() != Token.IF:
             return None
 
@@ -381,22 +382,18 @@ class Parser:
                 break
             if pf.peek() in (Token.FOR, Token.IF):
                 _ = pf.next()
-        pf.drop()
 
-        if not (condition := self._expr()):
-            return None
+        condition = self._expr()
         if not (then := self._block()):
-            return None
+            raise ParseError("expected block after `?` condition")
         if pf.peek() != Token.ELSE:
             return n.If(condition, then, None)
         _ = pf.next()
         if else_ := self._block():
             return n.If(condition, then, else_)
         if pf.peek() != Token.IF:
-            return None
-        if elif_ := self._if_stmt():
-            return n.If(condition, then, elif_)
-        return None
+            raise ParseError("expected block or `?` after `,,`")
+        return n.If(condition, then, self._if_stmt())
 
     @watch
     def _foreach_stmt(self) -> n.ForEach | None:
