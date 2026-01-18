@@ -451,17 +451,17 @@ class Parser:
         return n.While(condition, then)
 
     @watch
-    @automark
     def _try_stmt(self) -> n.Try | None:
         pf = self._pf
-        if pf.next() != Token.TRY:
+        if pf.peek() != Token.TRY:
             return None
+        _ = pf.next()
         if not (try_block := self._block()):
-            return None
+            raise ParseError("expected block after `??`")
         if pf.next() != Token.CATCH:
-            return None
+            raise ParseError("expected `!!` after `??` block")
         if not (catch_block := self._block()):
-            return None
+            raise ParseError("expected block after `!!`")
         return n.Try(try_block, catch_block)
 
     @watch

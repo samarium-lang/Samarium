@@ -146,3 +146,25 @@ def test_parse_func_def_stmt(
 def test_parse_func_def_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
         _ = Parser(source).parse()
+
+
+def test_parse_try_stmt() -> None:
+    assert Parser(r"?? { /--\; } !! { \--/; }").parse() == [
+        n.Try(
+            n.Block([n.ExprStmt(n.BinaryOp(n.Int(1), n.BinOp.DIV, n.Int(0)))]),
+            n.Block([n.ExprStmt(n.BinaryOp(n.Int(0), n.BinOp.DIV, n.Int(1)))]),
+        )
+    ]
+
+
+@pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("??", "expected block after `??`"),
+        ("?? {}", "expected `!!` after `??` block"),
+        ("?? {} !!", "expected block after `!!`"),
+    ]
+)
+def test_parse_try_stmt_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()
