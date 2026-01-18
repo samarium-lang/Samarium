@@ -401,11 +401,10 @@ class Parser:
     @watch
     def _foreach_stmt(self) -> n.ForEach | None:
         pf = self._pf
-        pf.mark("foreach")
 
-        if pf.next() != Token.FOR:
-            pf.drop()
+        if pf.peek() != Token.FOR:
             return None
+        _ = pf.next()
 
         members: list[n.Identifier] = []
         sep = False
@@ -413,30 +412,21 @@ class Parser:
             if pf.peek() == Token.IN:
                 _ = pf.next()
                 break
-            pf.mark("foreach: members")
             if sep:
                 if pf.next() != Token.SEP:
-                    pf.drop("foreach")
-                    return None
-                pf.commit()
+                    raise ParseError("expected `,` between loop targets")
                 sep = False
             else:
                 if not (member := self._expr_identifier()):
-                    pf.drop("foreach")
-                    return None
-                pf.commit()
+                    raise ParseError("expected loop target")
                 sep = True
                 members.append(member)
 
-        if not (iterable := self._expr()):
-            pf.drop()
-            return None
+        iterable = self._expr()
 
         if not (body := self._block()):
-            pf.drop()
-            return None
+            raise ParseError("expected block after loop definition")
 
-        pf.commit()
         return n.ForEach(members, iterable, body)
 
     @watch

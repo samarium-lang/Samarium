@@ -181,3 +181,38 @@ def test_parse_while_stmt() -> None:
 def test_parse_while_stmt_fail() -> None:
     with pytest.raises(ParseError, match=r"expected block after `\.\.` condition"):
         _ = Parser(".. /").parse()
+
+
+@pytest.mark.parametrize(
+    ("source", "iterable", "targets", "body"),
+    [
+        ("...->?{}", INULL, [], []),
+        ("...a->?{}", INULL, ["a"], []),
+        ("...a,->?{}", INULL, ["a"], []),
+        (
+            "...a,b->?c{d;}",
+            n.Identifier("c"),
+            ["a", "b"],
+            [n.ExprStmt(n.Identifier("d"))],
+        ),
+    ],
+)
+def test_parse_foreach_stmt(
+    source: str, iterable: n.Expr, targets: list[str], body: list[n.Statement]
+) -> None:
+    assert Parser(source).parse() == [
+        n.ForEach(list(map(n.Identifier, targets)), iterable, n.Block(body))
+    ]
+
+
+@pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("... a b ->?{}", "expected `,` between loop targets"),
+        ("... , ->?{}", "expected loop target"),
+        ("...->?", "expected block after loop definition"),
+    ],
+)
+def test_parse_foreach_stmt_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()
