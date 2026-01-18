@@ -51,3 +51,43 @@ def test_parse_data_class_stmt_fail(source: str, error_message: str) -> None:
 def test_parse_stmt_fail() -> None:
     with pytest.raises(ParseError, match="unexpected token `<>`"):
         _ = Parser("<>").parse()
+
+
+@pytest.mark.parametrize(
+    ("source", "name", "parents", "block"),
+    [
+        (
+            "@ => { hey * { } }",
+            None,
+            [],
+            [n.FuncDef(n.Identifier("hey"), [], False, n.Block([]), [])],
+        ),
+        ("@0{}", "0", [], []),
+        ("@ a(b, c) {}", "a", ["b", "c"], []),
+    ],
+)
+def test_parse_class_def_stmt(
+    source: str, name: str | None, parents: list[str], block: list[n.Statement]
+) -> None:
+    assert Parser(source).parse() == [
+        n.ClassDef(
+            n.Identifier(name) if name else n.FuncSpecialName.ENTRY,
+            list(map(n.Identifier, parents)),
+            n.Block(block),
+        )
+    ]
+
+
+@pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("@", "expected identifier or `=>` as class name"),
+        ("@ Foo", "expected block after class definition"),
+        ("@ Foo(a, b)", "expected block after class definition"),
+        ("@ Foo(a b)", "expected `,` between class parents"),
+        ("@ Foo(a, b, ,)", "expected class parent"),
+    ],
+)
+def test_parse_class_def_stmt_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()

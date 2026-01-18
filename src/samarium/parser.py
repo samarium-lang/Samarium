@@ -583,7 +583,7 @@ class Parser:
         decorators: list[n.Expr] = []
         while True:
             pf.mark("func_def: decorators")
-            if dec := self._expr():
+            if (dec := self._expr()) is not n.UnitExpr.IMPLICIT_NULL:
                 if pf.next() != Token.CLASS:
                     pf.drop()
                     break
@@ -650,16 +650,14 @@ class Parser:
     @watch
     def _class_def_stmt(self) -> n.ClassDef | None:
         pf = self._pf
-        pf.mark("class_def")
 
-        if pf.next() != Token.CLASS:
-            pf.drop()
+        if pf.peek() != Token.CLASS:
             return None
+        _ = pf.next()
 
         if not (name := self._expr_identifier()):
             if pf.next() != Token.ENTRY:
-                pf.drop()
-                return None
+                raise ParseError("expected identifier or `=>` as class name")
             name = n.FuncSpecialName.ENTRY
 
         parents: list[n.Identifier] = []
@@ -670,25 +668,19 @@ class Parser:
                 if pf.peek() == Token.PAREN_CLOSE:
                     _ = pf.next()
                     break
-                pf.mark("class_def: parents")
                 if sep:
                     if pf.next() != Token.SEP:
-                        pf.drop("class_def")
-                        return None
+                        raise ParseError("expected `,` between class parents")
                     sep = False
                 elif not (parent := self._expr_identifier()):
-                    pf.drop("class_def")
-                    return None
+                    raise ParseError("expected class parent")
                 else:
                     sep = True
                     parents.append(parent)
-                pf.commit()
 
         if not (body := self._block()):
-            pf.drop()
-            return None
+            raise ParseError("expected block after class definition")
 
-        pf.commit()
         return n.ClassDef(name, parents, body)
 
     @watch
