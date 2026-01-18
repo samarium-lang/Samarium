@@ -46,3 +46,8 @@ def test_parse_data_class_stmt(
 def test_parse_data_class_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
         _ = Parser(source).parse()
+
+
+def test_parse_stmt_fail() -> None:
+    with pytest.raises(ParseError, match="unexpected token `<>`"):
+        _ = Parser("<>").parse()

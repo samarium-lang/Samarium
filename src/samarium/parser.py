@@ -264,7 +264,7 @@ class Parser:
                 return obj
         else:
             tok = Token.from_index(cast("int", self._pf.peek()))
-            raise ParseError(f"unexpected token {tok.value}")
+            raise ParseError(f"unexpected token `{tok.value}`")
 
     @watch
     def _block(self) -> n.Block | None:
