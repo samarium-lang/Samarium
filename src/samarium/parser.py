@@ -440,14 +440,13 @@ class Parser:
         return n.ForEach(members, iterable, body)
 
     @watch
-    @automark
     def _while_stmt(self) -> n.While | None:
-        if self._pf.next() != Token.WHILE:
+        if self._pf.peek() != Token.WHILE:
             return None
-        if not (condition := self._expr()):
-            return None
+        _ = self._pf.next()
+        condition = self._expr()
         if not (then := self._block()):
-            return None
+            raise ParseError("expected block after `..` condition")
         return n.While(condition, then)
 
     @watch

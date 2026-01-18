@@ -163,8 +163,21 @@ def test_parse_try_stmt() -> None:
         ("??", "expected block after `??`"),
         ("?? {}", "expected `!!` after `??` block"),
         ("?? {} !!", "expected block after `!!`"),
-    ]
+    ],
 )
 def test_parse_try_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
         _ = Parser(source).parse()
+
+
+def test_parse_while_stmt() -> None:
+    assert Parser(r".. / { /!; }").parse() == [
+        n.While(
+            n.Int(1), n.Block([n.ExprStmt(n.Postfix(n.Int(1), n.UnitPostfix.PRINT))])
+        )
+    ]
+
+
+def test_parse_while_stmt_fail() -> None:
+    with pytest.raises(ParseError, match=r"expected block after `\.\.` condition"):
+        _ = Parser(".. /").parse()
