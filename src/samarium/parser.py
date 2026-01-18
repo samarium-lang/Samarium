@@ -694,15 +694,13 @@ class Parser:
     @watch
     def _data_class_stmt(self) -> n.DataClassDef | None:
         pf = self._pf
-        pf.mark("data_class_def")
 
-        if pf.next() != Token.DATACLASS:
-            pf.drop()
+        if pf.peek() != Token.DATACLASS:
             return None
 
+        _ = pf.next()
         if not (name := self._expr_identifier()):
-            pf.drop()
-            return None
+            raise ParseError("expected data class name")
 
         members: list[n.Identifier] = []
         if pf.peek() == Token.PAREN_OPEN:
@@ -712,27 +710,21 @@ class Parser:
                 if pf.peek() == Token.PAREN_CLOSE:
                     _ = pf.next()
                     break
-                pf.mark("data_class_def: members")
                 if sep:
                     if pf.next() != Token.SEP:
-                        pf.drop("data_class_def")
-                        return None
+                        raise ParseError("expected `,` between data class members")
                     sep = False
                 elif not (member := self._expr_identifier()):
-                    pf.drop("data_class_def")
-                    return None
+                    raise ParseError("expected data class member")
                 else:
                     sep = True
                     members.append(member)
-                pf.commit()
 
         if not (body := self._block()):
             if pf.next() != Token.END:
-                pf.drop()
-                return None
+                raise ParseError("expected `;` or block after data class definition")
             body = None
 
-        pf.commit()
         return n.DataClassDef(name, members, body)
 
     @watch
