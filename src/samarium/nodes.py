@@ -12,6 +12,7 @@ CompoundStatement: TypeAlias = (
 )
 Statement: TypeAlias = "SimpleStatement | CompoundStatement"
 PostfixKind: TypeAlias = "UnitPostfix | Slice | Index | Call | Attribute"
+Name: TypeAlias = "Identifier | Literal[UnitExpr.SELF]"
 
 
 @dataclass(slots=True)
@@ -37,11 +38,13 @@ class UnitExpr(Enum):
     NULL = auto()
     TIMESTAMP = auto()
     DATETIME = auto()
+    SELF = auto()
 
 
 # Very commonly used
 INULL = UnitExpr.IMPLICIT_NULL
 NULL = UnitExpr.NULL
+SELF = UnitExpr.SELF
 
 
 class Exit(NamedTuple):
@@ -275,7 +278,7 @@ class UnaryOp(NamedTuple):
 
 class AssignmentTarget(NamedTuple):
     # TODO: support attribute update
-    name: Identifier
+    name: Name
     subscript: Index | Slice | Attribute | None
 
 

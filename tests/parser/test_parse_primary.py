@@ -56,13 +56,13 @@ def test_parse_primary_basic(source: str, expected_node: n.Expr) -> None:
 
 
 @pytest.mark.parametrize(
-    ("source", "expected_data"),
+    ("source", "expected_node"),
     [
-        (r"0", ("0", False, False)),
-        (r"'0", ("0", True, False)),
-        (r"#0", ("0", False, True)),
-        (r"'#0", ("0", True, True)),
-        (r"'", (None, True, False)),
+        (r"0", n.Identifier("0")),
+        (r"'0", n.Identifier("0", inst=True)),
+        (r"#0", n.Identifier("0", private=True)),
+        (r"'#0", n.Identifier("0", inst=True, private=True)),
+        (r"'", n.SELF),
     ],
 )
 def test_parse_primary_identifier(source: str, expected_node: n.Name) -> None:

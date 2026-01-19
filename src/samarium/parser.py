@@ -377,7 +377,7 @@ class Parser:
             if pf.peek() in (Token.FUNCTION, Token.BNOT):
                 pf.drop()
                 return None
-            if not self._expr_identifier():
+            if not self._expr_name():
                 pf.drop()
                 break
             if pf.peek() in (Token.FOR, Token.IF):
@@ -414,8 +414,10 @@ class Parser:
                     raise ParseError("expected `,` between loop targets")
                 sep = False
             else:
-                if not (member := self._expr_identifier()):
+                if not (member := self._expr_name()):
                     raise ParseError("expected loop target")
+                if member is n.SELF:
+                    raise ParseError("cannot use `'` as a loop target")
                 sep = True
                 members.append(member)
 
@@ -503,7 +505,7 @@ class Parser:
                     return None
                 sep = False
             else:
-                if not (ident := self._expr_identifier()):
+                if not (ident := self._expr_name()):
                     pf.drop()
                     return None
                 targets.append(n.AssignmentTarget(ident, self._expr_slice()))
@@ -596,13 +598,13 @@ class Parser:
                 break
 
         pf.mark("func_def: name")
-        if not (name := self._expr_identifier()):
+        if not (name := self._expr_name()):
             match pf.peek(), pf.peek(1), pf.peek(2):
                 case (Token.ADD | Token.SUB) as tok, Token.IDENTIFIER, _:
                     _ = pf.next()
 
                     pf.mark("func_def: name: unary check")
-                    unary_ident = self._expr_identifier() == n.Identifier("_")
+                    unary_ident = self._expr_name() == n.Identifier("_")
                     pf.commit() if unary_ident else pf.drop()
 
                     is_plus = tok == Token.ADD
@@ -620,6 +622,9 @@ class Parser:
                 case _:
                     pf.drop("func_def")
                     return None
+        if name is n.SELF:
+            pf.drop("func_def")
+            return None
         pf.commit()
 
         params: list[n.FuncParam] = []
@@ -627,11 +632,14 @@ class Parser:
             if pf.peek() in (Token.FUNCTION, Token.BNOT):
                 break
             pf.mark("func_def: params")
-            if not (param_name := self._expr_identifier()):
+            if not (param_name := self._expr_name()):
                 if params:
                     raise ParseError("expected parameter")
                 pf.drop("func_def")
                 return None
+
+            if param_name is n.SELF:
+                raise ParseError("cannot use `'` as a parameter name")
 
             if kind := {
                 Token.IF.index: n.FuncParamKind.VARIADIC,
@@ -668,10 +676,12 @@ class Parser:
             return None
         _ = pf.next()
 
-        if not (name := self._expr_identifier()):
+        if not (name := self._expr_name()):
             if pf.next() != Token.ENTRY:
                 raise ParseError("expected identifier or `=>` as class name")
             name = n.FuncSpecialName.ENTRY
+        if name is n.SELF:
+            raise ParseError("cannot use `'` as a class name")
 
         parents: list[n.Identifier] = []
         if pf.peek() == Token.PAREN_OPEN:
@@ -685,8 +695,10 @@ class Parser:
                     if pf.next() != Token.SEP:
                         raise ParseError("expected `,` between class parents")
                     sep = False
-                elif not (parent := self._expr_identifier()):
+                elif not (parent := self._expr_name()):
                     raise ParseError("expected class parent")
+                elif parent is n.SELF:
+                    raise ParseError("cannot use `'` as a parent")
                 else:
                     sep = True
                     parents.append(parent)
@@ -704,8 +716,10 @@ class Parser:
             return None
 
         _ = pf.next()
-        if not (name := self._expr_identifier()):
+        if not (name := self._expr_name()):
             raise ParseError("expected data class name")
+        if name is n.SELF:
+            raise ParseError("cannot use `'` as a data class name")
 
         members: list[n.Identifier] = []
         if pf.peek() == Token.PAREN_OPEN:
@@ -719,8 +733,10 @@ class Parser:
                     if pf.next() != Token.SEP:
                         raise ParseError("expected `,` between data class members")
                     sep = False
-                elif not (member := self._expr_identifier()):
+                elif not (member := self._expr_name()):
                     raise ParseError("expected data class member")
+                elif member is n.SELF:
+                    raise ParseError("cannot use `'` as a data class member")
                 else:
                     sep = True
                     members.append(member)
@@ -737,7 +753,7 @@ class Parser:
         pf = self._pf
         pf.mark("enum")
 
-        if not (enum_name := self._expr_identifier()):
+        if not (enum_name := self._expr_name()) or enum_name is n.SELF:
             pf.drop()
             return None
 
@@ -755,8 +771,10 @@ class Parser:
                 pf.commit()
                 return n.EnumDef(enum_name, members)
 
-            if not (name := self._expr_identifier()):
+            if not (name := self._expr_name()):
                 raise ParseError("expected enum member name")
+            if name is n.SELF:
+                raise ParseError("cannot use `'` as an enum member name")
 
             if pf.peek() == Token.END:
                 _ = pf.next()
@@ -777,7 +795,7 @@ class Parser:
     @automark
     def _default_stmt(self) -> n.Default | None:
         pf = self._pf
-        if not (identifier := self._expr_identifier()):
+        if not (identifier := self._expr_name()) or identifier is n.SELF:
             return None
         if pf.next() != Token.DEFAULT:
             return None
@@ -790,13 +808,17 @@ class Parser:
     @automark
     def _import_item(self) -> n.ImportItem | None:
         pf = self._pf
-        if not (name := self._expr_identifier()):
+        if not (name := self._expr_name()):
             return None
+        if name is n.SELF:
+            raise ParseError("cannot import `'`")
         if pf.peek() != Token.TO:
             return n.ImportItem(name)
         _ = pf.next()
-        if not (alias := self._expr_identifier()):
+        if not (alias := self._expr_name()):
             raise ParseError("expected alias name after `->`")
+        if alias is n.SELF:
+            raise ParseError("cannot use `'` as an alias name")
         return n.ImportItem(name, alias)
 
     @watch
@@ -808,8 +830,10 @@ class Parser:
             pf.drop()
             return None
 
-        if not (module := self._expr_identifier()):
+        if not (module := self._expr_name()):
             raise ParseError("expected identifier after `<=`")
+        if module is n.SELF:
+            raise ParseError("cannot use `'` as a module name")
 
         if pf.peek() == Token.END:
             _ = pf.next()
@@ -1119,8 +1143,10 @@ class Parser:
         pf = self._pf
         if pf.peek() == Token.ATTR:
             _ = pf.next()
-            if not (ident := self._expr_identifier()):
+            if not (ident := self._expr_name()):
                 raise ParseError("expected attribute name after `.`")
+            if ident is n.SELF:
+                raise ParseError("cannot use `'` as an attribute name")
             postfix = n.Attribute(ident)
         elif slice := self._expr_slice():
             postfix = slice
@@ -1146,7 +1172,7 @@ class Parser:
     def _expr_primary(self) -> n.Expr:
         if literal := self._expr_literal():
             return literal
-        if identifier := self._expr_identifier():
+        if identifier := self._expr_name():
             return identifier
         if null := self._expr_null():
             return null
@@ -1197,9 +1223,9 @@ class Parser:
         return None
 
     @watch
-    @automark
-    def _expr_identifier(self) -> n.Identifier | None:
+    def _expr_name(self) -> n.Name | None:
         pf = self._pf
+        pf.mark("name")
 
         if inst := pf.peek() == Token.INSTANCE:
             _ = pf.next()
@@ -1209,18 +1235,24 @@ class Parser:
         if pf.peek() == Token.IDENTIFIER:
             _, name = pf.nexts(2)
             assert name is not None
-            return n.Identifier(self._src_data.identifier_table[name], inst, private)
+            pf.commit()
+            return n.Identifier(
+                self._src_data.identifier_table[name], inst=inst, private=private
+            )
         elif inst:
             if private:
                 raise ParseError("expected a name after '#")
-            return n.Identifier(None, inst)
+            pf.commit()
+            return n.SELF
         elif private:
             if pf.waypoints[-2].name == "func_def: params":
                 # We're likely trying to parse an enum definition (`name # {}`)
+                pf.drop()
                 return None
             print(pf.waypoints)
             raise ParseError("expected a name after #")
         else:
+            pf.drop()
             return None
 
     @watch
@@ -1297,8 +1329,10 @@ class Parser:
                     raise ParseError("missing `,` between array comprehension targets")
                 sep = False
                 continue
-            if not (member := self._expr_identifier()):
+            if not (member := self._expr_name()):
                 raise ParseError("expected identifier as an array comprehension target")
+            if member is n.SELF:
+                raise ParseError("cannot use `'` as an array comprehension target")
             sep = True
             members.append(member)
 
@@ -1383,8 +1417,10 @@ class Parser:
                     raise ParseError("missing `,` between table comprehension targets")
                 sep = False
                 continue
-            if not (member := self._expr_identifier()):
+            if not (member := self._expr_name()):
                 raise ParseError("expected identifier as a table comprehension target")
+            if member is n.SELF:
+                raise ParseError("cannot use `'` as a table comprehension target")
             sep = True
             members.append(member)
 
