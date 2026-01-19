@@ -352,7 +352,7 @@ class Parser:
 
         if pf.peek() == Token.END:
             _ = pf.next()
-            return n.Assert(condition, None)
+            return n.Assert(condition)
 
         if pf.next() != Token.SEP:
             raise ParseError("expected `,` or `;` after assert expression")
@@ -387,7 +387,7 @@ class Parser:
         if not (then := self._block()):
             raise ParseError("expected block after `?` condition")
         if pf.peek() != Token.ELSE:
-            return n.If(condition, then, None)
+            return n.If(condition, then)
         _ = pf.next()
         if else_ := self._block():
             return n.If(condition, then, else_)
@@ -543,7 +543,7 @@ class Parser:
             path = self._expr()
             if pf.next() != Token.END:
                 raise ParseError("expected `;` after file path")
-            return n.FileIO(n.UnitExpr.NULL, None, path)
+            return n.FileIO(n.NULL, None, path)
 
         pf.mark("file_io")
 
@@ -572,7 +572,7 @@ class Parser:
             token_name = token_name.removeprefix("BINARY_")
 
         access = n.FileIOAccess[token_name]
-        io_kind = n.FileIOKind(access, binary, quick)
+        io_kind = n.FileIOKind(access, binary=binary, quick=quick)
 
         pf.commit()
         return n.FileIO(lhs, io_kind, rhs)
@@ -585,7 +585,7 @@ class Parser:
         decorators: list[n.Expr] = []
         while True:
             pf.mark("func_def: decorators")
-            if (dec := self._expr()) is not n.UnitExpr.IMPLICIT_NULL:
+            if (dec := self._expr()) is not n.INULL:
                 if pf.next() != Token.CLASS:
                     pf.drop()
                     break
@@ -760,7 +760,7 @@ class Parser:
 
             if pf.peek() == Token.END:
                 _ = pf.next()
-                members.append(n.EnumMember(name, None))
+                members.append(n.EnumMember(name))
                 continue
 
             if pf.next() != Token.ASSIGN:
@@ -793,7 +793,7 @@ class Parser:
         if not (name := self._expr_identifier()):
             return None
         if pf.peek() != Token.TO:
-            return n.ImportItem(name, None)
+            return n.ImportItem(name)
         _ = pf.next()
         if not (alias := self._expr_identifier()):
             raise ParseError("expected alias name after `->`")
@@ -814,7 +814,7 @@ class Parser:
         if pf.peek() == Token.END:
             _ = pf.next()
             pf.commit()
-            return n.Import(module, None)
+            return n.Import(module)
 
         if pf.next() != Token.ATTR:
             raise ParseError("expected `.` or `;` after module name")
@@ -869,7 +869,7 @@ class Parser:
             if final == Token.END:
                 return n.ExprStmt(expr)
             return n.Throw(expr)
-        if expr is not n.UnitExpr.IMPLICIT_NULL:
+        if expr is not n.INULL:
             raise ParseError("expected `;` after the expression")
         return None
 
@@ -1076,7 +1076,7 @@ class Parser:
             return None
 
         op = n.BinOp[Token.from_index(cast("int", pf.next())).name]
-        unary = self._expr_unary() or n.UnitExpr.NULL
+        unary = self._expr_unary() or n.NULL
         term_prime = self._expr_term_prime()
         return ((op, unary), term_prime)
 
@@ -1152,7 +1152,7 @@ class Parser:
             return null
         if expr := self._expr_paren():
             return expr
-        return n.UnitExpr.IMPLICIT_NULL
+        return n.INULL
 
     @watch
     def _expr_literal(self) -> n.Primary | None:
@@ -1227,7 +1227,7 @@ class Parser:
     @automark
     def _expr_null(self) -> Literal[n.UnitExpr.NULL] | None:
         if self._pf.nexts(2) == [Token.PAREN_OPEN, Token.PAREN_CLOSE]:
-            return n.UnitExpr.NULL
+            return n.NULL
 
     @watch
     @automark
@@ -1419,22 +1419,24 @@ class Parser:
 
         if pf.next() == Token.SLICE_CLOSE:
             pf.commit("slice")  # <<>>
-            return n.Slice(n.UnitExpr.NULL, n.UnitExpr.NULL, n.UnitExpr.NULL)
+            return n.Slice()
 
         pf.reset()
         if pf.next() == Token.WHILE:
             pf.mark("slice: <<..")
             if pf.next() == Token.SLICE_CLOSE:
                 pf.commit("slice")  # <<..>>
-                return n.Slice(n.UnitExpr.NULL, n.UnitExpr.NULL, n.UnitExpr.NULL)
+                return n.Slice()
 
             pf.reset()
             if pf.next() == Token.WHILE:
                 # <<.. ..
                 expr_c = self._expr()
+                if expr_c is n.INULL:
+                    expr_c = None
                 if pf.next() == Token.SLICE_CLOSE:
                     pf.commit("slice")  # <<.. ..>> or <<.. ..c>>
-                    return n.Slice(n.UnitExpr.NULL, n.UnitExpr.NULL, expr_c)
+                    return n.Slice(step=expr_c)
                 raise unclosed
 
             pf.reset()
@@ -1443,21 +1445,21 @@ class Parser:
 
             if pf.next() == Token.SLICE_CLOSE:
                 pf.commit("slice")  # <<..b>>
-                return n.Slice(n.UnitExpr.NULL, expr_b, n.UnitExpr.NULL)
+                return n.Slice(stop=expr_b)
 
             pf.reset()
             if pf.next() == Token.WHILE:
                 pf.mark("slice: <<..b..")
                 if pf.next() == Token.SLICE_CLOSE:
                     pf.commit("slice")  # <<..b..>>
-                    return n.Slice(n.UnitExpr.NULL, expr_b, n.UnitExpr.NULL)
+                    return n.Slice(stop=expr_b)
 
                 pf.reset()
                 expr_c = self._expr()
                 # <<..b..c
                 if pf.next() == Token.SLICE_CLOSE:
                     pf.commit("slice")  # <<..b..c>>
-                    return n.Slice(n.UnitExpr.NULL, expr_b, expr_c)
+                    return n.Slice(stop=expr_b, step=expr_c)
             raise unclosed
 
         pf.reset()
@@ -1465,10 +1467,12 @@ class Parser:
             if pf.next() != Token.ATTR:
                 raise ParseError("expected `<<..` or `<<....`, not `<<...`")
             # <<... .
-            expr = self._expr()
+            expr_c = self._expr()
+            if expr_c is n.INULL:
+                expr_c = None
             if pf.next() == Token.SLICE_CLOSE:
                 pf.commit("slice")  # <<... .>> or <<... .c>>
-                return n.Slice(n.UnitExpr.NULL, n.UnitExpr.NULL, expr)
+                return n.Slice(step=expr_c)
 
         pf.reset()
         expr_a = self._expr()
@@ -1482,15 +1486,17 @@ class Parser:
             pf.mark("slice: <<a..")
             if pf.next() == Token.SLICE_CLOSE:
                 pf.commit("slice")  # <<a..>>
-                return n.Slice(expr_a, n.UnitExpr.NULL, n.UnitExpr.NULL)
+                return n.Slice(start=expr_a)
 
             pf.reset()
             if pf.next() == Token.WHILE:
                 # <<a.. ..
                 expr_c = self._expr()
+                if expr_c is n.INULL:
+                    expr_c = None
                 if pf.next() == Token.SLICE_CLOSE:
                     pf.commit("slice")  # <<a.. ..>> or <<a.. ..c>>
-                    return n.Slice(expr_a, n.UnitExpr.NULL, expr_c)
+                    return n.Slice(start=expr_a, step=expr_c)
                 raise unclosed
 
             pf.reset()
@@ -1499,18 +1505,20 @@ class Parser:
             if pf.next() == Token.WHILE:
                 # <<a..b..
                 expr_c = self._expr()
+                if expr_c is n.INULL:
+                    expr_c = None
                 if pf.next() == Token.SLICE_CLOSE:
                     pf.commit("slice")  # <<a..b..>> or <<a..b..c>>
-                    return n.Slice(expr_a, expr_b, expr_c)
+                    return n.Slice(start=expr_a, stop=expr_b, step=expr_c)
                 raise unclosed
 
             pf.reset()
             if pf.next() == Token.SLICE_CLOSE:
                 pf.commit("slice")  # <<a..b>>
-                return n.Slice(expr_a, expr_b, n.UnitExpr.NULL)
+                return n.Slice(start=expr_a, stop=expr_b)
 
             pf.reset()
-            if self._expr() is n.UnitExpr.IMPLICIT_NULL:
+            if self._expr() is n.INULL:
                 raise unclosed
             raise ParseError("missing `..` between slice items")
 
@@ -1520,13 +1528,15 @@ class Parser:
                 raise ParseError("expected `<<a..` or `<<a....`, not `<<a...`")
             # <<a... .
             expr_c = self._expr()
+            if expr_c is n.INULL:
+                expr_c = None
             if pf.next() == Token.SLICE_CLOSE:
                 pf.commit("slice")  # <<a... .>> or <<a... .c>>
-                return n.Slice(expr_a, n.UnitExpr.NULL, expr_c)
+                return n.Slice(start=expr_a, step=expr_c)
             raise unclosed
 
         pf.reset()
-        if self._expr() is n.UnitExpr.IMPLICIT_NULL:
+        if self._expr() is n.INULL:
             raise unclosed
         raise ParseError("missing `..` between slice items")
 

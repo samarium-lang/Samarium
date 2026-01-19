@@ -3,9 +3,6 @@ import pytest
 from samarium import nodes as n
 from samarium.parser import Parser
 
-NULL = n.UnitExpr.NULL
-INULL = n.UnitExpr.IMPLICIT_NULL
-
 
 @pytest.mark.parametrize(
     ("source", "expected_node"),
@@ -21,7 +18,7 @@ INULL = n.UnitExpr.IMPLICIT_NULL
                     n.UnOp.BNOT,
                     n.UnOp.YIELD,
                 ],
-                n.UnitExpr.NULL,
+                n.NULL,
             ),
         ),
         (
@@ -73,7 +70,7 @@ def test_parse_chained_logical(op_src: str, op_obj: n.BinOp) -> None:
 
 def test_parse_operator_precedence() -> None:
     # Aliases to make the expected output more digestible
-    b, bo, u, uo, i = n.BinaryOp, n.BinOp, n.UnaryOp, n.UnOp, n.UnitExpr.IMPLICIT_NULL
+    b, bo, u, uo, i = n.BinaryOp, n.BinOp, n.UnaryOp, n.UnOp, n.INULL
 
     ast = Parser(
         "--- > ->? && >: + ^ ::: >< < >< ::: ~~ + ++ < &&"
@@ -117,7 +114,11 @@ def test_parse_operator_precedence() -> None:
         ),
         bo.OR,
         b(
-            b(b(i, bo.EQ, NULL), bo.AND, b(b(NULL, bo.NIN, i), bo.AND, b(i, bo.IN, i))),
+            b(
+                b(i, bo.EQ, n.NULL),
+                bo.AND,
+                b(b(n.NULL, bo.NIN, i), bo.AND, b(i, bo.IN, i)),
+            ),
             bo.AND,
             b(
                 i,

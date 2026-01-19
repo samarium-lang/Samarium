@@ -75,7 +75,7 @@ def decompress_int_table(bitbuf: BitBuffer) -> list[int]:
         bitbuf.push_back(nibble, 4)
         size = gather_length(bitbuf, 4)
         int_table.append(bitbuf.next(4 * size))
-            
+
 
 def decompress_float_table(bitbuf: BitBuffer) -> list[tuple[int, int]]:
     float_table: list[tuple[int, int]] = []

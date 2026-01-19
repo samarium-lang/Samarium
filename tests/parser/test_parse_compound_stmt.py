@@ -4,24 +4,21 @@ import pytest
 from samarium import nodes as n
 from samarium.parser import ParseError, Parser
 
-NULL = n.UnitExpr.NULL
-INULL = n.UnitExpr.IMPLICIT_NULL
-
 
 @pytest.mark.parametrize(
     ("source", "name", "members", "block"),
     [
         ("@! Foo;", "Foo", [], None),
         ("@! Foo();", "Foo", [], None),
-        ("@! Foo() {}", "Foo", [], n.Block([])),
-        ("@! Foo {}", "Foo", [], n.Block([])),
+        ("@! Foo() {}", "Foo", [], n.Block()),
+        ("@! Foo {}", "Foo", [], n.Block()),
         ("@! Person(name, age);", "Person", ["name", "age"], None),
         ("@! Person(name, age,);", "Person", ["name", "age"], None),
         (
             "@!0{ a*{} }",
             "0",
             [],
-            n.Block([n.FuncDef(n.Identifier("a"), [], False, n.Block([]), [])]),
+            n.Block([n.FuncDef(n.Identifier("a"), [], False, n.Block(), [])]),
         ),
     ],
 )
@@ -55,7 +52,7 @@ def test_parse_data_class_stmt_fail(source: str, error_message: str) -> None:
             "@ => { hey * { } }",
             None,
             [],
-            [n.FuncDef(n.Identifier("hey"), [], False, n.Block([]), [])],
+            [n.FuncDef(n.Identifier("hey"), [], False, n.Block(), [])],
         ),
         ("@0{}", "0", [], []),
         ("@ a(b, c) {}", "a", ["b", "c"], []),
@@ -186,9 +183,9 @@ def test_parse_while_stmt_fail() -> None:
 @pytest.mark.parametrize(
     ("source", "iterable", "targets", "body"),
     [
-        ("...->?{}", INULL, [], []),
-        ("...a->?{}", INULL, ["a"], []),
-        ("...a,->?{}", INULL, ["a"], []),
+        ("...->?{}", n.INULL, [], []),
+        ("...a->?{}", n.INULL, ["a"], []),
+        ("...a,->?{}", n.INULL, ["a"], []),
         (
             "...a,b->?c{d;}",
             n.Identifier("c"),
@@ -221,15 +218,23 @@ def test_parse_foreach_stmt_fail(source: str, error_message: str) -> None:
 @pytest.mark.parametrize(
     ("source", "cond", "then", "else_"),
     [
-        ("? {}", INULL, [], None),
-        ("? {} ,, {}", INULL, [], []),
-        ("? {} ,, ? {}", INULL, [], n.If(INULL, n.Block([]), None)),
-        ("? {} ,, ? {} ,, {}", INULL, [], n.If(INULL, n.Block([]), n.Block([]))),
-        ("? a {;} ,, {;}", n.Identifier("a"), [n.ExprStmt(INULL)], [n.ExprStmt(INULL)]),
+        ("? {}", n.INULL, [], None),
+        ("? {} ,, {}", n.INULL, [], []),
+        ("? {} ,, ? {}", n.INULL, [], n.If(n.INULL, n.Block())),
+        ("? {} ,, ? {} ,, {}", n.INULL, [], n.If(n.INULL, n.Block(), n.Block())),
+        (
+            "? a {;} ,, {;}",
+            n.Identifier("a"),
+            [n.ExprStmt(n.INULL)],
+            [n.ExprStmt(n.INULL)],
+        ),
     ],
 )
 def test_parse_if_stmt(
-    source: str, cond: n.Expr, then: list[n.Statement], else_: list[n.Statement] | n.If | None
+    source: str,
+    cond: n.Expr,
+    then: list[n.Statement],
+    else_: list[n.Statement] | n.If | None,
 ) -> None:
     assert Parser(source).parse() == [
         n.If(cond, n.Block(then), n.Block(else_) if isinstance(else_, list) else else_)
@@ -240,7 +245,7 @@ def test_parse_if_stmt(
     ("source", "error_message"),
     [
         ("?", "expected block after `?` condition"),
-        ("? {} ,,", "expected block or `?` after `,,`")
+        ("? {} ,,", "expected block or `?` after `,,`"),
     ],
 )
 def test_parse_if_stmt_fail(source: str, error_message: str) -> None:

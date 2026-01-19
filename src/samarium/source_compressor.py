@@ -138,5 +138,6 @@ if __name__ == "__main__":
     import sys
     from pathlib import Path
     from samarium.tokenizer import tokenize
+
     tokens = tokenize(Path(sys.argv[1]).read_text())
     _ = sys.stdout.buffer.write(compress(tokens))

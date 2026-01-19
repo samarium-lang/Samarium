@@ -4,24 +4,21 @@ import pytest
 from samarium import nodes as n
 from samarium.parser import ParseError, Parser
 
-NULL = n.UnitExpr.NULL
-INULL = n.UnitExpr.IMPLICIT_NULL
-
 
 @pytest.mark.parametrize(
     ("inner_source", "args"),
     [
         ("", []),
-        (",", [INULL]),
-        ("()", [NULL]),
-        ("(), , ,()", [NULL, INULL, INULL, NULL]),
+        (",", [n.INULL]),
+        ("()", [n.NULL]),
+        ("(), , ,()", [n.NULL, n.INULL, n.INULL, n.NULL]),
         ("a,b", [n.Identifier("a"), n.Identifier("b")]),
         ("a,b,", [n.Identifier("a"), n.Identifier("b")]),
     ],
 )
 def test_parse_postfix_call(inner_source: str, args: list[n.Expr]) -> None:
     assert Parser(f"()({inner_source});").parse() == [
-        n.ExprStmt(n.Postfix(n.UnitExpr.NULL, n.Call(args)))
+        n.ExprStmt(n.Postfix(n.NULL, n.Call(args)))
     ]
 
 
@@ -29,7 +26,7 @@ def test_parse_postfix_repeated_call() -> None:
     assert Parser("()()()();").parse() == [
         n.ExprStmt(
             n.Postfix(
-                n.Postfix(n.Postfix(n.UnitExpr.NULL, n.Call([])), n.Call([])),
+                n.Postfix(n.Postfix(n.NULL, n.Call([])), n.Call([])),
                 n.Call([]),
             )
         )
@@ -62,9 +59,7 @@ def test_parse_postfix_attr() -> None:
     ],
 )
 def test_parse_postfix_op(op: str, postfix_kind: n.UnitPostfix) -> None:
-    assert Parser(f"(){op};").parse() == [
-        n.ExprStmt(n.Postfix(n.UnitExpr.NULL, postfix_kind))
-    ]
+    assert Parser(f"(){op};").parse() == [n.ExprStmt(n.Postfix(n.NULL, postfix_kind))]
 
 
 def test_parse_postfix_op_multiple() -> None:
@@ -78,9 +73,7 @@ def test_parse_postfix_op_multiple() -> None:
                                 n.Postfix(
                                     n.Postfix(
                                         n.Postfix(
-                                            n.Postfix(
-                                                n.UnitExpr.NULL, n.UnitPostfix.READLINE
-                                            ),
+                                            n.Postfix(n.NULL, n.UnitPostfix.READLINE),
                                             n.UnitPostfix.RANDOM,
                                         ),
                                         n.UnitPostfix.PARENT,

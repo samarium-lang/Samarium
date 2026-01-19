@@ -294,7 +294,7 @@ def transpile_expr(expr: n.Expr) -> ast.expr:
 
 def transpile_slice_args(expr: n.Slice) -> tuple[ast.expr, ast.expr, ast.expr]:
     start = transpile_expr(expr.start) if expr.start else ast.Constant(None)
-    end = transpile_expr(expr.end) if expr.end else ast.Constant(None)
+    end = transpile_expr(expr.stop) if expr.stop else ast.Constant(None)
     step = transpile_expr(expr.step) if expr.step else ast.Constant(None)
     return start, end, step
 

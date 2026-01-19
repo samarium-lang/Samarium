@@ -1,24 +1,30 @@
 from __future__ import annotations
 
+from dataclasses import KW_ONLY, dataclass, field
 from enum import Enum, auto
 from typing import Literal, NamedTuple, TypeAlias
 
 Primary: TypeAlias = "String | Int | Float | Identifier | UnitExpr | Array | ArrayComp | Table | TableComp | Slice | Index"
 Expr: TypeAlias = "Primary | UnaryOp | BinaryOp | IfExpr | Postfix"
 SimpleStatement: TypeAlias = "ExprStmt | UnitStmt | Assignment | FileIO | Throw | Exit | Sleep | Assert | Return | Yield | Default | Import"
-CompoundStatement: TypeAlias = "If | ForEach | While | Try | FuncDef | ClassDef | DataClassDef | EnumDef"
+CompoundStatement: TypeAlias = (
+    "If | ForEach | While | Try | FuncDef | ClassDef | DataClassDef | EnumDef"
+)
 Statement: TypeAlias = "SimpleStatement | CompoundStatement"
 PostfixKind: TypeAlias = "UnitPostfix | Slice | Index | Call | Attribute"
 
 
-class Identifier(NamedTuple):
-    name: str | None
+@dataclass(slots=True)
+class Identifier:
+    name: str
+    _: KW_ONLY
     inst: bool = False
     private: bool = False
 
 
-class Block(NamedTuple):
-    statements: list[Statement]
+@dataclass(slots=True)
+class Block:
+    statements: list[Statement] = field(default_factory=list)
 
 
 class UnitStmt(Enum):
@@ -33,6 +39,11 @@ class UnitExpr(Enum):
     DATETIME = auto()
 
 
+# Very commonly used
+INULL = UnitExpr.IMPLICIT_NULL
+NULL = UnitExpr.NULL
+
+
 class Exit(NamedTuple):
     code: Expr
 
@@ -43,13 +54,13 @@ class Sleep(NamedTuple):
 
 class Assert(NamedTuple):
     condition: Expr
-    error_message: Expr | None
+    error_message: Expr | None = None
 
 
 class If(NamedTuple):
     condition: Expr
     then: Block
-    else_: If | Block | None
+    else_: If | Block | None = None
 
 
 class ForEach(NamedTuple):
@@ -58,36 +69,39 @@ class ForEach(NamedTuple):
     body: Block
 
 
-class Array(NamedTuple):
-    elements: list[Expr]
+@dataclass(slots=True)
+class Array:
+    elements: list[Expr] = field(default_factory=list)
 
 
 class ArrayComp(NamedTuple):
     iterable: Expr
     members: list[Identifier]
     body: Expr
-    condition: Expr | None
+    condition: Expr | None = None
 
 
-class Table(NamedTuple):
-    elements: list[tuple[Expr, Expr]]
+@dataclass(slots=True)
+class Table:
+    elements: list[tuple[Expr, Expr]] = field(default_factory=list)
 
 
 class TableComp(NamedTuple):
     iterable: Expr
     members: list[Identifier]
     body: tuple[Expr, Expr]
-    condition: Expr | None
+    condition: Expr | None = None
 
 
 class Index(NamedTuple):
     value: Expr
 
 
-class Slice(NamedTuple):
-    start: Expr
-    end: Expr
-    step: Expr
+@dataclass(slots=True, kw_only=True)
+class Slice:
+    start: Expr | None = None
+    stop: Expr | None = None
+    step: Expr | None = None
 
 
 class Call(NamedTuple):
@@ -156,12 +170,13 @@ class FuncSpecialName(Enum):
     SET = auto()
 
 
-class FuncDef(NamedTuple):
+@dataclass(slots=True)
+class FuncDef:
     name: Identifier | FuncSpecialName
     params: list[FuncParam]
     static: bool
     body: Block
-    decorators: list[Expr]
+    decorators: list[Expr] = field(default_factory=list)
 
 
 class ClassDef(NamedTuple):
@@ -173,12 +188,12 @@ class ClassDef(NamedTuple):
 class DataClassDef(NamedTuple):
     name: Identifier
     members: list[Identifier]
-    body: Block | None
+    body: Block | None = None
 
 
 class EnumMember(NamedTuple):
     name: Identifier
-    value: Expr | None
+    value: Expr | None = None
 
 
 class EnumDef(NamedTuple):
@@ -193,12 +208,12 @@ class Default(NamedTuple):
 
 class ImportItem(NamedTuple):
     name: Identifier
-    alias: Identifier | None
+    alias: Identifier | None = None
 
 
 class Import(NamedTuple):
     module: Identifier
-    items: list[ImportItem] | Literal["*"] | None
+    items: list[ImportItem] | Literal["*"] | None = None
 
 
 class ExprStmt(NamedTuple):
@@ -290,10 +305,12 @@ class FileIOAccess(Enum):
     READ_WRITE = auto()
 
 
-class FileIOKind(NamedTuple):
+@dataclass(slots=True)
+class FileIOKind:
     access: FileIOAccess
-    binary: bool
-    quick: bool
+    _: KW_ONLY
+    binary: bool = False
+    quick: bool = False
 
 
 class FileIO(NamedTuple):

@@ -4,37 +4,32 @@ import pytest
 from samarium import nodes as n
 from samarium.parser import ParseError, Parser
 
-NULL = n.UnitExpr.NULL
-INULL = n.UnitExpr.IMPLICIT_NULL
-
 
 @pytest.mark.parametrize(
     ("source", "expected_node"),
     [
-        (r"[]", n.Array([])),
+        (r"[]", n.Array()),
         (r"[/,]", n.Array([n.Int(1)])),
         (r"[/\, //]", n.Array([n.Int(2), n.Int(3)])),
-        (r"[[],(),[]]", n.Array([n.Array([]), NULL, n.Array([])])),
-        (r"[[], ,[]]", n.Array([n.Array([]), INULL, n.Array([])])),
+        (r"[[],(),[]]", n.Array([n.Array(), n.NULL, n.Array()])),
+        (r"[[], ,[]]", n.Array([n.Array(), n.INULL, n.Array()])),
         (
             r"[0 ... 0 ->? 1]",
-            n.ArrayComp(
-                n.Identifier("1"), [n.Identifier("0")], n.Identifier("0"), None
-            ),
+            n.ArrayComp(n.Identifier("1"), [n.Identifier("0")], n.Identifier("0")),
         ),
-        (r"[... ->? [] ?]", n.ArrayComp(n.Array([]), [], INULL, INULL)),
-        (r"[...->??]", n.ArrayComp(INULL, [], INULL, INULL)),
-        (r"{{}}", n.Table([])),
-        (r"{{->,->}}", n.Table([(INULL, INULL), (INULL, INULL)])),
-        (r"{{->,->,}}", n.Table([(INULL, INULL), (INULL, INULL)])),
-        (r"{{->...->?()?}}", n.TableComp(NULL, [], (INULL, INULL), INULL)),
+        (r"[... ->? [] ?]", n.ArrayComp(n.Array(), [], n.INULL, n.INULL)),
+        (r"[...->??]", n.ArrayComp(n.INULL, [], n.INULL, n.INULL)),
+        (r"{{}}", n.Table()),
+        (r"{{->,->}}", n.Table([(n.INULL, n.INULL), (n.INULL, n.INULL)])),
+        (r"{{->,->,}}", n.Table([(n.INULL, n.INULL), (n.INULL, n.INULL)])),
+        (r"{{->...->?()?}}", n.TableComp(n.NULL, [], (n.INULL, n.INULL), n.INULL)),
         (
             r"{{->...0,->?()?}}",
-            n.TableComp(NULL, [n.Identifier("0")], (INULL, INULL), INULL),
+            n.TableComp(n.NULL, [n.Identifier("0")], (n.INULL, n.INULL), n.INULL),
         ),
         (
             r"{{{{}}->{{}}...->?[]?[]}}",
-            n.TableComp(n.Array([]), [], (n.Table([]), n.Table([])), n.Array([])),
+            n.TableComp(n.Array(), [], (n.Table(), n.Table()), n.Array()),
         ),
     ],
 )
@@ -50,8 +45,8 @@ def test_parse_primary_collections(source: str, expected_node: n.Expr) -> None:
         (r'"hey"', n.String('"hey"')),
         (r"@@", n.UnitExpr.DATETIME),
         (r"@@@", n.UnitExpr.TIMESTAMP),
-        (r"()", NULL),
-        (r"", INULL),
+        (r"()", n.NULL),
+        (r"", n.INULL),
         (r"(\)", n.Int(0)),
         (r"<<\>>", n.Index(n.Int(0))),
     ],
@@ -70,26 +65,27 @@ def test_parse_primary_basic(source: str, expected_node: n.Expr) -> None:
         (r"'", (None, True, False)),
     ],
 )
-def test_parse_primary_identifier(
-    source: str, expected_data: tuple[str | None, bool, bool]
-) -> None:
-    assert Parser(source + ";").parse() == [n.ExprStmt(n.Identifier(*expected_data))]
+def test_parse_primary_identifier(source: str, expected_node: n.Name) -> None:
+    assert Parser(source + ";").parse() == [n.ExprStmt(expected_node)]
 
 
 @pytest.mark.parametrize(
     ("start", "stop", "step", "inner_source"),
     [
-        (NULL, NULL, NULL, r""),
-        (NULL, NULL, NULL, r".."),
-        (NULL, NULL, INULL, r"...."),
-        (n.Int(1), NULL, NULL, r"/.."),
-        (n.Int(1), NULL, INULL, r"/...."),
-        (NULL, n.Int(1), NULL, r"../"),
-        (NULL, n.Int(1), NULL, r"../.."),
-        (NULL, NULL, n.Int(1), r"..../"),
-        (NULL, n.Int(1), n.Int(1), r"../../"),
-        (n.Int(1), NULL, n.Int(1), r"/..../"),
-        (n.Int(1), n.Int(1), INULL, r"/../.."),
+        (None, None, None, r""),
+        (None, None, None, r".."),
+        (None, None, None, r"...."),
+        (None, None, None, r".. .."),
+        (n.Int(1), None, None, r"/.."),
+        (n.Int(1), None, None, r"/...."),
+        (None, n.Int(1), None, r"../"),
+        (None, n.Int(1), None, r"../.."),
+        (None, None, n.Int(1), r"..../"),
+        (None, None, n.Int(1), r".. ../"),
+        (None, n.Int(1), n.Int(1), r"../../"),
+        (n.Int(1), None, n.Int(1), r"/..../"),
+        (n.Int(1), None, n.Int(1), r"/.. ../"),
+        (n.Int(1), n.Int(1), None, r"/../.."),
         (n.Int(1), n.Int(1), n.Int(1), r"/../../"),
     ],
 )
@@ -100,7 +96,7 @@ def test_parse_primary_slice(
     step: n.Int | n.UnitExpr,
 ) -> None:
     assert Parser(f"<<{inner_source}>>;").parse() == [
-        n.ExprStmt(n.Slice(start, stop, step))
+        n.ExprStmt(n.Slice(start=start, stop=stop, step=step))
     ]
 
 
