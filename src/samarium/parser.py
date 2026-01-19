@@ -698,7 +698,7 @@ class Parser:
                 elif not (parent := self._expr_name()):
                     raise ParseError("expected class parent")
                 elif parent is n.SELF:
-                    raise ParseError("cannot use `'` as a parent")
+                    raise ParseError("cannot use `'` as a class parent")
                 else:
                     sep = True
                     parents.append(parent)

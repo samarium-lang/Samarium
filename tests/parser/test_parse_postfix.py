@@ -94,8 +94,13 @@ def test_parse_postfix_op_multiple() -> None:
     ]
 
 
-def test_parse_postfix_attr_fail() -> None:
-    with pytest.raises(
-        ParseError, match=re.escape("expected attribute name after `.`")
-    ):
-        _ = Parser("a.;").parse()
+@pytest.mark.parametrize(
+    ("source", "error_message"),
+    [
+        ("a.;", "expected attribute name after `.`"),
+        ("a.';", "cannot use `'` as an attribute name"),
+    ],
+)
+def test_parse_postfix_attr_fail(source: str, error_message: str) -> None:
+    with pytest.raises(ParseError, match=re.escape(error_message)):
+        _ = Parser(source).parse()
