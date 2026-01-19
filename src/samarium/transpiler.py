@@ -240,7 +240,7 @@ def transpile_expr(expr: n.Expr) -> ast.expr:
     match expr:
         case n.Int(value) | n.String(value):
             return ast.Constant(value)
-        case n.UnitExpr.NULL:
+        case n.NULL | n.INULL:
             return ast.Constant(None)
         case n.UnitExpr.DATETIME:
             return call("dtnow")
