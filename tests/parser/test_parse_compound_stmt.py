@@ -194,7 +194,7 @@ def test_parse_while_stmt_fail() -> None:
         ),
     ],
 )
-def test_parse_if_stmt(
+def test_parse_foreach_stmt(
     source: str, iterable: n.Expr, targets: list[str], body: list[n.Statement]
 ) -> None:
     assert Parser(source).parse() == [
