@@ -14,6 +14,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
 T = TypeVar("T")
+RY = TypeVar("RY", n.Return, n.Yield)
+BC = TypeVar("BC", bound=n.UnitStmt)
 Prime: TypeAlias = "tuple[T, Prime[T]] | None"
 
 ALLOWED_FUNC_DEF_OPS = frozenset(
@@ -283,13 +285,12 @@ class Parser:
                 return n.Block(stmts)
             stmts.append(self._stmt())
 
-    @watch
-    @automark
-    def _continue_stmt(self) -> Literal[n.UnitStmt.CONTINUE] | None:
+    def _break_or_continue_stmt(self, tok: Token, value: BC) -> BC | None:
         pf = self._pf
 
-        if pf.next() != Token.TO:
+        if pf.peek() != tok:
             return None
+        _ = pf.next()
 
         match pf.peek():
             case Token.END:
@@ -299,25 +300,16 @@ class Parser:
             case _:
                 return None
 
-        return n.UnitStmt.CONTINUE
+        return value
+
+    @watch
+    def _continue_stmt(self) -> Literal[n.UnitStmt.CONTINUE] | None:
+        return self._break_or_continue_stmt(Token.TO, n.UnitStmt.CONTINUE)
 
     @watch
     @automark
     def _break_stmt(self) -> Literal[n.UnitStmt.BREAK] | None:
-        pf = self._pf
-
-        if pf.next() != Token.FROM:
-            return None
-
-        match pf.peek():
-            case Token.END:
-                _ = pf.next()
-            case Token.BRACE_CLOSE:
-                pass  # Let the block parser consume it
-            case _:
-                return None
-
-        return n.UnitStmt.BREAK
+        return self._break_or_continue_stmt(Token.FROM, n.UnitStmt.BREAK)
 
     @watch
     @automark
@@ -395,6 +387,29 @@ class Parser:
             raise ParseError("expected block or `?` after `,,`")
         return n.If(condition, then, self._if_stmt())
 
+    def _name_list(self, context: str, *, stop_at: Token) -> list[n.Identifier]:
+        pf = self._pf
+
+        names: list[n.Identifier] = []
+        sep = False
+        while True:
+            if pf.peek() == stop_at:
+                _ = pf.next()
+                break
+            if sep:
+                if pf.next() != Token.SEP:
+                    raise ParseError(f"expected `,` between {context}s")
+                sep = False
+            elif not (name := self._expr_name()):
+                raise ParseError(f"expected {context}")
+            elif name is n.SELF:
+                raise ParseError(f"cannot use `'` as {context}")
+            else:
+                sep = True
+                names.append(name)
+
+        return names
+
     @watch
     def _foreach_stmt(self) -> n.ForEach | None:
         pf = self._pf
@@ -403,24 +418,7 @@ class Parser:
             return None
         _ = pf.next()
 
-        members: list[n.Identifier] = []
-        sep = False
-        while True:
-            if pf.peek() == Token.IN:
-                _ = pf.next()
-                break
-            if sep:
-                if pf.next() != Token.SEP:
-                    raise ParseError("expected `,` between loop targets")
-                sep = False
-            else:
-                if not (member := self._expr_name()):
-                    raise ParseError("expected loop target")
-                if member is n.SELF:
-                    raise ParseError("cannot use `'` as a loop target")
-                sep = True
-                members.append(member)
-
+        members = self._name_list("loop target", stop_at=Token.IN)
         iterable = self._expr()
 
         if not (body := self._block()):
@@ -453,33 +451,22 @@ class Parser:
         return n.Try(try_block, catch_block)
 
     @watch
-    @automark
     def _return_stmt(self) -> n.Return | None:
-        pf = self._pf
-
-        if pf.next() != Token.FUNCTION:
-            return None
-
-        expr = self._expr()
-
-        match pf.peek():
-            case Token.END:
-                _ = pf.next()
-            case Token.BRACE_CLOSE:
-                pass  # Let the block parser consume it
-            case _:
-                raise ParseError("expected `;` or block end after return statement")
-
-        return n.Return(expr)
+        return self._return_or_yield_stmt(n.Return, Token.FUNCTION, "return")
 
     @watch
-    @automark
     def _yield_stmt(self) -> n.Yield | None:
+        return self._return_or_yield_stmt(n.Yield, Token.YIELD, "yield")
+
+    def _return_or_yield_stmt(
+        self, type_: type[RY], tok: Token, name: str
+    ) -> RY | None:
         pf = self._pf
 
-        if pf.next() != Token.YIELD:
+        if pf.peek() != tok:
             return None
 
+        _ = pf.next()
         expr = self._expr()
 
         match pf.peek():
@@ -488,9 +475,9 @@ class Parser:
             case Token.BRACE_CLOSE:
                 pass  # Let the block parser consume it
             case _:
-                raise ParseError("expected `;` or block end after yield statement")
+                raise ParseError(f"expected `;` or block end after {name} statement")
 
-        return n.Yield(expr)
+        return type_(expr)
 
     @watch
     def _assignment_stmt(self) -> n.Assignment | None:
@@ -683,25 +670,12 @@ class Parser:
         if name is n.SELF:
             raise ParseError("cannot use `'` as a class name")
 
-        parents: list[n.Identifier] = []
+        parents: list[n.Identifier]
         if pf.peek() == Token.PAREN_OPEN:
             _ = pf.next()
-            sep = False
-            while True:
-                if pf.peek() == Token.PAREN_CLOSE:
-                    _ = pf.next()
-                    break
-                if sep:
-                    if pf.next() != Token.SEP:
-                        raise ParseError("expected `,` between class parents")
-                    sep = False
-                elif not (parent := self._expr_name()):
-                    raise ParseError("expected class parent")
-                elif parent is n.SELF:
-                    raise ParseError("cannot use `'` as a class parent")
-                else:
-                    sep = True
-                    parents.append(parent)
+            parents = self._name_list("class parent", stop_at=Token.PAREN_CLOSE)
+        else:
+            parents = []
 
         if not (body := self._block()):
             raise ParseError("expected block after class definition")
@@ -721,25 +695,12 @@ class Parser:
         if name is n.SELF:
             raise ParseError("cannot use `'` as a data class name")
 
-        members: list[n.Identifier] = []
+        members: list[n.Identifier]
         if pf.peek() == Token.PAREN_OPEN:
             _ = pf.next()
-            sep = False
-            while True:
-                if pf.peek() == Token.PAREN_CLOSE:
-                    _ = pf.next()
-                    break
-                if sep:
-                    if pf.next() != Token.SEP:
-                        raise ParseError("expected `,` between data class members")
-                    sep = False
-                elif not (member := self._expr_name()):
-                    raise ParseError("expected data class member")
-                elif member is n.SELF:
-                    raise ParseError("cannot use `'` as a data class member")
-                else:
-                    sep = True
-                    members.append(member)
+            members = self._name_list("data class member", stop_at=Token.PAREN_CLOSE)
+        else:
+            members = []
 
         if not (body := self._block()):
             if pf.next() != Token.END:
@@ -925,39 +886,31 @@ class Parser:
         else_ = self._expr()
         return n.IfExpr(condition, lor, else_)
 
-    @watch
-    def _expr_lor(self) -> n.Expr:
+    def _expr_logical(
+        self, op: n.BinOp, token: Token, subparser: Callable[[], n.Expr]
+    ) -> n.Expr:
+        ...
         pf = self._pf
 
-        ors = [self._expr_land()]
+        operands = [subparser()]
         while True:
-            if pf.peek() != Token.OR:
+            if pf.peek() != token:
                 break
             _ = pf.next()
-            ors.append(self._expr_land())
+            operands.append(subparser())
 
-        rhs = ors.pop()
-        while ors:
-            rhs = n.BinaryOp(ors.pop(), n.BinOp.OR, rhs)
-
+        rhs = operands.pop()
+        while operands:
+            rhs = n.BinaryOp(operands.pop(), op, rhs)
         return rhs
+
+    @watch
+    def _expr_lor(self) -> n.Expr:
+        return self._expr_logical(n.BinOp.OR, Token.OR, self._expr_land)
 
     @watch
     def _expr_land(self) -> n.Expr:
-        pf = self._pf
-
-        ands = [self._expr_membership()]
-        while True:
-            if pf.peek() != Token.AND:
-                break
-            _ = pf.next()
-            ands.append(self._expr_membership())
-
-        rhs = ands.pop()
-        while ands:
-            rhs = n.BinaryOp(ands.pop(), n.BinOp.AND, rhs)
-
-        return rhs
+        return self._expr_logical(n.BinOp.AND, Token.AND, self._expr_membership)
 
     @watch
     def _expr_membership(self) -> n.Expr:
@@ -1318,23 +1271,7 @@ class Parser:
         if pf.next() != Token.FOR:
             raise ParseError("expected `...` after item in array comprehension")
 
-        members: list[n.Identifier] = []
-        sep = False
-        while True:
-            if pf.peek() == Token.IN:
-                _ = pf.next()
-                break
-            if sep:
-                if pf.next() != Token.SEP:
-                    raise ParseError("missing `,` between array comprehension targets")
-                sep = False
-                continue
-            if not (member := self._expr_name()):
-                raise ParseError("expected identifier as an array comprehension target")
-            if member is n.SELF:
-                raise ParseError("cannot use `'` as an array comprehension target")
-            sep = True
-            members.append(member)
+        members = self._name_list("array comprehension target", stop_at=Token.IN)
 
         pf.mark("x_comp: iterable")  # context for _expr_if
         iterable = self._expr()
@@ -1406,23 +1343,7 @@ class Parser:
         if pf.next() != Token.FOR:
             raise ParseError("expected `...` after pair in table comprehension")
 
-        members: list[n.Identifier] = []
-        sep = False
-        while True:
-            if pf.peek() == Token.IN:
-                _ = pf.next()
-                break
-            if sep:
-                if pf.next() != Token.SEP:
-                    raise ParseError("missing `,` between table comprehension targets")
-                sep = False
-                continue
-            if not (member := self._expr_name()):
-                raise ParseError("expected identifier as a table comprehension target")
-            if member is n.SELF:
-                raise ParseError("cannot use `'` as a table comprehension target")
-            sep = True
-            members.append(member)
+        members = self._name_list("table comprehension target", stop_at=Token.IN)
 
         pf.mark("x_comp: iterable")  # context for _expr_if
         iterable = self._expr()
