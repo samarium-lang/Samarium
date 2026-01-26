@@ -874,17 +874,16 @@ class Parser:
     ) -> n.Expr:
         pf = self._pf
 
-        lhs = subparser()
-        operands: list[n.Expr] = []
+        operands: list[n.Expr] = [subparser()]
         while True:
             if pf.peek() != token:
                 break
             _ = pf.next()
             operands.append(subparser())
 
-        if not operands:
-            return lhs
-        return n.BinaryLogOp(lhs, [(op, operand) for operand in operands])
+        if len(operands) == 1:
+            return operands.pop()
+        return n.LogicalOp(op, operands)
 
     @watch
     def _expr_lor(self) -> n.Expr:
@@ -928,18 +927,17 @@ class Parser:
         if not primes:
             return a
 
-        binops: list[n.BinaryOp] = []
+        binops: list[n.Expr] = []
         lhs = a
         while primes:
             op, rhs = primes.pop(0)
             binops.append(n.BinaryOp(lhs, op, rhs))
             lhs = rhs
 
-        lhs = binops.pop(0)
-        if not binops:
-            return lhs
+        if len(binops) == 1:
+            return binops.pop()
 
-        return n.BinaryLogOp(lhs, [(n.LogOp.AND, b) for b in binops])
+        return n.LogicalOp(n.LogOp.AND, binops)
 
     @watch
     def _expr_bor(self) -> n.Expr:

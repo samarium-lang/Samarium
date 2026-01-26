@@ -2,25 +2,14 @@
 # name: test_parse_chained_logical[&&]
   list([
     ExprStmt(
-      expr=BinaryLogOp(
-        lhs=Identifier(name='a', inst=False, private=False),
-        rhss=list([
-          tuple(
-            <LogOp.AND: 2>,
-            Identifier(name='b', inst=False, private=False),
-          ),
-          tuple(
-            <LogOp.AND: 2>,
-            Identifier(name='c', inst=False, private=False),
-          ),
-          tuple(
-            <LogOp.AND: 2>,
-            Identifier(name='d', inst=False, private=False),
-          ),
-          tuple(
-            <LogOp.AND: 2>,
-            Identifier(name='e', inst=False, private=False),
-          ),
+      expr=LogicalOp(
+        op=<LogOp.AND: 2>,
+        values=list([
+          Identifier(name='a', inst=False, private=False),
+          Identifier(name='b', inst=False, private=False),
+          Identifier(name='c', inst=False, private=False),
+          Identifier(name='d', inst=False, private=False),
+          Identifier(name='e', inst=False, private=False),
         ]),
       ),
     ),
@@ -29,25 +18,14 @@
 # name: test_parse_chained_logical[||]
   list([
     ExprStmt(
-      expr=BinaryLogOp(
-        lhs=Identifier(name='a', inst=False, private=False),
-        rhss=list([
-          tuple(
-            <LogOp.OR: 1>,
-            Identifier(name='b', inst=False, private=False),
-          ),
-          tuple(
-            <LogOp.OR: 1>,
-            Identifier(name='c', inst=False, private=False),
-          ),
-          tuple(
-            <LogOp.OR: 1>,
-            Identifier(name='d', inst=False, private=False),
-          ),
-          tuple(
-            <LogOp.OR: 1>,
-            Identifier(name='e', inst=False, private=False),
-          ),
+      expr=LogicalOp(
+        op=<LogOp.OR: 1>,
+        values=list([
+          Identifier(name='a', inst=False, private=False),
+          Identifier(name='b', inst=False, private=False),
+          Identifier(name='c', inst=False, private=False),
+          Identifier(name='d', inst=False, private=False),
+          Identifier(name='e', inst=False, private=False),
         ]),
       ),
     ),
@@ -56,233 +34,201 @@
 # name: test_parse_operator_precedence
   list([
     ExprStmt(
-      expr=BinaryLogOp(
-        lhs=BinaryLogOp(
-          lhs=BinaryLogOp(
-            lhs=BinaryOp(
-              lhs=BinaryOp(
-                lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                op=<BinOp.MOD: 6>,
-                rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-              ),
-              op=<BinOp.GT: 9>,
-              rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-            ),
-            rhss=list([
-              tuple(
-                <LogOp.AND: 2>,
-                BinaryOp(
-                  lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                  op=<BinOp.IN: 14>,
-                  rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                ),
-              ),
-            ]),
-          ),
-          rhss=list([
-            tuple(
-              <LogOp.AND: 2>,
-              BinaryLogOp(
-                lhs=BinaryOp(
-                  lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                  op=<BinOp.GE: 8>,
-                  rhs=BinaryOp(
-                    lhs=UnaryOp(
-                      expr=<UnitExpr.IMPLICIT_NULL: 1>,
-                      ops=list([
-                        <UnOp.ADD: 1>,
-                      ]),
-                    ),
-                    op=<BinOp.BXOR: 18>,
-                    rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                  ),
-                ),
-                rhss=list([
-                  tuple(
-                    <LogOp.AND: 2>,
-                    BinaryOp(
-                      lhs=BinaryOp(
-                        lhs=UnaryOp(
-                          expr=<UnitExpr.IMPLICIT_NULL: 1>,
-                          ops=list([
-                            <UnOp.ADD: 1>,
-                          ]),
-                        ),
-                        op=<BinOp.BXOR: 18>,
-                        rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                      ),
-                      op=<BinOp.NE: 13>,
-                      rhs=BinaryOp(
-                        lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                        op=<BinOp.ZIP: 7>,
-                        rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                      ),
-                    ),
-                  ),
-                  tuple(
-                    <LogOp.AND: 2>,
-                    BinaryOp(
-                      lhs=BinaryOp(
-                        lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                        op=<BinOp.ZIP: 7>,
-                        rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                      ),
-                      op=<BinOp.LT: 11>,
-                      rhs=BinaryOp(
-                        lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                        op=<BinOp.ZIP: 7>,
-                        rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                      ),
-                    ),
-                  ),
-                  tuple(
-                    <LogOp.AND: 2>,
-                    BinaryOp(
-                      lhs=BinaryOp(
-                        lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                        op=<BinOp.ZIP: 7>,
-                        rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                      ),
-                      op=<BinOp.NE: 13>,
-                      rhs=BinaryOp(
-                        lhs=UnaryOp(
-                          expr=<UnitExpr.IMPLICIT_NULL: 1>,
-                          ops=list([
-                            <UnOp.NOT: 4>,
-                            <UnOp.ADD: 1>,
-                          ]),
-                        ),
-                        op=<BinOp.MUL: 3>,
-                        rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                      ),
-                    ),
-                  ),
-                  tuple(
-                    <LogOp.AND: 2>,
-                    BinaryOp(
-                      lhs=BinaryOp(
-                        lhs=UnaryOp(
-                          expr=<UnitExpr.IMPLICIT_NULL: 1>,
-                          ops=list([
-                            <UnOp.NOT: 4>,
-                            <UnOp.ADD: 1>,
-                          ]),
-                        ),
-                        op=<BinOp.MUL: 3>,
-                        rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                      ),
-                      op=<BinOp.LT: 11>,
+      expr=LogicalOp(
+        op=<LogOp.OR: 1>,
+        values=list([
+          LogicalOp(
+            op=<LogOp.AND: 2>,
+            values=list([
+              LogicalOp(
+                op=<LogOp.AND: 2>,
+                values=list([
+                  BinaryOp(
+                    lhs=BinaryOp(
+                      lhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                      op=<BinOp.MOD: 6>,
                       rhs=<UnitExpr.IMPLICIT_NULL: 1>,
                     ),
+                    op=<BinOp.GT: 9>,
+                    rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                  ),
+                  BinaryOp(
+                    lhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                    op=<BinOp.IN: 14>,
+                    rhs=<UnitExpr.IMPLICIT_NULL: 1>,
                   ),
                 ]),
               ),
-            ),
-            tuple(
-              <LogOp.AND: 2>,
-              BinaryLogOp(
-                lhs=BinaryOp(
-                  lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                  op=<BinOp.LE: 10>,
-                  rhs=UnaryOp(
-                    expr=<UnitExpr.IMPLICIT_NULL: 1>,
-                    ops=list([
-                      <UnOp.SUB: 2>,
-                    ]),
-                  ),
-                ),
-                rhss=list([
-                  tuple(
-                    <LogOp.AND: 2>,
-                    BinaryOp(
+              LogicalOp(
+                op=<LogOp.AND: 2>,
+                values=list([
+                  BinaryOp(
+                    lhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                    op=<BinOp.GE: 8>,
+                    rhs=BinaryOp(
                       lhs=UnaryOp(
-                        expr=<UnitExpr.IMPLICIT_NULL: 1>,
-                        ops=list([
-                          <UnOp.SUB: 2>,
-                        ]),
-                      ),
-                      op=<BinOp.NE: 13>,
-                      rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                    ),
-                  ),
-                  tuple(
-                    <LogOp.AND: 2>,
-                    BinaryOp(
-                      lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                      op=<BinOp.NE: 13>,
-                      rhs=UnaryOp(
                         expr=<UnitExpr.IMPLICIT_NULL: 1>,
                         ops=list([
                           <UnOp.ADD: 1>,
                         ]),
                       ),
-                    ),
-                  ),
-                ]),
-              ),
-            ),
-          ]),
-        ),
-        rhss=list([
-          tuple(
-            <LogOp.OR: 1>,
-            BinaryLogOp(
-              lhs=BinaryLogOp(
-                lhs=BinaryOp(
-                  lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                  op=<BinOp.EQ: 12>,
-                  rhs=<UnitExpr.NULL: 2>,
-                ),
-                rhss=list([
-                  tuple(
-                    <LogOp.AND: 2>,
-                    BinaryOp(
-                      lhs=<UnitExpr.NULL: 2>,
-                      op=<BinOp.NIN: 15>,
+                      op=<BinOp.BXOR: 18>,
                       rhs=<UnitExpr.IMPLICIT_NULL: 1>,
                     ),
                   ),
-                  tuple(
-                    <LogOp.AND: 2>,
-                    BinaryOp(
+                  BinaryOp(
+                    lhs=BinaryOp(
+                      lhs=UnaryOp(
+                        expr=<UnitExpr.IMPLICIT_NULL: 1>,
+                        ops=list([
+                          <UnOp.ADD: 1>,
+                        ]),
+                      ),
+                      op=<BinOp.BXOR: 18>,
+                      rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                    ),
+                    op=<BinOp.NE: 13>,
+                    rhs=BinaryOp(
                       lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                      op=<BinOp.IN: 14>,
+                      op=<BinOp.ZIP: 7>,
                       rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                    ),
+                  ),
+                  BinaryOp(
+                    lhs=BinaryOp(
+                      lhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                      op=<BinOp.ZIP: 7>,
+                      rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                    ),
+                    op=<BinOp.LT: 11>,
+                    rhs=BinaryOp(
+                      lhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                      op=<BinOp.ZIP: 7>,
+                      rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                    ),
+                  ),
+                  BinaryOp(
+                    lhs=BinaryOp(
+                      lhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                      op=<BinOp.ZIP: 7>,
+                      rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                    ),
+                    op=<BinOp.NE: 13>,
+                    rhs=BinaryOp(
+                      lhs=UnaryOp(
+                        expr=<UnitExpr.IMPLICIT_NULL: 1>,
+                        ops=list([
+                          <UnOp.NOT: 4>,
+                          <UnOp.ADD: 1>,
+                        ]),
+                      ),
+                      op=<BinOp.MUL: 3>,
+                      rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                    ),
+                  ),
+                  BinaryOp(
+                    lhs=BinaryOp(
+                      lhs=UnaryOp(
+                        expr=<UnitExpr.IMPLICIT_NULL: 1>,
+                        ops=list([
+                          <UnOp.NOT: 4>,
+                          <UnOp.ADD: 1>,
+                        ]),
+                      ),
+                      op=<BinOp.MUL: 3>,
+                      rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                    ),
+                    op=<BinOp.LT: 11>,
+                    rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                  ),
+                ]),
+              ),
+              LogicalOp(
+                op=<LogOp.AND: 2>,
+                values=list([
+                  BinaryOp(
+                    lhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                    op=<BinOp.LE: 10>,
+                    rhs=UnaryOp(
+                      expr=<UnitExpr.IMPLICIT_NULL: 1>,
+                      ops=list([
+                        <UnOp.SUB: 2>,
+                      ]),
+                    ),
+                  ),
+                  BinaryOp(
+                    lhs=UnaryOp(
+                      expr=<UnitExpr.IMPLICIT_NULL: 1>,
+                      ops=list([
+                        <UnOp.SUB: 2>,
+                      ]),
+                    ),
+                    op=<BinOp.NE: 13>,
+                    rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                  ),
+                  BinaryOp(
+                    lhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                    op=<BinOp.NE: 13>,
+                    rhs=UnaryOp(
+                      expr=<UnitExpr.IMPLICIT_NULL: 1>,
+                      ops=list([
+                        <UnOp.ADD: 1>,
+                      ]),
                     ),
                   ),
                 ]),
               ),
-              rhss=list([
-                tuple(
-                  <LogOp.AND: 2>,
+            ]),
+          ),
+          LogicalOp(
+            op=<LogOp.AND: 2>,
+            values=list([
+              LogicalOp(
+                op=<LogOp.AND: 2>,
+                values=list([
                   BinaryOp(
                     lhs=<UnitExpr.IMPLICIT_NULL: 1>,
                     op=<BinOp.EQ: 12>,
-                    rhs=BinaryOp(
+                    rhs=<UnitExpr.NULL: 2>,
+                  ),
+                  BinaryOp(
+                    lhs=<UnitExpr.NULL: 2>,
+                    op=<BinOp.NIN: 15>,
+                    rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                  ),
+                  BinaryOp(
+                    lhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                    op=<BinOp.IN: 14>,
+                    rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                  ),
+                ]),
+              ),
+              BinaryOp(
+                lhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                op=<BinOp.EQ: 12>,
+                rhs=BinaryOp(
+                  lhs=BinaryOp(
+                    lhs=BinaryOp(
                       lhs=BinaryOp(
-                        lhs=BinaryOp(
-                          lhs=BinaryOp(
-                            lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                            op=<BinOp.POW: 5>,
-                            rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                          ),
-                          op=<BinOp.BAND: 16>,
-                          rhs=BinaryOp(
-                            lhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                            op=<BinOp.DIV: 4>,
-                            rhs=<UnitExpr.IMPLICIT_NULL: 1>,
-                          ),
-                        ),
-                        op=<BinOp.BAND: 16>,
+                        lhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                        op=<BinOp.POW: 5>,
                         rhs=<UnitExpr.IMPLICIT_NULL: 1>,
                       ),
-                      op=<BinOp.BOR: 17>,
-                      rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                      op=<BinOp.BAND: 16>,
+                      rhs=BinaryOp(
+                        lhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                        op=<BinOp.DIV: 4>,
+                        rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+                      ),
                     ),
+                    op=<BinOp.BAND: 16>,
+                    rhs=<UnitExpr.IMPLICIT_NULL: 1>,
                   ),
+                  op=<BinOp.BOR: 17>,
+                  rhs=<UnitExpr.IMPLICIT_NULL: 1>,
                 ),
-              ]),
-            ),
+              ),
+            ]),
           ),
         ]),
       ),
