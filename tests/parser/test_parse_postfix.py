@@ -1,36 +1,16 @@
-import re
 import pytest
 
-from samarium import nodes as n
 from samarium.parser import ParseError, Parser
+from syrupy.assertion import SnapshotAssertion
 
 
-@pytest.mark.parametrize(
-    ("inner_source", "args"),
-    [
-        ("", []),
-        (",", [n.INULL]),
-        ("()", [n.NULL]),
-        ("(), , ,()", [n.NULL, n.INULL, n.INULL, n.NULL]),
-        ("a,b", [n.Identifier("a"), n.Identifier("b")]),
-        ("a,b,", [n.Identifier("a"), n.Identifier("b")]),
-    ],
-)
-def test_parse_postfix_call(inner_source: str, args: list[n.Expr]) -> None:
-    assert Parser(f"()({inner_source});").parse() == [
-        n.ExprStmt(n.Postfix(n.NULL, n.Call(args)))
-    ]
+@pytest.mark.parametrize("inner_source", ["", ",", "()", "(), , ,()", "a,b", "a,b,"])
+def test_parse_postfix_call(inner_source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(f"()({inner_source});").parse() == snapshot
 
 
-def test_parse_postfix_repeated_call() -> None:
-    assert Parser("()()()();").parse() == [
-        n.ExprStmt(
-            n.Postfix(
-                n.Postfix(n.Postfix(n.NULL, n.Call([])), n.Call([])),
-                n.Call([]),
-            )
-        )
-    ]
+def test_parse_postfix_repeated_call(snapshot: SnapshotAssertion) -> None:
+    assert Parser("()()()();").parse() == snapshot
 
 
 def test_parse_postfix_call_fail() -> None:
@@ -38,60 +18,17 @@ def test_parse_postfix_call_fail() -> None:
         _ = Parser("()(a b);").parse()
 
 
-def test_parse_postfix_attr() -> None:
-    assert Parser("3.14;").parse() == [
-        n.ExprStmt(n.Postfix(n.Identifier("3"), n.Attribute(n.Identifier("14"))))
-    ]
+def test_parse_postfix_attr(snapshot: SnapshotAssertion) -> None:
+    assert Parser("3.14;").parse() == snapshot
 
 
-@pytest.mark.parametrize(
-    ("op", "postfix_kind"),
-    [
-        ("???", n.UnitPostfix.READLINE),
-        ("??", n.UnitPostfix.RANDOM),
-        ("?!", n.UnitPostfix.TYPE),
-        ("!", n.UnitPostfix.PRINT),
-        ("!?", n.UnitPostfix.PARENT),
-        ("##", n.UnitPostfix.HASH),
-        ("$", n.UnitPostfix.SPECIAL),
-        ("**", n.UnitPostfix.ID),
-        ("%", n.UnitPostfix.CAST),
-    ],
-)
-def test_parse_postfix_op(op: str, postfix_kind: n.UnitPostfix) -> None:
-    assert Parser(f"(){op};").parse() == [n.ExprStmt(n.Postfix(n.NULL, postfix_kind))]
+@pytest.mark.parametrize("op", ["???", "??", "?!", "!", "!?", "##", "$", "**", "%"])
+def test_parse_postfix_op(op: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(f"(){op};").parse() == snapshot
 
 
-def test_parse_postfix_op_multiple() -> None:
-    assert Parser(f"()?????!?!$?!**%##;").parse() == [
-        n.ExprStmt(
-            n.Postfix(
-                n.Postfix(
-                    n.Postfix(
-                        n.Postfix(
-                            n.Postfix(
-                                n.Postfix(
-                                    n.Postfix(
-                                        n.Postfix(
-                                            n.Postfix(n.NULL, n.UnitPostfix.READLINE),
-                                            n.UnitPostfix.RANDOM,
-                                        ),
-                                        n.UnitPostfix.PARENT,
-                                    ),
-                                    n.UnitPostfix.PRINT,
-                                ),
-                                n.UnitPostfix.SPECIAL,
-                            ),
-                            n.UnitPostfix.TYPE,
-                        ),
-                        n.UnitPostfix.ID,
-                    ),
-                    n.UnitPostfix.CAST,
-                ),
-                n.UnitPostfix.HASH,
-            )
-        )
-    ]
+def test_parse_postfix_op_multiple(snapshot: SnapshotAssertion) -> None:
+    assert Parser(f"()?????!?!$?!**%##;").parse() == snapshot
 
 
 def test_parse_postfix_attr_fail() -> None:

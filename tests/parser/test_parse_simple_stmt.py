@@ -3,21 +3,13 @@ from __future__ import annotations
 import re
 import pytest
 
-from samarium import nodes as n
 from samarium.parser import ParseError, Parser
+from syrupy.assertion import SnapshotAssertion
 
 
-@pytest.mark.parametrize(
-    ("source", "statements"),
-    [
-        (";;", [n.ExprStmt(n.INULL)] * 2),
-        ("!!!", [n.Throw(n.INULL)]),
-        ("!!!();();", [n.Throw(n.INULL), n.ExprStmt(n.NULL), n.ExprStmt(n.NULL)]),
-        ("!!!;();", [n.Throw(n.INULL), n.ExprStmt(n.NULL)]),
-    ],
-)
-def test_parse_expr_or_throw_stmt(source: str, statements: list[n.Statement]) -> None:
-    assert Parser(source).parse() == statements
+@pytest.mark.parametrize("source", [";;", "!!!", "!!!();();", "!!!;();"])
+def test_parse_expr_or_throw_stmt(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source).parse() == snapshot
 
 
 @pytest.mark.parametrize(
@@ -30,32 +22,10 @@ def test_parse_expr_or_throw_stmt_fail(source: str, error_message: str) -> None:
 
 
 @pytest.mark.parametrize(
-    ("source", "statement"),
-    [
-        ("<=0;", n.Import(n.Identifier("0"))),
-        ("<=0.*;", n.Import(n.Identifier("0"), "*")),
-        (
-            "<=0.1;",
-            n.Import(n.Identifier("0"), [n.ImportItem(n.Identifier("1"))]),
-        ),
-        ("<=0.[];", n.Import(n.Identifier("0"), [])),
-        (
-            "<=0.[1, 2];",
-            n.Import(
-                n.Identifier("0"),
-                [n.ImportItem(n.Identifier("1")), n.ImportItem(n.Identifier("2"))],
-            ),
-        ),
-        (
-            "<=0.[1 -> 2];",
-            n.Import(
-                n.Identifier("0"), [n.ImportItem(n.Identifier("1"), n.Identifier("2"))]
-            ),
-        ),
-    ],
+    "source", ["<=0;", "<=0.*;", "<=0.1;", "<=0.[];", "<=0.[1, 2];", "<=0.[1 -> 2];"]
 )
-def test_parse_import_stmt(source: str, statement: n.Import) -> None:
-    assert Parser(source).parse() == [statement]
+def test_parse_import_stmt(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source).parse() == snapshot
 
 
 @pytest.mark.parametrize(
@@ -77,8 +47,8 @@ def test_parse_import_stmt_fail(source: str, error_message: str) -> None:
         _ = Parser(source).parse()
 
 
-def test_parse_default_stmt() -> None:
-    assert Parser("0<>;").parse() == [n.Default(n.Identifier("0"), n.INULL)]
+def test_parse_default_stmt(snapshot: SnapshotAssertion) -> None:
+    assert Parser("0<>;").parse() == snapshot
 
 
 def test_parse_default_stmt_fail() -> None:
@@ -86,22 +56,9 @@ def test_parse_default_stmt_fail() -> None:
         _ = Parser("0<>").parse()
 
 
-@pytest.mark.parametrize(
-    ("source", "enum"),
-    [
-        ("0 # {}", n.EnumDef(n.Identifier("0"), [])),
-        (
-            "0 # { a; }",
-            n.EnumDef(n.Identifier("0"), [n.EnumMember(n.Identifier("a"), None)]),
-        ),
-        (
-            "0 # { a: /; }",
-            n.EnumDef(n.Identifier("0"), [n.EnumMember(n.Identifier("a"), n.Int(1))]),
-        ),
-    ],
-)
-def test_parse_enum_stmt(source: str, enum: n.EnumDef) -> None:
-    assert Parser(source).parse() == [enum]
+@pytest.mark.parametrize("source", ["0 # {}", "0 # { a; }", "0 # { a: /; }"])
+def test_parse_enum_stmt(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source).parse() == snapshot
 
 
 @pytest.mark.parametrize(
@@ -118,39 +75,31 @@ def test_parse_enum_stmt_fail(source: str, error_message: str) -> None:
         _ = Parser(source).parse()
 
 
-def test_parse_file_io_stmt_create() -> None:
-    assert Parser("?~>;").parse() == [n.FileIO(n.NULL, None, n.INULL)]
+def test_parse_file_io_stmt_create(snapshot: SnapshotAssertion) -> None:
+    assert Parser("?~>;").parse() == snapshot
 
 
 @pytest.mark.parametrize(
-    ("op", "io_access", "io_binary", "io_quick"),
+    "op",
     [
-        ("&~~>", "APPEND", False, False),
-        ("<~~", "READ", False, False),
-        ("~~>", "WRITE", False, False),
-        ("<~>", "READ_WRITE", False, False),
-        ("&%~>", "APPEND", True, False),
-        ("<~%", "READ", True, False),
-        ("%~>", "WRITE", True, False),
-        ("<%>", "READ_WRITE", True, False),
-        ("&~>", "APPEND", False, True),
-        ("<~", "READ", False, True),
-        ("~>", "WRITE", False, True),
-        ("&%>", "APPEND", True, True),
-        ("<%", "READ", True, True),
-        ("%>", "WRITE", True, True),
+        "&~~>",
+        "<~~",
+        "~~>",
+        "<~>",
+        "&%~>",
+        "<~%",
+        "%~>",
+        "<%>",
+        "&~>",
+        "<~",
+        "~>",
+        "&%>",
+        "<%",
+        "%>",
     ],
 )
-def test_parse_file_io_stmt_access(
-    op: str, io_access: str, io_binary: bool, io_quick: bool
-) -> None:
-    assert Parser(f"a {op} b;").parse() == [
-        n.FileIO(
-            n.Identifier("a"),
-            n.FileIOKind(n.FileIOAccess[io_access], binary=io_binary, quick=io_quick),
-            n.Identifier("b"),
-        )
-    ]
+def test_parse_file_io_stmt_access(op: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(f"a {op} b;").parse() == snapshot
 
 
 @pytest.mark.parametrize(
@@ -166,30 +115,9 @@ def test_parse_file_io_stmt_fail(source: str, error_message: str) -> None:
         _ = Parser(source).parse()
 
 
-@pytest.mark.parametrize(
-    ("source", "targets", "kind"),
-    [
-        ("x:;", [("x", None)], n.AssignmentKind.REGULAR),
-        ("a,b+:;", [("a", None), ("b", None)], n.AssignmentKind.ADD),
-        (
-            "a<<>>,b,c<</..>>,d^:;",
-            [
-                ("a", n.Slice()),
-                ("b", None),
-                ("c", n.Slice(start=n.Int(1))),
-                ("d", None),
-            ],
-            n.AssignmentKind.BXOR,
-        ),
-    ],
-)
-def test_parse_assignment_stmt(
-    source: str, targets: list[tuple[str, n.Slice | None]], kind: n.AssignmentKind
-) -> None:
-    assignment_targets = [
-        n.AssignmentTarget(n.Identifier(name), slice) for name, slice in targets
-    ]
-    assert Parser(source).parse() == [n.Assignment(assignment_targets, kind, n.INULL)]
+@pytest.mark.parametrize("source", ["x:;", "a,b+:;", "a<<>>,b,c<</..>>,d^:;"])
+def test_parse_assignment_stmt(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source).parse() == snapshot
 
 
 @pytest.mark.parametrize(
@@ -205,10 +133,8 @@ def test_parse_assignment_stmt_fail(source: str, error_message: str) -> None:
 
 
 @pytest.mark.parametrize("ending", [";", ""])
-def test_parse_yield_stmt_ending(ending: str) -> None:
-    assert Parser(f".. {{ ** x{ending} }}").parse() == [
-        n.While(n.INULL, n.Block([n.Yield(n.Identifier("x"))]))
-    ]
+def test_parse_yield_stmt_ending(ending: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(f".. {{ ** x{ending} }}").parse() == snapshot
 
 
 def test_parse_yield_stmt_fail() -> None:
@@ -219,10 +145,8 @@ def test_parse_yield_stmt_fail() -> None:
 
 
 @pytest.mark.parametrize("ending", [";", ""])
-def test_parse_return_stmt_ending(ending: str) -> None:
-    assert Parser(f".. {{ * x{ending} }}").parse() == [
-        n.While(n.INULL, n.Block([n.Return(n.Identifier("x"))]))
-    ]
+def test_parse_return_stmt_ending(ending: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(f".. {{ * x{ending} }}").parse() == snapshot
 
 
 def test_parse_return_stmt_fail() -> None:
@@ -232,15 +156,9 @@ def test_parse_return_stmt_fail() -> None:
         _ = Parser("* x").parse()
 
 
-@pytest.mark.parametrize(
-    ("source", "condition", "msg"),
-    [
-        ("!!;", n.INULL, None),
-        ("!!,;", n.INULL, n.INULL),
-    ],
-)
-def test_parse_assert_stmt(source: str, condition: n.Expr, msg: n.Expr | None) -> None:
-    assert Parser(source).parse() == [n.Assert(condition, msg)]
+@pytest.mark.parametrize("source", ["!!;", "!!,;"])
+def test_parse_assert_stmt(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source).parse() == snapshot
 
 
 @pytest.mark.parametrize(
@@ -255,8 +173,8 @@ def test_parse_assert_stmt_fail(source: str, error_message: str) -> None:
         _ = Parser(source).parse()
 
 
-def test_parse_sleep_stmt() -> None:
-    assert Parser(",.,;").parse() == [n.Sleep(n.INULL)]
+def test_parse_sleep_stmt(snapshot: SnapshotAssertion) -> None:
+    assert Parser(",.,;").parse() == snapshot
 
 
 def test_parse_sleep_stmt_fail() -> None:
@@ -264,8 +182,8 @@ def test_parse_sleep_stmt_fail() -> None:
         _ = Parser(",.,").parse()
 
 
-def test_parse_exit_stmt() -> None:
-    assert Parser("=>!;").parse() == [n.Exit(n.INULL)]
+def test_parse_exit_stmt(snapshot: SnapshotAssertion) -> None:
+    assert Parser("=>!;").parse() == snapshot
 
 
 def test_parse_exit_stmt_fail() -> None:
@@ -274,14 +192,10 @@ def test_parse_exit_stmt_fail() -> None:
 
 
 @pytest.mark.parametrize("ending", [";", ""])
-def test_parse_break_stmt_ending(ending: str) -> None:
-    assert Parser(f".. {{ <-{ending} }}").parse() == [
-        n.While(n.INULL, n.Block([n.UnitStmt.BREAK]))
-    ]
+def test_parse_break_stmt_ending(ending: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(f".. {{ <-{ending} }}").parse() == snapshot
 
 
 @pytest.mark.parametrize("ending", [";", ""])
-def test_parse_continue_stmt_ending(ending: str) -> None:
-    assert Parser(f".. {{ ->{ending} }}").parse() == [
-        n.While(n.INULL, n.Block([n.UnitStmt.CONTINUE]))
-    ]
+def test_parse_continue_stmt_ending(ending: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(f".. {{ ->{ending} }}").parse() == snapshot

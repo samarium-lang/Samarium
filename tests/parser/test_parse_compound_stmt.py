@@ -1,33 +1,24 @@
 import re
 import pytest
 
-from samarium import nodes as n
 from samarium.parser import ParseError, Parser
+from syrupy.assertion import SnapshotAssertion
 
 
 @pytest.mark.parametrize(
-    ("source", "name", "members", "block"),
+    "source",
     [
-        ("@! Foo;", "Foo", [], None),
-        ("@! Foo();", "Foo", [], None),
-        ("@! Foo() {}", "Foo", [], n.Block()),
-        ("@! Foo {}", "Foo", [], n.Block()),
-        ("@! Person(name, age);", "Person", ["name", "age"], None),
-        ("@! Person(name, age,);", "Person", ["name", "age"], None),
-        (
-            "@!0{ a*{} }",
-            "0",
-            [],
-            n.Block([n.FuncDef(n.Identifier("a"), [], False, n.Block(), [])]),
-        ),
+        "@! Foo;",
+        "@! Foo();",
+        "@! Foo() {}",
+        "@! Foo {}",
+        "@! Person(name, age);",
+        "@! Person(name, age,);",
+        "@!0{ a*{} }",
     ],
 )
-def test_parse_data_class_stmt(
-    source: str, name: str, members: list[str], block: n.Block | None
-) -> None:
-    assert Parser(source).parse() == [
-        n.DataClassDef(n.Identifier(name), list(map(n.Identifier, members)), block)
-    ]
+def test_parse_data_class_stmt(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source).parse() == snapshot
 
 
 @pytest.mark.parametrize(
@@ -45,29 +36,9 @@ def test_parse_data_class_stmt_fail(source: str, error_message: str) -> None:
         _ = Parser(source).parse()
 
 
-@pytest.mark.parametrize(
-    ("source", "name", "parents", "block"),
-    [
-        (
-            "@ => { hey * { } }",
-            None,
-            [],
-            [n.FuncDef(n.Identifier("hey"), [], False, n.Block(), [])],
-        ),
-        ("@0{}", "0", [], []),
-        ("@ a(b, c) {}", "a", ["b", "c"], []),
-    ],
-)
-def test_parse_class_def_stmt(
-    source: str, name: str | None, parents: list[str], block: list[n.Statement]
-) -> None:
-    assert Parser(source).parse() == [
-        n.ClassDef(
-            n.Identifier(name) if name else n.FuncSpecialName.ENTRY,
-            list(map(n.Identifier, parents)),
-            n.Block(block),
-        )
-    ]
+@pytest.mark.parametrize("source", ["@ => { hey * { } }", "@0{}", "@ a(b, c) {}"])
+def test_parse_class_def_stmt(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source).parse() == snapshot
 
 
 @pytest.mark.parametrize(
@@ -86,48 +57,26 @@ def test_parse_class_def_stmt_fail(source: str, error_message: str) -> None:
 
 
 @pytest.mark.parametrize(
-    ("source", "name", "params", "static", "body", "decorators"),
+    "source",
     [
-        ("hey * {}", "hey", [], False, [], []),
-        ("?what? * {}", n.FuncSpecialName.IF, [("what", 2)], False, [], []),
-        ("hey who? ~'* {}", "hey", [("who", 2)], True, [], []),
-        ("hey who... ~'* {}", "hey", [("who", 3)], True, [], []),
-        ("dont @ me ok... * {}", "me", [("ok", 3)], False, [], [n.Identifier("dont")]),
-        ("=> * {}", n.FuncSpecialName.ENTRY, [], False, [], []),
-        ("->? * {}", n.FuncSpecialName.IN, [], False, [], []),
-        ("++ * {}", n.FuncSpecialName.MUL, [], False, [], []),
-        ("+ * {}", n.FuncSpecialName.ADD, [], False, [], []),
-        ("+a * {}", n.FuncSpecialName.ADD, [("a", 1)], False, [], []),
-        ("-_ * {}", n.FuncSpecialName.NEG, [], False, [], []),
-        ("<<>> * {}", n.FuncSpecialName.GET, [], False, [], []),
-        ("<<>>: * {}", n.FuncSpecialName.SET, [], False, [], []),
-        (
-            'hey who * { "hey"!; }',
-            "hey",
-            [("who", 1)],
-            False,
-            [n.ExprStmt(n.Postfix(n.String('"hey"'), n.UnitPostfix.PRINT))],
-            [],
-        ),
+        "hey * {}",
+        "?what? * {}",
+        "hey who? ~'* {}",
+        "hey who... ~'* {}",
+        "dont @ me ok... * {}",
+        "=> * {}",
+        "->? * {}",
+        "++ * {}",
+        "+ * {}",
+        "+a * {}",
+        "-_ * {}",
+        "<<>> * {}",
+        "<<>>: * {}",
+        'hey who * { "hey"!; }',
     ],
 )
-def test_parse_func_def_stmt(
-    source: str,
-    name: str | n.FuncSpecialName,
-    params: list[tuple[str, int]],
-    static: bool,
-    body: list[n.Statement],
-    decorators: list[n.Expr],
-) -> None:
-    assert Parser(source).parse() == [
-        n.FuncDef(
-            n.Identifier(name) if isinstance(name, str) else name,
-            [n.FuncParam(n.Identifier(p), n.FuncParamKind(k)) for p, k in params],
-            static,
-            n.Block(body),
-            decorators,
-        )
-    ]
+def test_parse_func_def_stmt(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source).parse() == snapshot
 
 
 @pytest.mark.parametrize(
@@ -145,13 +94,8 @@ def test_parse_func_def_stmt_fail(source: str, error_message: str) -> None:
         _ = Parser(source).parse()
 
 
-def test_parse_try_stmt() -> None:
-    assert Parser(r"?? { /--\; } !! { \--/; }").parse() == [
-        n.Try(
-            n.Block([n.ExprStmt(n.BinaryOp(n.Int(1), n.BinOp.DIV, n.Int(0)))]),
-            n.Block([n.ExprStmt(n.BinaryOp(n.Int(0), n.BinOp.DIV, n.Int(1)))]),
-        )
-    ]
+def test_parse_try_stmt(snapshot: SnapshotAssertion) -> None:
+    assert Parser(r"?? { /--\; } !! { \--/; }").parse() == snapshot
 
 
 @pytest.mark.parametrize(
@@ -167,12 +111,8 @@ def test_parse_try_stmt_fail(source: str, error_message: str) -> None:
         _ = Parser(source).parse()
 
 
-def test_parse_while_stmt() -> None:
-    assert Parser(r".. / { /!; }").parse() == [
-        n.While(
-            n.Int(1), n.Block([n.ExprStmt(n.Postfix(n.Int(1), n.UnitPostfix.PRINT))])
-        )
-    ]
+def test_parse_while_stmt(snapshot: SnapshotAssertion) -> None:
+    assert Parser(r".. / { /!; }").parse() == snapshot
 
 
 def test_parse_while_stmt_fail() -> None:
@@ -181,25 +121,10 @@ def test_parse_while_stmt_fail() -> None:
 
 
 @pytest.mark.parametrize(
-    ("source", "iterable", "targets", "body"),
-    [
-        ("...->?{}", n.INULL, [], []),
-        ("...a->?{}", n.INULL, ["a"], []),
-        ("...a,->?{}", n.INULL, ["a"], []),
-        (
-            "...a,b->?c{d;}",
-            n.Identifier("c"),
-            ["a", "b"],
-            [n.ExprStmt(n.Identifier("d"))],
-        ),
-    ],
+    "source", ["...->?{}", "...a->?{}", "...a,->?{}", "...a,b->?c{d;}"]
 )
-def test_parse_foreach_stmt(
-    source: str, iterable: n.Expr, targets: list[str], body: list[n.Statement]
-) -> None:
-    assert Parser(source).parse() == [
-        n.ForEach(list(map(n.Identifier, targets)), iterable, n.Block(body))
-    ]
+def test_parse_foreach_stmt(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source).parse() == snapshot
 
 
 @pytest.mark.parametrize(
@@ -216,29 +141,11 @@ def test_parse_foreach_stmt_fail(source: str, error_message: str) -> None:
 
 
 @pytest.mark.parametrize(
-    ("source", "cond", "then", "else_"),
-    [
-        ("? {}", n.INULL, [], None),
-        ("? {} ,, {}", n.INULL, [], []),
-        ("? {} ,, ? {}", n.INULL, [], n.If(n.INULL, n.Block())),
-        ("? {} ,, ? {} ,, {}", n.INULL, [], n.If(n.INULL, n.Block(), n.Block())),
-        (
-            "? a {;} ,, {;}",
-            n.Identifier("a"),
-            [n.ExprStmt(n.INULL)],
-            [n.ExprStmt(n.INULL)],
-        ),
-    ],
+    "source",
+    ["? {}", "? {} ,, {}", "? {} ,, ? {}", "? {} ,, ? {} ,, {}", "? a {;} ,, {;}"],
 )
-def test_parse_if_stmt(
-    source: str,
-    cond: n.Expr,
-    then: list[n.Statement],
-    else_: list[n.Statement] | n.If | None,
-) -> None:
-    assert Parser(source).parse() == [
-        n.If(cond, n.Block(then), n.Block(else_) if isinstance(else_, list) else else_)
-    ]
+def test_parse_if_stmt(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source).parse() == snapshot
 
 
 @pytest.mark.parametrize(

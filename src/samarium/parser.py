@@ -870,30 +870,29 @@ class Parser:
         return n.IfExpr(condition, lor, else_)
 
     def _expr_logical(
-        self, op: n.BinOp, token: Token, subparser: Callable[[], n.Expr]
+        self, op: n.LogOp, token: Token, subparser: Callable[[], n.Expr]
     ) -> n.Expr:
-        ...
         pf = self._pf
 
-        operands = [subparser()]
+        lhs = subparser()
+        operands: list[n.Expr] = []
         while True:
             if pf.peek() != token:
                 break
             _ = pf.next()
             operands.append(subparser())
 
-        rhs = operands.pop()
-        while operands:
-            rhs = n.BinaryOp(operands.pop(), op, rhs)
-        return rhs
+        if not operands:
+            return lhs
+        return n.BinaryLogOp(lhs, [(op, operand) for operand in operands])
 
     @watch
     def _expr_lor(self) -> n.Expr:
-        return self._expr_logical(n.BinOp.OR, Token.OR, self._expr_land)
+        return self._expr_logical(n.LogOp.OR, Token.OR, self._expr_land)
 
     @watch
     def _expr_land(self) -> n.Expr:
-        return self._expr_logical(n.BinOp.AND, Token.AND, self._expr_membership)
+        return self._expr_logical(n.LogOp.AND, Token.AND, self._expr_membership)
 
     @watch
     def _expr_membership(self) -> n.Expr:
@@ -936,11 +935,11 @@ class Parser:
             binops.append(n.BinaryOp(lhs, op, rhs))
             lhs = rhs
 
-        rhs = binops.pop()
-        while binops:
-            rhs = n.BinaryOp(binops.pop(), n.BinOp.AND, rhs)
+        lhs = binops.pop(0)
+        if not binops:
+            return lhs
 
-        return rhs
+        return n.BinaryLogOp(lhs, [(n.LogOp.AND, b) for b in binops])
 
     @watch
     def _expr_bor(self) -> n.Expr:

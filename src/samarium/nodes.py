@@ -5,7 +5,7 @@ from enum import Enum, auto
 from typing import Literal, NamedTuple, TypeAlias
 
 Primary: TypeAlias = "String | Int | Float | Identifier | UnitExpr | Array | ArrayComp | Table | TableComp | Slice | Index"
-Expr: TypeAlias = "Primary | UnaryOp | BinaryOp | IfExpr | Postfix"
+Expr: TypeAlias = "Primary | UnaryOp | BinaryOp | BinaryLogOp | IfExpr | Postfix"
 SimpleStatement: TypeAlias = "ExprStmt | UnitStmt | Assignment | FileIO | Throw | Exit | Sleep | Assert | Return | Yield | Default | Import"
 CompoundStatement: TypeAlias = (
     "If | ForEach | While | Try | FuncDef | ClassDef | DataClassDef | EnumDef"
@@ -244,10 +244,8 @@ class BinOp(Enum):
     LT = auto()
     EQ = auto()
     NE = auto()
-    AND = auto()
     IN = auto()
     NIN = auto()
-    OR = auto()
     BAND = auto()
     BOR = auto()
     BXOR = auto()
@@ -257,6 +255,16 @@ class BinaryOp(NamedTuple):
     lhs: Expr
     op: BinOp
     rhs: Expr
+
+
+class LogOp(Enum):
+    OR = auto()
+    AND = auto()
+
+
+class BinaryLogOp(NamedTuple):
+    lhs: Expr
+    rhss: list[tuple[LogOp, Expr]]
 
 
 class UnOp(Enum):

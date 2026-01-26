@@ -1,0 +1,362 @@
+# serializer version: 1
+# name: test_parse_primary_basic["hey"]
+  list([
+    ExprStmt(
+      expr=String(
+        value='"hey"',
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_primary_basic[()]
+  list([
+    ExprStmt(
+      expr=<UnitExpr.NULL: 2>,
+    ),
+  ])
+# ---
+# name: test_parse_primary_basic[(\\)]
+  list([
+    ExprStmt(
+      expr=Int(
+        value=0,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_primary_basic[//\\\\]
+  list([
+    ExprStmt(
+      expr=Int(
+        value=12,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_primary_basic[/\\`\\/]
+  list([
+    ExprStmt(
+      expr=Float(
+        dec=2,
+        frac=1,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_primary_basic[<<\\>>]
+  list([
+    ExprStmt(
+      expr=Index(
+        value=Int(
+          value=0,
+        ),
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_primary_basic[@@@]
+  list([
+    ExprStmt(
+      expr=<UnitExpr.TIMESTAMP: 3>,
+    ),
+  ])
+# ---
+# name: test_parse_primary_basic[@@]
+  list([
+    ExprStmt(
+      expr=<UnitExpr.DATETIME: 4>,
+    ),
+  ])
+# ---
+# name: test_parse_primary_basic[]
+  list([
+    ExprStmt(
+      expr=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[[... ->? [] ?]]
+  list([
+    ExprStmt(
+      expr=ArrayComp(
+        body=<UnitExpr.IMPLICIT_NULL: 1>,
+        condition=<UnitExpr.IMPLICIT_NULL: 1>,
+        iterable=Array(elements=[]),
+        members=list([
+        ]),
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[[...->??]]
+  list([
+    ExprStmt(
+      expr=ArrayComp(
+        body=<UnitExpr.IMPLICIT_NULL: 1>,
+        condition=<UnitExpr.IMPLICIT_NULL: 1>,
+        iterable=<UnitExpr.IMPLICIT_NULL: 1>,
+        members=list([
+        ]),
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[[/,]]
+  list([
+    ExprStmt(
+      expr=Array(elements=[Int(value=1)]),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[[/\\, //]]
+  list([
+    ExprStmt(
+      expr=Array(elements=[Int(value=2), Int(value=3)]),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[[0 ... 0 ->? 1]]
+  list([
+    ExprStmt(
+      expr=ArrayComp(
+        body=Identifier(name='0', inst=False, private=False),
+        condition=None,
+        iterable=Identifier(name='1', inst=False, private=False),
+        members=list([
+          Identifier(name='0', inst=False, private=False),
+        ]),
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[[[], ,[]]]
+  list([
+    ExprStmt(
+      expr=Array(elements=[Array(elements=[]), <UnitExpr.IMPLICIT_NULL: 1>, Array(elements=[])]),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[[[],(),[]]]
+  list([
+    ExprStmt(
+      expr=Array(elements=[Array(elements=[]), <UnitExpr.NULL: 2>, Array(elements=[])]),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[[]]
+  list([
+    ExprStmt(
+      expr=Array(elements=[]),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[{{->,->,}}]
+  list([
+    ExprStmt(
+      expr=Table(elements=[(<UnitExpr.IMPLICIT_NULL: 1>, <UnitExpr.IMPLICIT_NULL: 1>), (<UnitExpr.IMPLICIT_NULL: 1>, <UnitExpr.IMPLICIT_NULL: 1>)]),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[{{->,->}}]
+  list([
+    ExprStmt(
+      expr=Table(elements=[(<UnitExpr.IMPLICIT_NULL: 1>, <UnitExpr.IMPLICIT_NULL: 1>), (<UnitExpr.IMPLICIT_NULL: 1>, <UnitExpr.IMPLICIT_NULL: 1>)]),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[{{->...->?()?}}]
+  list([
+    ExprStmt(
+      expr=TableComp(
+        body=tuple(
+          <UnitExpr.IMPLICIT_NULL: 1>,
+          <UnitExpr.IMPLICIT_NULL: 1>,
+        ),
+        condition=<UnitExpr.IMPLICIT_NULL: 1>,
+        iterable=<UnitExpr.NULL: 2>,
+        members=list([
+        ]),
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[{{->...0,->?()?}}]
+  list([
+    ExprStmt(
+      expr=TableComp(
+        body=tuple(
+          <UnitExpr.IMPLICIT_NULL: 1>,
+          <UnitExpr.IMPLICIT_NULL: 1>,
+        ),
+        condition=<UnitExpr.IMPLICIT_NULL: 1>,
+        iterable=<UnitExpr.NULL: 2>,
+        members=list([
+          Identifier(name='0', inst=False, private=False),
+        ]),
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[{{{{}}->{{}}...->?[]?[]}}]
+  list([
+    ExprStmt(
+      expr=TableComp(
+        body=tuple(
+          Table(elements=[]),
+          Table(elements=[]),
+        ),
+        condition=Array(elements=[]),
+        iterable=Array(elements=[]),
+        members=list([
+        ]),
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_primary_collections[{{}}]
+  list([
+    ExprStmt(
+      expr=Table(elements=[]),
+    ),
+  ])
+# ---
+# name: test_parse_primary_identifier[#0]
+  list([
+    ExprStmt(
+      expr=Identifier(name='0', inst=False, private=True),
+    ),
+  ])
+# ---
+# name: test_parse_primary_identifier['#0]
+  list([
+    ExprStmt(
+      expr=Identifier(name='0', inst=True, private=True),
+    ),
+  ])
+# ---
+# name: test_parse_primary_identifier['0]
+  list([
+    ExprStmt(
+      expr=Identifier(name='0', inst=True, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_primary_identifier[']
+  list([
+    ExprStmt(
+      expr=Identifier(name=None, inst=True, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_primary_identifier[0]
+  list([
+    ExprStmt(
+      expr=Identifier(name='0', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[.. ../]
+  list([
+    ExprStmt(
+      expr=Slice(start=None, stop=None, step=Int(value=1)),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[.. ..]
+  list([
+    ExprStmt(
+      expr=Slice(start=None, stop=None, step=None),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[..../]
+  list([
+    ExprStmt(
+      expr=Slice(start=None, stop=None, step=Int(value=1)),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[....]
+  list([
+    ExprStmt(
+      expr=Slice(start=None, stop=None, step=None),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[../../]
+  list([
+    ExprStmt(
+      expr=Slice(start=None, stop=Int(value=1), step=Int(value=1)),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[../..]
+  list([
+    ExprStmt(
+      expr=Slice(start=None, stop=Int(value=1), step=None),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[../]
+  list([
+    ExprStmt(
+      expr=Slice(start=None, stop=Int(value=1), step=None),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[..]
+  list([
+    ExprStmt(
+      expr=Slice(start=None, stop=None, step=None),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[/.. ../]
+  list([
+    ExprStmt(
+      expr=Slice(start=Int(value=1), stop=None, step=Int(value=1)),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[/..../]
+  list([
+    ExprStmt(
+      expr=Slice(start=Int(value=1), stop=None, step=Int(value=1)),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[/....]
+  list([
+    ExprStmt(
+      expr=Slice(start=Int(value=1), stop=None, step=None),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[/../../]
+  list([
+    ExprStmt(
+      expr=Slice(start=Int(value=1), stop=Int(value=1), step=Int(value=1)),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[/../..]
+  list([
+    ExprStmt(
+      expr=Slice(start=Int(value=1), stop=Int(value=1), step=None),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[/..]
+  list([
+    ExprStmt(
+      expr=Slice(start=Int(value=1), stop=None, step=None),
+    ),
+  ])
+# ---
+# name: test_parse_primary_slice[]
+  list([
+    ExprStmt(
+      expr=Slice(start=None, stop=None, step=None),
+    ),
+  ])
+# ---

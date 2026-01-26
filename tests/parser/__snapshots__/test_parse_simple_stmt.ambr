@@ -1,0 +1,441 @@
+# serializer version: 1
+# name: test_parse_assert_stmt[!!,;]
+  list([
+    Assert(
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+      error_message=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_assert_stmt[!!;]
+  list([
+    Assert(
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+      error_message=None,
+    ),
+  ])
+# ---
+# name: test_parse_assignment_stmt[a,b+:;]
+  list([
+    Assignment(
+      kind=<AssignmentKind.ADD: 2>,
+      targets=list([
+        AssignmentTarget(
+          name=Identifier(name='a', inst=False, private=False),
+          subscript=None,
+        ),
+        AssignmentTarget(
+          name=Identifier(name='b', inst=False, private=False),
+          subscript=None,
+        ),
+      ]),
+      value=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_assignment_stmt[a<<>>,b,c<</..>>,d^:;]
+  list([
+    Assignment(
+      kind=<AssignmentKind.BXOR: 10>,
+      targets=list([
+        AssignmentTarget(
+          name=Identifier(name='a', inst=False, private=False),
+          subscript=Slice(start=None, stop=None, step=None),
+        ),
+        AssignmentTarget(
+          name=Identifier(name='b', inst=False, private=False),
+          subscript=None,
+        ),
+        AssignmentTarget(
+          name=Identifier(name='c', inst=False, private=False),
+          subscript=Slice(start=Int(value=1), stop=None, step=None),
+        ),
+        AssignmentTarget(
+          name=Identifier(name='d', inst=False, private=False),
+          subscript=None,
+        ),
+      ]),
+      value=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_assignment_stmt[x:;]
+  list([
+    Assignment(
+      kind=<AssignmentKind.REGULAR: 1>,
+      targets=list([
+        AssignmentTarget(
+          name=Identifier(name='x', inst=False, private=False),
+          subscript=None,
+        ),
+      ]),
+      value=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_break_stmt_ending[;]
+  list([
+    While(
+      body=Block(statements=[<UnitStmt.BREAK: 1>]),
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_break_stmt_ending[]
+  list([
+    While(
+      body=Block(statements=[<UnitStmt.BREAK: 1>]),
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_continue_stmt_ending[;]
+  list([
+    While(
+      body=Block(statements=[<UnitStmt.CONTINUE: 2>]),
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_continue_stmt_ending[]
+  list([
+    While(
+      body=Block(statements=[<UnitStmt.CONTINUE: 2>]),
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_default_stmt
+  list([
+    Default(
+      name=Identifier(name='0', inst=False, private=False),
+      value=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_enum_stmt[0 # { a: /; }]
+  list([
+    EnumDef(
+      members=list([
+        EnumMember(
+          name=Identifier(name='a', inst=False, private=False),
+          value=Int(
+            value=1,
+          ),
+        ),
+      ]),
+      name=Identifier(name='0', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_enum_stmt[0 # { a; }]
+  list([
+    EnumDef(
+      members=list([
+        EnumMember(
+          name=Identifier(name='a', inst=False, private=False),
+          value=None,
+        ),
+      ]),
+      name=Identifier(name='0', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_enum_stmt[0 # {}]
+  list([
+    EnumDef(
+      members=list([
+      ]),
+      name=Identifier(name='0', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_exit_stmt
+  list([
+    Exit(
+      code=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_expr_or_throw_stmt[!!!();();]
+  list([
+    Throw(
+      value=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+    ExprStmt(
+      expr=<UnitExpr.NULL: 2>,
+    ),
+    ExprStmt(
+      expr=<UnitExpr.NULL: 2>,
+    ),
+  ])
+# ---
+# name: test_parse_expr_or_throw_stmt[!!!;();]
+  list([
+    Throw(
+      value=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+    ExprStmt(
+      expr=<UnitExpr.NULL: 2>,
+    ),
+  ])
+# ---
+# name: test_parse_expr_or_throw_stmt[!!!]
+  list([
+    Throw(
+      value=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_expr_or_throw_stmt[;;]
+  list([
+    ExprStmt(
+      expr=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+    ExprStmt(
+      expr=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[%>]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.WRITE: 3>, binary=True, quick=True),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[%~>]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.WRITE: 3>, binary=True, quick=False),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[&%>]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.APPEND: 1>, binary=True, quick=True),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[&%~>]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.APPEND: 1>, binary=True, quick=False),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[&~>]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.APPEND: 1>, binary=False, quick=True),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[&~~>]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.APPEND: 1>, binary=False, quick=False),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[<%>]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.READ_WRITE: 4>, binary=True, quick=False),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[<%]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.READ: 2>, binary=True, quick=True),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[<~%]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.READ: 2>, binary=True, quick=False),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[<~>]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.READ_WRITE: 4>, binary=False, quick=False),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[<~]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.READ: 2>, binary=False, quick=True),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[<~~]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.READ: 2>, binary=False, quick=False),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[~>]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.WRITE: 3>, binary=False, quick=True),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_access[~~>]
+  list([
+    FileIO(
+      kind=FileIOKind(access=<FileIOAccess.WRITE: 3>, binary=False, quick=False),
+      lhs=Identifier(name='a', inst=False, private=False),
+      rhs=Identifier(name='b', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_file_io_stmt_create
+  list([
+    FileIO(
+      kind=None,
+      lhs=<UnitExpr.NULL: 2>,
+      rhs=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_import_stmt[<=0.*;]
+  list([
+    Import(
+      items='*',
+      module=Identifier(name='0', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_import_stmt[<=0.1;]
+  list([
+    Import(
+      items=list([
+        ImportItem(
+          alias=None,
+          name=Identifier(name='1', inst=False, private=False),
+        ),
+      ]),
+      module=Identifier(name='0', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_import_stmt[<=0.[1 -> 2];]
+  list([
+    Import(
+      items=list([
+        ImportItem(
+          alias=Identifier(name='2', inst=False, private=False),
+          name=Identifier(name='1', inst=False, private=False),
+        ),
+      ]),
+      module=Identifier(name='0', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_import_stmt[<=0.[1, 2];]
+  list([
+    Import(
+      items=list([
+        ImportItem(
+          alias=None,
+          name=Identifier(name='1', inst=False, private=False),
+        ),
+        ImportItem(
+          alias=None,
+          name=Identifier(name='2', inst=False, private=False),
+        ),
+      ]),
+      module=Identifier(name='0', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_import_stmt[<=0.[];]
+  list([
+    Import(
+      items=list([
+      ]),
+      module=Identifier(name='0', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_import_stmt[<=0;]
+  list([
+    Import(
+      items=None,
+      module=Identifier(name='0', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_return_stmt_ending[;]
+  list([
+    While(
+      body=Block(statements=[Return(expr=Identifier(name='x', inst=False, private=False))]),
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_return_stmt_ending[]
+  list([
+    While(
+      body=Block(statements=[Return(expr=Identifier(name='x', inst=False, private=False))]),
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_sleep_stmt
+  list([
+    Sleep(
+      duration=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_yield_stmt_ending[;]
+  list([
+    While(
+      body=Block(statements=[Yield(expr=Identifier(name='x', inst=False, private=False))]),
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_yield_stmt_ending[]
+  list([
+    While(
+      body=Block(statements=[Yield(expr=Identifier(name='x', inst=False, private=False))]),
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---

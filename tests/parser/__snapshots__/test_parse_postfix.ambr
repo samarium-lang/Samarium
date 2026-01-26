@@ -1,0 +1,250 @@
+# serializer version: 1
+# name: test_parse_postfix_attr
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=Attribute(
+          name=Identifier(name='14', inst=False, private=False),
+        ),
+        value=Identifier(name='3', inst=False, private=False),
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_call[(), , ,()]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=Call(
+          args=list([
+            <UnitExpr.NULL: 2>,
+            <UnitExpr.IMPLICIT_NULL: 1>,
+            <UnitExpr.IMPLICIT_NULL: 1>,
+            <UnitExpr.NULL: 2>,
+          ]),
+        ),
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_call[()]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=Call(
+          args=list([
+            <UnitExpr.NULL: 2>,
+          ]),
+        ),
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_call[,]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=Call(
+          args=list([
+            <UnitExpr.IMPLICIT_NULL: 1>,
+          ]),
+        ),
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_call[]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=Call(
+          args=list([
+          ]),
+        ),
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_call[a,b,]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=Call(
+          args=list([
+            Identifier(name='a', inst=False, private=False),
+            Identifier(name='b', inst=False, private=False),
+          ]),
+        ),
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_call[a,b]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=Call(
+          args=list([
+            Identifier(name='a', inst=False, private=False),
+            Identifier(name='b', inst=False, private=False),
+          ]),
+        ),
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_op[!?]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=<UnitPostfix.PARENT: 'PARENT'>,
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_op[!]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=<UnitPostfix.PRINT: 'PRINT'>,
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_op[##]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=<UnitPostfix.HASH: 'HASH'>,
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_op[$]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=<UnitPostfix.SPECIAL: 'SPECIAL'>,
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_op[%]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=<UnitPostfix.CAST: 'CAST'>,
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_op[**]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=<UnitPostfix.ID: 'YIELD'>,
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_op[?!]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=<UnitPostfix.TYPE: 'TYPE'>,
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_op[???]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=<UnitPostfix.READLINE: 'READLINE'>,
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_op[??]
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=<UnitPostfix.RANDOM: 'TRY'>,
+        value=<UnitExpr.NULL: 2>,
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_op_multiple
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=<UnitPostfix.HASH: 'HASH'>,
+        value=Postfix(
+          kind=<UnitPostfix.CAST: 'CAST'>,
+          value=Postfix(
+            kind=<UnitPostfix.ID: 'YIELD'>,
+            value=Postfix(
+              kind=<UnitPostfix.TYPE: 'TYPE'>,
+              value=Postfix(
+                kind=<UnitPostfix.SPECIAL: 'SPECIAL'>,
+                value=Postfix(
+                  kind=<UnitPostfix.PRINT: 'PRINT'>,
+                  value=Postfix(
+                    kind=<UnitPostfix.PARENT: 'PARENT'>,
+                    value=Postfix(
+                      kind=<UnitPostfix.RANDOM: 'TRY'>,
+                      value=Postfix(
+                        kind=<UnitPostfix.READLINE: 'READLINE'>,
+                        value=<UnitExpr.NULL: 2>,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  ])
+# ---
+# name: test_parse_postfix_repeated_call
+  list([
+    ExprStmt(
+      expr=Postfix(
+        kind=Call(
+          args=list([
+          ]),
+        ),
+        value=Postfix(
+          kind=Call(
+            args=list([
+            ]),
+          ),
+          value=Postfix(
+            kind=Call(
+              args=list([
+              ]),
+            ),
+            value=<UnitExpr.NULL: 2>,
+          ),
+        ),
+      ),
+    ),
+  ])
+# ---

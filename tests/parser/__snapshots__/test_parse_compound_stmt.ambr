@@ -1,0 +1,292 @@
+# serializer version: 1
+# name: test_parse_class_def_stmt[@ => { hey * { } }]
+  list([
+    ClassDef(
+      body=Block(statements=[FuncDef(name=Identifier(name='hey', inst=False, private=False), params=[], static=False, body=Block(statements=[]), decorators=[])]),
+      name=<FuncSpecialName.ENTRY: 26>,
+      parents=list([
+      ]),
+    ),
+  ])
+# ---
+# name: test_parse_class_def_stmt[@ a(b, c) {}]
+  list([
+    ClassDef(
+      body=Block(statements=[]),
+      name=Identifier(name='a', inst=False, private=False),
+      parents=list([
+        Identifier(name='b', inst=False, private=False),
+        Identifier(name='c', inst=False, private=False),
+      ]),
+    ),
+  ])
+# ---
+# name: test_parse_class_def_stmt[@0{}]
+  list([
+    ClassDef(
+      body=Block(statements=[]),
+      name=Identifier(name='0', inst=False, private=False),
+      parents=list([
+      ]),
+    ),
+  ])
+# ---
+# name: test_parse_data_class_stmt[@! Foo {}]
+  list([
+    DataClassDef(
+      body=Block(statements=[]),
+      members=list([
+      ]),
+      name=Identifier(name='Foo', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_data_class_stmt[@! Foo() {}]
+  list([
+    DataClassDef(
+      body=Block(statements=[]),
+      members=list([
+      ]),
+      name=Identifier(name='Foo', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_data_class_stmt[@! Foo();]
+  list([
+    DataClassDef(
+      body=None,
+      members=list([
+      ]),
+      name=Identifier(name='Foo', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_data_class_stmt[@! Foo;]
+  list([
+    DataClassDef(
+      body=None,
+      members=list([
+      ]),
+      name=Identifier(name='Foo', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_data_class_stmt[@! Person(name, age);]
+  list([
+    DataClassDef(
+      body=None,
+      members=list([
+        Identifier(name='name', inst=False, private=False),
+        Identifier(name='age', inst=False, private=False),
+      ]),
+      name=Identifier(name='Person', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_data_class_stmt[@! Person(name, age,);]
+  list([
+    DataClassDef(
+      body=None,
+      members=list([
+        Identifier(name='name', inst=False, private=False),
+        Identifier(name='age', inst=False, private=False),
+      ]),
+      name=Identifier(name='Person', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_data_class_stmt[@!0{ a*{} }]
+  list([
+    DataClassDef(
+      body=Block(statements=[FuncDef(name=Identifier(name='a', inst=False, private=False), params=[], static=False, body=Block(statements=[]), decorators=[])]),
+      members=list([
+      ]),
+      name=Identifier(name='0', inst=False, private=False),
+    ),
+  ])
+# ---
+# name: test_parse_foreach_stmt[...->?{}]
+  list([
+    ForEach(
+      body=Block(statements=[]),
+      iterable=<UnitExpr.IMPLICIT_NULL: 1>,
+      members=list([
+      ]),
+    ),
+  ])
+# ---
+# name: test_parse_foreach_stmt[...a,->?{}]
+  list([
+    ForEach(
+      body=Block(statements=[]),
+      iterable=<UnitExpr.IMPLICIT_NULL: 1>,
+      members=list([
+        Identifier(name='a', inst=False, private=False),
+      ]),
+    ),
+  ])
+# ---
+# name: test_parse_foreach_stmt[...a,b->?c{d;}]
+  list([
+    ForEach(
+      body=Block(statements=[ExprStmt(expr=Identifier(name='d', inst=False, private=False))]),
+      iterable=Identifier(name='c', inst=False, private=False),
+      members=list([
+        Identifier(name='a', inst=False, private=False),
+        Identifier(name='b', inst=False, private=False),
+      ]),
+    ),
+  ])
+# ---
+# name: test_parse_foreach_stmt[...a->?{}]
+  list([
+    ForEach(
+      body=Block(statements=[]),
+      iterable=<UnitExpr.IMPLICIT_NULL: 1>,
+      members=list([
+        Identifier(name='a', inst=False, private=False),
+      ]),
+    ),
+  ])
+# ---
+# name: test_parse_func_def_stmt[+ * {}]
+  list([
+    FuncDef(name=<FuncSpecialName.ADD: 1>, params=[], static=False, body=Block(statements=[]), decorators=[]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[++ * {}]
+  list([
+    FuncDef(name=<FuncSpecialName.MUL: 4>, params=[], static=False, body=Block(statements=[]), decorators=[]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[+a * {}]
+  list([
+    FuncDef(name=<FuncSpecialName.ADD: 1>, params=[FuncParam(name=Identifier(name='a', inst=False, private=False), kind=<FuncParamKind.DEFAULT: 1>)], static=False, body=Block(statements=[]), decorators=[]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[->? * {}]
+  list([
+    FuncDef(name=<FuncSpecialName.IN: 7>, params=[], static=False, body=Block(statements=[]), decorators=[]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[-_ * {}]
+  list([
+    FuncDef(name=<FuncSpecialName.NEG: 28>, params=[], static=False, body=Block(statements=[]), decorators=[]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[<<>> * {}]
+  list([
+    FuncDef(name=<FuncSpecialName.GET: 29>, params=[], static=False, body=Block(statements=[]), decorators=[]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[<<>>: * {}]
+  list([
+    FuncDef(name=<FuncSpecialName.SET: 30>, params=[], static=False, body=Block(statements=[]), decorators=[]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[=> * {}]
+  list([
+    FuncDef(name=<FuncSpecialName.ENTRY: 26>, params=[], static=False, body=Block(statements=[]), decorators=[]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[?what? * {}]
+  list([
+    FuncDef(name=<FuncSpecialName.IF: 17>, params=[FuncParam(name=Identifier(name='what', inst=False, private=False), kind=<FuncParamKind.VARIADIC: 2>)], static=False, body=Block(statements=[]), decorators=[]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[dont @ me ok... * {}]
+  list([
+    FuncDef(name=Identifier(name='me', inst=False, private=False), params=[FuncParam(name=Identifier(name='ok', inst=False, private=False), kind=<FuncParamKind.OPTIONAL: 3>)], static=False, body=Block(statements=[]), decorators=[Identifier(name='dont', inst=False, private=False)]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[hey * {}]
+  list([
+    FuncDef(name=Identifier(name='hey', inst=False, private=False), params=[], static=False, body=Block(statements=[]), decorators=[]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[hey who * { "hey"!; }]
+  list([
+    FuncDef(name=Identifier(name='hey', inst=False, private=False), params=[FuncParam(name=Identifier(name='who', inst=False, private=False), kind=<FuncParamKind.DEFAULT: 1>)], static=False, body=Block(statements=[ExprStmt(expr=Postfix(value=String(value='"hey"'), kind=<UnitPostfix.PRINT: 'PRINT'>))]), decorators=[]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[hey who... ~'* {}]
+  list([
+    FuncDef(name=Identifier(name='hey', inst=False, private=False), params=[FuncParam(name=Identifier(name='who', inst=False, private=False), kind=<FuncParamKind.OPTIONAL: 3>)], static=True, body=Block(statements=[]), decorators=[]),
+  ])
+# ---
+# name: test_parse_func_def_stmt[hey who? ~'* {}]
+  list([
+    FuncDef(name=Identifier(name='hey', inst=False, private=False), params=[FuncParam(name=Identifier(name='who', inst=False, private=False), kind=<FuncParamKind.VARIADIC: 2>)], static=True, body=Block(statements=[]), decorators=[]),
+  ])
+# ---
+# name: test_parse_if_stmt[? a {;} ,, {;}]
+  list([
+    If(
+      condition=Identifier(name='a', inst=False, private=False),
+      else_=Block(statements=[ExprStmt(expr=<UnitExpr.IMPLICIT_NULL: 1>)]),
+      then=Block(statements=[ExprStmt(expr=<UnitExpr.IMPLICIT_NULL: 1>)]),
+    ),
+  ])
+# ---
+# name: test_parse_if_stmt[? {} ,, ? {} ,, {}]
+  list([
+    If(
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+      else_=If(
+        condition=<UnitExpr.IMPLICIT_NULL: 1>,
+        else_=Block(statements=[]),
+        then=Block(statements=[]),
+      ),
+      then=Block(statements=[]),
+    ),
+  ])
+# ---
+# name: test_parse_if_stmt[? {} ,, ? {}]
+  list([
+    If(
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+      else_=If(
+        condition=<UnitExpr.IMPLICIT_NULL: 1>,
+        else_=None,
+        then=Block(statements=[]),
+      ),
+      then=Block(statements=[]),
+    ),
+  ])
+# ---
+# name: test_parse_if_stmt[? {} ,, {}]
+  list([
+    If(
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+      else_=Block(statements=[]),
+      then=Block(statements=[]),
+    ),
+  ])
+# ---
+# name: test_parse_if_stmt[? {}]
+  list([
+    If(
+      condition=<UnitExpr.IMPLICIT_NULL: 1>,
+      else_=None,
+      then=Block(statements=[]),
+    ),
+  ])
+# ---
+# name: test_parse_try_stmt
+  list([
+    Try(
+      catch=Block(statements=[ExprStmt(expr=BinaryOp(lhs=Int(value=0), op=<BinOp.DIV: 4>, rhs=Int(value=1)))]),
+      try_=Block(statements=[ExprStmt(expr=BinaryOp(lhs=Int(value=1), op=<BinOp.DIV: 4>, rhs=Int(value=0)))]),
+    ),
+  ])
+# ---
+# name: test_parse_while_stmt
+  list([
+    While(
+      body=Block(statements=[ExprStmt(expr=Postfix(value=Int(value=1), kind=<UnitPostfix.PRINT: 'PRINT'>))]),
+      condition=Int(
+        value=1,
+      ),
+    ),
+  ])
+# ---

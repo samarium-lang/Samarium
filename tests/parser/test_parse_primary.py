@@ -1,103 +1,67 @@
 import re
 import pytest
 
-from samarium import nodes as n
 from samarium.parser import ParseError, Parser
+from syrupy.assertion import SnapshotAssertion
 
 
 @pytest.mark.parametrize(
-    ("source", "expected_node"),
+    "source",
     [
-        (r"[]", n.Array()),
-        (r"[/,]", n.Array([n.Int(1)])),
-        (r"[/\, //]", n.Array([n.Int(2), n.Int(3)])),
-        (r"[[],(),[]]", n.Array([n.Array(), n.NULL, n.Array()])),
-        (r"[[], ,[]]", n.Array([n.Array(), n.INULL, n.Array()])),
-        (
-            r"[0 ... 0 ->? 1]",
-            n.ArrayComp(n.Identifier("1"), [n.Identifier("0")], n.Identifier("0")),
-        ),
-        (r"[... ->? [] ?]", n.ArrayComp(n.Array(), [], n.INULL, n.INULL)),
-        (r"[...->??]", n.ArrayComp(n.INULL, [], n.INULL, n.INULL)),
-        (r"{{}}", n.Table()),
-        (r"{{->,->}}", n.Table([(n.INULL, n.INULL), (n.INULL, n.INULL)])),
-        (r"{{->,->,}}", n.Table([(n.INULL, n.INULL), (n.INULL, n.INULL)])),
-        (r"{{->...->?()?}}", n.TableComp(n.NULL, [], (n.INULL, n.INULL), n.INULL)),
-        (
-            r"{{->...0,->?()?}}",
-            n.TableComp(n.NULL, [n.Identifier("0")], (n.INULL, n.INULL), n.INULL),
-        ),
-        (
-            r"{{{{}}->{{}}...->?[]?[]}}",
-            n.TableComp(n.Array(), [], (n.Table(), n.Table()), n.Array()),
-        ),
+        r"[]",
+        r"[/,]",
+        r"[/\, //]",
+        r"[[],(),[]]",
+        r"[[], ,[]]",
+        r"[0 ... 0 ->? 1]",
+        r"[... ->? [] ?]",
+        r"[...->??]",
+        r"{{}}",
+        r"{{->,->}}",
+        r"{{->,->,}}",
+        r"{{->...->?()?}}",
+        r"{{->...0,->?()?}}",
+        r"{{{{}}->{{}}...->?[]?[]}}",
     ],
 )
-def test_parse_primary_collections(source: str, expected_node: n.Expr) -> None:
-    assert Parser(source + ";").parse() == [n.ExprStmt(expected_node)]
+def test_parse_primary_collections(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source + ";").parse() == snapshot
 
 
 @pytest.mark.parametrize(
-    ("source", "expected_node"),
-    [
-        (r"//\\", n.Int(12)),
-        (r"/\`\/", n.Float(2, 1)),
-        (r'"hey"', n.String('"hey"')),
-        (r"@@", n.UnitExpr.DATETIME),
-        (r"@@@", n.UnitExpr.TIMESTAMP),
-        (r"()", n.NULL),
-        (r"", n.INULL),
-        (r"(\)", n.Int(0)),
-        (r"<<\>>", n.Index(n.Int(0))),
-    ],
+    "source", [r"//\\", r"/\`\/", r'"hey"', r"@@", r"@@@", r"()", r"", r"(\)", r"<<\>>"]
 )
-def test_parse_primary_basic(source: str, expected_node: n.Expr) -> None:
-    assert Parser(source + ";").parse() == [n.ExprStmt(expected_node)]
+def test_parse_primary_basic(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source + ";").parse() == snapshot
+
+
+@pytest.mark.parametrize("source", [r"0", r"'0", r"#0", r"'#0", r"'"])
+def test_parse_primary_identifier(source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(source + ";").parse() == snapshot
 
 
 @pytest.mark.parametrize(
-    ("source", "expected_node"),
+    "inner_source",
     [
-        (r"0", n.Identifier("0")),
-        (r"'0", n.Identifier("0", inst=True)),
-        (r"#0", n.Identifier("0", private=True)),
-        (r"'#0", n.Identifier("0", inst=True, private=True)),
-        (r"'", n.Identifier(None, inst=True)),
+        r"",
+        r"..",
+        r"....",
+        r".. ..",
+        r"/..",
+        r"/....",
+        r"../",
+        r"../..",
+        r"..../",
+        r".. ../",
+        r"../../",
+        r"/..../",
+        r"/.. ../",
+        r"/../..",
+        r"/../../",
     ],
 )
-def test_parse_primary_identifier(source: str, expected_node: n.Identifier) -> None:
-    assert Parser(source + ";").parse() == [n.ExprStmt(expected_node)]
-
-
-@pytest.mark.parametrize(
-    ("start", "stop", "step", "inner_source"),
-    [
-        (None, None, None, r""),
-        (None, None, None, r".."),
-        (None, None, None, r"...."),
-        (None, None, None, r".. .."),
-        (n.Int(1), None, None, r"/.."),
-        (n.Int(1), None, None, r"/...."),
-        (None, n.Int(1), None, r"../"),
-        (None, n.Int(1), None, r"../.."),
-        (None, None, n.Int(1), r"..../"),
-        (None, None, n.Int(1), r".. ../"),
-        (None, n.Int(1), n.Int(1), r"../../"),
-        (n.Int(1), None, n.Int(1), r"/..../"),
-        (n.Int(1), None, n.Int(1), r"/.. ../"),
-        (n.Int(1), n.Int(1), None, r"/../.."),
-        (n.Int(1), n.Int(1), n.Int(1), r"/../../"),
-    ],
-)
-def test_parse_primary_slice(
-    inner_source: str,
-    start: n.Int | n.UnitExpr,
-    stop: n.Int | n.UnitExpr,
-    step: n.Int | n.UnitExpr,
-) -> None:
-    assert Parser(f"<<{inner_source}>>;").parse() == [
-        n.ExprStmt(n.Slice(start=start, stop=stop, step=step))
-    ]
+def test_parse_primary_slice(inner_source: str, snapshot: SnapshotAssertion) -> None:
+    assert Parser(f"<<{inner_source}>>;").parse() == snapshot
 
 
 @pytest.mark.parametrize("source", ["#", "'#"])
