@@ -5,7 +5,7 @@ from functools import wraps
 from typing import TYPE_CHECKING, Literal, NamedTuple, TypeAlias, TypeVar, cast, final
 
 from samarium import nodes as n
-from samarium.source_compressor import group_tokens
+from samarium.source_compressor import SourceData, group_tokens
 from samarium.source_decompressor import decompress
 from samarium.tokenizer import Tokenlike, tokenize
 from samarium.tokens import Token
@@ -222,13 +222,9 @@ def automark(
 
 @final
 class Parser:
-    def __init__(self, source: str | bytes) -> None:
-        if isinstance(source, str):
-            src_data = group_tokens(tokenize(source))
-        else:
-            src_data = decompress(source)
-        self._src_data = src_data
-        self._pf = Pathfinder(src_data.tokens)
+    def __init__(self, source_data: SourceData) -> None:
+        self._src_data = source_data
+        self._pf = Pathfinder(source_data.tokens)
         # global pf
         # pf = self._pf
 
@@ -1506,6 +1502,16 @@ class Parser:
             sep = False
 
 
+def parse(source: str) -> list[n.Statement]:
+    source_data = group_tokens(tokenize(source))
+    return Parser(source_data).parse()
+
+
+def parse_compressed(source: bytes) -> list[n.Statement]:
+    source_data = decompress(source)
+    return Parser(source_data).parse()
+
+
 def test() -> None:
     from pathlib import Path
 
@@ -1516,7 +1522,7 @@ def test() -> None:
         #     continue
         print(f"{file.name:<20}", end="")
         try:
-            _ = Parser(src).parse()
+            _ = parse(src)
         except RuntimeError:
             print("\033[31mFAIL\033[0m")
         else:
@@ -1531,8 +1537,6 @@ if __name__ == "__main__":
 
         from rich import print
 
-        print(
-            Parser((Path(__file__).parent / "modules" / "test.sm").read_text()).parse()
-        )
+        print(parse((Path(__file__).parent / "modules" / "test.sm").read_text()))
     else:
         test()

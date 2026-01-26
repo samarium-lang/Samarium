@@ -1,7 +1,7 @@
 import re
 import pytest
 
-from samarium.parser import ParseError, Parser
+from samarium.parser import ParseError, parse
 from syrupy.assertion import SnapshotAssertion
 
 
@@ -25,19 +25,19 @@ from syrupy.assertion import SnapshotAssertion
     ],
 )
 def test_parse_primary_collections(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source + ";").parse() == snapshot
+    assert parse(source + ";") == snapshot
 
 
 @pytest.mark.parametrize(
     "source", [r"//\\", r"/\`\/", r'"hey"', r"@@", r"@@@", r"()", r"", r"(\)", r"<<\>>"]
 )
 def test_parse_primary_basic(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source + ";").parse() == snapshot
+    assert parse(source + ";") == snapshot
 
 
 @pytest.mark.parametrize("source", [r"0", r"'0", r"#0", r"'#0", r"'"])
 def test_parse_primary_identifier(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source + ";").parse() == snapshot
+    assert parse(source + ";") == snapshot
 
 
 @pytest.mark.parametrize(
@@ -61,13 +61,13 @@ def test_parse_primary_identifier(source: str, snapshot: SnapshotAssertion) -> N
     ],
 )
 def test_parse_primary_slice(inner_source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(f"<<{inner_source}>>;").parse() == snapshot
+    assert parse(f"<<{inner_source}>>;") == snapshot
 
 
 @pytest.mark.parametrize("source", ["#", "'#"])
 def test_parse_primary_identifer_fail(source: str) -> None:
     with pytest.raises(ParseError, match=re.escape(f"expected a name after {source}")):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 @pytest.mark.parametrize(
@@ -89,7 +89,7 @@ def test_parse_primary_identifer_fail(source: str) -> None:
 )
 def test_parse_primary_slice_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 @pytest.mark.parametrize(
@@ -113,7 +113,7 @@ def test_parse_primary_slice_fail(source: str, error_message: str) -> None:
 )
 def test_parse_primary_collections_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 @pytest.mark.parametrize(
@@ -124,4 +124,4 @@ def test_parse_primary_collections_fail(source: str, error_message: str) -> None
 )
 def test_parse_primary_basic_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)

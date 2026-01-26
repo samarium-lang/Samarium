@@ -4,7 +4,7 @@ import ast
 from typing import Literal, overload
 
 from samarium import nodes as n
-from samarium.parser import Parser
+from samarium.parser import parse
 
 
 def call(
@@ -501,7 +501,7 @@ array :: <-types.Slice;
 
 # random_sm = Path(__file__).parent / "modules" / "random.sm"
 # code = random_sm.read_text()
-stmts = Parser(code).parse()
+stmts = parse(code)
 t = transpile(stmts)
 print(ast.unparse(t))
 # print(ast.dump(t, indent=2))

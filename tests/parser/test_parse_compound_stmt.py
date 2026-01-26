@@ -1,7 +1,7 @@
 import re
 import pytest
 
-from samarium.parser import ParseError, Parser
+from samarium.parser import ParseError, parse
 from syrupy.assertion import SnapshotAssertion
 
 
@@ -18,7 +18,7 @@ from syrupy.assertion import SnapshotAssertion
     ],
 )
 def test_parse_data_class_stmt(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source).parse() == snapshot
+    assert parse(source) == snapshot
 
 
 @pytest.mark.parametrize(
@@ -33,12 +33,12 @@ def test_parse_data_class_stmt(source: str, snapshot: SnapshotAssertion) -> None
 )
 def test_parse_data_class_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 @pytest.mark.parametrize("source", ["@ => { hey * { } }", "@0{}", "@ a(b, c) {}"])
 def test_parse_class_def_stmt(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source).parse() == snapshot
+    assert parse(source) == snapshot
 
 
 @pytest.mark.parametrize(
@@ -53,7 +53,7 @@ def test_parse_class_def_stmt(source: str, snapshot: SnapshotAssertion) -> None:
 )
 def test_parse_class_def_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 @pytest.mark.parametrize(
@@ -76,7 +76,7 @@ def test_parse_class_def_stmt_fail(source: str, error_message: str) -> None:
     ],
 )
 def test_parse_func_def_stmt(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source).parse() == snapshot
+    assert parse(source) == snapshot
 
 
 @pytest.mark.parametrize(
@@ -91,11 +91,11 @@ def test_parse_func_def_stmt(source: str, snapshot: SnapshotAssertion) -> None:
 )
 def test_parse_func_def_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 def test_parse_try_stmt(snapshot: SnapshotAssertion) -> None:
-    assert Parser(r"?? { /--\; } !! { \--/; }").parse() == snapshot
+    assert parse(r"?? { /--\; } !! { \--/; }") == snapshot
 
 
 @pytest.mark.parametrize(
@@ -108,23 +108,23 @@ def test_parse_try_stmt(snapshot: SnapshotAssertion) -> None:
 )
 def test_parse_try_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 def test_parse_while_stmt(snapshot: SnapshotAssertion) -> None:
-    assert Parser(r".. / { /!; }").parse() == snapshot
+    assert parse(r".. / { /!; }") == snapshot
 
 
 def test_parse_while_stmt_fail() -> None:
     with pytest.raises(ParseError, match=r"expected block after `\.\.` condition"):
-        _ = Parser(".. /").parse()
+        _ = parse(".. /")
 
 
 @pytest.mark.parametrize(
     "source", ["...->?{}", "...a->?{}", "...a,->?{}", "...a,b->?c{d;}"]
 )
 def test_parse_foreach_stmt(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source).parse() == snapshot
+    assert parse(source) == snapshot
 
 
 @pytest.mark.parametrize(
@@ -137,7 +137,7 @@ def test_parse_foreach_stmt(source: str, snapshot: SnapshotAssertion) -> None:
 )
 def test_parse_foreach_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 @pytest.mark.parametrize(
@@ -145,7 +145,7 @@ def test_parse_foreach_stmt_fail(source: str, error_message: str) -> None:
     ["? {}", "? {} ,, {}", "? {} ,, ? {}", "? {} ,, ? {} ,, {}", "? a {;} ,, {;}"],
 )
 def test_parse_if_stmt(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source).parse() == snapshot
+    assert parse(source) == snapshot
 
 
 @pytest.mark.parametrize(
@@ -157,4 +157,4 @@ def test_parse_if_stmt(source: str, snapshot: SnapshotAssertion) -> None:
 )
 def test_parse_if_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)

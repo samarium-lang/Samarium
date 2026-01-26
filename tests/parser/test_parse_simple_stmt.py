@@ -3,13 +3,13 @@ from __future__ import annotations
 import re
 import pytest
 
-from samarium.parser import ParseError, Parser
+from samarium.parser import ParseError, parse
 from syrupy.assertion import SnapshotAssertion
 
 
 @pytest.mark.parametrize("source", [";;", "!!!", "!!!();();", "!!!;();"])
 def test_parse_expr_or_throw_stmt(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source).parse() == snapshot
+    assert parse(source) == snapshot
 
 
 @pytest.mark.parametrize(
@@ -18,14 +18,14 @@ def test_parse_expr_or_throw_stmt(source: str, snapshot: SnapshotAssertion) -> N
 )
 def test_parse_expr_or_throw_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 @pytest.mark.parametrize(
     "source", ["<=0;", "<=0.*;", "<=0.1;", "<=0.[];", "<=0.[1, 2];", "<=0.[1 -> 2];"]
 )
 def test_parse_import_stmt(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source).parse() == snapshot
+    assert parse(source) == snapshot
 
 
 @pytest.mark.parametrize(
@@ -44,21 +44,21 @@ def test_parse_import_stmt(source: str, snapshot: SnapshotAssertion) -> None:
 )
 def test_parse_import_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 def test_parse_default_stmt(snapshot: SnapshotAssertion) -> None:
-    assert Parser("0<>;").parse() == snapshot
+    assert parse("0<>;") == snapshot
 
 
 def test_parse_default_stmt_fail() -> None:
     with pytest.raises(ParseError, match="expected `;` after default value"):
-        _ = Parser("0<>").parse()
+        _ = parse("0<>")
 
 
 @pytest.mark.parametrize("source", ["0 # {}", "0 # { a; }", "0 # { a: /; }"])
 def test_parse_enum_stmt(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source).parse() == snapshot
+    assert parse(source) == snapshot
 
 
 @pytest.mark.parametrize(
@@ -72,11 +72,11 @@ def test_parse_enum_stmt(source: str, snapshot: SnapshotAssertion) -> None:
 )
 def test_parse_enum_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 def test_parse_file_io_stmt_create(snapshot: SnapshotAssertion) -> None:
-    assert Parser("?~>;").parse() == snapshot
+    assert parse("?~>;") == snapshot
 
 
 @pytest.mark.parametrize(
@@ -99,7 +99,7 @@ def test_parse_file_io_stmt_create(snapshot: SnapshotAssertion) -> None:
     ],
 )
 def test_parse_file_io_stmt_access(op: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(f"a {op} b;").parse() == snapshot
+    assert parse(f"a {op} b;") == snapshot
 
 
 @pytest.mark.parametrize(
@@ -112,12 +112,12 @@ def test_parse_file_io_stmt_access(op: str, snapshot: SnapshotAssertion) -> None
 )
 def test_parse_file_io_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 @pytest.mark.parametrize("source", ["x:;", "a,b+:;", "a<<>>,b,c<</..>>,d^:;"])
 def test_parse_assignment_stmt(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source).parse() == snapshot
+    assert parse(source) == snapshot
 
 
 @pytest.mark.parametrize(
@@ -129,36 +129,36 @@ def test_parse_assignment_stmt(source: str, snapshot: SnapshotAssertion) -> None
 )
 def test_parse_assignment_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 @pytest.mark.parametrize("ending", [";", ""])
 def test_parse_yield_stmt_ending(ending: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(f".. {{ ** x{ending} }}").parse() == snapshot
+    assert parse(f".. {{ ** x{ending} }}") == snapshot
 
 
 def test_parse_yield_stmt_fail() -> None:
     with pytest.raises(
         ParseError, match="expected `;` or block end after yield statement"
     ):
-        _ = Parser("** x").parse()
+        _ = parse("** x")
 
 
 @pytest.mark.parametrize("ending", [";", ""])
 def test_parse_return_stmt_ending(ending: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(f".. {{ * x{ending} }}").parse() == snapshot
+    assert parse(f".. {{ * x{ending} }}") == snapshot
 
 
 def test_parse_return_stmt_fail() -> None:
     with pytest.raises(
         ParseError, match="expected `;` or block end after return statement"
     ):
-        _ = Parser("* x").parse()
+        _ = parse("* x")
 
 
 @pytest.mark.parametrize("source", ["!!;", "!!,;"])
 def test_parse_assert_stmt(source: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(source).parse() == snapshot
+    assert parse(source) == snapshot
 
 
 @pytest.mark.parametrize(
@@ -170,32 +170,32 @@ def test_parse_assert_stmt(source: str, snapshot: SnapshotAssertion) -> None:
 )
 def test_parse_assert_stmt_fail(source: str, error_message: str) -> None:
     with pytest.raises(ParseError, match=re.escape(error_message)):
-        _ = Parser(source).parse()
+        _ = parse(source)
 
 
 def test_parse_sleep_stmt(snapshot: SnapshotAssertion) -> None:
-    assert Parser(",.,;").parse() == snapshot
+    assert parse(",.,;") == snapshot
 
 
 def test_parse_sleep_stmt_fail() -> None:
     with pytest.raises(ParseError, match="expected `;` after sleep statement"):
-        _ = Parser(",.,").parse()
+        _ = parse(",.,")
 
 
 def test_parse_exit_stmt(snapshot: SnapshotAssertion) -> None:
-    assert Parser("=>!;").parse() == snapshot
+    assert parse("=>!;") == snapshot
 
 
 def test_parse_exit_stmt_fail() -> None:
     with pytest.raises(ParseError, match="expected `;` after exit statement"):
-        _ = Parser("=>!").parse()
+        _ = parse("=>!")
 
 
 @pytest.mark.parametrize("ending", [";", ""])
 def test_parse_break_stmt_ending(ending: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(f".. {{ <-{ending} }}").parse() == snapshot
+    assert parse(f".. {{ <-{ending} }}") == snapshot
 
 
 @pytest.mark.parametrize("ending", [";", ""])
 def test_parse_continue_stmt_ending(ending: str, snapshot: SnapshotAssertion) -> None:
-    assert Parser(f".. {{ ->{ending} }}").parse() == snapshot
+    assert parse(f".. {{ ->{ending} }}") == snapshot
