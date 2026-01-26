@@ -62,10 +62,10 @@ def test_parse_primary_basic(source: str, expected_node: n.Expr) -> None:
         (r"'0", n.Identifier("0", inst=True)),
         (r"#0", n.Identifier("0", private=True)),
         (r"'#0", n.Identifier("0", inst=True, private=True)),
-        (r"'", n.SELF),
+        (r"'", n.Identifier(None, inst=True)),
     ],
 )
-def test_parse_primary_identifier(source: str, expected_node: n.Name) -> None:
+def test_parse_primary_identifier(source: str, expected_node: n.Identifier) -> None:
     assert Parser(source + ";").parse() == [n.ExprStmt(expected_node)]
 
 
@@ -140,13 +140,11 @@ def test_parse_primary_slice_fail(source: str, error_message: str) -> None:
         ("{{k -> v,", "expected a `k -> v` pair"),
         ("{{k -> v", "expected `...` after pair in table comprehension"),
         ("{{k -> v, l -> w  m -> x}}", "missing `,` between table pairs"),
-        ("{{->...'->?}}", "cannot use `'` as table comprehension target"),
         ("[a, b c]", "missing `,` between array items"),
         ("[x .. ->?]", "expected `...` after item in array comprehension"),
         ("[x ... a b ->?]", "expected `,` between array comprehension targets"),
         ("[... / ->?]", "expected array comprehension target"),
         ("[...->?", "`[` was never closed"),
-        ("[...'->?]", "cannot use `'` as array comprehension target"),
     ],
 )
 def test_parse_primary_collections_fail(source: str, error_message: str) -> None:

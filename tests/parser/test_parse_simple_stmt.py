@@ -70,9 +70,6 @@ def test_parse_import_stmt(source: str, statement: n.Import) -> None:
         ("<=0.[1 -> 2 3];", "expected `,` between import items"),
         ("<=0.[1 -> 2, /];", "expected import item"),
         ("<=0.[1 ->];", "expected alias name after `->`"),
-        ("<='", "cannot use `'` as a module name"),
-        ("<=0.'", "cannot import `'`"),
-        ("<=0.1 -> ';", "cannot use `'` as an alias name"),
     ],
 )
 def test_parse_import_stmt_fail(source: str, error_message: str) -> None:
@@ -114,7 +111,6 @@ def test_parse_enum_stmt(source: str, enum: n.EnumDef) -> None:
         ("0 # { / }", "expected enum member name"),
         ("0 # { a }", "expected `:` or `;` after enum member name"),
         ("0 # { a: / }", "expected `;` after enum member value"),
-        ("0 # { '; }", "cannot use `'` as an enum member name"),
     ],
 )
 def test_parse_enum_stmt_fail(source: str, error_message: str) -> None:

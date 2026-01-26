@@ -38,8 +38,6 @@ def test_parse_data_class_stmt(
         ("@! Foo(a, b)", "expected `;` or block after data class definition"),
         ("@! Foo(a b)", "expected `,` between data class members"),
         ("@! Foo(a, b, ,)", "expected data class member"),
-        ("@! ';", "cannot use `'` as a data class name"),
-        ("@! Foo(');", "cannot use `'` as data class member"),
     ],
 )
 def test_parse_data_class_stmt_fail(source: str, error_message: str) -> None:
@@ -80,8 +78,6 @@ def test_parse_class_def_stmt(
         ("@ Foo(a, b)", "expected block after class definition"),
         ("@ Foo(a b)", "expected `,` between class parents"),
         ("@ Foo(a, b, ,)", "expected class parent"),
-        ("@ '{}", "cannot use `'` as a class name"),
-        ("@ Foo(') {}", "cannot use `'` as class parent"),
     ],
 )
 def test_parse_class_def_stmt_fail(source: str, error_message: str) -> None:
@@ -142,7 +138,6 @@ def test_parse_func_def_stmt(
         ("foo bar baz ~*", "expected `*` or `~'*`"),
         ("hey * * {}", "expected block after function definition"),
         ("hey *", "expected block after function definition"),
-        ("hey ' *", "cannot use `'` as a parameter name"),
     ],
 )
 def test_parse_func_def_stmt_fail(source: str, error_message: str) -> None:
@@ -212,7 +207,6 @@ def test_parse_foreach_stmt(
     [
         ("... a b ->?{}", "expected `,` between loop targets"),
         ("... , ->?{}", "expected loop target"),
-        ("... ' ->?{}", "cannot use `'` as loop target"),
         ("...->?", "expected block after loop definition"),
     ],
 )
