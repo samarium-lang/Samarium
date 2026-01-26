@@ -290,6 +290,15 @@ def transpile_expr(expr: n.Expr) -> ast.expr:
             return transpile_expr_slice(expr)
         case n.Postfix():
             return transpile_postfix(expr)
+        case n.LogicalOp():
+            return transpile_logical_op(expr)
+
+
+def transpile_logical_op(expr: n.LogicalOp) -> ast.expr:
+    return ast.BoolOp(
+        ast.And() if expr.op is n.LogOp.AND else ast.Or(),
+        list(map(transpile_expr, expr.values)),
+    )
 
 
 def transpile_slice_args(expr: n.Slice) -> tuple[ast.expr, ast.expr, ast.expr]:
