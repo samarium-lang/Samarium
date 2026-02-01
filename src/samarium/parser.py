@@ -1,13 +1,14 @@
 from __future__ import annotations
 
+import inspect
 from collections.abc import Callable
-from functools import wraps
+from functools import cached_property, wraps
 from typing import TYPE_CHECKING, Literal, NamedTuple, TypeAlias, TypeVar, cast, final
 
 from samarium import nodes as n
 from samarium.source_compressor import SourceData, group_tokens
 from samarium.source_decompressor import decompress
-from samarium.tokenizer import Tokenlike, tokenize
+from samarium.tokenizer import tokenize
 from samarium.tokens import Token
 
 if TYPE_CHECKING:
@@ -99,12 +100,11 @@ class Pathfinder:
     def __init__(self, tokens: Iterable[int]) -> None:
         self._tokens = list(tokens)
         self._index = 0
-        self.waypoints: list[Waypoint] = []
+        self._waypoints: list[Waypoint] = []
 
-    # def insert_literals(self, tokens: Iterable[Tokenlike]) -> None:
-    #     for tok in tokens:
-    #         if not isinstance(tok, str | float):
-    #             pass
+    @property
+    def waypoints(self) -> tuple[Waypoint, ...]:
+        return tuple(self._waypoints)
 
     def peek(self, offset: int = 0) -> int | None:
         pos = self._index + offset
@@ -123,14 +123,13 @@ class Pathfinder:
             if next_n[i - 1] > 80:
                 t.append(v)
             else:
-                t.append(Token.from_index(v).value)  # pyright: ignore[reportAny]
+                t.append(Token.from_index(v).value)
         return t
 
     def next(self) -> int | None:
         if self._index < len(self._tokens):
             tok = self._tokens[self._index]
             self._index += 1
-            # print("NEXT", self.debug(6))
             return tok
         return None
 
@@ -141,8 +140,7 @@ class Pathfinder:
         return self._index >= len(self._tokens)
 
     def mark(self, name: str) -> None:
-        self.waypoints.append(Waypoint(name, self._index))
-        # print("MARK", self.debug(6))
+        self._waypoints.append(Waypoint(name, self._index))
 
     def reset(self, to: str | None = None) -> None:
         if not self.waypoints:
@@ -152,7 +150,6 @@ class Pathfinder:
             while self.waypoints[idx].name != to:
                 idx -= 1
         self._index = self.waypoints[idx].idx
-        # print("RESET", self.debug(6))
 
     def drop(self, to: str | None = None) -> None:
         """To be used for acceptable failures, e.g. first token checks."""
@@ -160,46 +157,37 @@ class Pathfinder:
             raise RuntimeError("no waypoint to drop")
 
         if not to:
-            self._index = self.waypoints.pop().idx
+            self._index = self._waypoints.pop().idx
             return
 
-        while (waypoint := self.waypoints.pop()).name != to:
+        while (waypoint := self._waypoints.pop()).name != to:
             pass
 
         self._index = waypoint.idx
-        # print("DROP", self.debug(6))
 
     def commit(self, to: str | None = None) -> None:
         if not self.waypoints:
             raise RuntimeError("no waypoint to commit to")
         if not to:
-            _ = self.waypoints.pop()
+            _ = self._waypoints.pop()
             return
-        while self.waypoints.pop().name != to:
+        while self._waypoints.pop().name != to:
             pass
-        # print("COMMIT", self.debug(6))
 
 
-def watch(f: Callable[[Parser], T]) -> Callable[[Parser], T]:
-    # return f
+def watch(p: Callable[[Parser], T]) -> Callable[[Parser], T]:
     def wrapper(self: Parser) -> T:
-        import inspect
-
         caller = inspect.currentframe().f_back.f_code.co_name  # pyright: ignore[reportOptionalMemberAccess]
-        x = len(self._pf.waypoints)  # pyright: ignore[reportPrivateUsage]
-        # print(f"\033[32m-> (stack: {x}) {f.__name__} from {caller}\033[0m")
-        # print(f"+ (stack: {x}) {f.__name__} from {caller}")
-        r = f(self)
-        y = len(self._pf.waypoints)  # pyright: ignore[reportPrivateUsage]
-        # print(f"- (stack: {x} -> {y}) {f.__name__} to {caller}")
-        # print(f"\033[31m<- (stack: {x} -> {y}) {f.__name__} to {caller}\033[0m")
-        if y != x:
-            print(f"\033[31m<- (stack: {x} -> {y}) {f.__name__} to {caller}\033[0m")
-            print("\033[33m !!!!!!!!!!!!")
-            print("\033[33m !!!!!!!!!!!!")
-            print("\033[33m !!!!!!!!!!!!\033[0m")
-            raise RuntimeError
-        return r
+        before = len(self.pf.waypoints)
+        result = p(self)
+        after = len(self.pf.waypoints)
+        if after != before:
+            msg = (
+                "waypoint count mismatch occurred when returning from "
+                f"{p.__name__} to {caller}; entered with {before}, exited with {after}"
+            )
+            raise ParseError(msg)
+        return result
 
     return wrapper
 
@@ -209,7 +197,7 @@ def automark(
 ) -> Callable[[Parser], T | None]:
     @wraps(func)
     def wrapper(self: Parser) -> T | None:
-        pf = self._pf  # pyright: ignore[reportPrivateUsage]
+        pf = self.pf
         pf.mark(f"automark ({func.__name__})")
         if result := func(self):
             pf.commit()
@@ -225,13 +213,15 @@ class Parser:
     def __init__(self, source_data: SourceData) -> None:
         self._src_data = source_data
         self._pf = Pathfinder(source_data.tokens)
-        # global pf
-        # pf = self._pf
+
+    @cached_property
+    def pf(self) -> Pathfinder:
+        return self._pf
 
     def parse(self) -> list[n.Statement]:
         stmts: list[n.Statement] = []
 
-        while not self._pf.eof():
+        while not self.pf.eof():
             stmts.append(self._stmt())
 
         return stmts
@@ -263,12 +253,12 @@ class Parser:
             if obj := stmt_kind():
                 return obj
         else:
-            tok = Token.from_index(cast("int", self._pf.peek()))
+            tok = Token.from_index(cast("int", self.pf.peek()))
             raise ParseError(f"unexpected token `{tok.value}`")
 
     @watch
     def _block(self) -> n.Block | None:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() != Token.BRACE_OPEN:
             return None
@@ -282,7 +272,7 @@ class Parser:
             stmts.append(self._stmt())
 
     def _break_or_continue_stmt(self, tok: Token, value: BC) -> BC | None:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() != tok:
             return None
@@ -310,7 +300,7 @@ class Parser:
     @watch
     @automark
     def _exit_stmt(self) -> n.Exit | None:
-        pf = self._pf
+        pf = self.pf
         if pf.next() != Token.EXIT:
             return None
         expr = self._expr()
@@ -321,17 +311,17 @@ class Parser:
     @watch
     @automark
     def _sleep_stmt(self) -> n.Sleep | None:
-        if self._pf.next() != Token.SLEEP:
+        if self.pf.next() != Token.SLEEP:
             return None
         expr = self._expr()
-        if self._pf.next() != Token.END:
+        if self.pf.next() != Token.END:
             raise ParseError("expected `;` after sleep statement")
         return n.Sleep(expr)
 
     @watch
     @automark
     def _assert_stmt(self) -> n.Assert | None:
-        pf = self._pf
+        pf = self.pf
 
         if pf.next() != Token.CATCH:
             return None
@@ -354,7 +344,7 @@ class Parser:
     @watch
     @automark
     def _if_stmt(self) -> n.If | None:
-        pf = self._pf
+        pf = self.pf
 
         if pf.next() != Token.IF:
             return None
@@ -384,7 +374,7 @@ class Parser:
         return n.If(condition, then, self._if_stmt())
 
     def _name_list(self, context: str, *, stop_at: Token) -> list[n.Identifier]:
-        pf = self._pf
+        pf = self.pf
 
         names: list[n.Identifier] = []
         sep = False
@@ -406,7 +396,7 @@ class Parser:
 
     @watch
     def _foreach_stmt(self) -> n.ForEach | None:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() != Token.FOR:
             return None
@@ -422,9 +412,9 @@ class Parser:
 
     @watch
     def _while_stmt(self) -> n.While | None:
-        if self._pf.peek() != Token.WHILE:
+        if self.pf.peek() != Token.WHILE:
             return None
-        _ = self._pf.next()
+        _ = self.pf.next()
         condition = self._expr()
         if not (then := self._block()):
             raise ParseError("expected block after `..` condition")
@@ -432,7 +422,7 @@ class Parser:
 
     @watch
     def _try_stmt(self) -> n.Try | None:
-        pf = self._pf
+        pf = self.pf
         if pf.peek() != Token.TRY:
             return None
         _ = pf.next()
@@ -455,7 +445,7 @@ class Parser:
     def _return_or_yield_stmt(
         self, type_: type[RY], tok: Token, name: str
     ) -> RY | None:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() != tok:
             return None
@@ -475,7 +465,7 @@ class Parser:
 
     @watch
     def _assignment_stmt(self) -> n.Assignment | None:
-        pf = self._pf
+        pf = self.pf
         sep = False
         targets: list[n.AssignmentTarget] = []
         pf.mark("assignment")
@@ -519,7 +509,7 @@ class Parser:
 
     @watch
     def _file_io_stmt(self) -> n.FileIO | None:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() == Token.FILE_CREATE:
             _ = pf.next()
@@ -562,7 +552,7 @@ class Parser:
 
     @watch
     def _func_def_stmt(self) -> n.FuncDef | None:
-        pf = self._pf
+        pf = self.pf
         pf.mark("func_def")
 
         decorators: list[n.Expr] = []
@@ -648,7 +638,7 @@ class Parser:
 
     @watch
     def _class_def_stmt(self) -> n.ClassDef | None:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() != Token.CLASS:
             return None
@@ -673,7 +663,7 @@ class Parser:
 
     @watch
     def _data_class_stmt(self) -> n.DataClassDef | None:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() != Token.DATACLASS:
             return None
@@ -698,7 +688,7 @@ class Parser:
 
     @watch
     def _enum_stmt(self) -> n.EnumDef | None:
-        pf = self._pf
+        pf = self.pf
         pf.mark("enum")
 
         if not (enum_name := self._expr_identifier()):
@@ -740,7 +730,7 @@ class Parser:
     @watch
     @automark
     def _default_stmt(self) -> n.Default | None:
-        pf = self._pf
+        pf = self.pf
         if not (identifier := self._expr_identifier()):
             return None
         if pf.next() != Token.DEFAULT:
@@ -753,7 +743,7 @@ class Parser:
     @watch
     @automark
     def _import_item(self) -> n.ImportItem | None:
-        pf = self._pf
+        pf = self.pf
         if not (name := self._expr_identifier()):
             return None
         if pf.peek() != Token.TO:
@@ -765,7 +755,7 @@ class Parser:
 
     @watch
     def _import_stmt(self) -> n.Import | None:
-        pf = self._pf
+        pf = self.pf
         pf.mark("import")
 
         if pf.next() != Token.IMPORT:
@@ -825,7 +815,7 @@ class Parser:
     @watch
     @automark
     def _expr_or_throw_stmt(self) -> n.ExprStmt | n.Throw | None:
-        pf = self._pf
+        pf = self.pf
         expr = self._expr()
         if (final := pf.next()) in (Token.END, Token.THROW):
             if final == Token.THROW and pf.peek() == Token.END:
@@ -843,7 +833,7 @@ class Parser:
 
     @watch
     def _expr_if(self) -> n.Expr:
-        pf = self._pf
+        pf = self.pf
 
         lor = self._expr_lor()
         if pf.peek() != Token.IF:
@@ -868,7 +858,7 @@ class Parser:
     def _expr_logical(
         self, op: n.LogOp, token: Token, subparser: Callable[[], n.Expr]
     ) -> n.Expr:
-        pf = self._pf
+        pf = self.pf
 
         operands: list[n.Expr] = [subparser()]
         while True:
@@ -892,7 +882,7 @@ class Parser:
     @watch
     def _expr_membership(self) -> n.Expr:
         comparison = self._expr_comparison()
-        pf = self._pf
+        pf = self.pf
 
         match pf.peek(), pf.peek(1):
             case Token.IN, _:
@@ -910,7 +900,7 @@ class Parser:
     def _expr_comparison(self) -> n.Expr:
         a = self._expr_bor()
 
-        pf = self._pf
+        pf = self.pf
         primes: list[tuple[n.BinOp, n.Expr]] = []
         while True:
             if pf.peek() not in COMPARISON_OPS:
@@ -946,7 +936,7 @@ class Parser:
 
     @watch
     def _expr_bor_prime(self) -> Prime[n.Expr]:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() != Token.BOR:
             return None
@@ -965,7 +955,7 @@ class Parser:
 
     @watch
     def _expr_bxor_prime(self) -> Prime[n.Expr]:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() != Token.BXOR:
             return None
@@ -984,7 +974,7 @@ class Parser:
 
     @watch
     def _expr_band_prime(self) -> Prime[n.Expr]:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() != Token.BAND:
             return None
@@ -1003,7 +993,7 @@ class Parser:
 
     @watch
     def _expr_sum_prime(self) -> Prime[tuple[n.BinOp, n.Expr]]:
-        pf = self._pf
+        pf = self.pf
         if pf.peek() not in (Token.ADD, Token.SUB, Token.ZIP):
             return None
 
@@ -1024,7 +1014,7 @@ class Parser:
 
     @watch
     def _expr_term_prime(self) -> Prime[tuple[n.BinOp, n.Expr]]:
-        pf = self._pf
+        pf = self.pf
         if pf.peek() not in (Token.MUL, Token.DIV, Token.MOD):
             return None
 
@@ -1035,7 +1025,7 @@ class Parser:
 
     @watch
     def _expr_unary(self) -> n.Expr:
-        pf = self._pf
+        pf = self.pf
 
         ops: list[n.UnOp] = []
         while pf.peek() in UNARY_OPS:
@@ -1049,7 +1039,7 @@ class Parser:
     def _expr_power(self) -> n.Expr:
         base = self._expr_postfix()
 
-        pf = self._pf
+        pf = self.pf
         if pf.peek() == Token.POW:
             _ = pf.next()
             return n.BinaryOp(base, n.BinOp.POW, self._expr_unary())
@@ -1069,7 +1059,7 @@ class Parser:
 
     @watch
     def _expr_postfix_prime(self) -> Prime[n.PostfixKind]:
-        pf = self._pf
+        pf = self.pf
         if pf.peek() == Token.ATTR:
             _ = pf.next()
             if not (ident := self._expr_identifier()):
@@ -1109,7 +1099,7 @@ class Parser:
 
     @watch
     def _expr_literal(self) -> n.Primary | None:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() in (Token.INT, Token.STRING, Token.FLOAT):
             kind, value = pf.nexts(2)
@@ -1151,7 +1141,7 @@ class Parser:
 
     @watch
     def _expr_identifier(self) -> n.Identifier | None:
-        pf = self._pf
+        pf = self.pf
         pf.mark("name")
 
         if inst := pf.peek() == Token.INSTANCE:
@@ -1185,13 +1175,13 @@ class Parser:
     @watch
     @automark
     def _expr_null(self) -> Literal[n.UnitExpr.NULL] | None:
-        if self._pf.nexts(2) == [Token.PAREN_OPEN, Token.PAREN_CLOSE]:
+        if self.pf.nexts(2) == [Token.PAREN_OPEN, Token.PAREN_CLOSE]:
             return n.NULL
 
     @watch
     @automark
     def _expr_paren(self) -> n.Expr | None:
-        pf = self._pf
+        pf = self.pf
         if pf.next() != Token.PAREN_OPEN:
             return None
         expr = self._expr()
@@ -1201,7 +1191,7 @@ class Parser:
 
     @watch
     def _expr_array(self) -> n.Array | None:
-        pf = self._pf
+        pf = self.pf
         pf.mark("array")
 
         if pf.next() != Token.BRACKET_OPEN:
@@ -1234,7 +1224,7 @@ class Parser:
 
     @watch
     def _expr_array_comp(self) -> n.ArrayComp | None:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() != Token.BRACKET_OPEN:
             return None
@@ -1265,14 +1255,14 @@ class Parser:
     @watch
     def _table_pair(self) -> tuple[n.Expr, n.Expr]:
         key = self._expr()
-        if self._pf.next() != Token.TO:
+        if self.pf.next() != Token.TO:
             raise ParseError("expected a `k -> v` pair")
         value = self._expr()
         return key, value
 
     @watch
     def _expr_table(self) -> n.Table | None:
-        pf = self._pf
+        pf = self.pf
         pf.mark("table")
 
         if pf.next() != Token.TABLE_OPEN:
@@ -1306,7 +1296,7 @@ class Parser:
 
     @watch
     def _expr_table_comp(self) -> n.TableComp | None:
-        pf = self._pf
+        pf = self.pf
 
         if pf.peek() != Token.TABLE_OPEN:
             return None
@@ -1336,7 +1326,7 @@ class Parser:
 
     @watch
     def _expr_slice(self) -> n.Slice | n.Index | None:
-        pf = self._pf
+        pf = self.pf
         pf.mark("slice")
 
         # Predefined common error
@@ -1473,7 +1463,7 @@ class Parser:
 
     @watch
     def _expr_call(self) -> n.Call | None:
-        pf = self._pf
+        pf = self.pf
         pf.mark("call")
 
         if pf.next() != Token.PAREN_OPEN:
