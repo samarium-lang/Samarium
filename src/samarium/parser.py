@@ -476,10 +476,11 @@ class Parser:
                     return None
                 sep = False
             else:
-                if not (ident := self._expr_identifier()):
+                target = self._expr_postfix()
+                if target == n.Slice():
                     pf.drop()
                     return None
-                targets.append(n.AssignmentTarget(ident, self._expr_slice()))
+                targets.append(n.AssignmentTarget(target))
                 sep = True
             if Token.ASSIGN in (assign_op_tokens := (pf.peek(), pf.peek(1))):
                 break

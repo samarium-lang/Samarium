@@ -21,12 +21,52 @@
       kind=<AssignmentKind.ADD: 2>,
       targets=list([
         AssignmentTarget(
-          name=Identifier(name='a', inst=False, private=False),
-          subscript=None,
+          target=Identifier(name='a', inst=False, private=False),
         ),
         AssignmentTarget(
-          name=Identifier(name='b', inst=False, private=False),
-          subscript=None,
+          target=Identifier(name='b', inst=False, private=False),
+        ),
+      ]),
+      value=<UnitExpr.IMPLICIT_NULL: 1>,
+    ),
+  ])
+# ---
+# name: test_parse_assignment_stmt[a.b.c.d.e,f<<>><<>>:;]
+  list([
+    Assignment(
+      kind=<AssignmentKind.REGULAR: 1>,
+      targets=list([
+        AssignmentTarget(
+          target=Postfix(
+            kind=Attribute(
+              name=Identifier(name='e', inst=False, private=False),
+            ),
+            value=Postfix(
+              kind=Attribute(
+                name=Identifier(name='d', inst=False, private=False),
+              ),
+              value=Postfix(
+                kind=Attribute(
+                  name=Identifier(name='c', inst=False, private=False),
+                ),
+                value=Postfix(
+                  kind=Attribute(
+                    name=Identifier(name='b', inst=False, private=False),
+                  ),
+                  value=Identifier(name='a', inst=False, private=False),
+                ),
+              ),
+            ),
+          ),
+        ),
+        AssignmentTarget(
+          target=Postfix(
+            kind=Slice(start=None, stop=None, step=None),
+            value=Postfix(
+              kind=Slice(start=None, stop=None, step=None),
+              value=Identifier(name='f', inst=False, private=False),
+            ),
+          ),
         ),
       ]),
       value=<UnitExpr.IMPLICIT_NULL: 1>,
@@ -39,20 +79,22 @@
       kind=<AssignmentKind.BXOR: 10>,
       targets=list([
         AssignmentTarget(
-          name=Identifier(name='a', inst=False, private=False),
-          subscript=Slice(start=None, stop=None, step=None),
+          target=Postfix(
+            kind=Slice(start=None, stop=None, step=None),
+            value=Identifier(name='a', inst=False, private=False),
+          ),
         ),
         AssignmentTarget(
-          name=Identifier(name='b', inst=False, private=False),
-          subscript=None,
+          target=Identifier(name='b', inst=False, private=False),
         ),
         AssignmentTarget(
-          name=Identifier(name='c', inst=False, private=False),
-          subscript=Slice(start=Int(value=1), stop=None, step=None),
+          target=Postfix(
+            kind=Slice(start=Int(value=1), stop=None, step=None),
+            value=Identifier(name='c', inst=False, private=False),
+          ),
         ),
         AssignmentTarget(
-          name=Identifier(name='d', inst=False, private=False),
-          subscript=None,
+          target=Identifier(name='d', inst=False, private=False),
         ),
       ]),
       value=<UnitExpr.IMPLICIT_NULL: 1>,
@@ -65,8 +107,7 @@
       kind=<AssignmentKind.REGULAR: 1>,
       targets=list([
         AssignmentTarget(
-          name=Identifier(name='x', inst=False, private=False),
-          subscript=None,
+          target=Identifier(name='x', inst=False, private=False),
         ),
       ]),
       value=<UnitExpr.IMPLICIT_NULL: 1>,

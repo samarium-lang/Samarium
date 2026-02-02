@@ -115,7 +115,7 @@ def test_parse_file_io_stmt_fail(source: str, error_message: str) -> None:
         _ = parse(source)
 
 
-@pytest.mark.parametrize("source", ["x:;", "a,b+:;", "a<<>>,b,c<</..>>,d^:;"])
+@pytest.mark.parametrize("source", ["x:;", "a,b+:;", "a<<>>,b,c<</..>>,d^:;", "a.b.c.d.e,f<<>><<>>:;"])
 def test_parse_assignment_stmt(source: str, snapshot: SnapshotAssertion) -> None:
     assert parse(source) == snapshot
 

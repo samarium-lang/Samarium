@@ -282,9 +282,7 @@ class UnaryOp(NamedTuple):
 
 
 class AssignmentTarget(NamedTuple):
-    # TODO: support attribute update
-    name: Identifier
-    subscript: Index | Slice | Attribute | None
+    target: Expr
 
 
 class AssignmentKind(Enum):
